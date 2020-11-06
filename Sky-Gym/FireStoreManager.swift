@@ -117,6 +117,9 @@ class FireStoreManager: NSObject {
     
     func addMember(email:String,password:String,memberDetail:[String:String],memberships:[[String:String]],memberID:String,handler:@escaping (Error?) -> Void ) {
         let attendence = AppManager.shared.getCompleteMonthAttendenceStructure()
+        
+        let ab = AppManager.shared.getCompleteMonthAttendenceStructure()
+        
         fireDB.collection("/Members").document("/\(memberID)").setData(
             [
                 "adminID":AppManager.shared.adminID,
@@ -261,20 +264,23 @@ class FireStoreManager: NSObject {
                     let memberDetail = (doc.data())["memberDetail"] as! [String:String]
                     let membershipArray = (doc.data())["memberships"] as! NSArray
                     let attendence = (doc.data())["attendence"] as! [String:Any]
-
-                    guard  let day:NSDictionary = ((attendence["\(currentYear)"] as! NSDictionary)["\(currentMonth)"] as? NSDictionary)!["\(todayDate)"] as? NSDictionary else {
-                        break
-                    }
-                        if day.count > 0  {
-                            let check = day["\(checkFor)"] as! String
+                    let monthArray = (attendence["\(currentYear)"] as! NSDictionary)["\(currentMonth)"] as! Array<NSDictionary>
+//
+//                    guard  let day:NSDictionary = ((attendence["\(currentYear)"] as! NSDictionary)["\(currentMonth)"] as? NSDictionary)!["\(todayDate)"] as? NSDictionary else {
+//                        break
+//                    }
+                    for eachDay in monthArray {
+                        let d = eachDay as! NSDictionary
+                        if  let status = d["\(todayDate)"] as? NSDictionary  {
+                            let check = status["\(checkFor)"] as! String
                             let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
                             
                             if check != "" {
                                 let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.last!.endDate, dueAmount:currentMembership.last!.dueAmount)
                                 checkArray.append(member)
-                            } else {
                             }
                         }
+                    }
                 }
                 result(checkArray,nil)
             }
@@ -473,7 +479,8 @@ class FireStoreManager: NSObject {
     func getAttendenceFrom(trainerORmember:String,id:String,startDate:String,endDate:String,result:@escaping ([Attendence]) -> Void) {
         let startD = AppManager.shared.getDate(date: startDate)
         let endD = AppManager.shared.getDate(date: endDate)
-        let diff = Calendar.current.dateComponents([.year,.month], from: startD, to: endD)
+        let yearDiff = Calendar.current.component(.year, from: startD) - Calendar.current.component(.year, from: endD)
+        let monthDiff = Calendar.current.component(.month, from: startD) - Calendar.current.component(.month, from: endD)
 
         fireDB.collection("/\(trainerORmember)").document("/\(id)").getDocument(completion: {
             (docSnapshot,err) in
@@ -481,12 +488,12 @@ class FireStoreManager: NSObject {
             if err == nil {
                 let attendence = (((docSnapshot?.data())! as NSDictionary )["attendence"]) as! NSDictionary
                 
-                if diff.year == 0 {
-                    if diff.month == 0 {
+                if yearDiff == 0 {
+                    if monthDiff == 0 {
                         let a = AppManager.shared.sameMonthSameYearAttendenceFetching(attendence: attendence, year:"\(Calendar.current.component(.year, from: startD))" , month: "\(Calendar.current.component(.month, from: startD))", startDate: AppManager.shared.changeDateFormatToStandard(dateStr: startDate), endDate:  AppManager.shared.changeDateFormatToStandard(dateStr: endDate))
                         result(a)
                     } else {
-                        let a = AppManager.shared.sameYearDifferenctMonthAttedenceFetching(attendence: attendence, startDate: startD, endDate: startD)
+                        let a = AppManager.shared.sameYearDifferenctMonthAttedenceFetching(attendence: attendence, startDate: startD, endDate: endD)
                         result(a)
                     }
                 } else {
@@ -775,35 +782,25 @@ class FireStoreManager: NSObject {
             }
         })
     }
-    func dummyAttendence() {
-        fireDB.collection("/Members").document("261826315").getDocument(completion: {
-            (docRef,error) in
-            
-            let attendence = (docRef?.data() as! NSDictionary)["attendence"] as! [String:Any]
-//            let monthArray = (attendence["2020"] as! NSDictionary)["11"] as! NSArray
-//            var counter = Calendar.current.component(.day, from: Date())
-//        //    print("ARRAY IS :\((monthArray.first as! NSDictionary)["1/11/2020"] as! NSDictionary)")
-            
-          let s =  AppManager.shared.sameMonthSameYearAttendenceFetching(attendence: attendence as NSDictionary, year: "2020", month: "11", startDate: "6 Nov 2020", endDate: "13 Nov 2020")
-            
-            print("FINALL RESULT ATTENDENCE: \(s)")
-        })
-    }
+    
+    
+//    func dummyAttendence() {
+//        fireDB.collection("/Members").document("261826315").getDocument(completion: {
+//            (docRef,error) in
+//
+//            let attendence = (docRef?.data() as! NSDictionary)["attendence"] as! [String:Any]
+////            let monthArray = (attendence["2020"] as! NSDictionary)["11"] as! NSArray
+////            var counter = Calendar.current.component(.day, from: Date())
+////        //    print("ARRAY IS :\((monthArray.first as! NSDictionary)["1/11/2020"] as! NSDictionary)")
+//
+//          let s =  AppManager.shared.sameMonthSameYearAttendenceFetching(attendence: attendence as NSDictionary, year: "2020", month: "11", startDate: "6 Nov 2020", endDate: "13 Nov 2020")
+//
+//            print("FINALL RESULT ATTENDENCE: \(s)")
+//        })
+//    }
 }
     
-extension Array where Element:Equatable {
-    func removeDuplicates() -> [Element] {
-        var result = [Element]()
 
-        for value in self {
-            if result.contains(value) == false {
-                result.append(value)
-            }
-        }
-        return result
-    }
-    
-}
 
 
 

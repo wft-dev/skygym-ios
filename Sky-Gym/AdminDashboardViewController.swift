@@ -40,7 +40,7 @@ class AdminDashboardViewController: BaseViewController {
         self.setDashboardValues()
 //        FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Members", id: "12400688", startDate: <#T##String#>, endDate: <#T##String#>, result: <#T##([Attendence]) -> Void#>)
         
-        FireStoreManager.shared.dummyAttendence()
+       // FireStoreManager.shared.dummyAttendence()
         
     }
     

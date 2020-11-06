@@ -64,7 +64,6 @@ class MemberAttandanceViewController: BaseViewController {
     self.startDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: array.first!.date))
                 self.endDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: array.last!.date))
                 self.memberAttandanceTable.reloadData()
-                print("\(self.attandanceArray.count)")
         })
     }
 }
@@ -99,7 +98,7 @@ extension MemberAttandanceViewController {
     
     @objc func dateChanged(_ sender: UIDatePicker?) {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat =  "dd MMM yyyy"
+        dateFormatter.dateFormat =  "d MMM yyyy"
         if let date = sender?.date {
             self.startDateLabel.text = "\(dateFormatter.string(from: date))"
             self.endDateLabel.text = "\(AppManager.shared.getNext7DaysDate(startDate: date))"
@@ -108,7 +107,7 @@ extension MemberAttandanceViewController {
 
     @objc func onDoneButtonClick() {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat =  "dd MMM yyyy"
+        dateFormatter.dateFormat =  "d MMM yyyy"
         self.startDateLabel.text = "\(dateFormatter.string(from: self.datePicker.date))"
         self.endDateLabel.text = "\(AppManager.shared.getNext7DaysDate(startDate: self.datePicker.date))"
         self.toolBar.removeFromSuperview()
@@ -123,7 +122,9 @@ extension MemberAttandanceViewController {
     func fetchAttendenceFrom(startDate:String,endDate:String) {
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Members", id: AppManager.shared.memberID, startDate:startDate, endDate:endDate, result: {
             (attendenceArray) in
-            
+            self.attandanceArray.removeAll()
+            self.attandanceArray = attendenceArray
+            self.memberAttandanceTable.reloadData()
         })
     }
 }
@@ -140,13 +141,15 @@ extension MemberAttandanceViewController:UITableViewDataSource {
         cell.checkInTimeView.layer.cornerRadius = 12.0
         cell.checkoutTimeView.layer.cornerRadius = 12.0
         cell.weekdayNameLabel.text = AppManager.shared.getTodayWeekDay(date: singleAttendenceStatus.date)
-        cell.checkInTime.text = singleAttendenceStatus.checkIn
-        cell.checkOutTime.text = singleAttendenceStatus.checkOut
-        
+
         if singleAttendenceStatus.present == false {
             cell.attandanceImg.image = UIImage(named: "red")
             cell.checkOutTime.text = "-"
             cell.checkInTime.text = "-"
+        } else {
+            cell.attandanceImg.image = UIImage(named: "green")
+            cell.checkInTime.text = singleAttendenceStatus.checkIn
+            cell.checkOutTime.text = singleAttendenceStatus.checkOut
         }
         return cell
     }
