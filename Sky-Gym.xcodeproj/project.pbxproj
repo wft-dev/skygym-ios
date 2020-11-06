@@ -1,0 +1,574 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 51;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4231BF9425342965007EFBBF /* ViewVisitorScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF9325342965007EFBBF /* ViewVisitorScreenViewController.swift */; };
+		4231BF9625343C68007EFBBF /* AdminProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF9525343C68007EFBBF /* AdminProfileViewController.swift */; };
+		4231BF98253458A9007EFBBF /* ListOfEventsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF97253458A9007EFBBF /* ListOfEventsViewController.swift */; };
+		4231BF9A25347328007EFBBF /* ViewEventScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */; };
+		423F870A252B4846001C30D4 /* MemberDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423F8709252B4846001C30D4 /* MemberDetailViewController.swift */; };
+		424937232526094D0043ADFF /* AddMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424937222526094D0043ADFF /* AddMemberViewController.swift */; };
+		4249C38A251B12BD00DC9AE0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249C389251B12BD00DC9AE0 /* AppDelegate.swift */; };
+		4249C38C251B12BD00DC9AE0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249C38B251B12BD00DC9AE0 /* SceneDelegate.swift */; };
+		4249C38E251B12BD00DC9AE0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249C38D251B12BD00DC9AE0 /* ViewController.swift */; };
+		4249C391251B12BD00DC9AE0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4249C38F251B12BD00DC9AE0 /* Main.storyboard */; };
+		4249C394251B12BD00DC9AE0 /* Sky_Gym.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4249C392251B12BD00DC9AE0 /* Sky_Gym.xcdatamodeld */; };
+		4249C396251B12BF00DC9AE0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4249C395251B12BF00DC9AE0 /* Assets.xcassets */; };
+		4249C399251B12BF00DC9AE0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4249C397251B12BF00DC9AE0 /* LaunchScreen.storyboard */; };
+		4249C3AA251B693800DC9AE0 /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4249C3A9251B693800DC9AE0 /* Poppins-SemiBold.ttf */; };
+		4249C3AC251B695300DC9AE0 /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4249C3AB251B695300DC9AE0 /* Poppins-Medium.ttf */; };
+		4249C3AE251B6BAA00DC9AE0 /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4249C3AD251B6BAA00DC9AE0 /* Poppins-Bold.ttf */; };
+		4259DC1D252311EF00F08FA6 /* MemberAndTrainerDetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */; };
+		4259DC1F2523121C00F08FA6 /* MemberAndTrainerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */; };
+		4259DC212523469A00F08FA6 /* ListOfMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4259DC202523469A00F08FA6 /* ListOfMembersViewController.swift */; };
+		42651AD225301FF700539B19 /* TrainerAttendanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD125301FF700539B19 /* TrainerAttendanceViewController.swift */; };
+		42651AD425303F1500539B19 /* ListOfMembershipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD325303F1500539B19 /* ListOfMembershipViewController.swift */; };
+		42651AD62530657400539B19 /* MembershipViewScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD52530657400539B19 /* MembershipViewScreenViewController.swift */; };
+		42651AD825307F7600539B19 /* ListOfVisitorsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD725307F7600539B19 /* ListOfVisitorsViewController.swift */; };
+		42A407A1251C59940087B02F /* AdminRegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A407A0251C59940087B02F /* AdminRegistrationViewController.swift */; };
+		42A407A3251C780A0087B02F /* AdminRegistrationSecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A407A2251C780A0087B02F /* AdminRegistrationSecondViewController.swift */; };
+		42A407A5251C78570087B02F /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A407A4251C78570087B02F /* AppManager.swift */; };
+		42A407A7251CC6A40087B02F /* MemberAndTrainerLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A407A6251CC6A40087B02F /* MemberAndTrainerLoginViewController.swift */; };
+		42B873AC2536E081004CCD50 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 42B873AB2536E081004CCD50 /* GoogleService-Info.plist */; };
+		42B873AE2536E19E004CCD50 /* FireStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B873AD2536E19E004CCD50 /* FireStoreManager.swift */; };
+		42BC9BF6252D82EE00435000 /* MemberAttandanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BC9BF5252D82EE00435000 /* MemberAttandanceViewController.swift */; };
+		42BC9BF8252DCEC200435000 /* MemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BC9BF7252DCEC200435000 /* MemberViewController.swift */; };
+		42C3F51025386B3C007DBC79 /* AppDataStructureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C3F50F25386B3C007DBC79 /* AppDataStructureManager.swift */; };
+		42CAADF1252C4992006E1D76 /* CurrentMembershipDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42CAADF0252C4992006E1D76 /* CurrentMembershipDetailViewController.swift */; };
+		42CAADF3252C90DA006E1D76 /* PurchaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42CAADF2252C90DA006E1D76 /* PurchaseViewController.swift */; };
+		42D13390252ECB6E00BA7EE5 /* ListOfTrainersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42D1338F252ECB6E00BA7EE5 /* ListOfTrainersViewController.swift */; };
+		42D13392252F0ED500BA7EE5 /* TrainerEditScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42D13391252F0ED500BA7EE5 /* TrainerEditScreenViewController.swift */; };
+		42F7DBAF2521A444001F0050 /* MenuItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F7DBAE2521A444001F0050 /* MenuItemsViewController.swift */; };
+		42F7DBB12521E870001F0050 /* AdminDashboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F7DBB02521E870001F0050 /* AdminDashboardViewController.swift */; };
+		42F7DBB32521EBCA001F0050 /* CustomNavigationBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42F7DBB22521EBCA001F0050 /* CustomNavigationBar.xib */; };
+		42F7DBB52521F01E001F0050 /* CustomNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F7DBB42521F01E001F0050 /* CustomNavigationBar.swift */; };
+		42F7DBB72521F790001F0050 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F7DBB62521F790001F0050 /* BaseViewController.swift */; };
+		E8A288FE878FB50B1D6D7901 /* Pods_Sky_Gym.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F84D1FA3B68CE52B796C350 /* Pods_Sky_Gym.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		4231BF9325342965007EFBBF /* ViewVisitorScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewVisitorScreenViewController.swift; sourceTree = "<group>"; };
+		4231BF9525343C68007EFBBF /* AdminProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminProfileViewController.swift; sourceTree = "<group>"; };
+		4231BF97253458A9007EFBBF /* ListOfEventsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfEventsViewController.swift; sourceTree = "<group>"; };
+		4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewEventScreenViewController.swift; sourceTree = "<group>"; };
+		423F8709252B4846001C30D4 /* MemberDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDetailViewController.swift; sourceTree = "<group>"; };
+		424937222526094D0043ADFF /* AddMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemberViewController.swift; sourceTree = "<group>"; };
+		4249C386251B12BD00DC9AE0 /* Sky-Gym.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sky-Gym.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4249C389251B12BD00DC9AE0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		4249C38B251B12BD00DC9AE0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		4249C38D251B12BD00DC9AE0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		4249C390251B12BD00DC9AE0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		4249C393251B12BD00DC9AE0 /* Sky_Gym.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Sky_Gym.xcdatamodel; sourceTree = "<group>"; };
+		4249C395251B12BF00DC9AE0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4249C398251B12BF00DC9AE0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		4249C39A251B12BF00DC9AE0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4249C3A9251B693800DC9AE0 /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
+		4249C3AB251B695300DC9AE0 /* Poppins-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Medium.ttf"; sourceTree = "<group>"; };
+		4249C3AD251B6BAA00DC9AE0 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Bold.ttf"; sourceTree = "<group>"; };
+		4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemberAndTrainerDetailView.xib; sourceTree = "<group>"; };
+		4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAndTrainerDetailView.swift; sourceTree = "<group>"; };
+		4259DC202523469A00F08FA6 /* ListOfMembersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfMembersViewController.swift; sourceTree = "<group>"; };
+		42651AD125301FF700539B19 /* TrainerAttendanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerAttendanceViewController.swift; sourceTree = "<group>"; };
+		42651AD325303F1500539B19 /* ListOfMembershipViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfMembershipViewController.swift; sourceTree = "<group>"; };
+		42651AD52530657400539B19 /* MembershipViewScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipViewScreenViewController.swift; sourceTree = "<group>"; };
+		42651AD725307F7600539B19 /* ListOfVisitorsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfVisitorsViewController.swift; sourceTree = "<group>"; };
+		42A407A0251C59940087B02F /* AdminRegistrationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminRegistrationViewController.swift; sourceTree = "<group>"; };
+		42A407A2251C780A0087B02F /* AdminRegistrationSecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminRegistrationSecondViewController.swift; sourceTree = "<group>"; };
+		42A407A4251C78570087B02F /* AppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
+		42A407A6251CC6A40087B02F /* MemberAndTrainerLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAndTrainerLoginViewController.swift; sourceTree = "<group>"; };
+		42B873AB2536E081004CCD50 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		42B873AD2536E19E004CCD50 /* FireStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireStoreManager.swift; sourceTree = "<group>"; };
+		42BC9BF5252D82EE00435000 /* MemberAttandanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAttandanceViewController.swift; sourceTree = "<group>"; };
+		42BC9BF7252DCEC200435000 /* MemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberViewController.swift; sourceTree = "<group>"; };
+		42C3F50F25386B3C007DBC79 /* AppDataStructureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataStructureManager.swift; sourceTree = "<group>"; };
+		42CAADF0252C4992006E1D76 /* CurrentMembershipDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentMembershipDetailViewController.swift; sourceTree = "<group>"; };
+		42CAADF2252C90DA006E1D76 /* PurchaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseViewController.swift; sourceTree = "<group>"; };
+		42D1338F252ECB6E00BA7EE5 /* ListOfTrainersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfTrainersViewController.swift; sourceTree = "<group>"; };
+		42D13391252F0ED500BA7EE5 /* TrainerEditScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerEditScreenViewController.swift; sourceTree = "<group>"; };
+		42F7DBAE2521A444001F0050 /* MenuItemsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemsViewController.swift; sourceTree = "<group>"; };
+		42F7DBB02521E870001F0050 /* AdminDashboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDashboardViewController.swift; sourceTree = "<group>"; };
+		42F7DBB22521EBCA001F0050 /* CustomNavigationBar.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomNavigationBar.xib; sourceTree = "<group>"; };
+		42F7DBB42521F01E001F0050 /* CustomNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationBar.swift; sourceTree = "<group>"; };
+		42F7DBB62521F790001F0050 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		4F84D1FA3B68CE52B796C350 /* Pods_Sky_Gym.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sky_Gym.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		59F5F610B1FD37E8CF655883 /* Pods-Sky-Gym.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sky-Gym.release.xcconfig"; path = "Target Support Files/Pods-Sky-Gym/Pods-Sky-Gym.release.xcconfig"; sourceTree = "<group>"; };
+		ECB12277B5DC425A173F4D55 /* Pods-Sky-Gym.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sky-Gym.debug.xcconfig"; path = "Target Support Files/Pods-Sky-Gym/Pods-Sky-Gym.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4249C383251B12BD00DC9AE0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8A288FE878FB50B1D6D7901 /* Pods_Sky_Gym.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4249C37D251B12BD00DC9AE0 = {
+			isa = PBXGroup;
+			children = (
+				4249C388251B12BD00DC9AE0 /* Sky-Gym */,
+				4249C387251B12BD00DC9AE0 /* Products */,
+				89F0B0F930629CD01029AD00 /* Pods */,
+				8BEF3EF71A7A2EB004774E9E /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		4249C387251B12BD00DC9AE0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4249C386251B12BD00DC9AE0 /* Sky-Gym.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4249C388251B12BD00DC9AE0 /* Sky-Gym */ = {
+			isa = PBXGroup;
+			children = (
+				4249C389251B12BD00DC9AE0 /* AppDelegate.swift */,
+				4249C38B251B12BD00DC9AE0 /* SceneDelegate.swift */,
+				4249C38D251B12BD00DC9AE0 /* ViewController.swift */,
+				4249C38F251B12BD00DC9AE0 /* Main.storyboard */,
+				4249C3A8251B68FD00DC9AE0 /* Fonts */,
+				4249C395251B12BF00DC9AE0 /* Assets.xcassets */,
+				4249C397251B12BF00DC9AE0 /* LaunchScreen.storyboard */,
+				4249C39A251B12BF00DC9AE0 /* Info.plist */,
+				42B873AB2536E081004CCD50 /* GoogleService-Info.plist */,
+				4249C392251B12BD00DC9AE0 /* Sky_Gym.xcdatamodeld */,
+				42A407A0251C59940087B02F /* AdminRegistrationViewController.swift */,
+				42A407A2251C780A0087B02F /* AdminRegistrationSecondViewController.swift */,
+				424937222526094D0043ADFF /* AddMemberViewController.swift */,
+				42A407A4251C78570087B02F /* AppManager.swift */,
+				42A407A6251CC6A40087B02F /* MemberAndTrainerLoginViewController.swift */,
+				42F7DBAE2521A444001F0050 /* MenuItemsViewController.swift */,
+				42F7DBB02521E870001F0050 /* AdminDashboardViewController.swift */,
+				42F7DBB42521F01E001F0050 /* CustomNavigationBar.swift */,
+				42F7DBB62521F790001F0050 /* BaseViewController.swift */,
+				4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */,
+				4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */,
+				42F7DBB22521EBCA001F0050 /* CustomNavigationBar.xib */,
+				423F8709252B4846001C30D4 /* MemberDetailViewController.swift */,
+				42CAADF0252C4992006E1D76 /* CurrentMembershipDetailViewController.swift */,
+				42BC9BF7252DCEC200435000 /* MemberViewController.swift */,
+				42CAADF2252C90DA006E1D76 /* PurchaseViewController.swift */,
+				4259DC202523469A00F08FA6 /* ListOfMembersViewController.swift */,
+				42BC9BF5252D82EE00435000 /* MemberAttandanceViewController.swift */,
+				42D1338F252ECB6E00BA7EE5 /* ListOfTrainersViewController.swift */,
+				42D13391252F0ED500BA7EE5 /* TrainerEditScreenViewController.swift */,
+				42651AD125301FF700539B19 /* TrainerAttendanceViewController.swift */,
+				42651AD325303F1500539B19 /* ListOfMembershipViewController.swift */,
+				42651AD52530657400539B19 /* MembershipViewScreenViewController.swift */,
+				42651AD725307F7600539B19 /* ListOfVisitorsViewController.swift */,
+				4231BF9325342965007EFBBF /* ViewVisitorScreenViewController.swift */,
+				4231BF9525343C68007EFBBF /* AdminProfileViewController.swift */,
+				4231BF97253458A9007EFBBF /* ListOfEventsViewController.swift */,
+				4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */,
+				42B873AD2536E19E004CCD50 /* FireStoreManager.swift */,
+				42C3F50F25386B3C007DBC79 /* AppDataStructureManager.swift */,
+			);
+			path = "Sky-Gym";
+			sourceTree = "<group>";
+		};
+		4249C3A8251B68FD00DC9AE0 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				4249C3AD251B6BAA00DC9AE0 /* Poppins-Bold.ttf */,
+				4249C3A9251B693800DC9AE0 /* Poppins-SemiBold.ttf */,
+				4249C3AB251B695300DC9AE0 /* Poppins-Medium.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		89F0B0F930629CD01029AD00 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				ECB12277B5DC425A173F4D55 /* Pods-Sky-Gym.debug.xcconfig */,
+				59F5F610B1FD37E8CF655883 /* Pods-Sky-Gym.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		8BEF3EF71A7A2EB004774E9E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4F84D1FA3B68CE52B796C350 /* Pods_Sky_Gym.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4249C385251B12BD00DC9AE0 /* Sky-Gym */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4249C39D251B12BF00DC9AE0 /* Build configuration list for PBXNativeTarget "Sky-Gym" */;
+			buildPhases = (
+				087F5FE5724ABC84783A5CBF /* [CP] Check Pods Manifest.lock */,
+				4249C382251B12BD00DC9AE0 /* Sources */,
+				4249C383251B12BD00DC9AE0 /* Frameworks */,
+				4249C384251B12BD00DC9AE0 /* Resources */,
+				1673C8273A3D6A0262A7A5E3 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Sky-Gym";
+			productName = "Sky-Gym";
+			productReference = 4249C386251B12BD00DC9AE0 /* Sky-Gym.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4249C37E251B12BD00DC9AE0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1150;
+				LastUpgradeCheck = 1150;
+				ORGANIZATIONNAME = "KP iOSDev";
+				TargetAttributes = {
+					4249C385251B12BD00DC9AE0 = {
+						CreatedOnToolsVersion = 11.5;
+					};
+				};
+			};
+			buildConfigurationList = 4249C381251B12BD00DC9AE0 /* Build configuration list for PBXProject "Sky-Gym" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4249C37D251B12BD00DC9AE0;
+			productRefGroup = 4249C387251B12BD00DC9AE0 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4249C385251B12BD00DC9AE0 /* Sky-Gym */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4249C384251B12BD00DC9AE0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4249C399251B12BF00DC9AE0 /* LaunchScreen.storyboard in Resources */,
+				4249C3AE251B6BAA00DC9AE0 /* Poppins-Bold.ttf in Resources */,
+				4249C3AA251B693800DC9AE0 /* Poppins-SemiBold.ttf in Resources */,
+				4249C396251B12BF00DC9AE0 /* Assets.xcassets in Resources */,
+				42B873AC2536E081004CCD50 /* GoogleService-Info.plist in Resources */,
+				4249C391251B12BD00DC9AE0 /* Main.storyboard in Resources */,
+				4259DC1D252311EF00F08FA6 /* MemberAndTrainerDetailView.xib in Resources */,
+				42F7DBB32521EBCA001F0050 /* CustomNavigationBar.xib in Resources */,
+				4249C3AC251B695300DC9AE0 /* Poppins-Medium.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		087F5FE5724ABC84783A5CBF /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Sky-Gym-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		1673C8273A3D6A0262A7A5E3 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Sky-Gym/Pods-Sky-Gym-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Sky-Gym/Pods-Sky-Gym-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Sky-Gym/Pods-Sky-Gym-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4249C382251B12BD00DC9AE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42CAADF1252C4992006E1D76 /* CurrentMembershipDetailViewController.swift in Sources */,
+				42F7DBB52521F01E001F0050 /* CustomNavigationBar.swift in Sources */,
+				4231BF9A25347328007EFBBF /* ViewEventScreenViewController.swift in Sources */,
+				42A407A5251C78570087B02F /* AppManager.swift in Sources */,
+				4259DC1F2523121C00F08FA6 /* MemberAndTrainerDetailView.swift in Sources */,
+				4231BF9625343C68007EFBBF /* AdminProfileViewController.swift in Sources */,
+				42D13392252F0ED500BA7EE5 /* TrainerEditScreenViewController.swift in Sources */,
+				4231BF98253458A9007EFBBF /* ListOfEventsViewController.swift in Sources */,
+				42651AD62530657400539B19 /* MembershipViewScreenViewController.swift in Sources */,
+				4249C38E251B12BD00DC9AE0 /* ViewController.swift in Sources */,
+				4249C38A251B12BD00DC9AE0 /* AppDelegate.swift in Sources */,
+				4249C38C251B12BD00DC9AE0 /* SceneDelegate.swift in Sources */,
+				42651AD225301FF700539B19 /* TrainerAttendanceViewController.swift in Sources */,
+				42F7DBB72521F790001F0050 /* BaseViewController.swift in Sources */,
+				42BC9BF8252DCEC200435000 /* MemberViewController.swift in Sources */,
+				42651AD425303F1500539B19 /* ListOfMembershipViewController.swift in Sources */,
+				42BC9BF6252D82EE00435000 /* MemberAttandanceViewController.swift in Sources */,
+				42A407A7251CC6A40087B02F /* MemberAndTrainerLoginViewController.swift in Sources */,
+				42F7DBB12521E870001F0050 /* AdminDashboardViewController.swift in Sources */,
+				42A407A1251C59940087B02F /* AdminRegistrationViewController.swift in Sources */,
+				42CAADF3252C90DA006E1D76 /* PurchaseViewController.swift in Sources */,
+				423F870A252B4846001C30D4 /* MemberDetailViewController.swift in Sources */,
+				4249C394251B12BD00DC9AE0 /* Sky_Gym.xcdatamodeld in Sources */,
+				42651AD825307F7600539B19 /* ListOfVisitorsViewController.swift in Sources */,
+				4259DC212523469A00F08FA6 /* ListOfMembersViewController.swift in Sources */,
+				424937232526094D0043ADFF /* AddMemberViewController.swift in Sources */,
+				42B873AE2536E19E004CCD50 /* FireStoreManager.swift in Sources */,
+				42F7DBAF2521A444001F0050 /* MenuItemsViewController.swift in Sources */,
+				42A407A3251C780A0087B02F /* AdminRegistrationSecondViewController.swift in Sources */,
+				42D13390252ECB6E00BA7EE5 /* ListOfTrainersViewController.swift in Sources */,
+				4231BF9425342965007EFBBF /* ViewVisitorScreenViewController.swift in Sources */,
+				42C3F51025386B3C007DBC79 /* AppDataStructureManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		4249C38F251B12BD00DC9AE0 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4249C390251B12BD00DC9AE0 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		4249C397251B12BF00DC9AE0 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4249C398251B12BF00DC9AE0 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		4249C39B251B12BF00DC9AE0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4249C39C251B12BF00DC9AE0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		4249C39E251B12BF00DC9AE0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ECB12277B5DC425A173F4D55 /* Pods-Sky-Gym.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "Sky-Gym/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Kp-iOSDev.Sky-Gym";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4249C39F251B12BF00DC9AE0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 59F5F610B1FD37E8CF655883 /* Pods-Sky-Gym.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "Sky-Gym/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Kp-iOSDev.Sky-Gym";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4249C381251B12BD00DC9AE0 /* Build configuration list for PBXProject "Sky-Gym" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4249C39B251B12BF00DC9AE0 /* Debug */,
+				4249C39C251B12BF00DC9AE0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4249C39D251B12BF00DC9AE0 /* Build configuration list for PBXNativeTarget "Sky-Gym" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4249C39E251B12BF00DC9AE0 /* Debug */,
+				4249C39F251B12BF00DC9AE0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		4249C392251B12BD00DC9AE0 /* Sky_Gym.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				4249C393251B12BD00DC9AE0 /* Sky_Gym.xcdatamodel */,
+			);
+			currentVersion = 4249C393251B12BD00DC9AE0 /* Sky_Gym.xcdatamodel */;
+			path = Sky_Gym.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 4249C37E251B12BD00DC9AE0 /* Project object */;
+}

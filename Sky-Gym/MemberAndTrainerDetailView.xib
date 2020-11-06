@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="Poppins-Medium.ttf">
+            <string>Poppins-Medium</string>
+        </array>
+        <array key="Poppins-SemiBold.ttf">
+            <string>Poppins-SemiBold</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MemberAndTrainerDetailView" customModule="Sky_Gym" customModuleProvider="target">
+            <connections>
+                <outlet property="memberAndTrainerDetailView" destination="BuI-Tc-iqR" id="7ZS-aO-oBV"/>
+                <outlet property="numberOfPaidUserLabel" destination="rN6-e8-uSo" id="87k-Ju-M2O"/>
+                <outlet property="paidUserLabel" destination="6Is-BF-rl0" id="RCJ-Iy-9wl"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="448" height="108"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BuI-Tc-iqR">
+                    <rect key="frame" x="0.0" y="44" width="448" height="30"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="user-paid" translatesAutoresizingMaskIntoConstraints="NO" id="fXZ-SL-WYF">
+                            <rect key="frame" x="20" y="5.5" width="29" height="19.5"/>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paid Member" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Is-BF-rl0">
+                            <rect key="frame" x="64" y="6" width="224" height="18"/>
+                            <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rN6-e8-uSo">
+                            <rect key="frame" x="344" y="4" width="94" height="22"/>
+                            <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.93725490196078431" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <fontDescription key="fontDescription" name="Poppins-SemiBold" family="Poppins" pointSize="30"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <constraints>
+                        <constraint firstItem="fXZ-SL-WYF" firstAttribute="width" secondItem="BuI-Tc-iqR" secondAttribute="width" multiplier="0.065" id="0gh-mj-tCC"/>
+                        <constraint firstItem="6Is-BF-rl0" firstAttribute="width" secondItem="BuI-Tc-iqR" secondAttribute="width" multiplier="0.5" id="6Yp-26-gMA"/>
+                        <constraint firstItem="6Is-BF-rl0" firstAttribute="centerY" secondItem="fXZ-SL-WYF" secondAttribute="centerY" id="CgX-nA-RCo"/>
+                        <constraint firstItem="rN6-e8-uSo" firstAttribute="width" secondItem="BuI-Tc-iqR" secondAttribute="width" multiplier="0.21" id="Dkr-3T-Oq7"/>
+                        <constraint firstItem="fXZ-SL-WYF" firstAttribute="leading" secondItem="BuI-Tc-iqR" secondAttribute="leading" constant="20" id="DwU-j4-N3m"/>
+                        <constraint firstItem="6Is-BF-rl0" firstAttribute="leading" secondItem="fXZ-SL-WYF" secondAttribute="trailing" constant="15" id="Gzc-Tm-C5l"/>
+                        <constraint firstAttribute="trailing" secondItem="rN6-e8-uSo" secondAttribute="trailing" constant="10" id="Jch-po-DiE"/>
+                        <constraint firstItem="fXZ-SL-WYF" firstAttribute="height" secondItem="BuI-Tc-iqR" secondAttribute="height" multiplier="0.65" id="UiI-ue-mHU"/>
+                        <constraint firstItem="rN6-e8-uSo" firstAttribute="height" secondItem="BuI-Tc-iqR" secondAttribute="height" multiplier="0.72" id="n1E-kN-PlM"/>
+                        <constraint firstItem="fXZ-SL-WYF" firstAttribute="centerY" secondItem="BuI-Tc-iqR" secondAttribute="centerY" id="rPI-36-Tue"/>
+                        <constraint firstItem="6Is-BF-rl0" firstAttribute="height" secondItem="BuI-Tc-iqR" secondAttribute="height" multiplier="0.6" id="s3S-IZ-WwP"/>
+                        <constraint firstItem="rN6-e8-uSo" firstAttribute="centerY" secondItem="6Is-BF-rl0" secondAttribute="centerY" id="z2t-PR-Bs6"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+            <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="BuI-Tc-iqR" secondAttribute="trailing" id="Uio-5Q-cUu"/>
+                <constraint firstItem="BuI-Tc-iqR" firstAttribute="bottom" secondItem="vUN-kp-3ea" secondAttribute="bottom" id="cDF-oP-wSk"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="top" secondItem="BuI-Tc-iqR" secondAttribute="top" id="e01-nN-OEm"/>
+                <constraint firstItem="BuI-Tc-iqR" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="pwJ-7B-MeD"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <point key="canvasLocation" x="162.31884057971016" y="-145.98214285714286"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="user-paid" width="38" height="44"/>
+    </resources>
+</document>
