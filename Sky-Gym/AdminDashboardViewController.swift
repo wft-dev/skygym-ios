@@ -38,10 +38,7 @@ class AdminDashboardViewController: BaseViewController {
         self.totalMemberView.layer.borderColor = self.lightGrayColor.cgColor
         adjustFonts()
         self.setDashboardValues()
-//        FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Members", id: "12400688", startDate: <#T##String#>, endDate: <#T##String#>, result: <#T##([Attendence]) -> Void#>)
-        
-       // FireStoreManager.shared.dummyAttendence()
-        
+        FireStoreManager.shared.dummyAttendence()
     }
     
     func adjustFonts()  {

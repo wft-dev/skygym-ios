@@ -72,34 +72,24 @@ class ListOfMembersTableCell: UITableViewCell {
      }
     
     private func performAttandance(id:String){
-        let alert = UIAlertController(title: "Attendance", message: "Mark today's attendance.", preferredStyle: .alert)
-        let presentAlertAction = UIAlertAction(title: "Present", style: .default, handler: {
-            _ in
-            switch self.attendImg?.image {
-            case UIImage(named: "red"):
-                self.markAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "")
-                self.attendImg?.image = UIImage(named: "green")
-            case UIImage(named: "green"):
-                self.attendImg?.image = UIImage(named: "red")
-                FireStoreManager.shared.uploadCheckOutTime(trainerORmember: "Members", id: id, checkOut: AppManager.shared.getTimeFrom(date: Date()), completion: {
-                    _ in
-                })
-            default:
-                break
-            }
-        })
-        let absentAlertAction = UIAlertAction(title: "Absent", style: .default, handler: {
-              _ in
-            self.markAttandance(present: false, memberID: id,checkInTime:"",checkOutTime: "")
-        })
-        alert.addAction(absentAlertAction)
-        alert.addAction(presentAlertAction)
-        AppManager.shared.appDelegate.window?.rootViewController?.present(alert, animated: true, completion: nil)
+        switch self.attendImg?.image {
+        case UIImage(named: "red"):
+            self.markAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "")
+            self.attendImg?.image = UIImage(named: "green")
+        case UIImage(named: "green"):
+            self.attendImg?.image = UIImage(named: "red")
+            FireStoreManager.shared.uploadCheckOutTime(trainerORmember: "Members", id: id, checkOut: AppManager.shared.getTimeFrom(date: Date()), completion: {
+                _ in
+            })
+        default:
+            break
+        }
     }
     
     private func markAttandance(present:Bool,memberID:String,checkInTime:String,checkOutTime:String){
         FireStoreManager.shared.uploadAttandance(trainerORmember:"Members",id:memberID,present: present,checkIn:checkInTime,checkOut:checkOutTime, completion: {
             _ in
+            
         })
     }
 }
