@@ -188,7 +188,7 @@ extension ListOfMembersViewController : UITableViewDataSource{
         cell.layer.borderWidth = 1.0
         self.adjustFontSizeForRenewPackageLabel(label: cell.renewPackageLabel)
         let singleMember = self.filteredMemberArray.count > 0 ? self.filteredMemberArray[indexPath.section] : self.listOfMemberArray[indexPath.section]
-        self.getMemberProfileImage(id: singleMember.memberID, imgView: cell.userImag)
+        self.getMemberProfileImage(id: singleMember.memberID, imageName:singleMember.uploadName, imgView: cell.userImag)
         cell.userImag.image = singleMember.userImg
         cell.userName.text = singleMember.userName
         cell.phoneNumber.text = singleMember.phoneNumber
@@ -217,28 +217,28 @@ extension ListOfMembersViewController : UITableViewDelegate{
         let deleteContextualAction = UIContextualAction(style: .destructive, title: "", handler: {
             (context,view,action) in
             SVProgressHUD.show()
-                FireStoreManager.shared.deleteImgBy(id: self.listOfMemberArray[indexPath.section].memberID, result: {
-                    err in
-                      SVProgressHUD.dismiss()
-                    if err == nil {
-                        FireStoreManager.shared.deleteMemberBy(id: self.listOfMemberArray[indexPath.section].memberID, completion: {
-                            err in
-                            if err != nil {
-                                self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
-                            } else {
-                                self.alertBox(title: "Success", message: "Member is deleted successfully.")
-                               
-                            }
-                        })
-                    } else{
-                        self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
-                    }
-                })
+            FireStoreManager.shared.deleteImgBy(id: self.listOfMemberArray[indexPath.section].memberID, result: {
+                err in
+                SVProgressHUD.dismiss()
+                if err == nil {
+                    FireStoreManager.shared.deleteMemberBy(id: self.listOfMemberArray[indexPath.section].memberID, completion: {
+                        err in
+                        if err != nil {
+                            self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
+                        } else {
+                            self.alertBox(title: "Success", message: "Member is deleted successfully.")
+                            
+                        }
+                    })
+                } else{
+                    self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
+                }
+            })
         })
         let emptyContextualAction = UIContextualAction(style: .normal, title: "", handler: {
-                   (context,view,action) in
-                   //empty the tabel cell
-               })
+            (context,view,action) in
+            //empty the tabel cell
+        })
         emptyContextualAction.backgroundColor = .red
         deleteContextualAction.backgroundColor = .red
         deleteContextualAction.image = UIImage(named: "delete")
@@ -285,9 +285,9 @@ extension ListOfMembersViewController{
         })
     }
 
-    func getMemberProfileImage(id:String,imgView :UIImageView) {
+    func getMemberProfileImage(id:String,imageName:String,imgView :UIImageView) {
          SVProgressHUD.show()
-         FireStoreManager.shared.downloadUserImg(id: id, result: {
+        FireStoreManager.shared.downloadImgWithName(imageName:imageName,id: id, result: {
              (imgUrl,err) in
              SVProgressHUD.dismiss()
              if err != nil {
@@ -353,6 +353,7 @@ extension ListOfMembersViewController{
     func showMembers() {
         var membership:MembershipDetailStructure? = nil
         SVProgressHUD.show()
+        
         FireStoreManager.shared.getAllMembers(completion: {
             (dataDirctionary,err) in
             SVProgressHUD.dismiss()
@@ -368,7 +369,7 @@ extension ListOfMembersViewController{
                         let memberships = singleData["memberships"] as! NSArray
                         membership = memberships.count > 0 ? AppManager.shared.getCurrentMembership(membershipArray: memberships).last : MembershipDetailStructure(membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", puchaseTime: "--")
                         
-                        let member = ListOfMemberStr(memberID: memberDetail.memberID, userImg: UIImage(named: "user1")!, userName: "\(memberDetail.firstName) \(memberDetail.lastName)", phoneNumber: memberDetail.phoneNo, dateOfExp:membership!.endDate , dueAmount: membership!.dueAmount)
+                        let member = ListOfMemberStr(memberID: memberDetail.memberID, userImg: UIImage(named: "user1")!, userName: "\(memberDetail.firstName) \(memberDetail.lastName)", phoneNumber: memberDetail.phoneNo, dateOfExp:membership!.endDate , dueAmount: membership!.dueAmount, uploadName: memberDetail.uploadIDName)
                             self.listOfMemberArray.append(member)
                     }
                 }

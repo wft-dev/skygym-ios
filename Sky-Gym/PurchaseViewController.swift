@@ -99,15 +99,12 @@ extension PurchaseViewController :UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "purchaseCell", for: indexPath) as! PuchaseTableViewCell
         let singleMembership = self.purchaseArray[indexPath.row]
-        
         self.setTableCellView(tableCellView: cell.purchaseTableCellView)
         cell.activePurchaseLabel.layer.cornerRadius = 10.0
-       
-        
-       let endDate = AppManager.shared.getDate(date:singleMembership.expireDate)
+        let endDate = AppManager.shared.getDate(date:singleMembership.expireDate)
         let startDate = AppManager.shared.getDate(date: singleMembership.purchaseDate)
-        let endDayDiff = Calendar.current.dateComponents([.day], from: Date(), to: endDate).day!
-        let startDayDiff = Calendar.current.dateComponents([.day], from: Date(), to:startDate).day!
+        let endDayDiff = Calendar.current.dateComponents([.day], from: endDate, to: Date()).day!
+        let startDayDiff = Calendar.current.dateComponents([.day], from: startDate, to:Date()).day!
   
         if endDayDiff >= 0 && startDayDiff <= 0 {
             cell.activePurchaseLabel.isHidden = false

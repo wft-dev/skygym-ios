@@ -69,6 +69,7 @@ struct ListOfMemberStr {
     var phoneNumber:String
     var dateOfExp:String
     var dueAmount:String
+    var uploadName:String
 }
 
 

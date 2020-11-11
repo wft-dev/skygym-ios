@@ -192,7 +192,7 @@ extension ViewVisitorScreenViewController {
             $0?.clipsToBounds = true
         }
         
-        self.visitorDetailTextView.addPaddingToTextField()
+        self.visitorDetailTextView.addPaddingToTextView(top: 0, right: 10, bottom: 0, left: 10)
         self.visitorDetailTextView.layer.cornerRadius = 7.0
         self.visitorDetailTextView.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
         self.visitorDetailTextView.clipsToBounds = true

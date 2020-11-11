@@ -242,7 +242,6 @@ extension TrainerEditScreenViewController {
             self.shiftTimingsTextField! : self.shiftTimingsNonEditLabel!,
             self.dobTextField! :self.dobNonEditLabel!,
             self.dateOfJoinTextField! : self.dateOfJoinNonEditLabel!,
-    
         ]
         return dir
     }

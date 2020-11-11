@@ -74,6 +74,8 @@ class MemberViewController: BaseViewController {
         self.memberImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openUserProfilePicker)))
         self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
         self.imgPicker.delegate = self
+        self.updateBtn.isEnabled = false
+        self.updateBtn.alpha = 0.6
     }
     
     @IBAction func updateBtnAction(_ sender: Any) {
@@ -178,6 +180,8 @@ extension MemberViewController{
         self.isEdit = false
         self.setHrLineView(isHidden: false, alpha: 1.0)
         self.setToggleBtns(isEnabled: false, alpha: 0.9)
+        self.updateBtn.isEnabled = false
+        self.updateBtn.alpha = 0.6
        } else{
         self.memberImg.isUserInteractionEnabled = true
         AppManager.shared.performEditAction(dataFields:self.getMemberProfileFieldsAndLabelDic(), edit:  true)
@@ -190,8 +194,9 @@ extension MemberViewController{
         self.addressTextView.isHidden  = false
         self.addressTextView.alpha = 1.0
         self.setHrLineView(isHidden: true, alpha: 0.0)
+        self.updateBtn.isEnabled = true
+        self.updateBtn.alpha = 1.0
         }
-        
        }
        
        func setLabelsColor(color:UIColor){

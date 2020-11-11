@@ -115,6 +115,15 @@ class FireStoreManager: NSObject {
         })
     }
     
+    func downloadImgWithName(imageName:String,id:String,result:@escaping (URL?,Error?) -> Void) {
+       let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(id)/\(imageName)")
+
+           imgRef.downloadURL(completion: {
+               (imgUrl,err) in
+               result(imgUrl,err)
+           })
+       }
+    
     func addMember(email:String,password:String,memberDetail:[String:String],memberships:[[String:String]],memberID:String,handler:@escaping (Error?) -> Void ) {
         let attendence = AppManager.shared.getCompleteMonthAttendenceStructure()
 
@@ -205,7 +214,7 @@ class FireStoreManager: NSObject {
                         let difference = Calendar.current.dateComponents([.year,.month,.day], from: startDate, to: expiredDate)
                         
                         if difference.day! < 0 {
-                            let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: singleCurrentMembership.endDate, dueAmount:singleCurrentMembership.dueAmount)
+                            let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: singleCurrentMembership.endDate, dueAmount:singleCurrentMembership.dueAmount, uploadName: memberDetail["uploadIDName"]!)
                             memberArray.append(member)
                         }
                     }
@@ -235,7 +244,7 @@ class FireStoreManager: NSObject {
                     let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
                     
                     if checkIn != "" {
-                        let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.last!.endDate, dueAmount:currentMembership.last!.dueAmount)
+                        let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.last!.endDate, dueAmount:currentMembership.last!.dueAmount, uploadName: memberDetail["uploadIDName"]!)
                         checkInArray.append(member)
                     } else {
                         print("COMES OUT OF CHECK IN FILTER : \(memberDetail["firstName"]!)")
@@ -274,7 +283,7 @@ class FireStoreManager: NSObject {
                             let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
                             
                             if check != "" {
-                                let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.last!.endDate, dueAmount:currentMembership.last!.dueAmount)
+                                let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.last!.endDate, dueAmount:currentMembership.last!.dueAmount, uploadName: memberDetail["uploadIDName"]!)
                                 checkArray.append(member)
                             }
                         }
@@ -508,7 +517,8 @@ class FireStoreManager: NSObject {
     
     
     func addTrainer(email:String,password:String,trainerID:String,trainerDetail:[String:String],trainerPermission:[String:Bool],completion:@escaping (Error?)->Void) {
-        let attendence = [String:[String:[String:Bool]]]()
+       // let attendence = [String:[String:[String:Bool]]]()
+        let attendence = AppManager.shared.getCompleteMonthAttendenceStructure()
         fireDB.collection("/Trainers").document("\(trainerID)").setData([
             "adminID":AppManager.shared.adminID,
             "gymID":AppManager.shared.gymID,
@@ -750,7 +760,6 @@ class FireStoreManager: NSObject {
             }
         })
     }
-    
 
     func dummyAttendence() {
         fireDB.collection("/Members").document("129078391").getDocument(completion: {
@@ -789,6 +798,7 @@ class FireStoreManager: NSObject {
 //            self.addYear(attendenceDir: attendence, trainerORmember: "Members", id: "129078391", year: 2020, month: 1, day: 1, present: true, checkIn: "9:00 AM", checkOut: "10:00 AM", handler: {
 //                _ in
 //            })
+            
    
         })
     }

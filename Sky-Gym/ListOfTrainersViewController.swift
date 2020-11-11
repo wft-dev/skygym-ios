@@ -27,6 +27,7 @@ class ListOfTrainersTableCell: UITableViewCell {
         callBtn.addTarget(self, action: #selector(callAction), for: .touchUpInside)
         messageBtn.addTarget(self, action: #selector(messageAction), for: .touchUpInside)
         attendenceBtn.addTarget(self, action: #selector(attendenceAction), for: .touchUpInside)
+        attendenceBtn.setImage(UIImage(named: "red"), for: .normal)
     }
     
     @objc func callAction()  {
@@ -42,31 +43,27 @@ class ListOfTrainersTableCell: UITableViewCell {
      }
     
     private func performTrainerAttandance(id:String){
-        let alert = UIAlertController(title: "Attendance", message: "Mark today's attendance.", preferredStyle: .alert)
-        let presentAlertAction = UIAlertAction(title: "Present", style: .default, handler: {
+        switch self.attendenceBtn?.currentImage {
+        case UIImage(named: "red"):
+            self.markTrainerAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "")
+            self.attendenceBtn.setImage(UIImage(named: "green"), for: .normal)
+        case UIImage(named: "green"):
+            self.attendenceBtn.setImage(UIImage(named: "red"), for: .normal)
+            FireStoreManager.shared.uploadCheckOutTime(trainerORmember: "Trainers", id: id, checkOut: AppManager.shared.getTimeFrom(date: Date()), completion: {
+                _ in
+            })
+        default:
+            break
+        }
+    }
+    
+    private func markTrainerAttandance(present:Bool,memberID:String,checkInTime:String,checkOutTime:String){
+        FireStoreManager.shared.uploadAttandance(trainerORmember:"Trainers",id:memberID,present: present,checkIn:checkInTime,checkOut:checkOutTime, completion: {
             _ in
-            self.markTrainerAttandance(present: true, memberID: id)
+            
         })
-        let absentAlertAction = UIAlertAction(title: "Absent", style: .default, handler: {
-              _ in
-            self.markTrainerAttandance(present: false, memberID: id)
-        })
-        alert.addAction(absentAlertAction)
-        alert.addAction(presentAlertAction)
-        AppManager.shared.appDelegate.window?.rootViewController?.present(alert, animated: true, completion: nil)
     }
-    
-    private func markTrainerAttandance(present:Bool,memberID:String){
-//        FireStoreManager.shared.uploadAttandance(trainerORmember:"Trainers",id:memberID,present: present, completion: {
-//            (err) in
-//            if err != nil {
-//                self.showAlert(title: "Error", message: "Error in marking the attendence, Please Try Again.")
-//            } else {
-//                self.showAlert(title: "Success", message: "Attendance is marked.")
-//            }
-//        })
-    }
-    
+ 
     private func showAlert(title:String,message:String){
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: nil)
@@ -153,7 +150,6 @@ extension ListOfTrainersViewController {
             }
         })
     }
-    
     
     func setListOfTrainersCompleteView() {
         self.setListOfTrainersNavigationSet()
@@ -250,9 +246,7 @@ extension ListOfTrainersViewController:UITableViewDataSource{
         cell.trainerLabel.layer.cornerRadius = 6.5
         cell.memberLabelView.layer.cornerRadius = 6.5
         cell.numberOfMembersLabel.layer.cornerRadius = 5.5
-        
         self.getUserProfileImage(id: singleTrainer.trainerID, imgView: cell.userImg)
-
         cell.trainerNameLabel.text = singleTrainer.trainerName
         cell.trainerPhoneNoLabel.text = singleTrainer.trainerPhone
         cell.dateOfJoiningLabel.text = singleTrainer.dateOfJoinging
@@ -279,16 +273,19 @@ extension ListOfTrainersViewController:UITableViewDelegate{
         AppManager.shared.trainerID = self.listOfTrainerArray[indexPath.section].trainerID
         performSegue(withIdentifier: "visitorDetailSegue", sender: false)
     }
-     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteContextualAction = UIContextualAction(style: .destructive, title: "Delete", handler: {
             (action,context,view) in
+            SVProgressHUD.show()
             FireStoreManager.shared.deleteImgBy(id: self.listOfTrainerArray[indexPath.section].trainerID, result: {
                 err in
                 if err != nil {
+                    SVProgressHUD.dismiss()
                     self.showAlert(title: "Error", message: "Error in deleting trainer.")
                 } else {
                     FireStoreManager.shared.deleteTrainerBy(id: self.listOfTrainerArray[indexPath.section].trainerID, completion: {
                         err in
+                        SVProgressHUD.dismiss()
                         if err != nil {
                             self.showAlert(title: "Error", message: "Error in deleting trainer.")
                         } else {
@@ -297,7 +294,6 @@ extension ListOfTrainersViewController:UITableViewDelegate{
                     })
                 }
             })
-            
         })
         deleteContextualAction.image = UIImage(named: "delete")
         deleteContextualAction.backgroundColor = .red
