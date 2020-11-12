@@ -47,6 +47,15 @@ class ViewVisitorScreenViewController: BaseViewController {
     @IBOutlet weak var phoneNo: UILabel!
     @IBOutlet weak var phoneNoNonEditLabel: UILabel!
     @IBOutlet weak var phoneNoHrLineView: UIView!
+    @IBOutlet weak var firstNameForNonEditLabel: UILabel!
+    @IBOutlet weak var lastNameForNonEditLabel: UILabel!
+    @IBOutlet weak var emailForNonEditLabel: UILabel!
+    @IBOutlet weak var addressForNonEditLabel: UILabel!
+    @IBOutlet weak var dateOfJoinForNonEditLabel: UILabel!
+    @IBOutlet weak var dateOfVisitForNonEditLabel: UILabel!
+    @IBOutlet weak var noOfVisitForNonEditLabel: UILabel!
+    @IBOutlet weak var genderForNonEditLabel: UILabel!
+    @IBOutlet weak var phoneNoForNonEditLabel: UILabel!
     
     var imagePicker = UIImagePickerController()
     var isNewVisitor:Bool = false
@@ -56,18 +65,25 @@ class ViewVisitorScreenViewController: BaseViewController {
     var isImgPickerOpened:Bool = false
     var selectedVisitorImg:UIImage? = nil
     var isEdit:Bool = false
+    var forNonEditLabelArray:[UILabel]? = nil
+    var defaultLabelArray:[UILabel]? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setVisitorView()
+        
+        self.forNonEditLabelArray = [self.addressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.dateOfJoinForNonEditLabel,self.dateOfVisitNonEditLabel,self.genderForNonEditLabel,self.noOfVisitForNonEditLabel,self.phoneNoForNonEditLabel]
+        self.defaultLabelArray = [self.firstName,self.lastName,self.address,self.email,self.dateOfJoin,self.dateOfVisit,self.gender,self.noOfVisit,self.phoneNo]
+        
         if self.isNewVisitor == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
             self.setHrLineView(isHidden: false, alpha: 1.0)
-            self.setLabelsColor(color: UIColor.lightGray)
             self.visitorDetailTextView.isHidden = true
             self.visitorDetailTextView.alpha = 0.0
             self.addressNonEditLabel.isHidden = false
             self.addressNonEditLabel.alpha = 1.0
+            
         }
     }
     
@@ -131,29 +147,29 @@ extension ViewVisitorScreenViewController {
             self.visitorViewNavigationBar.editBtn.addTarget(self, action: #selector(editVisitor), for: .touchUpInside)
         }
     }
-
+    
     @objc func editVisitor() {
-         if self.isEdit == true {
-              AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-              self.setLabelsColor(color: UIColor.lightGray)
-              self.isEdit = false
-              self.setHrLineView(isHidden: false, alpha: 1.0)
-             self.visitorDetailTextView.isHidden = true
-             self.visitorDetailTextView.alpha = 0.0
-             self.addressNonEditLabel.isHidden = false
-             self.addressNonEditLabel.alpha = 1.0
-             
-          } else{
-              AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-              self.setLabelsColor(color: UIColor.black)
-              self.isEdit = true
-              self.setHrLineView(isHidden: true, alpha: 0.0)
-             self.visitorDetailTextView.isHidden = false
-             self.visitorDetailTextView.alpha = 1.0
-             self.addressNonEditLabel.isHidden = true
-             self.addressNonEditLabel.alpha = 0.0
-          }
-     }
+        if self.isEdit == true {
+            AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
+            self.isEdit = false
+            self.setHrLineView(isHidden: false, alpha: 1.0)
+            self.visitorDetailTextView.isHidden = true
+            self.visitorDetailTextView.alpha = 0.0
+            self.addressNonEditLabel.isHidden = false
+            self.addressNonEditLabel.alpha = 1.0
+            
+        } else{
+            AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
+            self.isEdit = true
+            self.setHrLineView(isHidden: true, alpha: 0.0)
+            self.visitorDetailTextView.isHidden = false
+            self.visitorDetailTextView.alpha = 1.0
+            self.addressNonEditLabel.isHidden = true
+            self.addressNonEditLabel.alpha = 0.0
+        }
+    }
 
     func getFieldsAndLabelDic() -> [UITextField:UILabel] {
             let dir = [
@@ -169,12 +185,6 @@ extension ViewVisitorScreenViewController {
             return dir
         }
 
-        func setLabelsColor(color:UIColor){
-            [self.firstName,self.lastName,self.email,self.address,self.dateOfJoin,self.dateOfVisit,self.noOfVisit,self.gender,self.phoneNo].forEach{
-                  $0?.textColor = color
-              }
-          }
-          
           func setHrLineView(isHidden:Bool,alpha:CGFloat) {
             [self.firstNameHrLineView,self.emailHrLineView,self.addressHrLineView,self.dateOfJoinHrLineView,self.noOfVisitHrLineView,self.phoneNoHrLineView].forEach{
                   $0?.isHidden = isHidden

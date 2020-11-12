@@ -32,7 +32,12 @@ class MembershipViewScreenViewController: BaseViewController {
     @IBOutlet weak var startDateHrLineView: UIView!
     @IBOutlet weak var endDateLabel: UILabel!
     @IBOutlet weak var endDateNonEditLabel: UILabel!
-    
+    @IBOutlet weak var titleForNonEditLabel: UILabel!
+    @IBOutlet weak var amountForNonEditLabel: UILabel!
+    @IBOutlet weak var detailForNonEditLabel: UILabel!
+    @IBOutlet weak var startDateForNonEditLabel: UILabel!
+    @IBOutlet weak var endDateForNonEditLabel: UILabel!
+
     var isNewMemberhsip:Bool = false
     var datePicker = UIDatePicker()
     let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
@@ -40,23 +45,28 @@ class MembershipViewScreenViewController: BaseViewController {
     var startDate:Date? = nil
     var endDate:Date? = nil
     var isEdit:Bool = false
-    
+    var forNonEditLabelArray:[UILabel]? = nil
+    var defaultLabelArray:[UILabel]? = nil
+ 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setMembershipView()
         if self.isNewMemberhsip == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
             self.setHrLineView(isHidden: false, alpha: 1.0)
-            self.setLabelsColor(color: UIColor.lightGray)
             self.detailTextView.isHidden = true
             self.detailTextView.alpha = 0.0
             self.detailNonEditLabel.isHidden = false
             self.detailNonEditLabel.alpha = 1.0
         }
+        self.forNonEditLabelArray = [self.titleForNonEditLabel,self.amountForNonEditLabel,self.detailForNonEditLabel,self.endDateForNonEditLabel,self.startDateForNonEditLabel]
+        self.defaultLabelArray = [self.titleLabel,self.amountLabel,self.detailLabel,self.startDateLabel,self.endDateLabel]
+        
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: true)
+        
     }
     
     @IBAction func doneBtnAction(_ sender: Any) {
-        
         self.isNewMemberhsip ? self.registerNewMembership() : self.updateMembership()
    }
 }
@@ -100,30 +110,29 @@ extension  MembershipViewScreenViewController {
             self.viewMembershipNavigationBar.editBtn.alpha = 1.0
             self.viewMembershipNavigationBar.editBtn.addTarget(self, action: #selector(editMembership), for: .touchUpInside)
         }
-     
     }
     
     @objc func editMembership() {
         if self.isEdit == true {
-             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-             self.setLabelsColor(color: UIColor.lightGray)
-             self.isEdit = false
-             self.setHrLineView(isHidden: false, alpha: 1.0)
+            AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: true)
+            self.isEdit = false
+            self.setHrLineView(isHidden: false, alpha: 1.0)
             self.detailTextView.isHidden = true
             self.detailTextView.alpha = 0.0
             self.detailNonEditLabel.isHidden = false
             self.detailNonEditLabel.alpha = 1.0
             
-         } else{
-             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-             self.setLabelsColor(color: UIColor.black)
-             self.isEdit = true
-             self.setHrLineView(isHidden: true, alpha: 0.0)
+        } else{
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: false)
+            AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
+            self.isEdit = true
+            self.setHrLineView(isHidden: true, alpha: 0.0)
             self.detailTextView.isHidden = false
             self.detailTextView.alpha = 1.0
             self.detailNonEditLabel.isHidden = true
             self.detailNonEditLabel.alpha = 0.0
-         }
+        }
     }
     
     
@@ -136,21 +145,12 @@ extension  MembershipViewScreenViewController {
         ]
         return dir
     }
-
-    func setLabelsColor(color:UIColor){
-        [self.titleLabel,self.amountLabel,self.detailLabel,self.startDateLabel,self.endDateLabel].forEach{
-              $0?.textColor = color
-          }
-      }
-      
       func setHrLineView(isHidden:Bool,alpha:CGFloat) {
         [self.titleHrLineView,self.amountHrLineView,self.detailHrLineView,self.startDateHrLineView].forEach{
               $0?.isHidden = isHidden
               $0?.alpha = alpha
           }
       }
-    
-    
     
     func setTextFields() {
         [self.amountTextField,self.titleTextField,self.startDateTextField,self.endDateTextField].forEach{

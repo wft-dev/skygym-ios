@@ -73,7 +73,7 @@ extension PurchaseViewController {
     }
     
     func getPurchaseMemberPlan(membership:[String:String]) -> PurchaseMembershipPlan {
-        let purchasePlan = PurchaseMembershipPlan(membershipPlan: membership["membershipPlan"]!, expireDate: membership["endDate"]!, amount:membership["totalAmount"]! , dueAmount: membership["dueAmount"]!, paidAmount: membership["amount"]!, purchaseDate: membership["startDate"]!)
+        let purchasePlan = PurchaseMembershipPlan(membershipPlan: membership["membershipPlan"]!, expireDate: membership["endDate"]!, amount:membership["totalAmount"]! , dueAmount: membership["dueAmount"]!, paidAmount: membership["amount"]!, purchaseDate:membership["startDate"]!, startDate: membership["startDate"]!)
         
         return purchasePlan
     }
@@ -89,8 +89,6 @@ extension PurchaseViewController {
        }
 }
 
-
-
 extension PurchaseViewController :UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.purchaseArray.count
@@ -103,7 +101,7 @@ extension PurchaseViewController :UITableViewDataSource {
         cell.activePurchaseLabel.layer.cornerRadius = 10.0
         let endDate = AppManager.shared.getDate(date:singleMembership.expireDate)
         let startDate = AppManager.shared.getDate(date: singleMembership.purchaseDate)
-        let endDayDiff = Calendar.current.dateComponents([.day], from: endDate, to: Date()).day!
+        let endDayDiff = Calendar.current.dateComponents([.day], from: Date(), to: endDate).day!
         let startDayDiff = Calendar.current.dateComponents([.day], from: startDate, to:Date()).day!
   
         if endDayDiff >= 0 && startDayDiff <= 0 {

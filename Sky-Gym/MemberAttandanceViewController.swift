@@ -52,16 +52,16 @@ class MemberAttandanceViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "dd MMM yyyy"
-
+        
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Members", id: AppManager.shared.memberID, startDate: "\(dateFormatter.string(from: Date()))", endDate: "\(AppManager.shared.getNext7DaysDate(startDate: Date()))"
-, result: {
-                 array in
-               // self.attandanceArray.removeAll()
+            , result: {
+                array in
+                // self.attandanceArray.removeAll()
                 self.attandanceArray = array
-    self.startDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: array.first!.date))
+                self.startDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: array.first!.date))
                 self.endDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: array.last!.date))
                 self.memberAttandanceTable.reloadData()
         })
@@ -76,24 +76,21 @@ extension MemberAttandanceViewController {
         memberAttandanceNavigationBar.navigationTitleLabel.text = "Attendance"
         memberAttandanceNavigationBar.searchBtn.isHidden = true
     }
-    
-  @objc  func checkByDateAction() {
-    datePicker = UIDatePicker.init()
-    datePicker.backgroundColor = UIColor.white
-    
-    datePicker.autoresizingMask = .flexibleWidth
-    datePicker.datePickerMode = .date
-    
-    datePicker.addTarget(self, action: #selector(self.dateChanged(_:)), for: .valueChanged)
-    datePicker.frame = CGRect(x: 0.0, y: UIScreen.main.bounds.size.height - 250, width: UIScreen.main.bounds.size.width, height: 250)
-    self.view.addSubview(datePicker)
-    
-    toolBar = UIToolbar(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height - 250, width: UIScreen.main.bounds.size.width, height: 50))
-    toolBar.barStyle = .default
-    toolBar.items = [UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(self.onCancelButtonClick)),UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(self.onDoneButtonClick))]
-    toolBar.sizeToFit()
-    self.view.addSubview(toolBar)
-    
+
+    @objc  func checkByDateAction() {
+        datePicker = UIDatePicker.init()
+        datePicker.backgroundColor = UIColor.white
+        datePicker.autoresizingMask = .flexibleWidth
+        datePicker.datePickerMode = .date
+        datePicker.addTarget(self, action: #selector(self.dateChanged(_:)), for: .valueChanged)
+        datePicker.frame = CGRect(x: 0.0, y: UIScreen.main.bounds.size.height - 250, width: UIScreen.main.bounds.size.width, height: 250)
+        self.view.addSubview(datePicker)
+        
+        toolBar = UIToolbar(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height - 250, width: UIScreen.main.bounds.size.width, height: 50))
+        toolBar.barStyle = .default
+        toolBar.items = [UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(self.onCancelButtonClick)),UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(self.onDoneButtonClick))]
+        toolBar.sizeToFit()
+        self.view.addSubview(toolBar)
     }
     
     @objc func dateChanged(_ sender: UIDatePicker?) {
@@ -114,6 +111,7 @@ extension MemberAttandanceViewController {
         self.datePicker.removeFromSuperview()
         fetchAttendenceFrom(startDate: self.startDateLabel.text!, endDate: self.endDateLabel.text!)
     }
+    
     @objc func onCancelButtonClick() {
         self.toolBar.removeFromSuperview()
         self.datePicker.removeFromSuperview()

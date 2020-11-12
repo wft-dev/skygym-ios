@@ -32,10 +32,17 @@ class ViewEventScreenViewController: BaseViewController {
     @IBOutlet weak var eventEndTime: UILabel!
     @IBOutlet weak var eventEndTimeNonEditLabel: UILabel!
     @IBOutlet weak var eventHrLineView: UIView!
+    @IBOutlet weak var eventNameForNonEditLabel: UILabel!
+    @IBOutlet weak var eventDateForNonEditLabel: UILabel!
+    @IBOutlet weak var addressForNonEditLabel: UILabel!
+    @IBOutlet weak var eventStartTimeForNonEditLabel: UILabel!
+    @IBOutlet weak var eventEndTimeForNontEditLabel: UILabel!
     
     var isNewEvent:Bool = false
     var eventID:String = ""
     var isEdit:Bool = false
+    var forNonEditLabelArray:[UILabel]? = nil
+    var defaultLabelArray:[UILabel]? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,19 +53,21 @@ class ViewEventScreenViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.forNonEditLabelArray = [self.addressForNonEditLabel,self.eventDateForNonEditLabel,self.eventEndTimeForNontEditLabel,self.eventNameForNonEditLabel,self.eventStartTimeForNonEditLabel]
+        self.defaultLabelArray = [self.eventName,self.eventDate,self.address,self.eventStartTime,self.eventEndTime]
+        
         if self.isNewEvent == false {
-                self.fetchEventBy(id: AppManager.shared.eventID)
-                   AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  false)
-                   self.setHrLineView(isHidden: false, alpha: 1.0)
-                   self.setLabelsColor(color: UIColor.lightGray)
-                   self.addressNonEditLabel.isHidden = false
-                   self.addressTextView.isHidden = true
-                   self.addressTextView.alpha = 0.0
+            self.fetchEventBy(id: AppManager.shared.eventID)
+            AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  false)
+            self.setHrLineView(isHidden: false, alpha: 1.0)
+            self.addressNonEditLabel.isHidden = false
+            self.addressTextView.isHidden = true
+            self.addressTextView.alpha = 0.0
             self.addressNonEditLabel.alpha = 1.0
-               }else {
-                   setLabelsColor(color: UIColor.black)
-               }
-  
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
+        }else {
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
+        }
     }
     
     @IBAction func updateBtnAction(_ sender: Any) {
@@ -67,6 +76,7 @@ class ViewEventScreenViewController: BaseViewController {
 }
 
 extension ViewEventScreenViewController {
+
     func setViewEventNavigationBar() {
         self.viewEventNavigationBar.menuBtn.isHidden = true
         self.viewEventNavigationBar.leftArrowBtn.isHidden = false
@@ -84,23 +94,22 @@ extension ViewEventScreenViewController {
     @objc func editEvent() {
              if self.isEdit == true {
                   AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-                  self.setLabelsColor(color: UIColor.lightGray)
                   self.isEdit = false
                   self.setHrLineView(isHidden: false, alpha: 1.0)
                  self.addressTextView.isHidden = true
                  self.addressTextView.alpha = 0.0
                  self.addressNonEditLabel.isHidden = false
                  self.addressNonEditLabel.alpha = 1.0
-                 
+                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
               } else{
                   AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-                  self.setLabelsColor(color: UIColor.black)
                   self.isEdit = true
                   self.setHrLineView(isHidden: true, alpha: 0.0)
                  self.addressTextView.isHidden = false
                  self.addressTextView.alpha = 1.0
                  self.addressNonEditLabel.isHidden = true
                  self.addressNonEditLabel.alpha = 0.0
+                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
               }
          }
 
@@ -113,13 +122,7 @@ extension ViewEventScreenViewController {
         ]
         return dir
     }
-
-    func setLabelsColor(color:UIColor){
-        [self.eventName,self.eventDate,self.address,self.eventEndTime,self.eventStartTime].forEach{
-            $0?.textColor = color
-        }
-    }
-              
+          
     func setHrLineView(isHidden:Bool,alpha:CGFloat) {
         [self.eventNameHrLineView,self.eventHrLineView,self.addressHrLineView,self.eventDateHrLineView].forEach{
             $0?.isHidden = isHidden

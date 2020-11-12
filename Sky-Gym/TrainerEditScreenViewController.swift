@@ -117,6 +117,7 @@ class TrainerEditScreenViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+       // switchConstraints(flag: true)
     }
     
     @IBAction func trainerAttendanceAction(_ sender: Any) {
@@ -175,6 +176,21 @@ class TrainerEditScreenViewController: BaseViewController {
 }
 
 extension TrainerEditScreenViewController {
+    
+    func switchConstraints(flag:Bool) {
+        //self.view.translatesAutoresizingMaskIntoConstraints = false
+        [self.gender,self.salary].forEach{
+                $0.topAnchor.constraint(equalTo: self.addressHrLineView.bottomAnchor, constant: 20).isActive = flag
+        }
+        
+//        if flag == true{
+//           self.firstName.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
+//        } else {
+//           // self.firstName.le
+//        }
+        
+    }
+
     func setTrainerEditScreenNavigationBar()  {
         let navigationBar  = self.trainerEditScreenNavigationBar
         navigationBar?.menuBtn.isHidden = true
@@ -199,6 +215,7 @@ extension TrainerEditScreenViewController {
         self.isEdit = false
         self.setHrLineView(isHidden: false, alpha: 1.0)
         self.setToggleBtns(isEnabled: false, alpha: 0.9)
+        self.switchConstraints(flag: true)
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
         self.setLabelsColor(color: UIColor.black)
@@ -211,6 +228,7 @@ extension TrainerEditScreenViewController {
         self.addressView.text = self.addressNonEditLabel.text
         self.isEdit = true
         self.setHrLineView(isHidden: true, alpha: 0.0)
+        self.switchConstraints(flag: false)
     }
     }
     

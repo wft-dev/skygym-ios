@@ -484,6 +484,31 @@ class AppManager: NSObject {
         return attendence
     }
     
+    func setLabel(nonEditLabels:[UILabel],defaultLabels:[UILabel],flag:Bool) {
+        if flag == true {
+            nonEditLabels.forEach{
+                $0.isHidden = false
+                $0.alpha = 1.0
+                $0.textColor = UIColor.lightGray
+            }
+            defaultLabels.forEach{
+                $0.isHidden = true
+                $0.alpha = 0.0
+            }
+            
+        } else {
+            nonEditLabels.forEach{
+                $0.isHidden = true
+                $0.alpha = 0.0
+            }
+            defaultLabels.forEach{
+                $0.isHidden = false
+                $0.alpha = 1.0
+                $0.textColor = UIColor.black
+            }
+        }
+    }
+
 }
 
 

@@ -80,6 +80,7 @@ struct PurchaseMembershipPlan {
     var dueAmount:String
     var paidAmount:String
     var purchaseDate:String
+    var startDate:String
 }
 
 struct Attendence {
