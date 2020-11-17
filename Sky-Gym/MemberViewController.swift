@@ -53,6 +53,19 @@ class MemberViewController: BaseViewController {
     @IBOutlet weak var generalToggleBtn: UIButton!
     @IBOutlet weak var personalToggleBtn: UIButton!
     @IBOutlet weak var memberFullNameLabel: UILabel!
+    @IBOutlet weak var memberIDForNonEditLabel: UILabel!
+    @IBOutlet weak var dateOfJoiningForNonEditLabel: UILabel!
+    @IBOutlet weak var trainerNameForNonEditLabel: UILabel!
+    @IBOutlet weak var uploadForNonEditLabel: UILabel!
+    @IBOutlet weak var emailForNonEditLabel: UILabel!
+    @IBOutlet weak var addressForNonEditLabel: UILabel!
+    @IBOutlet weak var phoneNoForNonEditLabel: UILabel!
+    @IBOutlet weak var dobForNonEditLabel: UILabel!
+    @IBOutlet weak var genderForNonEditLabel: UILabel!
+    @IBOutlet weak var passwordForNonEditLabel: UILabel!
+    @IBOutlet weak var trainerTypeLabel: UILabel!
+    @IBOutlet weak var memberViewScrollView: UIScrollView!
+    
     var isEdit:Bool = false
     var firstName:String = ""
     var lastName:String = ""
@@ -60,11 +73,16 @@ class MemberViewController: BaseViewController {
     var imgURL:URL? = nil
     var isUploadIdSelected:Bool = false
     var isUserProfileSelected:Bool = false
-    var img:UIImage? = nil 
+    var img:UIImage? = nil
+    var forNonEditLabelArray:[UILabel] = []
+    var defaultLabelArray:[UILabel] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.forNonEditLabelArray = [self.memberIDForNonEditLabel,self.dateOfJoiningForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.trainerNameForNonEditLabel,self.uploadForNonEditLabel,self.emailForNonEditLabel,self.addressForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
+        self.defaultLabelArray = [self.memberID,self.dateOfJoining,self.gender,self.password,self.trainerName,self.uploadID,self.email,self.address,self.phoneNo,self.dob]
         self.setMemberProfileCompleteView()
+       // AppManager.shared.setScrollViewContentSize(scrollView: self.memberViewScrollView)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -113,7 +131,6 @@ class MemberViewController: BaseViewController {
         
     }
     
-    
     @IBAction func generalToggleBtnAction(_ sender: Any) {
         if self.generalToggleBtn.currentImage == UIImage(named: "non_selecte") {
             self.generalToggleBtn.setImage(UIImage(named: "selelecte"), for: .normal)
@@ -136,13 +153,13 @@ extension MemberViewController{
         setTextFields()
         self.updateBtn.layer.cornerRadius = 15.0
         AppManager.shared.performEditAction(dataFields: self.getMemberProfileFieldsAndLabelDic(), edit:  false)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: true)
         self.setHrLineView(isHidden: false, alpha: 1.0)
         self.addressNonEditLabel.isHidden = false
         self.addressNonEditLabel.alpha = 1.0
         self.addressTextView.isHidden  = true
         self.addressTextView.alpha = 0.0
         self.setToggleBtns(isEnabled: false, alpha: 0.9)
-        self.setLabelsColor(color: UIColor.lightGray)
         self.addUploadTextFieldRightView()
     }
     
@@ -173,7 +190,7 @@ extension MemberViewController{
        if self.isEdit == true {
         self.memberImg.isUserInteractionEnabled = false
         AppManager.shared.performEditAction(dataFields:self.getMemberProfileFieldsAndLabelDic(), edit:  false)
-        self.setLabelsColor(color: UIColor.lightGray)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: true)
         self.addressNonEditLabel.isHidden = false
         self.addressTextView.isHidden  = true
         self.addressTextView.alpha = 0.0
@@ -185,7 +202,7 @@ extension MemberViewController{
        } else{
         self.memberImg.isUserInteractionEnabled = true
         AppManager.shared.performEditAction(dataFields:self.getMemberProfileFieldsAndLabelDic(), edit:  true)
-        self.setLabelsColor(color: UIColor.black)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: false)
         self.setToggleBtns(isEnabled: true, alpha: 1.0)
         self.memberIDTextField.isEnabled = true
         self.memberIDTextField.layer.opacity = 0.4
@@ -198,13 +215,7 @@ extension MemberViewController{
         self.updateBtn.alpha = 1.0
         }
        }
-       
-       func setLabelsColor(color:UIColor){
-        [self.memberID,self.dateOfJoining,self.gender,self.password,self.email,self.uploadID,self.trainerName,self.address,self.phoneNo,self.dob].forEach{
-               $0?.textColor = color
-           }
-       }
-       
+
        func setHrLineView(isHidden:Bool,alpha:CGFloat) {
         [self.genderHrLineView,self.addressHrLineView,self.memberIDHrLineView,self.trainerNameHrView,self.phoneNoHrLineView,self.uploadIDHrView,self.emailHrLineView].forEach{
                $0?.isHidden = isHidden

@@ -72,7 +72,7 @@ class ViewVisitorScreenViewController: BaseViewController {
         super.viewDidLoad()
         self.setVisitorView()
         
-        self.forNonEditLabelArray = [self.addressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.dateOfJoinForNonEditLabel,self.dateOfVisitNonEditLabel,self.genderForNonEditLabel,self.noOfVisitForNonEditLabel,self.phoneNoForNonEditLabel]
+        self.forNonEditLabelArray = [self.addressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.dateOfJoinForNonEditLabel,self.dateOfVisitForNonEditLabel,self.genderForNonEditLabel,self.noOfVisitForNonEditLabel,self.phoneNoForNonEditLabel]
         self.defaultLabelArray = [self.firstName,self.lastName,self.address,self.email,self.dateOfJoin,self.dateOfVisit,self.gender,self.noOfVisit,self.phoneNo]
         
         if self.isNewVisitor == false {
@@ -161,7 +161,7 @@ extension ViewVisitorScreenViewController {
             
         } else{
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
             self.isEdit = true
             self.setHrLineView(isHidden: true, alpha: 0.0)
             self.visitorDetailTextView.isHidden = false

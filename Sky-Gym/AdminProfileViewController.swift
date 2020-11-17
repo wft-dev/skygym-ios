@@ -50,10 +50,23 @@ class AdminProfileViewController: UIViewController {
     @IBOutlet weak var phoneNoHrLineView: UIView!
     @IBOutlet weak var dobNonEditLabel: UILabel!
     @IBOutlet weak var phoneNoNonEditLabel: UILabel!
-
+    @IBOutlet weak var gymNameForNonEditLabel: UILabel!
+    @IBOutlet weak var gymIDForNonEditLabel: UILabel!
+    @IBOutlet weak var gymAddressForNonEditLabel: UILabel!
+    @IBOutlet weak var firstNameForNonEditLabel: UILabel!
+    @IBOutlet weak var lastNameForNonEditLabel: UILabel!
+    @IBOutlet weak var genderForNonEditLabel: UILabel!
+    @IBOutlet weak var passwordForNonEditLabel: UILabel!
+    @IBOutlet weak var emailForNonEditLabel: UILabel!
+    @IBOutlet weak var phoneNoForNonEditLabel: UILabel!
+    @IBOutlet weak var dobForNonEditLabel: UILabel!
+    
+    
     var imagePicker = UIImagePickerController()
     var isProfileImgSelected:Bool = false
     var isEdit:Bool = false
+    var forNonEditLabelArray:[UILabel] = []
+    var defaultLabelArray:[UILabel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,10 +74,12 @@ class AdminProfileViewController: UIViewController {
         setTextFields()
         self.adminImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPicker)))
         self.imagePicker.delegate = self
+        self.forNonEditLabelArray = [self.gymNameForNonEditLabel,self.gymIDForNonEditLabel,self.gymAddressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel]
+        self.defaultLabelArray = [self.gymName,self.gymID,self.gymAddress,self.firstName,self.lastName,self.email,self.gender,self.password,self.phoneNo,self.dob]
         self.adminImg.makeRounded()
         AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: true)
         self.setHrLineView(isHidden: false, alpha: 1.0)
-        self.setLabelsColor(color: UIColor.lightGray)
         self.addressTextView.isHidden = true
         self.addressTextView.alpha = 0.0
         self.gymAddressNoEditLabel.isHidden = false
@@ -126,7 +141,7 @@ extension AdminProfileViewController {
     @objc func editAdmin() {
              if self.isEdit == true {
                   AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-                  self.setLabelsColor(color: UIColor.lightGray)
+                  AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: true)
                   self.isEdit = false
                   self.setHrLineView(isHidden: false, alpha: 1.0)
                  self.addressTextView.isHidden = true
@@ -136,7 +151,7 @@ extension AdminProfileViewController {
                  
              } else{
                 AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-                self.setLabelsColor(color: UIColor.black)
+                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: false)
                 self.isEdit = true
                 self.setHrLineView(isHidden: true, alpha: 0.0)
                 self.gymIDTextField.isEnabled = true
@@ -163,12 +178,6 @@ extension AdminProfileViewController {
                 return dir
             }
 
-            func setLabelsColor(color:UIColor){
-                [self.gymName,self.gymID,self.firstName,self.lastName,self.email,self.gender,self.password,self.gymAddress,self.phoneNo,self.dob].forEach{
-                      $0?.textColor = color
-                  }
-              }
-              
               func setHrLineView(isHidden:Bool,alpha:CGFloat) {
                 [self.gymNameHrLineView,self.gymAddressHrLineView,self.firstNameHrLineView,self.phoneNoHrLineView,self.emailHrLineView,self.genderHrLineView].forEach{
                       $0?.isHidden = isHidden

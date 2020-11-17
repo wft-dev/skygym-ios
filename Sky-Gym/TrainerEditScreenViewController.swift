@@ -79,7 +79,23 @@ class TrainerEditScreenViewController: BaseViewController {
     @IBOutlet weak var salary: UILabel!
     @IBOutlet weak var type: UILabel!
     @IBOutlet weak var permissions: UILabel!
+    @IBOutlet weak var firstNameForNonEditLabel: UILabel!
+    @IBOutlet weak var lastNameForNonEditLabel: UILabel!
+    @IBOutlet weak var idForNonEditLabel: UILabel!
+    @IBOutlet weak var phoneNoForNonEditLabel: UILabel!
+    @IBOutlet weak var passwordForNonEditLabel: UILabel!
+    @IBOutlet weak var addressForNonEditLabel: UILabel!
+    @IBOutlet weak var dobForNonEditLabel: UILabel!
+    @IBOutlet weak var dateOfJoinForNonEditLabel: UILabel!
+    @IBOutlet weak var emailForNonEditLabel: UILabel!
+    @IBOutlet weak var genderForNonEditLabel: UILabel!
+    @IBOutlet weak var salaryForNonEditLabel: UILabel!
+    @IBOutlet weak var shiftDaysForNonEditLabel: UILabel!
+    @IBOutlet weak var shiftTimingForNonEditLabel: UILabel!
+    @IBOutlet weak var idProofForNonEditLabel: UILabel!
+    @IBOutlet weak var trainerEditScrollView: UIScrollView!
     
+
     var isNewTrainer:Bool = false
     let imagePicker = UIImagePickerController()
     var imgURL:URL? = nil
@@ -91,18 +107,24 @@ class TrainerEditScreenViewController: BaseViewController {
     var isUserImgSelected:Bool = false
     var img:UIImage? = nil
     var isEdit: Bool = false
+    var forNonEditLabelArray:[UILabel] = []
+    var defaultArray:[UILabel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setTrainerEditView()
         self.showTrainerBy(id: AppManager.shared.trainerID)
+        //AppManager.shared.setScrollViewContentSize(scrollView: self.trainerEditScrollView)
         self.idTextField.text = "\(UUID().hashValue)"
         self.idTextField.isEnabled = false
         self.idTextField.layer.opacity = 0.4
+        self.forNonEditLabelArray = [self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.idForNonEditLabel,self.phoneNoForNonEditLabel,self.emailForNonEditLabel,self.passwordForNonEditLabel,self.addressForNonEditLabel,self.genderForNonEditLabel,self.salaryForNonEditLabel,self.idProofForNonEditLabel,self.shiftDaysForNonEditLabel,self.shiftTimingForNonEditLabel,self.dobForNonEditLabel,self.dateOfJoinForNonEditLabel]
+        self.defaultArray = [self.firstName,self.lastName,self.id,self.phoneNo,self.email,self.password,self.address,self.gender,self.salary,self.shiftDays,self.idProof,self.shiftTimings,self.dob,self.dateOfJoin]
         userImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showUserImgPicker)))
         userImg.makeRounded()
         if self.isNewTrainer == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: true)
             self.setHrLineView(isHidden: false, alpha: 1.0)
             self.setToggleBtns(isEnabled: false, alpha: 0.9)
             self.addressNonEditLabel.isHidden = false
@@ -110,14 +132,11 @@ class TrainerEditScreenViewController: BaseViewController {
             self.addressView.alpha = 0.0
             self.addressView.text = self.addressNonEditLabel.text
             self.addressNonEditLabel.alpha = 1.0
-        }else {
-            setLabelsColor(color: UIColor.black)
         }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-       // switchConstraints(flag: true)
     }
     
     @IBAction func trainerAttendanceAction(_ sender: Any) {
@@ -176,20 +195,6 @@ class TrainerEditScreenViewController: BaseViewController {
 }
 
 extension TrainerEditScreenViewController {
-    
-    func switchConstraints(flag:Bool) {
-        //self.view.translatesAutoresizingMaskIntoConstraints = false
-        [self.gender,self.salary].forEach{
-                $0.topAnchor.constraint(equalTo: self.addressHrLineView.bottomAnchor, constant: 20).isActive = flag
-        }
-        
-//        if flag == true{
-//           self.firstName.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
-//        } else {
-//           // self.firstName.le
-//        }
-        
-    }
 
     func setTrainerEditScreenNavigationBar()  {
         let navigationBar  = self.trainerEditScreenNavigationBar
@@ -208,17 +213,18 @@ extension TrainerEditScreenViewController {
    @objc func makeEditable() {
     if self.isEdit == true {
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-        self.setLabelsColor(color: UIColor.lightGray)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: true)
         self.addressNonEditLabel.isHidden = false
         self.addressView.isHidden  = true
         self.addressView.alpha = 0.0
         self.isEdit = false
         self.setHrLineView(isHidden: false, alpha: 1.0)
         self.setToggleBtns(isEnabled: false, alpha: 0.9)
-        self.switchConstraints(flag: true)
+        self.type.textColor = .lightGray
+        self.permissions.textColor = .lightGray
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-        self.setLabelsColor(color: UIColor.black)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: false)
         self.setToggleBtns(isEnabled: true, alpha: 1.0)
         self.idTextField.isEnabled = true
         self.idTextField.layer.opacity = 0.4
@@ -228,16 +234,11 @@ extension TrainerEditScreenViewController {
         self.addressView.text = self.addressNonEditLabel.text
         self.isEdit = true
         self.setHrLineView(isHidden: true, alpha: 0.0)
-        self.switchConstraints(flag: false)
+        self.type.textColor = .black
+        self.permissions.textColor = .black
     }
     }
-    
-    func setLabelsColor(color:UIColor){
-        [self.firstName,self.lastName,self.id,self.email,self.phoneNo,self.password,self.idProof,self.address,self.gender,self.salary,self.permissions,self.type,self.shiftDays,self.shiftTimings,self.dob,self.dateOfJoin].forEach{
-            $0?.textColor = color
-        }
-    }
-    
+
     func setHrLineView(isHidden:Bool,alpha:CGFloat) {
         [self.NameHrLineView,self.idHrLineView,self.emailHrLineView,self.passwordHrLineView,self.addressHrLineView,self.genderHrLineView,self.idProofHrLineView,self.shiftDayHrLineView,self.shiftTimingHrLineView,self.dobHrLineView,self.dateOfJoinHrLineView].forEach{
             $0?.isHidden = isHidden
@@ -429,9 +430,9 @@ extension TrainerEditScreenViewController {
                     self.retryAlert()
                 } else {
                     self.setTrainerDataToFields(trainerDetails: AppManager.shared.getTrainerDetailS(trainerDetail: data?["trainerDetail"] as! [String : String]), trainerPermissions:AppManager.shared.getTrainerPermissionS(trainerPermission: data?["trainerPermission"] as! [String:Bool]) )
-                    
                 }
-                self.userImg.image = self.img
+               // self.userImg.image = self.img
+                self.userImg.image = AppManager.shared.resizeImage(image: self.img!, targetSize: self.userImg.image!.size)
             })
         } else {
             SVProgressHUD.dismiss()

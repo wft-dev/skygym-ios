@@ -102,7 +102,7 @@ extension PurchaseViewController :UITableViewDataSource {
         let endDate = AppManager.shared.getDate(date:singleMembership.expireDate)
         let startDate = AppManager.shared.getDate(date: singleMembership.purchaseDate)
         let endDayDiff = Calendar.current.dateComponents([.day], from: Date(), to: endDate).day!
-        let startDayDiff = Calendar.current.dateComponents([.day], from: startDate, to:Date()).day!
+        let startDayDiff = Calendar.current.dateComponents([.day], from: Date(), to:startDate).day!
   
         if endDayDiff >= 0 && startDayDiff <= 0 {
             cell.activePurchaseLabel.isHidden = false

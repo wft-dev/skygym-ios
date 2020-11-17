@@ -139,14 +139,6 @@ class AddMemberViewController: BaseViewController {
 }
 
 extension AddMemberViewController{
-    func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage {
-        let rect = CGRect(x: 0, y: 0, width: targetSize.width, height: targetSize.height)
-        UIGraphicsBeginImageContextWithOptions(targetSize, false, 1.0)
-        image.draw(in: rect)
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return newImage!
-    }
 
     func addTopAndBottomBorders(toView:UIView) {
         let thickness: CGFloat = 0.9
@@ -511,8 +503,8 @@ extension AddMemberViewController{
                 do{
                     let imgData = try Data(contentsOf: imgUrl!)
                     let image = UIImage(data: imgData)
+                    imgView.image = AppManager.shared.resizeImage(image: image!, targetSize: self.memberImg.image!.size)
                     imgView.makeRounded()
-                    imgView.image = self.resizeImage(image: image!, targetSize: self.memberImg.image!.size)
                     self.fetchVisitorBy(id: id)
                 } catch let error as NSError { print(error) }
             }

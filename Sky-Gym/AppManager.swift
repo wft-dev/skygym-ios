@@ -508,6 +508,23 @@ class AppManager: NSObject {
             }
         }
     }
+    
+    func setScrollViewContentSize(scrollView:UIScrollView)  {
+        let contentRect: CGRect = scrollView.subviews.reduce(into: .zero) { rect, view in
+            rect = rect.union(view.frame)
+        }
+        scrollView.contentSize = contentRect.size
+    }
+    
+    func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage {
+        let rect = CGRect(x: 0, y: 0, width: targetSize.width, height: targetSize.height)
+        UIGraphicsBeginImageContextWithOptions(targetSize, false, 1.0)
+        image.draw(in: rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage!
+    }
+
 
 }
 
