@@ -132,9 +132,10 @@ extension CurrentMembershipDetailViewController {
                 SVProgressHUD.dismiss()
                 let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! NSDictionary )
                 let membershipArray = AppManager.shared.getCurrentMembership(membershipArray: docSnapshot?["memberships"] as! NSArray)
-                
-                if membershipArray.count > 0 {
-                    self.setCurrentMembership(memberDetail: memberDetail, currentMembership: membershipArray.last!)
+               // let membershipArray = docSnapshot?["memberships"] as! NSArray
+ 
+                if membershipArray.count > 0  {
+                    self.setCurrentMembership(memberDetail: memberDetail, currentMembership: membershipArray.first! )
                     [self.memberView,self.membershipDateView,self.DiscountView,self.paymentHistoryView].forEach{
                         $0?.isHidden = false
                         $0?.alpha = 1.0
@@ -166,7 +167,7 @@ extension CurrentMembershipDetailViewController {
         else {
             self.paidStatusLabel.attributedText = NSAttributedString(string: "Paid", attributes: [ NSAttributedString.Key.foregroundColor: UIColor.green ])
         }
-        self.membershipStartDateLabel.text = currentMembership.startDate
+        self.membershipStartDateLabel.text = currentMembership.purchaseDate
         self.membershipEndDateLabel.text = currentMembership.endDate
         self.memberhsipStartDate.text = currentMembership.startDate
         self.memberNameLabel.text = "\(memberDetail.firstName) \(memberDetail.lastName)"
@@ -179,7 +180,7 @@ extension CurrentMembershipDetailViewController {
         self.totalAmountLabel.text = currentMembership.totalAmount
         self.dueAmountLabel.text = currentMembership.dueAmount
         self.paymentTypeLabel.text = currentMembership.paymentType
-        self.membershipPaymentDateLabel.text = currentMembership.startDate
+        self.membershipPaymentDateLabel.text = currentMembership.purchaseDate
         self.paymentTimeLabel.text = currentMembership.puchaseTime
         self.paymentType.text = currentMembership.paymentType
         self.paymentAmountLabel.text = currentMembership.amount

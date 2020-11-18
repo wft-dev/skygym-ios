@@ -66,7 +66,13 @@ class ViewEventScreenViewController: BaseViewController {
             self.addressNonEditLabel.alpha = 1.0
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
         }else {
+             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
+            self.setHrLineView(isHidden: true, alpha: 0.0)
+            self.addressNonEditLabel.isHidden = true
+            self.addressTextView.isHidden = false
+            self.addressTextView.alpha = 1.0
+            self.addressNonEditLabel.alpha = 0.0
         }
     }
     

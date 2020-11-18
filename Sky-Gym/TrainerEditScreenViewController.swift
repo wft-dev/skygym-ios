@@ -94,8 +94,14 @@ class TrainerEditScreenViewController: BaseViewController {
     @IBOutlet weak var shiftTimingForNonEditLabel: UILabel!
     @IBOutlet weak var idProofForNonEditLabel: UILabel!
     @IBOutlet weak var trainerEditScrollView: UIScrollView!
+    @IBOutlet weak var typeForNonEditLabel: UILabel!
+    @IBOutlet weak var generalBtnForNonEditLabel: UIButton!
+    @IBOutlet weak var personalBtnForNonEditLabel: UIButton!
+    @IBOutlet weak var generalTypeForNonEditLabel: UILabel!
+    @IBOutlet weak var personalTypeForNonEditLabel: UILabel!
+    @IBOutlet weak var generalTypeLabel: UILabel!
+    @IBOutlet weak var personalTypeLabel: UILabel!
     
-
     var isNewTrainer:Bool = false
     let imagePicker = UIImagePickerController()
     var imgURL:URL? = nil
@@ -109,30 +115,16 @@ class TrainerEditScreenViewController: BaseViewController {
     var isEdit: Bool = false
     var forNonEditLabelArray:[UILabel] = []
     var defaultArray:[UILabel] = []
+    var trainerType:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setTrainerEditView()
         self.showTrainerBy(id: AppManager.shared.trainerID)
         //AppManager.shared.setScrollViewContentSize(scrollView: self.trainerEditScrollView)
-        self.idTextField.text = "\(UUID().hashValue)"
+        self.idTextField.text = "\(Int.random(in: 1..<100000))" 
         self.idTextField.isEnabled = false
         self.idTextField.layer.opacity = 0.4
-        self.forNonEditLabelArray = [self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.idForNonEditLabel,self.phoneNoForNonEditLabel,self.emailForNonEditLabel,self.passwordForNonEditLabel,self.addressForNonEditLabel,self.genderForNonEditLabel,self.salaryForNonEditLabel,self.idProofForNonEditLabel,self.shiftDaysForNonEditLabel,self.shiftTimingForNonEditLabel,self.dobForNonEditLabel,self.dateOfJoinForNonEditLabel]
-        self.defaultArray = [self.firstName,self.lastName,self.id,self.phoneNo,self.email,self.password,self.address,self.gender,self.salary,self.shiftDays,self.idProof,self.shiftTimings,self.dob,self.dateOfJoin]
-        userImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showUserImgPicker)))
-        userImg.makeRounded()
-        if self.isNewTrainer == false {
-            AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  false)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: true)
-            self.setHrLineView(isHidden: false, alpha: 1.0)
-            self.setToggleBtns(isEnabled: false, alpha: 0.9)
-            self.addressNonEditLabel.isHidden = false
-            self.addressView.isHidden = true
-            self.addressView.alpha = 0.0
-            self.addressView.text = self.addressNonEditLabel.text
-            self.addressNonEditLabel.alpha = 1.0
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -209,7 +201,7 @@ extension TrainerEditScreenViewController {
             navigationBar?.editBtn.addTarget(self, action: #selector(makeEditable), for: .touchUpInside)
         }
     }
-    
+
    @objc func makeEditable() {
     if self.isEdit == true {
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
@@ -222,6 +214,15 @@ extension TrainerEditScreenViewController {
         self.setToggleBtns(isEnabled: false, alpha: 0.9)
         self.type.textColor = .lightGray
         self.permissions.textColor = .lightGray
+        [self.generalTypeBtn,self.personalTypeBtn].forEach{
+            $0?.isHidden = true
+            $0?.alpha = 0.0
+        }
+        [self.generalBtnForNonEditLabel,self.personalBtnForNonEditLabel].forEach{
+            $0?.isHidden = false
+            $0?.alpha = 1.0
+        }
+        self.setTrainerType(type: self.trainerType, generalBtn: self.generalBtnForNonEditLabel, personalBtn: self.personalBtnForNonEditLabel)
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: false)
@@ -236,6 +237,15 @@ extension TrainerEditScreenViewController {
         self.setHrLineView(isHidden: true, alpha: 0.0)
         self.type.textColor = .black
         self.permissions.textColor = .black
+        [self.generalTypeBtn,self.personalTypeBtn].forEach{
+            $0?.isHidden = false
+            $0?.alpha = 1.0
+        }
+        [self.generalBtnForNonEditLabel,self.personalBtnForNonEditLabel].forEach{
+            $0?.isHidden = true
+            $0?.alpha = 0.0
+        }
+        self.setTrainerType(type: self.trainerType, generalBtn: self.generalTypeBtn, personalBtn: self.personalTypeBtn)
     }
     }
 
@@ -400,12 +410,50 @@ extension TrainerEditScreenViewController {
             $0?.setImage(UIImage(named: "toggle-off"), for: .normal)
         }
         self.datePicker.datePickerMode = .date
-              toolBar.barStyle = .default
-              let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
-              let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-              let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
-              toolBar.items = [cancelToolBarItem,space,okToolBarItem]
-              toolBar.sizeToFit()
+        toolBar.barStyle = .default
+        let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
+        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar.sizeToFit()
+        
+        self.forNonEditLabelArray = [self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.idForNonEditLabel,self.phoneNoForNonEditLabel,self.emailForNonEditLabel,self.passwordForNonEditLabel,self.addressForNonEditLabel,self.genderForNonEditLabel,self.salaryForNonEditLabel,self.idProofForNonEditLabel,self.shiftDaysForNonEditLabel,self.shiftTimingForNonEditLabel,self.dobForNonEditLabel,self.dateOfJoinForNonEditLabel,self.typeForNonEditLabel,self.generalTypeForNonEditLabel,self.personalTypeForNonEditLabel]
+        
+        self.defaultArray = [self.firstName,self.lastName,self.id,self.phoneNo,self.email,self.password,self.address,self.gender,self.salary,self.shiftDays,self.idProof,self.shiftTimings,self.dob,self.dateOfJoin,self.generalTypeLabel,self.type,self.personalTypeLabel]
+        userImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showUserImgPicker)))
+        userImg.makeRounded()
+        if self.isNewTrainer == false {
+            AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: true)
+            self.setHrLineView(isHidden: false, alpha: 1.0)
+            self.setToggleBtns(isEnabled: false, alpha: 0.9)
+            self.addressNonEditLabel.isHidden = false
+            self.addressView.isHidden = true
+            self.addressView.alpha = 0.0
+            self.addressView.text = self.addressNonEditLabel.text
+            self.addressNonEditLabel.alpha = 1.0
+            [self.generalTypeBtn,self.personalTypeBtn].forEach{
+                $0?.isHidden = true
+                $0?.alpha = 0.0
+            }
+            self.permissions.textColor = .lightGray
+        } else {
+            AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: false)
+            self.setHrLineView(isHidden: true, alpha: 0.0)
+            self.setToggleBtns(isEnabled: true, alpha: 1.0)
+            self.addressNonEditLabel.isHidden = true
+            self.addressView.isHidden = false
+            self.addressView.alpha = 1.0
+            self.addressView.text = self.addressNonEditLabel.text
+            self.addressNonEditLabel.alpha = 0.0
+            [self.generalTypeBtn,self.personalTypeBtn].forEach{
+                $0?.isHidden = false
+                $0?.alpha = 1.0
+            }
+            self.permissions.textColor = .black
+        }
+   
     }
     
     @objc func cancelTextField()  {
@@ -513,7 +561,7 @@ extension TrainerEditScreenViewController {
         self.idNonEditLabel.text = trainerDetails.trainerID
         self.phoneNonEditLabel.text = trainerDetails.phoneNo
         self.emailNonEditLabel.text = trainerDetails.email
-        self.passwordNonEditLabel.text = String(trainerDetails.password.map { _ in return "•" })
+        self.passwordNonEditLabel.text = trainerDetails.password
         self.addressNonEditLabel.text = trainerDetails.address
         self.genderNonEditLabel.text = trainerDetails.gender
         self.salaryNonEditLabel.text = trainerDetails.salary
@@ -541,11 +589,12 @@ extension TrainerEditScreenViewController {
         self.idTextField.isEnabled = false
         self.idTextField.layer.opacity = 0.4
         
-        self.setTrainerType(type:trainerDetails.type)
+        self.setTrainerType(type:trainerDetails.type,generalBtn:self.generalBtnForNonEditLabel,personalBtn: self.personalBtnForNonEditLabel )
         self.setTrainerPermission(memberPermission: trainerPermissions.canAddMember, visitorPermission: trainerPermissions.canAddVisitor, eventPermission:trainerPermissions.canAddEvent)
         
         self.name = "\(trainerDetails.firstName) \(trainerDetails.lastName)"
         self.addressStr = trainerDetails.address
+        self.trainerType = trainerDetails.type
     }
 
     func clearTextFields() {
@@ -555,14 +604,14 @@ extension TrainerEditScreenViewController {
         self.addressView.text = ""
     }
     
-    func setTrainerType(type:String) {
+    func setTrainerType(type:String,generalBtn:UIButton,personalBtn:UIButton) {
         if type == "General"{
-            self.generalTypeBtn.setImage(UIImage(named: "selelecte"), for: .normal)
-            self.personalTypeBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
+            generalBtn.setImage(UIImage(named: "selelecte"), for: .normal)
+            personalBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         }
         if type == "Personal"{
-            self.personalTypeBtn.setImage(UIImage(named: "selelecte"), for: .normal)
-            self.generalTypeBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
+            personalBtn.setImage(UIImage(named: "selelecte"), for: .normal)
+            generalBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         }
     }
     

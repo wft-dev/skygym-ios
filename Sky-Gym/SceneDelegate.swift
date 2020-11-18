@@ -8,24 +8,32 @@
 
 import UIKit
 import SWRevealViewController
+import FirebaseCore
+import FirebaseFirestore
+import IQKeyboardManagerSwift
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    let swRevealVC = SWRevealViewController()
     var window: UIWindow?
-
+    let swRevealVC = SWRevealViewController()
+    //let swRevealVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "swRevealVC") as! SWRevealViewController
+    let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginVC") as! ViewController
 
     @available(iOS 13.0, *)
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let _ = (scene as? UIWindowScene) else { return }
-        let dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
-        let menuItemVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "menuItemVC") as! MenuItemsViewController
-         self.swRevealVC.frontViewController = dashboardVC
-         self.swRevealVC.rearViewController = menuItemVC
-         window?.rootViewController = swRevealVC
-         window?.makeKeyAndVisible()
+//        let dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
+//        let menuItemVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "menuItemVC") as! MenuItemsViewController
+//         self.swRevealVC.frontViewController = dashboardVC
+//         self.swRevealVC.rearViewController = menuItemVC
+//         window?.rootViewController = swRevealVC
+//         window?.makeKeyAndVisible()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.window = self.window
+        //FirebaseApp.configure()
+       // setRoot()
+        IQKeyboardManager.shared.enable = true
     }
+    
 
     @available(iOS 13.0, *)
     func sceneDidDisconnect(_ scene: UIScene) {

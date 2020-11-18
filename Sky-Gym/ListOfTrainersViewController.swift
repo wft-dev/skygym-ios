@@ -253,6 +253,7 @@ extension ListOfTrainersViewController:UITableViewDataSource{
         cell.salaryLabel.text = singleTrainer.salary
         cell.numberOfMembersLabel.text = singleTrainer.members
         cell.attendenceBtn.tag = Int(singleTrainer.trainerID)!
+        cell.selectedBackgroundView = AppManager.shared.getClearBG()
         
         return cell
     }

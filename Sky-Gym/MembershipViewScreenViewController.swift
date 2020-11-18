@@ -51,6 +51,9 @@ class MembershipViewScreenViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setMembershipView()
+        self.forNonEditLabelArray = [self.titleForNonEditLabel,self.amountForNonEditLabel,self.detailForNonEditLabel,self.endDateForNonEditLabel,self.startDateForNonEditLabel]
+        self.defaultLabelArray = [self.titleLabel,self.amountLabel,self.detailLabel,self.startDateLabel,self.endDateLabel]
+        
         if self.isNewMemberhsip == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
             self.setHrLineView(isHidden: false, alpha: 1.0)
@@ -58,12 +61,16 @@ class MembershipViewScreenViewController: BaseViewController {
             self.detailTextView.alpha = 0.0
             self.detailNonEditLabel.isHidden = false
             self.detailNonEditLabel.alpha = 1.0
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: true)
+        }else {
+            AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: true)
+            self.setHrLineView(isHidden: true, alpha: 0.0)
+            self.detailTextView.isHidden = false
+            self.detailTextView.alpha = 1.0
+            self.detailNonEditLabel.isHidden = true
+            self.detailNonEditLabel.alpha = 0.0
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: false)
         }
-        self.forNonEditLabelArray = [self.titleForNonEditLabel,self.amountForNonEditLabel,self.detailForNonEditLabel,self.endDateForNonEditLabel,self.startDateForNonEditLabel]
-        self.defaultLabelArray = [self.titleLabel,self.amountLabel,self.detailLabel,self.startDateLabel,self.endDateLabel]
-        
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: true)
-        
     }
     
     @IBAction func doneBtnAction(_ sender: Any) {

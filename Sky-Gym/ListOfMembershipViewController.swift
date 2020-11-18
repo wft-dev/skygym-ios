@@ -103,7 +103,8 @@ extension ListOfMembershipViewController:UITableViewDataSource {
         cell.membershipPriceLabel.text = singleMembership.amount
         cell.membershipStartDate.text = singleMembership.startDate
         cell.membershipEndDate.text = singleMembership.endDate
-
+        cell.selectedBackgroundView = AppManager.shared.getClearBG()
+            
         return cell
     }
     }

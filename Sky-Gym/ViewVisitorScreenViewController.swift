@@ -83,7 +83,14 @@ class ViewVisitorScreenViewController: BaseViewController {
             self.visitorDetailTextView.alpha = 0.0
             self.addressNonEditLabel.isHidden = false
             self.addressNonEditLabel.alpha = 1.0
-            
+        }else {
+            AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
+            self.setHrLineView(isHidden: true, alpha: 0.0)
+            self.visitorDetailTextView.isHidden = false
+            self.visitorDetailTextView.alpha = 1.0
+            self.addressNonEditLabel.isHidden = true
+            self.addressNonEditLabel.alpha = 0.0
         }
     }
     
@@ -271,7 +278,7 @@ extension ViewVisitorScreenViewController {
     
     func registerVisitor() {
         SVProgressHUD.show()
-        self.register(id: "\(UUID().hashValue)", visitorDetail: self.getVisitorData(), completion: {
+        self.register(id: "\(Int.random(in: 1..<100000))" , visitorDetail: self.getVisitorData(), completion: {
             err in
             SVProgressHUD.dismiss()
             if err != nil {

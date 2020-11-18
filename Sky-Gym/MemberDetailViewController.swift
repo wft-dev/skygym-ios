@@ -88,7 +88,7 @@ extension MemberDetailViewController{
                 self.name = "\(memberDetail["firstName"] ?? "" ) \(memberDetail["lastName"] ?? "" )"
                 self.address = memberDetail["address"]!
                 self.memberPhoneNumber?.text = memberDetail["phoneNo"]
-                let lastMembership = memberships.count > 0 ? AppManager.shared.getLatestMembership(membershipsArray: memberships) : MembershipDetailStructure(membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", puchaseTime: "--")
+                let lastMembership = memberships.count > 0 ? AppManager.shared.getLatestMembership(membershipsArray: memberships) : MembershipDetailStructure(membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", puchaseTime: "--", purchaseDate: "--")
                 
                 self.memberDateOfJoin.text = memberDetail["dateOfJoining"]
                 if lastMembership.dueAmount == "--"{

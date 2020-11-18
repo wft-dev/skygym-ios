@@ -26,12 +26,14 @@ class PurchaseViewController: BaseViewController {
     @IBOutlet weak var purchaseNavigationBar: CustomNavigationBar!
     
     var purchaseArray:[PurchaseMembershipPlan] = []
+    var todayDate:Date = Date()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setPurchaseNavigationBar()
         self.purchaseTable.separatorStyle = .none
         setBackAction(toView: self.purchaseNavigationBar)
+        self.todayDate = AppManager.shared.getStandardFormatDate(date: Date())
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -73,7 +75,7 @@ extension PurchaseViewController {
     }
     
     func getPurchaseMemberPlan(membership:[String:String]) -> PurchaseMembershipPlan {
-        let purchasePlan = PurchaseMembershipPlan(membershipPlan: membership["membershipPlan"]!, expireDate: membership["endDate"]!, amount:membership["totalAmount"]! , dueAmount: membership["dueAmount"]!, paidAmount: membership["amount"]!, purchaseDate:membership["startDate"]!, startDate: membership["startDate"]!)
+        let purchasePlan = PurchaseMembershipPlan(membershipPlan: membership["membershipPlan"]!, expireDate: membership["endDate"]!, amount:membership["totalAmount"]! , dueAmount: membership["dueAmount"]!, paidAmount: membership["amount"]!, purchaseDate:membership["purchaseDate"]!, startDate: membership["startDate"]!)
         
         return purchasePlan
     }
@@ -100,9 +102,9 @@ extension PurchaseViewController :UITableViewDataSource {
         self.setTableCellView(tableCellView: cell.purchaseTableCellView)
         cell.activePurchaseLabel.layer.cornerRadius = 10.0
         let endDate = AppManager.shared.getDate(date:singleMembership.expireDate)
-        let startDate = AppManager.shared.getDate(date: singleMembership.purchaseDate)
-        let endDayDiff = Calendar.current.dateComponents([.day], from: Date(), to: endDate).day!
-        let startDayDiff = Calendar.current.dateComponents([.day], from: Date(), to:startDate).day!
+        let startDate = AppManager.shared.getDate(date: singleMembership.startDate)
+        let endDayDiff = Calendar.current.dateComponents([.day], from:todayDate , to: endDate).day!
+        let startDayDiff = Calendar.current.dateComponents([.day], from:todayDate, to:startDate).day!
   
         if endDayDiff >= 0 && startDayDiff <= 0 {
             cell.activePurchaseLabel.isHidden = false

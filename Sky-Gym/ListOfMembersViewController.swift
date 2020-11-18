@@ -123,24 +123,23 @@ class ListOfMembersViewController: BaseViewController {
         super.viewDidLoad()
         self.setCompleteListOfMembersView()
         self.setUpFilterView()
+        switch self.filterationLabel {
+        case "allMemberFilteration":
+            self.showMembers()
+        case "expiredMemberFilteration":
+            self.expiredMemberFilterationAction()
+        case "checkInMemberFilteration":
+            self.checkFilterationAction(checkFor: "checkIn")
+        case "checkOutMemberFilteration":
+            self.checkFilterationAction(checkFor: "checkOut")
+        default:
+            break
+        }
     }
     
 override func viewWillAppear(_ animated: Bool) {
      super.viewWillAppear(animated)
-    
-    switch self.filterationLabel {
-    case "allMemberFilteration":
-        self.showMembers()
-    case "expiredMemberFilteration":
-        self.expiredMemberFilterationAction()
-    case "checkInMemberFilteration":
-        self.checkFilterationAction(checkFor: "checkIn")
-    case "checkOutMemberFilteration":
-        self.checkFilterationAction(checkFor: "checkOut")
-    default:
-        break
-    }
-    
+  
  }
     @IBAction func filterBtnAction(_ sender: Any) {
         if self.filterView.isHidden == true {
@@ -196,6 +195,7 @@ extension ListOfMembersViewController : UITableViewDataSource{
         cell.dueAmount.text = singleMember.dueAmount
         cell.btnsStackView.tag =  Int(singleMember.memberID)!
         cell.customCellDelegate = self
+        cell.selectedBackgroundView = AppManager.shared.getClearBG()
         
         return cell
     }
@@ -287,20 +287,35 @@ extension ListOfMembersViewController{
 
     func getMemberProfileImage(id:String,imageName:String,imgView :UIImageView) {
          SVProgressHUD.show()
-        FireStoreManager.shared.downloadImgWithName(imageName:imageName,id: id, result: {
-             (imgUrl,err) in
-             SVProgressHUD.dismiss()
-             if err != nil {
-             self.viewDidLoad()
-             } else {
-                 do{
-                   let imgData = try Data(contentsOf: imgUrl!)
+//        FireStoreManager.shared.downloadImgWithName(imageName:imageName,id: id, result: {
+//             (imgUrl,err) in
+//             SVProgressHUD.dismiss()
+//             if err != nil {
+//             self.viewDidLoad()
+//             } else {
+//                 do{
+//                   let imgData = try Data(contentsOf: imgUrl!)
+//                    self.userImg = UIImage(data: imgData)
+//                    imgView.image = self.userImg
+//                     imgView.makeRounded()
+//                 } catch let error as NSError { print(error) }
+//             }
+//         })
+        
+        FireStoreManager.shared.downloadUserImg(id: id, result: {
+            (imgUrl,err) in
+            SVProgressHUD.dismiss()
+            if err != nil {
+                return
+            } else {
+                do{
+                    let imgData = try Data(contentsOf: imgUrl!)
                     self.userImg = UIImage(data: imgData)
                     imgView.image = self.userImg
-                     imgView.makeRounded()
-                 } catch let error as NSError { print(error) }
-             }
-         })
+                    imgView.makeRounded()
+                } catch let error as NSError { print(error) }
+            }
+        })
      }
 
    func adjustFontSizeForRenewPackageLabel(label:UILabel) {
@@ -367,7 +382,7 @@ extension ListOfMembersViewController{
                         
                         let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: singleData["memberDetail"] as! NSDictionary)
                         let memberships = singleData["memberships"] as! NSArray
-                        membership = memberships.count > 0 ? AppManager.shared.getCurrentMembership(membershipArray: memberships).last : MembershipDetailStructure(membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", puchaseTime: "--")
+                        membership = memberships.count > 0 ? AppManager.shared.getLatestMembership(membershipsArray: memberships) : MembershipDetailStructure(membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", puchaseTime: "--", purchaseDate: "--")
                         
                         let member = ListOfMemberStr(memberID: memberDetail.memberID, userImg: UIImage(named: "user1")!, userName: "\(memberDetail.firstName) \(memberDetail.lastName)", phoneNumber: memberDetail.phoneNo, dateOfExp:membership!.endDate , dueAmount: membership!.dueAmount, uploadName: memberDetail.uploadIDName)
                             self.listOfMemberArray.append(member)

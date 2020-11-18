@@ -60,6 +60,7 @@ struct MembershipDetailStructure {
       var paymentType:String
       var dueAmount:String
       var puchaseTime:String
+      var purchaseDate:String
 }
 
 struct ListOfMemberStr {

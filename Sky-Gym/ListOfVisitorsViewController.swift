@@ -234,6 +234,7 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
         self.adjustFontSizeForVisitorLabel(label:cell.trainerNameLabel)
         self.adjustFontSizeForVisitorLabel(label: cell.trainerTypeLabel)
         cell.memberBtn.tag = Int(singleVisitor.id)!
+        cell.selectedBackgroundView = AppManager.shared.getClearBG()
         
         return cell
     }
@@ -279,6 +280,9 @@ extension ListOfVisitorsViewController:UITableViewDelegate{
         let configuration = UISwipeActionsConfiguration(actions: [deleteContextualAction])
         return configuration
     }
+    
+    
+    
 }
 
 extension ListOfVisitorsViewController:UISearchBarDelegate{

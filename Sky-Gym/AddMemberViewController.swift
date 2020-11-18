@@ -51,6 +51,7 @@ class AddMemberViewController: BaseViewController {
     @IBOutlet weak var firstNameTextField: UITextField!
     @IBOutlet weak var lastNameTextField: UITextField!
     @IBOutlet weak var memberImg: UIImageView!
+    
     let imagePicker = UIImagePickerController()
     var imgUrl:URL? = nil
     var isNewMember:Bool = false
@@ -69,7 +70,8 @@ class AddMemberViewController: BaseViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.memberIDTextField.text = "\(UUID().hashValue)"
+        //self.memberIDTextField.text = "\(UUID().hashValue)"
+        self.memberIDTextField.text = "\(Int.random(in: 1..<100000))" 
         self.memberIDTextField.isEnabled = false
         self.memberIDTextField.alpha = 0.4
         self.endDateTextField.isEnabled = false
@@ -156,21 +158,25 @@ extension AddMemberViewController{
     
     func addRightView(toTextField:UITextField,imageName:String) {
         let imgView = UIImageView(image: UIImage(named: imageName))
-        imgView.contentMode = UIView.ContentMode.center
+        imgView.contentMode = .scaleAspectFit
         let btn = UIButton()
+        var v:UIView? = nil
         
         if imageName == "cam.png"{
-            imgView.frame = CGRect(x: 0.0, y: 0.0, width: imgView.image!.size.width + 20.0, height: imgView.image!.size.height)
-            btn.frame = imgView.frame
+            imgView.frame = CGRect(x: 0.0, y: 0.0, width: 20.0, height: 20.0)
+             v = UIView(frame: CGRect(x: 0, y: 0, width: imgView.frame.width + 20 , height: imgView.frame.height))
+            v!.addSubview(imgView)
+            btn.frame = v!.frame
+            btn.backgroundColor = .red
             btn.addTarget(self, action: #selector(openImgPicker), for: .touchUpInside)
         } else {
-            imgView.frame = CGRect(x: 0.0, y: 0.0, width: imgView.image!.size.width + 40.0, height: imgView.image!.size.height)
+            imgView.frame = CGRect(x: 0.0, y: 0.0, width: 40.0, height: 40)
             btn.frame = imgView.frame
             btn.addTarget(self, action: #selector(showMemberPlan), for: .touchUpInside)
         }
         
         btn.setImage(imgView.image, for: .normal)
-        toTextField.rightView = btn
+        toTextField.rightView = v
         toTextField.rightViewMode = .always
     }
     
@@ -282,7 +288,8 @@ extension AddMemberViewController{
             "discount":self.discountTextField.text!,
             "paymentType":self.paymentTypeTextField.text!,
             "dueAmount":self.dueAmountTextField.text!,
-            "purchaseTime": "\(AppManager.shared.getTimeFrom(date: Date()))"
+            "purchaseTime": "\(AppManager.shared.getTimeFrom(date: Date()))",
+            "purchaseDate": AppManager.shared.dateWithMonthName(date: Date())
         ]]
         return membership
     }
@@ -397,8 +404,11 @@ extension AddMemberViewController{
     func setCompleteView() {
         self.setNavigationBar()
         self.addTopAndBottomBorders(toView: profileAndMembershipBarView)
-        self.addRightView(toTextField: self.uploadIDTextField, imageName: "cam.png")
-        self.addRightView(toTextField: self.membershipPlanTextField, imageName: "arrow-down.png")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0 , execute: {
+            self.addRightView(toTextField: self.uploadIDTextField, imageName: "cam.png")
+            self.addRightView(toTextField: self.membershipPlanTextField, imageName: "arrow-down.png")
+        })
+
         self.setTextFields()
         setBackAction(toView: self.addMemberNavigationBar)
         

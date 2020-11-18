@@ -249,7 +249,7 @@ extension AdminProfileViewController {
         self.firstNameNonEditLabel.text = adminDetail.firstName
         self.lastNameNonEditLabel.text = adminDetail.lastName
         self.genderNonEditLabel.text = adminDetail.gender
-        self.passwordNonEditLabel.text = String(adminDetail.password.map { _ in return "•" })
+        self.passwordNonEditLabel.text = adminDetail.password
         self.emailNonEditLabel.text = adminDetail.email
         self.phoneNoNonEditLabel.text = adminDetail.phoneNO
         self.dobNonEditLabel.text = adminDetail.dob

@@ -172,7 +172,7 @@ class AppManager: NSObject {
       
       func getLatestMembership(membershipsArray:NSArray) -> MembershipDetailStructure{
           let lastMemberhipData = membershipsArray.lastObject as! NSDictionary
-          let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipPlan: lastMemberhipData["membershipPlan"] as! String, membershipDetail: lastMemberhipData["membershipDetail"] as! String, amount: lastMemberhipData["amount"] as! String, startDate: lastMemberhipData["startDate"] as! String, endDate: lastMemberhipData["endDate"] as! String, totalAmount: lastMemberhipData["totalAmount"] as! String, discount: lastMemberhipData["discount"] as! String, paymentType:lastMemberhipData["paymentType"] as! String , dueAmount: lastMemberhipData["dueAmount"] as! String,puchaseTime: lastMemberhipData["purchaseTime"] as! String)
+          let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipPlan: lastMemberhipData["membershipPlan"] as! String, membershipDetail: lastMemberhipData["membershipDetail"] as! String, amount: lastMemberhipData["amount"] as! String, startDate: lastMemberhipData["startDate"] as! String, endDate: lastMemberhipData["endDate"] as! String, totalAmount: lastMemberhipData["totalAmount"] as! String, discount: lastMemberhipData["discount"] as! String, paymentType:lastMemberhipData["paymentType"] as! String , dueAmount: lastMemberhipData["dueAmount"] as! String,puchaseTime: lastMemberhipData["purchaseTime"] as! String,purchaseDate: lastMemberhipData["purchaseDate"] as! String)
           return latestMemberhsip
       }
     
@@ -186,7 +186,7 @@ class AppManager: NSObject {
             
             if endDayDiff >= 0 && startDayDiff <= 0 {
                 let currentMembershipData = singleMembership as! [String:String]
-                let  currentMembership = MembershipDetailStructure(membershipPlan: currentMembershipData["membershipPlan"]!, membershipDetail: currentMembershipData["membershipDetail"]!, amount: currentMembershipData["amount"]!, startDate: currentMembershipData["startDate"]!, endDate: currentMembershipData["endDate"]!, totalAmount: currentMembershipData["totalAmount"]!, discount: currentMembershipData["discount"]!, paymentType:currentMembershipData["paymentType"]!, dueAmount: currentMembershipData["dueAmount"]!,puchaseTime: currentMembershipData["purchaseTime"]!)
+                let  currentMembership = MembershipDetailStructure(membershipPlan: currentMembershipData["membershipPlan"]!, membershipDetail: currentMembershipData["membershipDetail"]!, amount: currentMembershipData["amount"]!, startDate: currentMembershipData["startDate"]!, endDate: currentMembershipData["endDate"]!, totalAmount: currentMembershipData["totalAmount"]!, discount: currentMembershipData["discount"]!, paymentType:currentMembershipData["paymentType"]!, dueAmount: currentMembershipData["dueAmount"]!,puchaseTime: currentMembershipData["purchaseTime"]!, purchaseDate: currentMembershipData["purchaseDate"]!)
                 currentMembershipDataArray.append(currentMembership)
             }
         }
@@ -199,6 +199,13 @@ class AppManager: NSObject {
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
         let dateS = dateFormatter.date(from: date)!
         return dateS
+    }
+    
+    func getStandardFormatDate(date:Date) -> Date {
+        let df = DateFormatter()
+        df.dateFormat = "dd-MM-yyyy"
+        df.timeZone = TimeZone(secondsFromGMT: 0)
+        return getDate(date: df.string(from: date))
     }
 
     func getTodayWeekDay(date:String)-> String{
@@ -525,6 +532,11 @@ class AppManager: NSObject {
         return newImage!
     }
 
+    func getClearBG() -> UIView {
+        let bg = UIView()
+        bg.backgroundColor = .clear
+        return bg
+    }
 
 }
 
