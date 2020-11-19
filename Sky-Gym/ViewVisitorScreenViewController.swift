@@ -83,6 +83,8 @@ class ViewVisitorScreenViewController: BaseViewController {
             self.visitorDetailTextView.alpha = 0.0
             self.addressNonEditLabel.isHidden = false
             self.addressNonEditLabel.alpha = 1.0
+            self.updateBtn.isEnabled = false
+            self.updateBtn.alpha = 0.4
         }else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
@@ -91,6 +93,8 @@ class ViewVisitorScreenViewController: BaseViewController {
             self.visitorDetailTextView.alpha = 1.0
             self.addressNonEditLabel.isHidden = true
             self.addressNonEditLabel.alpha = 0.0
+            self.updateBtn.isEnabled = true
+            self.updateBtn.alpha = 1.0
         }
     }
     
@@ -165,7 +169,8 @@ extension ViewVisitorScreenViewController {
             self.visitorDetailTextView.alpha = 0.0
             self.addressNonEditLabel.isHidden = false
             self.addressNonEditLabel.alpha = 1.0
-            
+            self.updateBtn.isEnabled = false
+            self.updateBtn.alpha = 0.4
         } else{
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
@@ -175,6 +180,8 @@ extension ViewVisitorScreenViewController {
             self.visitorDetailTextView.alpha = 1.0
             self.addressNonEditLabel.isHidden = true
             self.addressNonEditLabel.alpha = 0.0
+            self.updateBtn.isEnabled = true
+            self.updateBtn.alpha = 1.0
         }
     }
 

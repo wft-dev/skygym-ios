@@ -72,9 +72,7 @@ extension ListOfEventsViewController {
            alertController.addAction(okAlertAction)
            present(alertController, animated: true, completion: nil)
        }
-
-    
-    
+   
     func fetchEvents()  {
         SVProgressHUD.show()
         FireStoreManager.shared.getAllEvents(result: {
@@ -164,11 +162,10 @@ extension ListOfEventsViewController:UITableViewDataSource{
         cell.eventEndTime.text = singleEvent.eventEndTime
         cell.eventDateLabel.text = singleEvent.eventDate
         cell.eventDateLabel.layer.cornerRadius = 7.0
-        
+        cell.backgroundView = AppManager.shared.getClearBG()
         return cell
     }
 }
-
 
 extension ListOfEventsViewController:UITableViewDelegate{
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -181,9 +178,7 @@ extension ListOfEventsViewController:UITableViewDelegate{
         return hearder
     }
     
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         AppManager.shared.eventID = self.eventsArray[indexPath.section].eventID
         performSegue(withIdentifier: "viewEventScreenSegue", sender: false)
     }

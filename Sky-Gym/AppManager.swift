@@ -157,7 +157,7 @@ class AppManager: NSObject {
     
     func performLogin() {
                 SVProgressHUD.show()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
             AppManager.shared.isLoggedIn = true
             AppManager.shared.appDelegate.setRoot()
             SVProgressHUD.dismiss()
@@ -172,7 +172,7 @@ class AppManager: NSObject {
       
       func getLatestMembership(membershipsArray:NSArray) -> MembershipDetailStructure{
           let lastMemberhipData = membershipsArray.lastObject as! NSDictionary
-          let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipPlan: lastMemberhipData["membershipPlan"] as! String, membershipDetail: lastMemberhipData["membershipDetail"] as! String, amount: lastMemberhipData["amount"] as! String, startDate: lastMemberhipData["startDate"] as! String, endDate: lastMemberhipData["endDate"] as! String, totalAmount: lastMemberhipData["totalAmount"] as! String, discount: lastMemberhipData["discount"] as! String, paymentType:lastMemberhipData["paymentType"] as! String , dueAmount: lastMemberhipData["dueAmount"] as! String,puchaseTime: lastMemberhipData["purchaseTime"] as! String,purchaseDate: lastMemberhipData["purchaseDate"] as! String)
+        let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"] as! String, membershipPlan: lastMemberhipData["membershipPlan"] as! String, membershipDetail: lastMemberhipData["membershipDetail"] as! String, amount: lastMemberhipData["amount"] as! String, startDate: lastMemberhipData["startDate"] as! String, endDate: lastMemberhipData["endDate"] as! String, totalAmount: lastMemberhipData["totalAmount"] as! String, discount: lastMemberhipData["discount"] as! String, paymentType:lastMemberhipData["paymentType"] as! String , dueAmount: lastMemberhipData["dueAmount"] as! String,purchaseTime: lastMemberhipData["purchaseTime"] as! String,purchaseDate: lastMemberhipData["purchaseDate"] as! String, membershipDuration: lastMemberhipData["membershipDuration"] as! String)
           return latestMemberhsip
       }
     
@@ -186,7 +186,7 @@ class AppManager: NSObject {
             
             if endDayDiff >= 0 && startDayDiff <= 0 {
                 let currentMembershipData = singleMembership as! [String:String]
-                let  currentMembership = MembershipDetailStructure(membershipPlan: currentMembershipData["membershipPlan"]!, membershipDetail: currentMembershipData["membershipDetail"]!, amount: currentMembershipData["amount"]!, startDate: currentMembershipData["startDate"]!, endDate: currentMembershipData["endDate"]!, totalAmount: currentMembershipData["totalAmount"]!, discount: currentMembershipData["discount"]!, paymentType:currentMembershipData["paymentType"]!, dueAmount: currentMembershipData["dueAmount"]!,puchaseTime: currentMembershipData["purchaseTime"]!, purchaseDate: currentMembershipData["purchaseDate"]!)
+                let  currentMembership = MembershipDetailStructure(membershipID: currentMembershipData["membershipID"]!, membershipPlan: currentMembershipData["membershipPlan"]!, membershipDetail: currentMembershipData["membershipDetail"]!, amount: currentMembershipData["amount"]!, startDate: currentMembershipData["startDate"]!, endDate: currentMembershipData["endDate"]!, totalAmount: currentMembershipData["totalAmount"]!, discount: currentMembershipData["discount"]!, paymentType:currentMembershipData["paymentType"]!, dueAmount: currentMembershipData["dueAmount"]!,purchaseTime: currentMembershipData["purchaseTime"]!, purchaseDate: currentMembershipData["purchaseDate"]!, membershipDuration: currentMembershipData["membershipDuration"]!)
                 currentMembershipDataArray.append(currentMembership)
             }
         }
@@ -355,7 +355,7 @@ class AppManager: NSObject {
         var counter = Calendar.current.component(.day, from: startD)
         let terminator = Calendar.current.component(.day, from: endD)
         for eachDay in monthArray {
-            let d = eachDay as! NSDictionary
+            let d = eachDay 
             if  let status = d["\(counter)/\(month)/\(year)"] as? NSDictionary  {
                 attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(counter)/\(month)/\(year)", value: status))
                 counter += 1
@@ -536,6 +536,11 @@ class AppManager: NSObject {
         let bg = UIView()
         bg.backgroundColor = .clear
         return bg
+    }
+    
+    func getCompleteMembershipDetail(membershipDetail:[String:String]) -> MembershipDetailStructure {
+        let m = MembershipDetailStructure(membershipID: membershipDetail["membershipID"]!, membershipPlan:  membershipDetail["membershipPlan"]!, membershipDetail:  membershipDetail["membershipDetail"]!, amount:  membershipDetail["amount"]!, startDate:  membershipDetail["startDate"]!, endDate:  membershipDetail["endDate"]!, totalAmount:  membershipDetail["totalAmount"]!, discount:  membershipDetail["discount"]!, paymentType:  membershipDetail["paymentType"]!, dueAmount:  membershipDetail["dueAmount"]!, purchaseTime:  membershipDetail["purchaseTime"]!, purchaseDate:  membershipDetail["purchaseDate"]!, membershipDuration: membershipDetail["membershipDuration"]!)
+        return m
     }
 
 }

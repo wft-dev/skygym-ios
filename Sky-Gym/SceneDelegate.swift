@@ -30,7 +30,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.window = self.window
         //FirebaseApp.configure()
-       // setRoot()
+        appDelegate.setRoot()
         IQKeyboardManager.shared.enable = true
     }
     

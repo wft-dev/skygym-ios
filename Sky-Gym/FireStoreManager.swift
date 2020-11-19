@@ -195,6 +195,26 @@ class FireStoreManager: NSObject {
         })
     }
     
+    func getMembershipWith(memberID:String,membershipID:String,result:@escaping (MembershipDetailStructure?,Error?) -> Void) {
+        fireDB.collection("/Members").document("\(memberID)").getDocument(completion: {
+            (memberDate,err) in
+            if err != nil {
+                result(nil,err)
+            } else {
+                let membershipArray = ((memberDate?.data())! as NSDictionary)["memberships"] as! Array<NSDictionary>
+                
+                for currentMembership in membershipArray {
+                    let currentMembershipID = currentMembership["membershipID"] as! String
+                    if currentMembershipID == membershipID {
+                        result(AppManager.shared.getCompleteMembershipDetail(membershipDetail: currentMembership as! [String:String]) , nil)
+ 
+                    }
+                }
+            }
+        })
+    }
+    
+    
     func expiredMemberFilterAction(result:@escaping ([ListOfMemberStr]?,Error?) -> Void) {
         var memberArray:[ListOfMemberStr] =  []
         fireDB.collection("/Members").getDocuments(completion: {
@@ -599,15 +619,44 @@ class FireStoreManager: NSObject {
         })
     }
     
-    func getMembershipBy(id:String,result:@escaping ([String:Any]?,Error?)->Void) {
-        fireDB.collection("/Memberships").document("/\(id)").getDocument(completion: {
-            (docSnapshot,err)in
-            
+    func getMembershipBy(id:String,result:@escaping (Memberhisp?,Error?) -> Void) {
+        fireDB.collection("/Memberships").document("\(id)").getDocument(completion: {
+            (membershipData,err) in
             if err != nil {
                 result(nil,err)
             }else {
-                let data = docSnapshot?.data()
-                result(data,nil)
+                let membershipDetail = ((membershipData?.data())! as NSDictionary)["membershipDetail"] as! [String:String]
+                
+                let membership = AppManager.shared.getMembership(membership: membershipDetail, membershipID: ((membershipData?.data())! as NSDictionary)["id"] as! String)
+                
+                result(membership,nil)
+                
+            }
+        })
+    }
+    
+    func updateMembershipBy(memberID:String,membershipID:String,membershipDetail:[String:String],result:@escaping (Error?) -> Void) {
+        fireDB.collection("/Members").document("\(memberID)").getDocument(completion: {
+            (memberDate,err) in
+            if err != nil {
+                result(err)
+            } else {
+                var membershipArray = ((memberDate?.data())! as NSDictionary)["memberships"] as! Array<NSDictionary>
+                
+                for currentMembership in membershipArray {
+                    let currentMembershipID = currentMembership["membershipID"] as! String
+                    if currentMembershipID == membershipID {
+                        let i:Int = membershipArray.firstIndex(of: currentMembership)!
+                        membershipArray.remove(at: i)
+                        membershipArray.insert(membershipDetail as NSDictionary, at: i)
+                        self.fireDB.collection("/Members").document("\(memberID)").updateData([
+                            "memberships" : membershipArray
+                        ], completion: {
+                            err in
+                            result (err)
+                        })
+                    }
+                }
             }
         })
     }
@@ -620,7 +669,7 @@ class FireStoreManager: NSObject {
             result(err)
         })
     }
-    
+
     func addVisitor(id:String,visitorDetail:[String:String],completion:@escaping (Error?)->Void) {
         fireDB.collection("/Visitors").document("/\(id)").setData([
             "id":id,
@@ -802,7 +851,7 @@ class FireStoreManager: NSObject {
    
         })
     }
-    
+
 }
     
 

@@ -36,6 +36,8 @@ class CurrentMembershipDetailViewController: BaseViewController {
     @IBOutlet weak var paymentAmountLabel: UILabel!
     @IBOutlet weak var memberhsipStartDate: UILabel!
     
+    var currentMembershipID:String = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCurrentMembershipDetailNavigationBar()
@@ -80,6 +82,14 @@ class CurrentMembershipDetailViewController: BaseViewController {
                 self.showAlert(title: "Success", message: "Current membership is deleted.")
             }
         })
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "renewMembershipSegue" {
+            let destination = segue.destination as! AddMemberViewController
+            destination.renewingMembershipID = self.currentMembershipID
+            destination.isRenewMembership = true
+        }
     }
 }
 
@@ -130,9 +140,9 @@ extension CurrentMembershipDetailViewController {
                 self.retryCurrentMembershipAlert()
             } else {
                 SVProgressHUD.dismiss()
+                let memberships = docSnapshot?["memberships"] as! NSArray
                 let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! NSDictionary )
-                let membershipArray = AppManager.shared.getCurrentMembership(membershipArray: docSnapshot?["memberships"] as! NSArray)
-               // let membershipArray = docSnapshot?["memberships"] as! NSArray
+                let membershipArray = AppManager.shared.getCurrentMembership(membershipArray: memberships)
  
                 if membershipArray.count > 0  {
                     self.setCurrentMembership(memberDetail: memberDetail, currentMembership: membershipArray.first! )
@@ -149,7 +159,12 @@ extension CurrentMembershipDetailViewController {
                         $0?.alpha = 0.0
                     }
                     self.paidStatusLabel.attributedText = NSAttributedString(string: "No Membership", attributes: [ NSAttributedString.Key.foregroundColor: UIColor.red ])
-                    self.membershipStartDateLabel.text = "--"
+                    if memberships.count > 0 {
+                    let latestMembership = AppManager.shared.getLatestMembership(membershipsArray: docSnapshot?["memberships"] as! NSArray)
+                        self.membershipStartDateLabel.attributedText = NSAttributedString(string: "starts from \(latestMembership.startDate)", attributes: [NSAttributedString.Key.font:UIFont(name: "Poppins-Medium", size: 11)!])
+                    } else {
+                        self.membershipStartDateLabel.text = "--"
+                    }
                     self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = true
                     self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 0.0
                     SVProgressHUD.dismiss()
@@ -167,6 +182,7 @@ extension CurrentMembershipDetailViewController {
         else {
             self.paidStatusLabel.attributedText = NSAttributedString(string: "Paid", attributes: [ NSAttributedString.Key.foregroundColor: UIColor.green ])
         }
+        self.currentMembershipID = currentMembership.membershipID
         self.membershipStartDateLabel.text = currentMembership.purchaseDate
         self.membershipEndDateLabel.text = currentMembership.endDate
         self.memberhsipStartDate.text = currentMembership.startDate
@@ -181,7 +197,7 @@ extension CurrentMembershipDetailViewController {
         self.dueAmountLabel.text = currentMembership.dueAmount
         self.paymentTypeLabel.text = currentMembership.paymentType
         self.membershipPaymentDateLabel.text = currentMembership.purchaseDate
-        self.paymentTimeLabel.text = currentMembership.puchaseTime
+        self.paymentTimeLabel.text = currentMembership.purchaseTime
         self.paymentType.text = currentMembership.paymentType
         self.paymentAmountLabel.text = currentMembership.amount
     }

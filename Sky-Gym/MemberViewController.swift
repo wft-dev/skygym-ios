@@ -81,7 +81,7 @@ class MemberViewController: BaseViewController {
         super.viewDidLoad()
         self.forNonEditLabelArray = [self.memberIDForNonEditLabel,self.dateOfJoiningForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.trainerNameForNonEditLabel,self.uploadForNonEditLabel,self.emailForNonEditLabel,self.addressForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
         self.defaultLabelArray = [self.memberID,self.dateOfJoining,self.gender,self.password,self.trainerName,self.uploadID,self.email,self.address,self.phoneNo,self.dob]
-        self.setMemberProfileCompleteView()
+       
        // AppManager.shared.setScrollViewContentSize(scrollView: self.memberViewScrollView)
     }
     
@@ -94,6 +94,7 @@ class MemberViewController: BaseViewController {
         self.imgPicker.delegate = self
         self.updateBtn.isEnabled = false
         self.updateBtn.alpha = 0.6
+         self.setMemberProfileCompleteView()
     }
     
     @IBAction func updateBtnAction(_ sender: Any) {
@@ -105,7 +106,7 @@ class MemberViewController: BaseViewController {
             if err != nil {
                 self.showMemberProfileAlert(title: "Error", message: "Member detail is not updated.")
             } else {
-                if self.isUploadIdSelected == true {
+               if self.isUploadIdSelected == true {
                     FireStoreManager.shared.uploadImg(url: self.imgURL!, membeID: AppManager.shared.memberID, imageName: self.uploadIDTextField.text!, completion: {
                         (err) in
                         if err != nil {
@@ -117,7 +118,7 @@ class MemberViewController: BaseViewController {
                     self.isUserProfileSelected = false
                 }
               
-                if self.isUserProfileSelected == true {
+              else if self.isUserProfileSelected == true {
                     FireStoreManager.shared.uploadUserImg(imgData: (self.memberImg.image?.pngData())!, id: AppManager.shared.memberID, completion: {
                         err in
                         if err == nil {
@@ -125,6 +126,9 @@ class MemberViewController: BaseViewController {
                         }
                     })
                     self.isUserProfileSelected = false
+                }
+               else {
+                self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
                 }
             }
         })
@@ -331,7 +335,7 @@ extension MemberViewController{
            let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
                (action) in
             if title == "Success" {
-                self.viewDidLoad()
+                self.viewWillAppear(true)
             }
            })
            alert.addAction(okAlertAction)
@@ -342,14 +346,14 @@ extension MemberViewController{
     func addUploadTextFieldRightView() {
         let imgView = UIImageView(image: UIImage(named: "cam.png"))
         imgView.contentMode = UIView.ContentMode.center
-        let btn = UIButton()
+        var v:UIView? = nil
         
-        imgView.frame = CGRect(x: 0.0, y: 0.0, width: imgView.image!.size.width + 20.0, height: imgView.image!.size.height)
-        btn.frame = imgView.frame
-        btn.addTarget(self, action: #selector(openMemberProfileImgPicker), for: .touchUpInside)
-        
-        btn.setImage(imgView.image, for: .normal)
-        self.uploadIDTextField.rightView = btn
+        imgView.frame = CGRect(x: 0.0, y: 0.0, width:20, height: 20)
+        v = UIView(frame: CGRect(x: 0, y: 0, width: imgView.frame.width + 10 , height: imgView.frame.height))
+        v!.addSubview(imgView)
+        v?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openMemberProfileImgPicker)))
+
+        self.uploadIDTextField.rightView = v
         self.uploadIDTextField.rightViewMode = .always
     }
     

@@ -123,23 +123,23 @@ class ListOfMembersViewController: BaseViewController {
         super.viewDidLoad()
         self.setCompleteListOfMembersView()
         self.setUpFilterView()
-        switch self.filterationLabel {
-        case "allMemberFilteration":
-            self.showMembers()
-        case "expiredMemberFilteration":
-            self.expiredMemberFilterationAction()
-        case "checkInMemberFilteration":
-            self.checkFilterationAction(checkFor: "checkIn")
-        case "checkOutMemberFilteration":
-            self.checkFilterationAction(checkFor: "checkOut")
-        default:
-            break
-        }
+
     }
     
 override func viewWillAppear(_ animated: Bool) {
      super.viewWillAppear(animated)
-  
+    switch self.filterationLabel {
+    case "allMemberFilteration":
+        self.showMembers()
+    case "expiredMemberFilteration":
+        self.expiredMemberFilterationAction()
+    case "checkInMemberFilteration":
+        self.checkFilterationAction(checkFor: "checkIn")
+    case "checkOutMemberFilteration":
+        self.checkFilterationAction(checkFor: "checkOut")
+    default:
+        break
+    }
  }
     @IBAction func filterBtnAction(_ sender: Any) {
         if self.filterView.isHidden == true {
@@ -345,24 +345,25 @@ extension ListOfMembersViewController{
     func setSearchBar()  {
             self.customSearchBar.backgroundColor = .clear
             self.customSearchBar.layer.borderColor = .none
-            for s in customSearchBar.subviews[0].subviews{
-                if s is UITextField{
-                    let searchTextField = s as! UITextField
+            if  let searchTextField = self.customSearchBar.value(forKey: "searchField") as? UITextField {
                     searchTextField.clipsToBounds = true
                     searchTextField.borderStyle = .none
                     let imagView = UIImageView(image: UIImage(named: "search-2"))
                     let emptyView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-                    let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: 35, height: 24))
+                   let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: 25, height: searchTextField.frame.height))
+                    stackView.translatesAutoresizingMaskIntoConstraints = false
+                    stackView.widthAnchor.constraint(equalToConstant: 25).isActive = true
+                   stackView.heightAnchor.constraint(equalToConstant: 25).isActive = true
+                    stackView.alignment = .center
                     stackView.insertArrangedSubview(imagView, at: 0)
                     stackView.insertArrangedSubview(emptyView, at: 1)
                     searchTextField.leftViewMode = .always
                     searchTextField.leftView = stackView
                    searchTextField.attributedPlaceholder = NSAttributedString(string: "Search Members",
                                                                               attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 192/255, green: 192/255, blue: 192/255, alpha: 1),
-                                                                                           NSAttributedString.Key.font:UIFont(name: "poppins", size: 18)!
+                                                                                           NSAttributedString.Key.font:UIFont(name: "Poppins-Medium", size: 18)!
                    ])
                 }
-            }
         }
     
     func showMembers() {
@@ -382,7 +383,7 @@ extension ListOfMembersViewController{
                         
                         let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: singleData["memberDetail"] as! NSDictionary)
                         let memberships = singleData["memberships"] as! NSArray
-                        membership = memberships.count > 0 ? AppManager.shared.getLatestMembership(membershipsArray: memberships) : MembershipDetailStructure(membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", puchaseTime: "--", purchaseDate: "--")
+                        membership = memberships.count > 0 ? AppManager.shared.getLatestMembership(membershipsArray: memberships) : MembershipDetailStructure(membershipID: "__", membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", purchaseTime: "--", purchaseDate: "--", membershipDuration: "--")
                         
                         let member = ListOfMemberStr(memberID: memberDetail.memberID, userImg: UIImage(named: "user1")!, userName: "\(memberDetail.firstName) \(memberDetail.lastName)", phoneNumber: memberDetail.phoneNo, dateOfExp:membership!.endDate , dueAmount: membership!.dueAmount, uploadName: memberDetail.uploadIDName)
                             self.listOfMemberArray.append(member)
@@ -406,7 +407,7 @@ extension ListOfMembersViewController{
         self.filterApplyBtn.layer.cornerRadius = 15.0
         self.filterApplyBtn.clipsToBounds = true
         self.navigationView.searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
-        setSearchBar()
+        self.setSearchBar()
         addClickToDismissSearchBar()
         self.customSearchBar.delegate = self
     }
@@ -533,7 +534,8 @@ extension ListOfMembersViewController:UISearchBarDelegate{
         if searchText.count > 0 {
                          self.filteredMemberArray.removeAll()
                          for singleMember in listOfMemberArray{
-                             if singleMember.userName.lowercased().contains(searchText.lowercased()) == true {
+                             if singleMember.userName.lowercased().contains(searchText.lowercased()) == true  ||
+                                singleMember.phoneNumber.contains(searchText) == true {
                                  self.filteredMemberArray.append(singleMember)
                                  self.listOfMemberTable.reloadData()
                              }

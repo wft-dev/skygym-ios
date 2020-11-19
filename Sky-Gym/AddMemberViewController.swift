@@ -62,11 +62,36 @@ class AddMemberViewController: BaseViewController {
     let borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0).cgColor
     var selectedDate:Date? = nil
     var membershipDuration:Int = 0
+    var isRenewMembership:Bool = false
+    var membershipID:String = ""
+    var renewingMembershipID:String = ""
+    var renewingMembershipDuration:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCompleteView()
-     
+        
+        if self.isRenewMembership == true {
+            FireStoreManager.shared.getMembershipWith(memberID: AppManager.shared.memberID, membershipID: self.renewingMembershipID, result: {
+                (membershipData,err) in
+                if err != nil {
+                    self.viewWillAppear(true)
+                } else{
+                    let membership = membershipData!
+                    self.membershipID = membership.membershipID
+                    self.membershipPlanTextField.text = membership.membershipPlan
+                    self.membershipDetailTextView.text = membership.membershipDetail
+                    self.amountTextField.text = membership.amount
+                    self.totalAmountTextField.text = membership.totalAmount
+                    self.dueAmountTextField.text = membership.dueAmount
+                    self.discountTextField.text = membership.discount
+                    self.startDateTextField.text = membership.startDate
+                    self.endDateTextField.text = membership.endDate
+                    self.paymentTypeTextField.text = membership.paymentType
+                    self.renewingMembershipDuration = membership.membershipDuration
+                }
+            })
+        }
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -87,7 +112,8 @@ class AddMemberViewController: BaseViewController {
             self.profileAndMembershipBarView.isUserInteractionEnabled = false
             self.profileAndMembershipBarView.alpha = 0.6
             self.featchMemberDetail(id: AppManager.shared.memberID)
-        }else {
+        }
+        else {
             if self.visitorID.count > 1 {
                 self.fetchVisitorDetail(id: self.visitorID)
             } else {
@@ -125,7 +151,13 @@ class AddMemberViewController: BaseViewController {
     @IBAction func updateBtnAction(_ sender: Any) {
         if self.isNewMember == true {
              self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
-        }else{
+        }
+        
+        else if self.isRenewMembership == true {
+            self.updateMembershipBy(memberID: AppManager.shared.memberID, membershipId: self.membershipID)
+        }
+            
+        else{
             self.updateMembership(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
         }
     }
@@ -159,23 +191,19 @@ extension AddMemberViewController{
     func addRightView(toTextField:UITextField,imageName:String) {
         let imgView = UIImageView(image: UIImage(named: imageName))
         imgView.contentMode = .scaleAspectFit
-        let btn = UIButton()
         var v:UIView? = nil
         
         if imageName == "cam.png"{
             imgView.frame = CGRect(x: 0.0, y: 0.0, width: 20.0, height: 20.0)
-             v = UIView(frame: CGRect(x: 0, y: 0, width: imgView.frame.width + 20 , height: imgView.frame.height))
+            v = UIView(frame: CGRect(x: 0, y: 0, width: imgView.frame.width + 10 , height: imgView.frame.height))
             v!.addSubview(imgView)
-            btn.frame = v!.frame
-            btn.backgroundColor = .red
-            btn.addTarget(self, action: #selector(openImgPicker), for: .touchUpInside)
+            v?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openImgPicker)))
         } else {
-            imgView.frame = CGRect(x: 0.0, y: 0.0, width: 40.0, height: 40)
-            btn.frame = imgView.frame
-            btn.addTarget(self, action: #selector(showMemberPlan), for: .touchUpInside)
+            imgView.frame = CGRect(x: 0.0, y: 0.0, width: 20.0, height: 20)
+            v = UIView(frame: CGRect(x: 0, y: 0, width: imgView.frame.width + 10 , height: imgView.frame.height))
+            v!.addSubview(imgView)
+            v?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showMemberPlan)))
         }
-        
-        btn.setImage(imgView.image, for: .normal)
         toTextField.rightView = v
         toTextField.rightViewMode = .always
     }
@@ -279,6 +307,7 @@ extension AddMemberViewController{
     
     func getMembershipDetails() -> [[String:String]] {
          let membership:[[String:String]] = [[
+            "membershipID": self.membershipID,
             "membershipPlan": self.membershipPlanTextField.text!,
             "membershipDetail":self.membershipDetailTextView.text!,
             "amount": self.amountTextField.text!,
@@ -289,7 +318,8 @@ extension AddMemberViewController{
             "paymentType":self.paymentTypeTextField.text!,
             "dueAmount":self.dueAmountTextField.text!,
             "purchaseTime": "\(AppManager.shared.getTimeFrom(date: Date()))",
-            "purchaseDate": AppManager.shared.dateWithMonthName(date: Date())
+            "purchaseDate": AppManager.shared.dateWithMonthName(date: Date()),
+            "membershipDuration" : "\(self.membershipDuration)"
         ]]
         return membership
     }
@@ -400,18 +430,26 @@ extension AddMemberViewController{
             })
         })
     }
+    
+    func updateMembershipBy(memberID:String,membershipId:String) {
+        FireStoreManager.shared.updateMembershipBy(memberID: memberID, membershipID: membershipId, membershipDetail: self.getMembershipDetails().first!, result: {
+            err in
+            if err != nil {
+                self.errorAlert(message: "Error in  renewing current membership.")
+            } else {
+                self.successAlert(message: "Success in renewing current membership.")
+            }
+        })
+    }
+    
   
     func setCompleteView() {
         self.setNavigationBar()
         self.addTopAndBottomBorders(toView: profileAndMembershipBarView)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0 , execute: {
-            self.addRightView(toTextField: self.uploadIDTextField, imageName: "cam.png")
-            self.addRightView(toTextField: self.membershipPlanTextField, imageName: "arrow-down.png")
-        })
-
+        self.addRightView(toTextField: self.uploadIDTextField, imageName: "cam.png")
+        self.addRightView(toTextField: self.membershipPlanTextField, imageName: "arrow-down.png")
         self.setTextFields()
         setBackAction(toView: self.addMemberNavigationBar)
-        
         self.generalTypeOptionBtn.setImage(UIImage(named: "selelecte"), for: .normal)
         self.personalTypeOptionBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         imagePicker.delegate = self
@@ -423,7 +461,6 @@ extension AddMemberViewController{
         self.membershipPlanView.layer.borderColor = UIColor.gray.cgColor
         self.membershipPlanView.layer.borderWidth = 1.0
         self.membershipPlanView.clipsToBounds = true
-        
         self.membershipPlanTable.tableFooterView = UIView()
         
         self.datePicker.datePickerMode = .date
@@ -590,6 +627,9 @@ extension AddMemberViewController:UITextFieldDelegate{
                               case 4:
                                 self.dobTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
                               case 6:
+                                if self.isRenewMembership == true {
+                                    self.membershipDuration = Int(self.renewingMembershipDuration)!
+                                }
                                 self.startDateTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
                                 self.endDateTextField.text = AppManager.shared.dateWithMonthName(date: AppManager.shared.getMembershipEndDate(startDate: self.selectedDate!, duration:self.membershipDuration))
                               default:
@@ -620,6 +660,7 @@ extension AddMemberViewController:UITableViewDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
             SVProgressHUD.dismiss()
             let membership = self.memberhsipPlanArray[indexPath.row]
+            self.membershipID = membership.membershipID
             self.membershipPlanTextField.text = membership.title
             self.membershipDetailTextView.text = membership.detail
             self.amountTextField.text = membership.amount

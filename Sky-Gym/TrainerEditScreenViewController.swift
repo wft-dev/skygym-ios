@@ -223,6 +223,8 @@ extension TrainerEditScreenViewController {
             $0?.alpha = 1.0
         }
         self.setTrainerType(type: self.trainerType, generalBtn: self.generalBtnForNonEditLabel, personalBtn: self.personalBtnForNonEditLabel)
+        self.updateBtn.isEnabled = false
+        self.updateBtn.alpha = 0.4
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: false)
@@ -246,6 +248,8 @@ extension TrainerEditScreenViewController {
             $0?.alpha = 0.0
         }
         self.setTrainerType(type: self.trainerType, generalBtn: self.generalTypeBtn, personalBtn: self.personalTypeBtn)
+        self.updateBtn.isEnabled = true
+        self.updateBtn.alpha = 1.0
     }
     }
 
@@ -323,14 +327,14 @@ extension TrainerEditScreenViewController {
     
     func addRightViewToMemberShipField(imageName:String) {
         let imgView = UIImageView(image: UIImage(named: imageName))
+        var v:UIView? = nil
         imgView.contentMode = UIView.ContentMode.center
-        imgView.frame = CGRect(x: 0.0, y: 0.0, width: imgView.image!.size.width + 40.0, height: imgView.image!.size.height)
-        let btn = UIButton()
-        btn.setImage(imgView.image, for: .normal)
-        btn.frame = imgView.frame
-        btn.addTarget(self, action: #selector(showPicker), for: .touchUpInside)
-      self.uploadIDProofTextField.rightView = btn
-      self.uploadIDProofTextField.rightViewMode = .always
+        imgView.frame = CGRect(x: 0.0, y: 0.0, width:20, height: 20)
+        v = UIView(frame: CGRect(x: 0, y: 0, width: imgView.frame.width + 10 , height: imgView.frame.height))
+        v!.addSubview(imgView)
+        v?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPicker)))
+        self.uploadIDProofTextField.rightView = v
+        self.uploadIDProofTextField.rightViewMode = .always
     }
     
     @objc func showPicker(){

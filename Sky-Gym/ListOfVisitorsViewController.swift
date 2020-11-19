@@ -80,14 +80,17 @@ extension ListOfVisitorsViewController {
     func setVisitorSearchBar()  {
         self.customSearchBar.backgroundColor = .clear
         self.customSearchBar.layer.borderColor = .none
-        for s in customSearchBar.subviews[0].subviews{
-            if s is UITextField{
-                let searchTextField = s as! UITextField
+        if  let searchTextField = self.customSearchBar.value(forKey: "searchField") as? UITextField {
                 searchTextField.clipsToBounds = true
                 searchTextField.borderStyle = .none
                 let imagView = UIImageView(image: UIImage(named: "search-2"))
                 let emptyView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-                let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: 35, height: 24))
+                    emptyView.backgroundColor = .red
+                let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: 40, height: searchTextField.frame.height))
+                stackView.translatesAutoresizingMaskIntoConstraints = false
+                stackView.widthAnchor.constraint(equalToConstant: 25).isActive = true
+                stackView.heightAnchor.constraint(equalToConstant: 25).isActive = true
+                stackView.alignment = .center
                 stackView.insertArrangedSubview(imagView, at: 0)
                 stackView.insertArrangedSubview(emptyView, at: 1)
                 searchTextField.leftViewMode = .always
@@ -97,7 +100,6 @@ extension ListOfVisitorsViewController {
                                                                                         NSAttributedString.Key.font:UIFont(name: "poppins", size: 18) as Any
                 ])
             }
-        }
     }
     
     @objc  func showSearchBar()  {
@@ -252,7 +254,6 @@ extension ListOfVisitorsViewController:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.visitorID = self.visitorsArray[indexPath.section].id
-        
         performSegue(withIdentifier: "visitorViewSegue", sender: false)
     }
     
@@ -280,27 +281,25 @@ extension ListOfVisitorsViewController:UITableViewDelegate{
         let configuration = UISwipeActionsConfiguration(actions: [deleteContextualAction])
         return configuration
     }
-    
-    
-    
 }
 
 extension ListOfVisitorsViewController:UISearchBarDelegate{
     
-//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        if searchText.count > 0 {
-//            self.filteredVisitorArray.removeAll()
-//            for singleVisitor in self.visitorsArray {
-//                if  singleVisitor.visitorName.lowercased().contains(searchText.lowercased()){
-//                    self.filteredVisitorArray.append(singleVisitor)
-//                    self.visitorsTable.reloadData()
-//                }
-//            }
-//        } else {
-//            self.filteredVisitorArray.removeAll()
-//            self.visitorsTable.reloadData()
-//        }
-//    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.count > 0 {
+            self.filteredVisitorArray.removeAll()
+            for singleVisitor in self.visitorsArray {
+                let fullName = "\(singleVisitor.firstName) \(singleVisitor.lastName)"
+                if  fullName.lowercased().contains(searchText.lowercased()) || singleVisitor.phoneNo.contains(searchText){
+                    self.filteredVisitorArray.append(singleVisitor)
+                    self.visitorsTable.reloadData()
+                }
+            }
+        } else {
+            self.filteredVisitorArray.removeAll()
+            self.visitorsTable.reloadData()
+        }
+    }
     
 }
 

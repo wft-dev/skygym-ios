@@ -50,6 +50,7 @@ struct MemberDetailStructure {
 }
 
 struct MembershipDetailStructure {
+      var membershipID:String
       var membershipPlan:String
       var membershipDetail:String
       var amount:String
@@ -59,8 +60,9 @@ struct MembershipDetailStructure {
       var discount:String
       var paymentType:String
       var dueAmount:String
-      var puchaseTime:String
+      var purchaseTime:String
       var purchaseDate:String
+      var membershipDuration:String
 }
 
 struct ListOfMemberStr {

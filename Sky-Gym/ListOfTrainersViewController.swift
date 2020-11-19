@@ -184,24 +184,26 @@ extension ListOfTrainersViewController {
     func setSearchBar()  {
         self.customSearchBar.backgroundColor = .clear
         self.customSearchBar.layer.borderColor = .none
-        for s in customSearchBar.subviews[0].subviews{
-            if s is UITextField{
-                let searchTextField = s as! UITextField
+                if  let searchTextField = self.customSearchBar.value(forKey: "searchField") as? UITextField {
                 searchTextField.clipsToBounds = true
                 searchTextField.borderStyle = .none
                 let imagView = UIImageView(image: UIImage(named: "search-2"))
                 let emptyView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-                let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: 35, height: 24))
+                    emptyView.backgroundColor = .red
+                let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: 40, height: searchTextField.frame.height))
+                stackView.translatesAutoresizingMaskIntoConstraints = false
+                stackView.widthAnchor.constraint(equalToConstant: 25).isActive = true
+                stackView.heightAnchor.constraint(equalToConstant: 25).isActive = true
+                stackView.alignment = .center
                 stackView.insertArrangedSubview(imagView, at: 0)
                 stackView.insertArrangedSubview(emptyView, at: 1)
                 searchTextField.leftViewMode = .always
                 searchTextField.leftView = stackView
                 searchTextField.attributedPlaceholder = NSAttributedString(string: "Search Trainers",
                                                                            attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 192/255, green: 192/255, blue: 192/255, alpha: 1),
-                                                                                        NSAttributedString.Key.font:UIFont(name: "poppins", size: 18) as Any
+                                                                                        NSAttributedString.Key.font:UIFont(name: "Poppins-Medium", size: 18) as Any
                 ])
             }
-        }
     }
     
     @objc  func showSearchBar()  {

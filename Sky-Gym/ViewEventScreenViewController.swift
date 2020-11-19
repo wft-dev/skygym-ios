@@ -65,6 +65,8 @@ class ViewEventScreenViewController: BaseViewController {
             self.addressTextView.alpha = 0.0
             self.addressNonEditLabel.alpha = 1.0
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
+            self.eventUpdateBtn.isEnabled = false
+            self.eventUpdateBtn.alpha = 0.4
         }else {
              AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
@@ -107,6 +109,8 @@ extension ViewEventScreenViewController {
                  self.addressNonEditLabel.isHidden = false
                  self.addressNonEditLabel.alpha = 1.0
                 AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
+                self.eventUpdateBtn.isEnabled = false
+                self.eventUpdateBtn.alpha = 0.4
               } else{
                   AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
                   self.isEdit = true
@@ -116,6 +120,8 @@ extension ViewEventScreenViewController {
                  self.addressNonEditLabel.isHidden = true
                  self.addressNonEditLabel.alpha = 0.0
                 AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
+                self.eventUpdateBtn.isEnabled = true
+                self.eventUpdateBtn.alpha = 1.0
               }
          }
 

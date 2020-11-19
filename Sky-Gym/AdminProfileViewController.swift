@@ -61,7 +61,6 @@ class AdminProfileViewController: UIViewController {
     @IBOutlet weak var phoneNoForNonEditLabel: UILabel!
     @IBOutlet weak var dobForNonEditLabel: UILabel!
     
-    
     var imagePicker = UIImagePickerController()
     var isProfileImgSelected:Bool = false
     var isEdit:Bool = false
@@ -84,6 +83,8 @@ class AdminProfileViewController: UIViewController {
         self.addressTextView.alpha = 0.0
         self.gymAddressNoEditLabel.isHidden = false
         self.gymAddressNoEditLabel.alpha = 1.0
+        self.updateBtn.isEnabled = false
+        self.updateBtn.alpha = 0.4
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -103,14 +104,14 @@ class AdminProfileViewController: UIViewController {
                 } else {
                     FireStoreManager.shared.register(id: adminID, adminDetail: self.getAdminDetailForUpdate(), result: {
                         (err) in
+                        self.isProfileImgSelected = false
+                        AppManager.shared.isInitialUploaded = true
                         if err != nil {
                             self.showAdminProfileAlert(title: "Error", message: "Error in updating admin details, please try again.")
                         } else {
                             self.showAdminProfileAlert(title: "Success", message: "Admin details are updated successfully.")
                         }
                     })
-                    self.isProfileImgSelected = false
-                    AppManager.shared.isInitialUploaded = true
                 }
             })
         }  else {
@@ -148,7 +149,8 @@ extension AdminProfileViewController {
                  self.addressTextView.alpha = 0.0
                  self.gymAddressNoEditLabel.isHidden = false
                  self.gymAddressNoEditLabel.alpha = 1.0
-                 
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
              } else{
                 AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
                 AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: false)
@@ -160,6 +162,8 @@ extension AdminProfileViewController {
                 self.addressTextView.alpha = 1.0
                 self.gymAddressNoEditLabel.isHidden = true
                 self.gymAddressNoEditLabel.alpha = 0.0
+                self.updateBtn.isEnabled = true
+                self.updateBtn.alpha = 1.0
         }
          }
 

@@ -62,6 +62,8 @@ class MembershipViewScreenViewController: BaseViewController {
             self.detailNonEditLabel.isHidden = false
             self.detailNonEditLabel.alpha = 1.0
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: true)
+            self.doneBtn.isEnabled = false
+            self.doneBtn.alpha = 0.4
         }else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: true)
             self.setHrLineView(isHidden: true, alpha: 0.0)
@@ -70,6 +72,8 @@ class MembershipViewScreenViewController: BaseViewController {
             self.detailNonEditLabel.isHidden = true
             self.detailNonEditLabel.alpha = 0.0
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: false)
+            self.doneBtn.isEnabled = true
+            self.doneBtn.alpha = 1.0
         }
     }
     
@@ -129,7 +133,8 @@ extension  MembershipViewScreenViewController {
             self.detailTextView.alpha = 0.0
             self.detailNonEditLabel.isHidden = false
             self.detailNonEditLabel.alpha = 1.0
-            
+            self.doneBtn.isEnabled = false
+            self.doneBtn.alpha = 0.4
         } else{
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: false)
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
@@ -139,6 +144,8 @@ extension  MembershipViewScreenViewController {
             self.detailTextView.alpha = 1.0
             self.detailNonEditLabel.isHidden = true
             self.detailNonEditLabel.alpha = 0.0
+            self.doneBtn.isEnabled = true
+            self.doneBtn.alpha = 1.0
         }
     }
     
@@ -240,12 +247,12 @@ extension  MembershipViewScreenViewController {
     func fetchMembersipBy(id:String) {
         SVProgressHUD.show()
         FireStoreManager.shared.getMembershipBy(id: id, result: {
-            (data,err) in
+            (membership,err) in
             SVProgressHUD.dismiss()
             if err != nil {
                 self.retryMembershipAlert()
             } else {
-                self.setMembershipData(membership: AppManager.shared.getMembership(membership: data?["membershipDetail"] as! [String:String], membershipID: AppManager.shared.membershipID))
+                self.setMembershipData(membership: membership!)
             }
         })
     }
