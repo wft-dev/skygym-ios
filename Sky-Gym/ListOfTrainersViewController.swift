@@ -23,11 +23,13 @@ class ListOfTrainersTableCell: UITableViewCell {
     @IBOutlet weak var messageBtn: UIButton!
     @IBOutlet weak var userImg: UIImageView!
 
+    var imageName:String = "red"
+    
     override func awakeFromNib() {
         callBtn.addTarget(self, action: #selector(callAction), for: .touchUpInside)
         messageBtn.addTarget(self, action: #selector(messageAction), for: .touchUpInside)
         attendenceBtn.addTarget(self, action: #selector(attendenceAction), for: .touchUpInside)
-        attendenceBtn.setImage(UIImage(named: "red"), for: .normal)
+        attendenceBtn.setImage(UIImage(named: imageName), for: .normal)
     }
     
     @objc func callAction()  {
@@ -43,12 +45,14 @@ class ListOfTrainersTableCell: UITableViewCell {
      }
     
     private func performTrainerAttandance(id:String){
-        switch self.attendenceBtn?.currentImage {
-        case UIImage(named: "red"):
-            self.markTrainerAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "")
-            self.attendenceBtn.setImage(UIImage(named: "green"), for: .normal)
-        case UIImage(named: "green"):
-            self.attendenceBtn.setImage(UIImage(named: "red"), for: .normal)
+        switch self.imageName {
+        case "red":
+            self.markTrainerAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "-")
+            imageName = "green"
+            self.attendenceBtn.setImage(UIImage(named: imageName), for: .normal)
+        case "green":
+            imageName = "red"
+            self.attendenceBtn.setImage(UIImage(named: imageName), for: .normal)
             FireStoreManager.shared.uploadCheckOutTime(trainerORmember: "Trainers", id: id, checkOut: AppManager.shared.getTimeFrom(date: Date()), completion: {
                 _ in
             })
@@ -223,7 +227,7 @@ extension ListOfTrainersViewController {
        }
 
        @objc
-       private func dismissPresentedView(_ sender: Any?) {
+       private func dismissPresentedView(_ sender: UITapGestureRecognizer?) {
            self.listOfTrainersNavigationBar.isHidden = false
            self.listOfTrainersNavigationBar.alpha = 1.0
            self.searchBarView.isHidden = true
@@ -256,6 +260,14 @@ extension ListOfTrainersViewController:UITableViewDataSource{
         cell.numberOfMembersLabel.text = singleTrainer.members
         cell.attendenceBtn.tag = Int(singleTrainer.trainerID)!
         cell.selectedBackgroundView = AppManager.shared.getClearBG()
+        FireStoreManager.shared.isCheckOut(memberOrTrainer: .Trainer, memberID: singleTrainer.trainerID, result: {
+            (checkOut,err) in
+            
+            if err == nil{
+                cell.imageName = checkOut == true ? "green" : "red"
+                cell.attendenceBtn.setImage(UIImage(named: cell.imageName), for: .normal)
+            }
+        })
         
         return cell
     }

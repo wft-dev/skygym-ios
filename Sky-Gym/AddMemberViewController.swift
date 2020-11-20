@@ -66,31 +66,35 @@ class AddMemberViewController: BaseViewController {
     var membershipID:String = ""
     var renewingMembershipID:String = ""
     var renewingMembershipDuration:String = ""
+    var visitorProfileImgData:Data? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCompleteView()
         
         if self.isRenewMembership == true {
-            FireStoreManager.shared.getMembershipWith(memberID: AppManager.shared.memberID, membershipID: self.renewingMembershipID, result: {
-                (membershipData,err) in
-                if err != nil {
-                    self.viewWillAppear(true)
-                } else{
-                    let membership = membershipData!
-                    self.membershipID = membership.membershipID
-                    self.membershipPlanTextField.text = membership.membershipPlan
-                    self.membershipDetailTextView.text = membership.membershipDetail
-                    self.amountTextField.text = membership.amount
-                    self.totalAmountTextField.text = membership.totalAmount
-                    self.dueAmountTextField.text = membership.dueAmount
-                    self.discountTextField.text = membership.discount
-                    self.startDateTextField.text = membership.startDate
-                    self.endDateTextField.text = membership.endDate
-                    self.paymentTypeTextField.text = membership.paymentType
-                    self.renewingMembershipDuration = membership.membershipDuration
-                }
-            })
+            if self.renewingMembershipID == "" {
+                FireStoreManager.shared.getMemberByID(id: AppManager.shared.memberID, completion: {
+                    (memberDetail,err) in
+                    if err == nil {
+                        let memberships = memberDetail!["memberships"] as! NSArray
+                        let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: memberships)
+                        if currentMembership.count > 0 {
+                            self.setRenewingMembershipData(membership: currentMembership.first!)
+                            self.renewingMembershipID = currentMembership.first!.membershipID
+                        }
+                    }
+                })
+            } else {
+                FireStoreManager.shared.getMembershipWith(memberID: AppManager.shared.memberID, membershipID: self.renewingMembershipID, result: {
+                    (membershipData,err) in
+                    if err != nil {
+                        self.viewWillAppear(true)
+                    } else{
+                        self.setRenewingMembershipData(membership: membershipData!)
+                    }
+                })
+            }
         }
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -149,10 +153,24 @@ class AddMemberViewController: BaseViewController {
     }
     
     @IBAction func updateBtnAction(_ sender: Any) {
+        SVProgressHUD.show()
         if self.isNewMember == true {
-             self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
+            if self.visitorID != "" {
+                FireStoreManager.shared.uploadUserImg(imgData: self.visitorProfileImgData!, id: self.memberIDTextField.text!, completion: {
+                    (err) in
+                    
+                    if err != nil {
+                        SVProgressHUD.dismiss()
+                        self.errorAlert(message: "Error in registering member,Please try again.")
+                    }else{
+                        self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
+                    }
+                })
+            } else {
+                self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
+            }
         }
-        
+            
         else if self.isRenewMembership == true {
             self.updateMembershipBy(memberID: AppManager.shared.memberID, membershipId: self.membershipID)
         }
@@ -170,6 +188,28 @@ class AddMemberViewController: BaseViewController {
         self.selectedDate = datePicker.date
         self.view.endEditing(true)
     }
+    
+    func setRenewingMembershipData(membership:MembershipDetailStructure)  {
+        self.membershipID = membership.membershipID
+        self.membershipPlanTextField.text = membership.membershipPlan
+        self.membershipDetailTextView.text = membership.membershipDetail
+        self.amountTextField.text = membership.amount
+        self.totalAmountTextField.text = membership.totalAmount
+        self.dueAmountTextField.text = membership.dueAmount
+        self.discountTextField.text = membership.discount
+        self.startDateTextField.text = membership.startDate
+        self.endDateTextField.text = membership.endDate
+        self.paymentTypeTextField.text = membership.paymentType
+        self.renewingMembershipDuration = membership.membershipDuration
+        
+        [self.membershipPlanTextField,self.amountTextField].forEach{
+            $0?.isEnabled = false
+            $0?.alpha = 0.4
+        }
+        self.membershipDetailTextView.isEditable = false
+        self.membershipDetailTextView.alpha = 0.4
+    }
+    
 }
 
 extension AddMemberViewController{
@@ -384,8 +424,7 @@ extension AddMemberViewController{
     }
     
     func registerMember(memberDetail:[String:String],membershipDetail:[[String:String]]) {
-        SVProgressHUD.show()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+        DispatchQueue.main.asyncAfter(deadline: .now(), execute: {
             
             FireStoreManager.shared.uploadImg(url:self.imgUrl!, membeID:self.memberIDTextField.text! , imageName: self.imgUrl!.lastPathComponent, completion: {
                 (err) in
@@ -441,7 +480,6 @@ extension AddMemberViewController{
             }
         })
     }
-    
   
     func setCompleteView() {
         self.setNavigationBar()
@@ -470,7 +508,6 @@ extension AddMemberViewController{
         let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
         toolBar.items = [cancelToolBarItem,space,okToolBarItem]
         toolBar.sizeToFit()
-   
     }
     
     func featchMemberDetail(id:String) {
@@ -535,29 +572,10 @@ extension AddMemberViewController{
     }
     
     func fetchVisitorDetail(id:String) {
-        getVisitorProfileToMemberImage(id: id, imgView: self.memberImg)
-        //self.fetchVisitorBy(id: id)
+       // getVisitorProfileToMemberImage(id: id, imgView: self.memberImg)
+      self.fetchVisitorBy(id: id)
     }
-    
-    func getVisitorProfileToMemberImage(id:String,imgView :UIImageView) {
-        SVProgressHUD.show()
-        FireStoreManager.shared.downloadUserImg(id: id, result: {
-            (imgUrl,err) in
-            SVProgressHUD.dismiss()
-            if err != nil {
-                // self.viewDidLoad()
-            } else {
-                do{
-                    let imgData = try Data(contentsOf: imgUrl!)
-                    let image = UIImage(data: imgData)
-                    imgView.image = AppManager.shared.resizeImage(image: image!, targetSize: self.memberImg.image!.size)
-                    imgView.makeRounded()
-                    self.fetchVisitorBy(id: id)
-                } catch let error as NSError { print(error) }
-            }
-        })
-    }
-    
+
     func fillVisitorDetail(visitor:Visitor) {
           self.firstNameTextField.text = visitor.firstName
               self.lastNameTextField.text = visitor.lastName

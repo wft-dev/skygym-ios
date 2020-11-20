@@ -22,6 +22,7 @@ class VisitorTableCell: UITableViewCell {
     @IBOutlet weak var visitorProfileImg: UIImageView!
     var delegate:CustomCellSegue? = nil
     
+    
     override func awakeFromNib() {
         memberBtn.addTarget(self, action: #selector(becomeMember), for: .touchUpInside)
     }
@@ -66,6 +67,7 @@ class ListOfVisitorsViewController: BaseViewController {
             let destinationVC = segue.destination as! AddMemberViewController
             destinationVC.isNewMember = true
             destinationVC.visitorID = sender as! String
+            destinationVC.visitorProfileImgData = self.visitorProfileImage?.pngData()
         }
     }
 }
@@ -156,7 +158,7 @@ extension ListOfVisitorsViewController {
                     let imgData = try Data(contentsOf: imgUrl!)
                     self.visitorProfileImage = UIImage(data: imgData)
                     imgView.image = self.visitorProfileImage
-                      imgView.makeRounded()
+                    imgView.makeRounded()
                       
                   } catch let error as NSError { print(error) }
               }

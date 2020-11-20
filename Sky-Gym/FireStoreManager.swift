@@ -37,7 +37,6 @@ class FireStoreManager: NSObject {
                     if adminEmail == email && adminPassword == password {
                         AppManager.shared.adminID = singleDoc.documentID
                         AppManager.shared.gymID =  adminDetail["gymID"] as! String
-                        AppManager.shared.isInitialUploaded = false
                         flag = true
                         break
                     }else {
@@ -303,7 +302,7 @@ class FireStoreManager: NSObject {
                             let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
                             
                             if check != "" {
-                                let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.last!.endDate, dueAmount:currentMembership.last!.dueAmount, uploadName: memberDetail["uploadIDName"]!)
+                                let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.count > 0 ? currentMembership.first!.endDate : "--", dueAmount: currentMembership.count > 0 ? currentMembership.first!.dueAmount : "--", uploadName: memberDetail["uploadIDName"]!)
                                 checkArray.append(member)
                             }
                         }
@@ -379,6 +378,39 @@ class FireStoreManager: NSObject {
                         completion(err)
                     })
                 }
+            }
+        })
+    }
+    
+    func isCheckOut(memberOrTrainer:Role,memberID:String,result:@escaping (Bool?,Error?) -> Void) {
+        fireDB.collection("\(AppManager.shared.getRole(role: memberOrTrainer))").document("\(memberID)").getDocument(completion: {
+            (docSnapshot,err) in
+            if err != nil {
+                result(false,err)
+            }else {
+                let attendenceDictionary = ((docSnapshot?.data())! as NSDictionary)["attendence"] as! NSDictionary
+                let matchingDateDir = AppManager.shared.getSingleDateDetail(attendence: attendenceDictionary, forDate: Date())
+                let matchingDate = AppManager.shared.getAttendanceData(key: "\(matchingDateDir.allKeys.first as! String)", value: matchingDateDir.value(forKey: "\(matchingDateDir.allKeys.first as! String)") as! NSDictionary )
+
+                if  matchingDate.present == true && matchingDate.checkIn != "" && matchingDate.checkOut == "-"  {
+                    result(true,nil)
+                }else {
+                    result(false,nil)
+                }
+            }
+        })
+    }
+    
+    
+    func isCurrentMembership(memberOrTrainer:Role,memberID:String,result:@escaping (Bool?,Error?) -> Void) {
+        fireDB.collection("\(AppManager.shared.getRole(role: memberOrTrainer))").document("\(memberID)").getDocument(completion: {
+            (docSnapshot,err) in
+            if err != nil {
+                result(false,err)
+            }else {
+                let membershipsArray = ((docSnapshot?.data())! as NSDictionary)["memberships"] as! NSArray
+                let currentMemberships = AppManager.shared.getCurrentMembership(membershipArray: membershipsArray)
+                currentMemberships.count > 0 ? result(true,nil) : result(false,nil)
             }
         })
     }

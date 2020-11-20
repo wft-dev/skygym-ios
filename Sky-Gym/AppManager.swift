@@ -181,8 +181,8 @@ class AppManager: NSObject {
         for singleMembership in membershipArray {
             let startDate = getDate(date: (singleMembership as! NSDictionary)["startDate"] as! String)
             let endDate = getDate(date: (singleMembership as! NSDictionary)["endDate"] as! String)
-            let endDayDiff = Calendar.current.dateComponents([.day], from: Date(), to: endDate).day!
-            let startDayDiff = Calendar.current.dateComponents([.day], from: Date(), to:startDate).day!
+            let endDayDiff = Calendar.current.dateComponents([.day], from: AppManager.shared.getStandardFormatDate(date: Date()), to: endDate).day!
+            let startDayDiff = Calendar.current.dateComponents([.day], from: AppManager.shared.getStandardFormatDate(date: Date()), to:startDate).day!
             
             if endDayDiff >= 0 && startDayDiff <= 0 {
                 let currentMembershipData = singleMembership as! [String:String]
@@ -542,6 +542,19 @@ class AppManager: NSObject {
         let m = MembershipDetailStructure(membershipID: membershipDetail["membershipID"]!, membershipPlan:  membershipDetail["membershipPlan"]!, membershipDetail:  membershipDetail["membershipDetail"]!, amount:  membershipDetail["amount"]!, startDate:  membershipDetail["startDate"]!, endDate:  membershipDetail["endDate"]!, totalAmount:  membershipDetail["totalAmount"]!, discount:  membershipDetail["discount"]!, paymentType:  membershipDetail["paymentType"]!, dueAmount:  membershipDetail["dueAmount"]!, purchaseTime:  membershipDetail["purchaseTime"]!, purchaseDate:  membershipDetail["purchaseDate"]!, membershipDuration: membershipDetail["membershipDuration"]!)
         return m
     }
+    
+    func getSingleDateDetail(attendence:NSDictionary,forDate:Date) -> NSDictionary {
+        let year = Calendar.current.component(.year, from: forDate)
+        let month = Calendar.current.component(.month, from: forDate)
+        let day = Calendar.current.component(.day, from: forDate)
+        let index = (day - 1)
+        
+        let monthArray = (attendence["\(year)"] as! NSDictionary)["\(month)"] as! Array<NSDictionary>
+        let matchingDateDir = monthArray[index]
+        
+        return matchingDateDir
+    }
+    
 
 }
 

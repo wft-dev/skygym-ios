@@ -158,7 +158,7 @@ extension CurrentMembershipDetailViewController {
                         $0?.isHidden = true
                         $0?.alpha = 0.0
                     }
-                    self.paidStatusLabel.attributedText = NSAttributedString(string: "No Membership", attributes: [ NSAttributedString.Key.foregroundColor: UIColor.red ])
+                    self.paidStatusLabel.attributedText = NSAttributedString(string: "No Active Membership", attributes: [ NSAttributedString.Key.foregroundColor: UIColor.red ])
                     if memberships.count > 0 {
                     let latestMembership = AppManager.shared.getLatestMembership(membershipsArray: docSnapshot?["memberships"] as! NSArray)
                         self.membershipStartDateLabel.attributedText = NSAttributedString(string: "starts from \(latestMembership.startDate)", attributes: [NSAttributedString.Key.font:UIFont(name: "Poppins-Medium", size: 11)!])

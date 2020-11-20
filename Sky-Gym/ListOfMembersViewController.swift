@@ -22,7 +22,9 @@ class ListOfMembersTableCell: UITableViewCell {
     @IBOutlet weak var msgImg: UIImageView?
     @IBOutlet weak var attendImg: UIImageView?
     @IBOutlet weak var renewImg: UIImageView?
+    @IBOutlet weak var attendenceLabel: UILabel!
     var customCellDelegate:CustomCellSegue?
+    var imageName:String = "red"
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -72,12 +74,14 @@ class ListOfMembersTableCell: UITableViewCell {
      }
     
     private func performAttandance(id:String){
-        switch self.attendImg?.image {
-        case UIImage(named: "red"):
-            self.markAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "")
-            self.attendImg?.image = UIImage(named: "green")
-        case UIImage(named: "green"):
-            self.attendImg?.image = UIImage(named: "red")
+        switch self.imageName{
+        case "red":
+            self.markAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "-")
+            imageName = "green"
+            self.attendImg?.image = UIImage(named: imageName)
+        case "green":
+            imageName = "red"
+             self.attendImg?.image = UIImage(named: imageName)
             FireStoreManager.shared.uploadCheckOutTime(trainerORmember: "Members", id: id, checkOut: AppManager.shared.getTimeFrom(date: Date()), completion: {
                 _ in
             })
@@ -123,7 +127,6 @@ class ListOfMembersViewController: BaseViewController {
         super.viewDidLoad()
         self.setCompleteListOfMembersView()
         self.setUpFilterView()
-
     }
     
 override func viewWillAppear(_ animated: Bool) {
@@ -196,6 +199,8 @@ extension ListOfMembersViewController : UITableViewDataSource{
         cell.btnsStackView.tag =  Int(singleMember.memberID)!
         cell.customCellDelegate = self
         cell.selectedBackgroundView = AppManager.shared.getClearBG()
+        self.setCellAttendeneBtn(memberCell: cell, memberID: singleMember.memberID)
+        self.setCellRenewMembershipBtn(memberCell: cell, memberID: singleMember.memberID)
         
         return cell
     }
@@ -287,21 +292,6 @@ extension ListOfMembersViewController{
 
     func getMemberProfileImage(id:String,imageName:String,imgView :UIImageView) {
          SVProgressHUD.show()
-//        FireStoreManager.shared.downloadImgWithName(imageName:imageName,id: id, result: {
-//             (imgUrl,err) in
-//             SVProgressHUD.dismiss()
-//             if err != nil {
-//             self.viewDidLoad()
-//             } else {
-//                 do{
-//                   let imgData = try Data(contentsOf: imgUrl!)
-//                    self.userImg = UIImage(data: imgData)
-//                    imgView.image = self.userImg
-//                     imgView.makeRounded()
-//                 } catch let error as NSError { print(error) }
-//             }
-//         })
-        
         FireStoreManager.shared.downloadUserImg(id: id, result: {
             (imgUrl,err) in
             SVProgressHUD.dismiss()
@@ -441,12 +431,8 @@ extension ListOfMembersViewController{
         if segue.identifier == "addMemberSegue"{
             let destinationVC = segue.destination as! AddMemberViewController
             destinationVC.isNewMember = sender as! Bool
+            destinationVC.isRenewMembership = true
         }
-//        if segue.identifier == "memberDetailSegue" {
-//            let destinationVC = segue.destination as! MemberDetailViewController
-//
-//        }
-        
     }
     
     func setUpFilterView()  {
@@ -527,6 +513,35 @@ extension ListOfMembersViewController{
         alertController.addAction(okAlertAction)
         present(alertController, animated: true, completion: nil)
       }
+    
+    
+    func setCellAttendeneBtn(memberCell:ListOfMembersTableCell,memberID:String)  {
+        FireStoreManager.shared.isCheckOut(memberOrTrainer: .Member, memberID: memberID, result: {
+            (checkOut,err) in
+            
+            if err == nil{
+                memberCell.imageName = checkOut == true ? "green" : "red"
+                memberCell.attendImg?.image = UIImage(named: memberCell.imageName)
+            }
+        })
+    }
+    
+    func setCellRenewMembershipBtn(memberCell:ListOfMembersTableCell,memberID:String)  {
+        FireStoreManager.shared.isCurrentMembership(memberOrTrainer: .Member, memberID: memberID, result: {
+            (flag,err) in
+            
+            if err == nil {
+                memberCell.renewImg?.isUserInteractionEnabled = flag!
+                memberCell.renewImg?.alpha = flag == true ? 1.0 : 0.4
+                memberCell.renewPackageLabel.alpha = flag == true ? 1.0 : 0.4
+                memberCell.attendImg?.isUserInteractionEnabled = flag!
+                memberCell.attendImg?.alpha = flag == true ? 1.0 : 0.4
+                memberCell.attendenceLabel.alpha = flag == true ? 1.0 : 0.4
+                memberCell.dueAmount.text = "--"
+                memberCell.dateOfExpiry.text = "--"
+            }
+        })
+    }
 }
 
 extension ListOfMembersViewController:UISearchBarDelegate{

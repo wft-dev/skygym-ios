@@ -159,7 +159,6 @@ extension MemberDetailViewController:UITableViewDataSource{
     }
 }
 
-
 extension MemberDetailViewController:UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {

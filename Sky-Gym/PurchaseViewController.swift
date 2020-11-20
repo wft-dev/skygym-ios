@@ -120,6 +120,7 @@ extension PurchaseViewController :UITableViewDataSource {
         cell.dueAmountLabel.text = singleMembership.dueAmount
         cell.paidAmountLabel.text = singleMembership.paidAmount
         cell.purchaseDateLabel.text = singleMembership.purchaseDate
+        cell.backgroundView = AppManager.shared.getClearBG()
         
        return cell
     }
