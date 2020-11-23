@@ -22,7 +22,7 @@ class VisitorTableCell: UITableViewCell {
     @IBOutlet weak var visitorProfileImg: UIImageView!
     var delegate:CustomCellSegue? = nil
     
-    
+
     override func awakeFromNib() {
         memberBtn.addTarget(self, action: #selector(becomeMember), for: .touchUpInside)
     }
@@ -41,17 +41,32 @@ class ListOfVisitorsViewController: BaseViewController {
     @IBOutlet weak var searchbarView: UIView!
     @IBOutlet weak var customSearchBar: UISearchBar!
     var visitorProfileImage:UIImage? = nil
+    let refreshControl = UIRefreshControl()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setVisitorsNavigationBar()
         self.visitorsTable.separatorStyle = .none
         self.setVisitorSearchBar()
         self.customSearchBar.delegate = self
+        self.refreshControl.tintColor = .black
+        self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Visitor List")
+        self.refreshControl.addTarget(self, action: #selector(refreshVisitorList), for: .valueChanged)
+         self.fetchVisitors()
+        self.visitorsTable.refreshControl = self.refreshControl
     }
     
     override func viewDidAppear(_ animated: Bool)  {
         super.viewDidAppear(animated)
-        self.fetchVisitors()
+       
+    }
+    
+    @objc func refreshVisitorList(){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+            self.refreshControl.endRefreshing()
+             self.fetchVisitors()
+        })
     }
     
     @IBAction func addNewVisitorAction(_ sender: Any) {
@@ -238,7 +253,7 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
         self.adjustFontSizeForVisitorLabel(label:cell.trainerNameLabel)
         self.adjustFontSizeForVisitorLabel(label: cell.trainerTypeLabel)
         cell.memberBtn.tag = Int(singleVisitor.id)!
-        cell.selectedBackgroundView = AppManager.shared.getClearBG()
+        cell.selectionStyle = .none
         
         return cell
     }

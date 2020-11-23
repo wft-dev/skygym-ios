@@ -84,16 +84,26 @@ class ListOfTrainersViewController: BaseViewController {
     var listOfTrainerArray:[ListOfTrainers] = []
     var filteredListOfTrainerArray:[ListOfTrainers] = []
     var userImage:UIImage? = nil
+    let refreshController = UIRefreshControl()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setListOfTrainersCompleteView()
-     
+        self.refreshController.tintColor = .black
+        self.refreshController.attributedTitle = NSAttributedString(string: "Fetching Trainer List")
+        self.refreshController.addTarget(self, action: #selector(refreshTrainerList), for: .valueChanged)
+        self.listOfTrainerTable.refreshControl = self.refreshController
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-         self.fetcthAllTrainer()
         AppManager.shared.trainerID = ""
        }
+    
+  @objc func refreshTrainerList()  {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+            self.refreshController.endRefreshing()
+            self.fetcthAllTrainer()
+        })
+    }
     
     @IBAction func addNewTrainerBtnAction(_ sender: Any) {
         performSegue(withIdentifier: "visitorDetailSegue", sender:true)
@@ -161,6 +171,7 @@ extension ListOfTrainersViewController {
         self.addClickToDismissSearchBar()
         self.setSearchBar()
         self.customSearchBar.delegate = self
+        self.fetcthAllTrainer()
     }
     
     func setListOfTrainersNavigationSet() {
@@ -259,7 +270,7 @@ extension ListOfTrainersViewController:UITableViewDataSource{
         cell.salaryLabel.text = singleTrainer.salary
         cell.numberOfMembersLabel.text = singleTrainer.members
         cell.attendenceBtn.tag = Int(singleTrainer.trainerID)!
-        cell.selectedBackgroundView = AppManager.shared.getClearBG()
+        cell.selectionStyle = .none 
         FireStoreManager.shared.isCheckOut(memberOrTrainer: .Trainer, memberID: singleTrainer.trainerID, result: {
             (checkOut,err) in
             

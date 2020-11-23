@@ -30,17 +30,20 @@ class AdminRegistrationSecondViewController: UIViewController {
     var lastName:String = ""
     var id:String = ""
     var appDelegate :AppDelegate? = nil
+    var selectedDate:Date? = nil
+    var datePicker = UIDatePicker()
+    var toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.setDatePicker()
         self.setTextFields()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         appDelegate = UIApplication.shared.delegate as? AppDelegate
-        
     }
+    
     @objc func errorChecker(_ textfield:UITextField)  {
            self.textFieldValidations(textField: textfield)
        }
@@ -71,6 +74,25 @@ extension AdminRegistrationSecondViewController{
               view.addSubview(imageView)
               self.view.sendSubviewToBack(imageView)
           }
+    func setDatePicker() {
+        self.datePicker.datePickerMode = .date
+        self.datePicker.date = Date()
+        toolBar.barStyle = .default
+        let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
+        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar.sizeToFit()
+    }
+    
+       @objc func cancelTextField()  {
+           self.view.endEditing(true)
+       }
+    
+    @objc func doneTextField()  {
+        self.selectedDate = datePicker.date
+        self.view.endEditing(true)
+    }
     
     func setTextFields() {
          assignbackground()
@@ -152,7 +174,7 @@ extension AdminRegistrationSecondViewController{
         
         return admin
     }
-    
+
     func showAlert(title:String,message:String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAlertAction = UIAlertAction(title: "Ok", style: .default, handler: {
@@ -164,13 +186,31 @@ extension AdminRegistrationSecondViewController{
          alertController.addAction(okAlertAction)
         present(alertController, animated: true, completion: nil)
     }
+    
 }
-
-
 
 extension AdminRegistrationSecondViewController : UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
         self.textFieldValidations(textField: textField)
+        
+        if textField.tag == 5 && self.selectedDate != nil {
+            textField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
+        }
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if textField.tag == 5 {
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.tag == 5 {
+            textField.inputAccessoryView = self.toolBar
+            textField.inputView = datePicker
+        }
     }
 }

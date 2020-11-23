@@ -457,7 +457,6 @@ extension TrainerEditScreenViewController {
             }
             self.permissions.textColor = .black
         }
-   
     }
     
     @objc func cancelTextField()  {
@@ -477,14 +476,26 @@ extension TrainerEditScreenViewController {
             self.doneBtn.setTitle("U P D A T E ", for: .normal)
             FireStoreManager.shared.getTrainerBy(id: id, completion: {
                 (data,err) in
-                SVProgressHUD.dismiss()
+                
                 if err != nil {
                     self.retryAlert()
                 } else {
                     self.setTrainerDataToFields(trainerDetails: AppManager.shared.getTrainerDetailS(trainerDetail: data?["trainerDetail"] as! [String : String]), trainerPermissions:AppManager.shared.getTrainerPermissionS(trainerPermission: data?["trainerPermission"] as! [String:Bool]) )
+                    
+                    FireStoreManager.shared.downloadUserImg(id: id, result: {
+                        (imgUrl,err) in
+                        SVProgressHUD.dismiss()
+                        if err == nil {
+                            do {
+                                let data = try Data(contentsOf: imgUrl!)
+                                self.img = UIImage(data: data)
+                                self.userImg.image = self.img
+                            } catch let e as NSError {
+                                print(e)
+                            }
+                        }
+                    })
                 }
-               // self.userImg.image = self.img
-                self.userImg.image = AppManager.shared.resizeImage(image: self.img!, targetSize: self.userImg.image!.size)
             })
         } else {
             SVProgressHUD.dismiss()

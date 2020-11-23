@@ -20,20 +20,32 @@ class MembershipTableCell: UITableViewCell {
 
 class ListOfMembershipViewController: BaseViewController {
     
-    var membershipDetailArray:[Memberhisp] = []
+    
     @IBOutlet weak var membershipNavigationBar: CustomNavigationBar!
     @IBOutlet weak var membershipTable: UITableView!
+    let refreshControl = UIRefreshControl()
+    var membershipDetailArray:[Memberhisp] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setMembershipNavigation()
         self.membershipTable.separatorStyle = .none
+        self.showAllMemberships()
+        self.refreshControl.tintColor = .black
+        self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Membership List")
+        self.refreshControl.addTarget(self, action: #selector(refreshMembershipList), for: .valueChanged)
+        self.membershipTable.refreshControl = self.refreshControl
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.showAllMemberships()
     }
     
+    @objc func refreshMembershipList(){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+            self.refreshControl.endRefreshing()
+            self.showAllMemberships()
+        })
+    }
     
     @IBAction func addNewMembershipAction(_ sender: Any) {
         performSegue(withIdentifier: "addMembershipSegue", sender: true)

@@ -1443,7 +1443,6 @@
                                                                     </subviews>
                                                                 </stackView>
                                                             </subviews>
-                                                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                             <constraints>
                                                                 <constraint firstItem="59P-xR-Gfl" firstAttribute="leading" secondItem="IS3-Qx-u8s" secondAttribute="trailing" constant="15" id="2UF-BA-CmG"/>
                                                                 <constraint firstItem="uGl-8N-iAV" firstAttribute="top" secondItem="RX7-ry-0NE" secondAttribute="bottom" constant="2" id="2rR-9a-zoB"/>
@@ -1485,6 +1484,7 @@
                                                         <constraint firstItem="iwt-Mq-U3P" firstAttribute="leading" secondItem="7ql-oG-wAY" secondAttribute="leading" id="y07-9Z-9sb"/>
                                                     </constraints>
                                                 </tableViewCellContentView>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <connections>
                                                     <outlet property="attendImg" destination="rbk-g2-oKu" id="xdM-1c-xJK"/>
                                                     <outlet property="attendenceLabel" destination="b4f-cj-dI6" id="4Ly-Ij-5G8"/>
@@ -3444,13 +3444,13 @@
                                                 <state key="normal" image="arrow-left"/>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="22 Aug 2020" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r1F-B3-lem">
-                                                <rect key="frame" x="64" y="239" width="79.5" height="16.5"/>
+                                                <rect key="frame" x="64" y="237.5" width="86" height="20"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="14"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="28 Aug 2020" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KgU-ry-s6C">
-                                                <rect key="frame" x="163.5" y="239" width="92.5" height="16.5"/>
+                                                <rect key="frame" x="169" y="237.5" width="87" height="20"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="14"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -3464,7 +3464,7 @@
                                                 <state key="normal" image="arrow-right"/>
                                             </button>
                                             <tableView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="66" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="tE9-s4-JwO">
-                                                <rect key="frame" x="35" y="267.5" width="250" height="493.5"/>
+                                                <rect key="frame" x="35" y="269.5" width="250" height="491.5"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <prototypes>
                                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="attendanceCell" rowHeight="66" id="aas-YY-bBi" customClass="AttandanceTableCell" customModule="Sky_Gym" customModuleProvider="target">
@@ -3485,7 +3485,7 @@
                                                                             </constraints>
                                                                         </imageView>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sunday" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ICg-1Q-DP9">
-                                                                            <rect key="frame" x="40" y="20.5" width="78" height="19"/>
+                                                                            <rect key="frame" x="40" y="19" width="78" height="22.5"/>
                                                                             <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="16"/>
                                                                             <nil key="textColor"/>
                                                                             <nil key="highlightedColor"/>
@@ -3494,13 +3494,13 @@
                                                                             <rect key="frame" x="120" y="8" width="55" height="44"/>
                                                                             <subviews>
                                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Check in " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZEr-aJ-hyP">
-                                                                                    <rect key="frame" x="5" y="10" width="45" height="12"/>
+                                                                                    <rect key="frame" x="5" y="10" width="45" height="14"/>
                                                                                     <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="10"/>
                                                                                     <nil key="textColor"/>
                                                                                     <nil key="highlightedColor"/>
                                                                                 </label>
                                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="8:00pm" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ByP-cs-W0V">
-                                                                                    <rect key="frame" x="5" y="24" width="45" height="12"/>
+                                                                                    <rect key="frame" x="5" y="26" width="45" height="14"/>
                                                                                     <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="10"/>
                                                                                     <nil key="textColor"/>
                                                                                     <color key="highlightedColor" red="0.96470588239999999" green="0.96470588239999999" blue="0.96470588239999999" alpha="1" colorSpace="calibratedRGB"/>
@@ -3521,13 +3521,13 @@
                                                                             <rect key="frame" x="185" y="8" width="55" height="44"/>
                                                                             <subviews>
                                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Check out" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XZr-YS-3KJ">
-                                                                                    <rect key="frame" x="1" y="10" width="53" height="12"/>
+                                                                                    <rect key="frame" x="1" y="10" width="53" height="14"/>
                                                                                     <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="10"/>
                                                                                     <nil key="textColor"/>
                                                                                     <nil key="highlightedColor"/>
                                                                                 </label>
                                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10:00pm" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vIx-OU-rIo">
-                                                                                    <rect key="frame" x="2" y="24" width="51" height="12"/>
+                                                                                    <rect key="frame" x="2" y="26" width="51" height="14"/>
                                                                                     <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="10"/>
                                                                                     <nil key="textColor"/>
                                                                                     <nil key="highlightedColor"/>
@@ -6166,7 +6166,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PEm-Lp-e1e" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="8391" y="-11"/>
+            <point key="canvasLocation" x="8385" y="0.0"/>
         </scene>
         <!--Membership View Screen View Controller-->
         <scene sceneID="5VL-B8-rgX">
@@ -6516,7 +6516,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1Nn-Q8-Pye" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9113" y="-11"/>
+            <point key="canvasLocation" x="9111" y="0.0"/>
         </scene>
         <!--List Of Visitors View Controller-->
         <scene sceneID="pSa-sj-wSD">
@@ -8465,7 +8465,7 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="4al-IY-hhM"/>
-        <segue reference="Ao5-lR-tYC"/>
+        <segue reference="uuh-BO-wgM"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="add_Icon" width="225" height="210"/>

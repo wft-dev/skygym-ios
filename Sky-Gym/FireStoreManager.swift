@@ -419,7 +419,7 @@ class FireStoreManager: NSObject {
             
         let yearDir = attendenceDir["\(year)"] as! NSDictionary
         let nextMonth = month + 1
-        let monthAttendence = AppManager.shared.getMonthAttendenceStructure(year: year, month: nextMonth, markingDate: "\(day)/\(nextMonth)/\(year)", checkIn: "10:00 AM", checkOut: "2:00 PM", present: true)
+        let monthAttendence = AppManager.shared.getMonthAttendenceStructure(year: year, month: nextMonth, markingDate: "\(day)/\(nextMonth)/\(year)", checkIn: checkIn, checkOut: checkOut, present: true)
         yearDir.setValue(monthAttendence, forKey: "\(nextMonth)")
         attendenceDir.setValue(yearDir, forKey: "\(year)")
 

@@ -97,7 +97,9 @@ extension PurchaseViewController :UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "purchaseCell", for: indexPath) as! PuchaseTableViewCell
+      //  let cell = tableView.dequeueReusableCell(withIdentifier: "purchaseCell", for: indexPath) as! PuchaseTableViewCell
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "purchaseCell") as! PuchaseTableViewCell
         let singleMembership = self.purchaseArray[indexPath.row]
         self.setTableCellView(tableCellView: cell.purchaseTableCellView)
         cell.activePurchaseLabel.layer.cornerRadius = 10.0
@@ -120,7 +122,7 @@ extension PurchaseViewController :UITableViewDataSource {
         cell.dueAmountLabel.text = singleMembership.dueAmount
         cell.paidAmountLabel.text = singleMembership.paidAmount
         cell.purchaseDateLabel.text = singleMembership.purchaseDate
-        cell.backgroundView = AppManager.shared.getClearBG()
+        cell.selectionStyle = .none
         
        return cell
     }

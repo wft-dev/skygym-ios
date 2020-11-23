@@ -25,6 +25,8 @@ class ListOfMembersTableCell: UITableViewCell {
     @IBOutlet weak var attendenceLabel: UILabel!
     var customCellDelegate:CustomCellSegue?
     var imageName:String = "red"
+    
+    
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -122,28 +124,42 @@ class ListOfMembersViewController: BaseViewController {
     var filteredMemberArray:[ListOfMemberStr] = []
     var userImg:UIImage? = nil
     var filterationLabel:String = "allMemberFilteration"
+    let refreshControl = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCompleteListOfMembersView()
         self.setUpFilterView()
+        switch self.filterationLabel {
+        case "allMemberFilteration":
+            self.showMembers()
+        case "expiredMemberFilteration":
+            self.expiredMemberFilterationAction()
+        case "checkInMemberFilteration":
+            self.checkFilterationAction(checkFor: "checkIn")
+        case "checkOutMemberFilteration":
+            self.checkFilterationAction(checkFor: "checkOut")
+        default:
+            break
+        }
+        self.refreshControl.addTarget(self, action: #selector(refreshMembers), for: .valueChanged)
+        self.refreshControl.tintColor = .black
+        self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Member List")
+        self.listOfMemberTable.refreshControl = self.refreshControl
     }
     
 override func viewWillAppear(_ animated: Bool) {
      super.viewWillAppear(animated)
-    switch self.filterationLabel {
-    case "allMemberFilteration":
-        self.showMembers()
-    case "expiredMemberFilteration":
-        self.expiredMemberFilterationAction()
-    case "checkInMemberFilteration":
-        self.checkFilterationAction(checkFor: "checkIn")
-    case "checkOutMemberFilteration":
-        self.checkFilterationAction(checkFor: "checkOut")
-    default:
-        break
-    }
+
  }
+    
+    @objc func refreshMembers(){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+            self.refreshControl.endRefreshing()
+              self.showMembers()
+        })
+    }
+    
     @IBAction func filterBtnAction(_ sender: Any) {
         if self.filterView.isHidden == true {
             self.showFilterView()
@@ -185,9 +201,9 @@ extension ListOfMembersViewController : UITableViewDataSource{
    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listOfMemberCell", for: indexPath) as! ListOfMembersTableCell
-        cell.layer.cornerRadius = 15.0
-        cell.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
-        cell.layer.borderWidth = 1.0
+        cell.contentView.layer.cornerRadius = 15.0
+        cell.contentView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
+        cell.contentView.layer.borderWidth = 1.0
         self.adjustFontSizeForRenewPackageLabel(label: cell.renewPackageLabel)
         let singleMember = self.filteredMemberArray.count > 0 ? self.filteredMemberArray[indexPath.section] : self.listOfMemberArray[indexPath.section]
         self.getMemberProfileImage(id: singleMember.memberID, imageName:singleMember.uploadName, imgView: cell.userImag)
@@ -198,30 +214,36 @@ extension ListOfMembersViewController : UITableViewDataSource{
         cell.dueAmount.text = singleMember.dueAmount
         cell.btnsStackView.tag =  Int(singleMember.memberID)!
         cell.customCellDelegate = self
-        cell.selectedBackgroundView = AppManager.shared.getClearBG()
+        cell.selectionStyle = .none
         self.setCellAttendeneBtn(memberCell: cell, memberID: singleMember.memberID)
-        self.setCellRenewMembershipBtn(memberCell: cell, memberID: singleMember.memberID)
+        self.setCellRenewMembershipBtn(memberCell: cell, memberID: singleMember.memberID,dueAmount: singleMember.dueAmount)
         
         return cell
     }
-      // Set the spacing between sections
+
       func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
           return 15
     }
       
-      // Make the background color show through
       func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
           let headerView = UIView()
           headerView.backgroundColor = UIColor.clear
           return headerView
       }
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+
+        cell.backgroundColor = .clear
+
+    }
 }
 
 extension ListOfMembersViewController : UITableViewDelegate{
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+
         let deleteContextualAction = UIContextualAction(style: .destructive, title: "", handler: {
-            (context,view,action) in
+            (context,vw,action) in
             SVProgressHUD.show()
+
             FireStoreManager.shared.deleteImgBy(id: self.listOfMemberArray[indexPath.section].memberID, result: {
                 err in
                 SVProgressHUD.dismiss()
@@ -232,7 +254,6 @@ extension ListOfMembersViewController : UITableViewDelegate{
                             self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
                         } else {
                             self.alertBox(title: "Success", message: "Member is deleted successfully.")
-                            
                         }
                     })
                 } else{
@@ -372,8 +393,14 @@ extension ListOfMembersViewController{
                     if singleData.count > 0 {
                         
                         let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: singleData["memberDetail"] as! NSDictionary)
-                        let memberships = singleData["memberships"] as! NSArray
-                        membership = memberships.count > 0 ? AppManager.shared.getLatestMembership(membershipsArray: memberships) : MembershipDetailStructure(membershipID: "__", membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", purchaseTime: "--", purchaseDate: "--", membershipDuration: "--")
+                        let currentMembership =
+                            AppManager.shared.getCurrentMembership(membershipArray: singleData["memberships"] as! NSArray)
+                        
+                        if currentMembership.count > 0 {
+                            membership = currentMembership.first
+                        }else {
+                        membership = MembershipDetailStructure(membershipID: "__", membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", purchaseTime: "--", purchaseDate: "--", membershipDuration: "--")
+                        }
                         
                         let member = ListOfMemberStr(memberID: memberDetail.memberID, userImg: UIImage(named: "user1")!, userName: "\(memberDetail.firstName) \(memberDetail.lastName)", phoneNumber: memberDetail.phoneNo, dateOfExp:membership!.endDate , dueAmount: membership!.dueAmount, uploadName: memberDetail.uploadIDName)
                             self.listOfMemberArray.append(member)
@@ -431,7 +458,7 @@ extension ListOfMembersViewController{
         if segue.identifier == "addMemberSegue"{
             let destinationVC = segue.destination as! AddMemberViewController
             destinationVC.isNewMember = sender as! Bool
-            destinationVC.isRenewMembership = true
+            destinationVC.isRenewMembership = !(sender as! Bool)
         }
     }
     
@@ -526,18 +553,18 @@ extension ListOfMembersViewController{
         })
     }
     
-    func setCellRenewMembershipBtn(memberCell:ListOfMembersTableCell,memberID:String)  {
+    func setCellRenewMembershipBtn(memberCell:ListOfMembersTableCell,memberID:String,dueAmount:String)  {
         FireStoreManager.shared.isCurrentMembership(memberOrTrainer: .Member, memberID: memberID, result: {
             (flag,err) in
             
-            if err == nil {
+            if err == nil && flag == false {
                 memberCell.renewImg?.isUserInteractionEnabled = flag!
                 memberCell.renewImg?.alpha = flag == true ? 1.0 : 0.4
                 memberCell.renewPackageLabel.alpha = flag == true ? 1.0 : 0.4
                 memberCell.attendImg?.isUserInteractionEnabled = flag!
                 memberCell.attendImg?.alpha = flag == true ? 1.0 : 0.4
                 memberCell.attendenceLabel.alpha = flag == true ? 1.0 : 0.4
-                memberCell.dueAmount.text = "--"
+                memberCell.dueAmount.text = dueAmount
                 memberCell.dateOfExpiry.text = "--"
             }
         })
@@ -567,5 +594,14 @@ extension ListOfMembersViewController:CustomCellSegue{
     func applySegue(id: String) {
            AppManager.shared.memberID = id
         performSegue(withIdentifier: "addMemberSegue", sender: false)
+    }
+}
+
+extension UIView {
+    func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
+        let path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        let mask = CAShapeLayer()
+        mask.path = path.cgPath
+        self.layer.mask = mask
     }
 }

@@ -502,6 +502,7 @@ extension AddMemberViewController{
         self.membershipPlanTable.tableFooterView = UIView()
         
         self.datePicker.datePickerMode = .date
+        self.datePicker.date = Date()
         toolBar.barStyle = .default
         let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)

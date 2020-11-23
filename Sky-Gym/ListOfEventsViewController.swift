@@ -20,22 +20,35 @@ class EventCellClass: UITableViewCell {
 }
 
 class ListOfEventsViewController: BaseViewController {
-    var eventsArray:[Event] = []
-    var filteredEventArray:[Event] = []
+
     @IBOutlet weak var eventsNavigationBar: CustomNavigationBar!
     @IBOutlet weak var listOfEventsTable: UITableView!
     @IBOutlet weak var searchView: UIView!
     @IBOutlet weak var customSearchBar: UISearchBar!
+    var eventsArray:[Event] = []
+    var filteredEventArray:[Event] = []
+    let refreshControl = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setEventsNavigationBar()
         self.listOfEventsTable.separatorStyle = .none
+        self.fetchEvents()
+        self.refreshControl.tintColor = .black
+        self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Events List")
+        self.refreshControl.addTarget(self, action: #selector(refreshEventList), for: .valueChanged)
+        self.listOfEventsTable.refreshControl = self.refreshControl
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-       self.fetchEvents()
+      
+    }
+    @objc func refreshEventList(){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+            self.refreshControl.endRefreshing()
+            self.fetchEvents()
+        })
     }
     
     @IBAction func addNewEventAction(_ sender: Any) {
@@ -162,7 +175,7 @@ extension ListOfEventsViewController:UITableViewDataSource{
         cell.eventEndTime.text = singleEvent.eventEndTime
         cell.eventDateLabel.text = singleEvent.eventDate
         cell.eventDateLabel.layer.cornerRadius = 7.0
-        cell.backgroundView = AppManager.shared.getClearBG()
+        cell.selectionStyle = .none
         return cell
     }
 }
