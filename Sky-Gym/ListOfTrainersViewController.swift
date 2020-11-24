@@ -112,6 +112,78 @@ class ListOfTrainersViewController: BaseViewController {
 
 extension ListOfTrainersViewController {
     
+    @objc func trainerLeftSwipeAction(_ gesture:UIGestureRecognizer){
+        UIView.animate(withDuration: 0.4, animations: {
+            gesture.view?.frame.origin.x = -((gesture.view?.frame.width)!/2)
+        })
+    }
+    
+    @objc func trainerRightSwipeAction(_ gesture:UIGestureRecognizer){
+        UIView.animate(withDuration: 0.4, animations: {
+            gesture.view?.frame.origin.x =  0
+        })
+    }
+    
+    @objc func deleteTrainer(_ gesture:UIGestureRecognizer){
+        SVProgressHUD.show()
+        FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
+            err in
+            if err != nil {
+                SVProgressHUD.dismiss()
+                self.showAlert(title: "Error", message: "Error in deleting trainer.")
+            } else {
+                FireStoreManager.shared.deleteTrainerBy(id: "\(gesture.view?.tag ?? 0)", completion: {
+                    err in
+                    SVProgressHUD.dismiss()
+                    if err != nil {
+                        self.showAlert(title: "Error", message: "Error in deleting trainer.")
+                    } else {
+                        self.showAlert(title: "Success", message: "Trainer is deleted successfully.")
+                    }
+                })
+            }
+        })
+    }
+
+    func addTrainerCustomSwipe(cellView:UIView,cell:ListOfTrainersTableCell,id:String) {
+        let leftSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(trainerLeftSwipeAction(_:)))
+        let rightSwipGesture = UISwipeGestureRecognizer(target: self, action: #selector(trainerRightSwipeAction(_:)))
+        leftSwipeGesture.direction = .left
+        rightSwipGesture.direction = .right
+        let deleteView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: cellView.frame.height))
+        let trashImgView = UIImageView(image: UIImage(named: "delete"))
+        trashImgView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+        trashImgView.isUserInteractionEnabled = true
+        trashImgView.tag = Int(id) ?? 0 
+        
+        deleteView.addSubview(trashImgView)
+        trashImgView.translatesAutoresizingMaskIntoConstraints = false
+        trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
+        trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/2)).isActive = true
+        trashImgView.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        trashImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(deleteTrainer(_:))))
+        
+        deleteView.heightAnchor.constraint(equalToConstant: cell.frame.height).isActive = true
+        deleteView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        deleteView.translatesAutoresizingMaskIntoConstraints = true
+        deleteView.tag = 1
+        deleteView.backgroundColor = .red
+        cell.contentView.addSubview(deleteView)
+        
+        cellView.addGestureRecognizer(leftSwipeGesture)
+        cellView.addGestureRecognizer(rightSwipGesture)
+        cellView.isUserInteractionEnabled = true
+        cellView.backgroundColor = .white
+        cell.contentView.backgroundColor = .white
+        cellView.layer.cornerRadius = 20
+        cellView.layer.cornerRadius = 15.0
+        cellView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
+        cellView.layer.borderWidth = 1.0
+        
+        deleteView.superview?.sendSubviewToBack(deleteView)
+    }
+    
     func fetcthAllTrainer() {
         SVProgressHUD.show()
         FireStoreManager.shared.getAllTrainers(completion: {
@@ -185,6 +257,7 @@ extension ListOfTrainersViewController {
         tableCellView.layer.cornerRadius = 20.0
         tableCellView.layer.borderWidth = 1.0
         tableCellView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
+
         tableCellView.clipsToBounds = true
     }
     
@@ -260,6 +333,9 @@ extension ListOfTrainersViewController:UITableViewDataSource{
         let cell = tableView.dequeueReusableCell(withIdentifier: "trainerCell", for: indexPath) as! ListOfTrainersTableCell
         let singleTrainer = self.filteredListOfTrainerArray.count > 0 ? self.filteredListOfTrainerArray[indexPath.section] : self.listOfTrainerArray[indexPath.section]
         self.setTrainerTableCellView(tableCellView: cell.trainerCellView)
+        cell.layer.cornerRadius = 20.0
+        cell.layer.borderWidth = 1.0
+        cell.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
         cell.trainerLabel.layer.cornerRadius = 6.5
         cell.memberLabelView.layer.cornerRadius = 6.5
         cell.numberOfMembersLabel.layer.cornerRadius = 5.5
@@ -270,7 +346,8 @@ extension ListOfTrainersViewController:UITableViewDataSource{
         cell.salaryLabel.text = singleTrainer.salary
         cell.numberOfMembersLabel.text = singleTrainer.members
         cell.attendenceBtn.tag = Int(singleTrainer.trainerID)!
-        cell.selectionStyle = .none 
+        self.addTrainerCustomSwipe(cellView: cell.trainerCellView, cell: cell,id: singleTrainer.trainerID)
+        cell.selectionStyle = .none
         FireStoreManager.shared.isCheckOut(memberOrTrainer: .Trainer, memberID: singleTrainer.trainerID, result: {
             (checkOut,err) in
             
@@ -298,33 +375,6 @@ extension ListOfTrainersViewController:UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.trainerID = self.listOfTrainerArray[indexPath.section].trainerID
         performSegue(withIdentifier: "visitorDetailSegue", sender: false)
-    }
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteContextualAction = UIContextualAction(style: .destructive, title: "Delete", handler: {
-            (action,context,view) in
-            SVProgressHUD.show()
-            FireStoreManager.shared.deleteImgBy(id: self.listOfTrainerArray[indexPath.section].trainerID, result: {
-                err in
-                if err != nil {
-                    SVProgressHUD.dismiss()
-                    self.showAlert(title: "Error", message: "Error in deleting trainer.")
-                } else {
-                    FireStoreManager.shared.deleteTrainerBy(id: self.listOfTrainerArray[indexPath.section].trainerID, completion: {
-                        err in
-                        SVProgressHUD.dismiss()
-                        if err != nil {
-                            self.showAlert(title: "Error", message: "Error in deleting trainer.")
-                        } else {
-                            self.showAlert(title: "Success", message: "Trainer is deleted successfully.")
-                        }
-                    })
-                }
-            })
-        })
-        deleteContextualAction.image = UIImage(named: "delete")
-        deleteContextualAction.backgroundColor = .red
-        let configuration =  UISwipeActionsConfiguration(actions: [deleteContextualAction])
-        return configuration
     }
 }
 

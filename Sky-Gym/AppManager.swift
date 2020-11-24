@@ -555,6 +555,12 @@ class AppManager: NSObject {
         return matchingDateDir
     }
     
+    func getSwipGesture(direction:UISwipeGestureRecognizer.Direction) -> UISwipeGestureRecognizer {
+        let swipeGesture = UISwipeGestureRecognizer()
+        swipeGesture.direction = direction
+        return swipeGesture
+    }
+    
 
 }
 

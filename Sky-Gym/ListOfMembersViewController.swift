@@ -189,6 +189,8 @@ override func viewWillAppear(_ animated: Bool) {
         self.grayView.backgroundColor = UIColor.darkGray
         self.addBtn.isHidden = true
     }
+    
+    
 }
 
 extension ListOfMembersViewController : UITableViewDataSource{
@@ -217,6 +219,8 @@ extension ListOfMembersViewController : UITableViewDataSource{
         cell.selectionStyle = .none
         self.setCellAttendeneBtn(memberCell: cell, memberID: singleMember.memberID)
         self.setCellRenewMembershipBtn(memberCell: cell, memberID: singleMember.memberID,dueAmount: singleMember.dueAmount)
+        self.addCustomSwipe(cellView: cell.listOfmemberTCView, cell: cell)
+        
         
         return cell
     }
@@ -238,41 +242,7 @@ extension ListOfMembersViewController : UITableViewDataSource{
 }
 
 extension ListOfMembersViewController : UITableViewDelegate{
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
 
-        let deleteContextualAction = UIContextualAction(style: .destructive, title: "", handler: {
-            (context,vw,action) in
-            SVProgressHUD.show()
-
-            FireStoreManager.shared.deleteImgBy(id: self.listOfMemberArray[indexPath.section].memberID, result: {
-                err in
-                SVProgressHUD.dismiss()
-                if err == nil {
-                    FireStoreManager.shared.deleteMemberBy(id: self.listOfMemberArray[indexPath.section].memberID, completion: {
-                        err in
-                        if err != nil {
-                            self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
-                        } else {
-                            self.alertBox(title: "Success", message: "Member is deleted successfully.")
-                        }
-                    })
-                } else{
-                    self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
-                }
-            })
-        })
-        let emptyContextualAction = UIContextualAction(style: .normal, title: "", handler: {
-            (context,view,action) in
-            //empty the tabel cell
-        })
-        emptyContextualAction.backgroundColor = .red
-        deleteContextualAction.backgroundColor = .red
-        deleteContextualAction.image = UIImage(named: "delete")
-        
-        let swipActionConf = UISwipeActionsConfiguration(actions: [emptyContextualAction,deleteContextualAction])
-        return swipActionConf
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.memberID = self.listOfMemberArray[indexPath.section].memberID
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
@@ -284,12 +254,83 @@ extension ListOfMembersViewController : UITableViewDelegate{
 
 extension ListOfMembersViewController{
     
+    @objc func deleteMember(_ gesture:UIGestureRecognizer) {
+        SVProgressHUD.show()
+        FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
+            err in
+
+            if err == nil {
+                FireStoreManager.shared.deleteMemberBy(id: "\(gesture.view?.tag ?? 0)", completion: {
+                    err in
+                    SVProgressHUD.dismiss()
+                    if err != nil {
+                        self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
+                    } else {
+                        self.alertBox(title: "Success", message: "Member is deleted successfully.")
+                    }
+                })
+            } else{
+                self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
+            }
+        })
+    }
+    
+    func addCustomSwipe(cellView:UIView,cell:ListOfMembersTableCell) {
+        let leftSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(leftSwipeAction(_:)))
+        let rightSwipGesture = UISwipeGestureRecognizer(target: self, action: #selector(rightSwipeAction(_:)))
+        leftSwipeGesture.direction = .left
+        rightSwipGesture.direction = .right
+        let deleteView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: cellView.frame.height))
+        let trashImgView = UIImageView(image: UIImage(named: "delete"))
+        trashImgView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+        trashImgView.isUserInteractionEnabled = true
+        trashImgView.tag = cell.btnsStackView.tag
+        
+        deleteView.addSubview(trashImgView)
+        trashImgView.translatesAutoresizingMaskIntoConstraints = false
+        trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
+        trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/2)).isActive = true
+        trashImgView.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        trashImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(deleteMember(_:))))
+        
+        deleteView.heightAnchor.constraint(equalToConstant: cell.frame.height).isActive = true
+        deleteView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        deleteView.translatesAutoresizingMaskIntoConstraints = true
+        deleteView.tag = 1
+        deleteView.backgroundColor = .red
+        cell.contentView.addSubview(deleteView)
+        
+        cellView.addGestureRecognizer(leftSwipeGesture)
+        cellView.addGestureRecognizer(rightSwipGesture)
+        cellView.isUserInteractionEnabled = true
+        cellView.backgroundColor = .white
+        cellView.layer.cornerRadius = 20
+        cellView.layer.cornerRadius = 15.0
+        cellView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
+        cellView.layer.borderWidth = 1.0
+        
+        deleteView.superview?.sendSubviewToBack(deleteView)
+    }
+    
+    @objc func rightSwipeAction (_ gesture:UISwipeGestureRecognizer) {
+        UIView.animate(withDuration: 0.4, animations: {
+            gesture.view?.frame.origin.x =  0
+        })
+    }
+    
+    @objc func leftSwipeAction (_ gesture:UISwipeGestureRecognizer) {
+        UIView.animate(withDuration: 0.4, animations: {
+            gesture.view?.frame.origin.x = -((gesture.view?.frame.width)!/2)
+        })
+        
+    }
+    
     func allMemberFilterAction() {
         self.showMembers()
     }
     
     func expiredMemberFilterationAction(){
-   
       FireStoreManager.shared.expiredMemberFilterAction(result: {
         (array,err) in
         if err == nil {

@@ -201,7 +201,7 @@ extension  MembershipViewScreenViewController {
     }
     
     func registerNewMembership() {
-        self.registerMembership(id:UUID().uuidString, membershipDetail: self.getMembershipData(), compltion: {
+        self.registerMembership(id:"\(Int.random(in: 1..<1000000))", membershipDetail: self.getMembershipData(), compltion: {
             err in
             if err != nil {
                 self.showMembershipAlert(title: "Error", message: "Error in adding membership,plese try again.")

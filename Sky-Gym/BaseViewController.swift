@@ -85,7 +85,7 @@ class BaseViewController: UIViewController {
     
     
     func setAttandanceTableCellView(tableCellView:UIView)  {
-        tableCellView.layer.cornerRadius = 20.0
+     tableCellView.layer.cornerRadius = 20.0
        tableCellView.layer.borderWidth = 1.0
        tableCellView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
         tableCellView.clipsToBounds = true

@@ -184,7 +184,7 @@ extension ViewEventScreenViewController {
     func addEvent() {
         SVProgressHUD.show()
    
-        FireStoreManager.shared.addEvent(id:UUID().uuidString, eventDetail: self.setEventDetails(), completion: {
+        FireStoreManager.shared.addEvent(id:"\(Int.random(in: 1..<1000000))", eventDetail: self.setEventDetails(), completion: {
             err in
             SVProgressHUD.dismiss()
             if err != nil {

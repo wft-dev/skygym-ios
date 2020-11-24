@@ -62,9 +62,73 @@ class ListOfEventsViewController: BaseViewController {
             destinationVC.eventID = (sender as! Bool) == false ? AppManager.shared.eventID : ""
         }
     }
+    
 }
 
 extension ListOfEventsViewController {
+
+    @objc func eventLeftSwipeAction(_ gesture:UIGestureRecognizer){
+        UIView.animate(withDuration: 0.4, animations: {
+            gesture.view?.frame.origin.x = -((gesture.view?.frame.width)!/2)
+        })
+
+    }
+    
+    @objc func eventRightSwipeAction(_ gesture:UIGestureRecognizer){
+        UIView.animate(withDuration: 0.4, animations: {
+            gesture.view?.frame.origin.x =  0
+        })
+    }
+    
+    @objc func deleteVisitor(_ gesture:UIGestureRecognizer){
+        FireStoreManager.shared.deleteEventBy(id: "\(gesture.view?.tag ?? 0)", completion: {
+            err in
+            if err != nil {
+                self.showEventAlert(title: "Error", message: "Error in deleting the event.")
+            } else {
+                self.showEventAlert(title: "Success", message: "Event is deleted successfully.")
+            }
+        })
+    }
+    
+    func addEventCustomSwipe(cellView:UIView,cell:EventCellClass) {
+        let leftSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(eventLeftSwipeAction(_:)))
+        let rightSwipGesture = UISwipeGestureRecognizer(target: self, action: #selector(eventRightSwipeAction(_:)))
+        leftSwipeGesture.direction = .left
+        rightSwipGesture.direction = .right
+        let deleteView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: cell.contentView.frame.height))
+        let trashImgView = UIImageView(image: UIImage(named: "delete"))
+        trashImgView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+        trashImgView.isUserInteractionEnabled = true
+        trashImgView.tag = cellView.tag
+        
+        deleteView.addSubview(trashImgView)
+        trashImgView.translatesAutoresizingMaskIntoConstraints = false
+        trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
+        trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/2)).isActive = true
+        trashImgView.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        trashImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(deleteVisitor(_:))))
+        
+        deleteView.heightAnchor.constraint(equalToConstant: cell.contentView.frame.height).isActive = true
+        deleteView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        deleteView.translatesAutoresizingMaskIntoConstraints = true
+        deleteView.backgroundColor = .red
+        cell.contentView.addSubview(deleteView)
+        
+        cellView.addGestureRecognizer(leftSwipeGesture)
+        cellView.addGestureRecognizer(rightSwipGesture)
+        cellView.isUserInteractionEnabled = true
+        cellView.backgroundColor = .white
+        cellView.layer.cornerRadius = 20
+        cellView.layer.cornerRadius = 15.0
+        cellView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
+        cellView.layer.borderWidth = 1.0
+        
+        deleteView.superview?.sendSubviewToBack(deleteView)
+    }
+    
+    
     func setEventsNavigationBar()  {
         self.eventsNavigationBar.navigationTitleLabel.text = "Events"
         self.eventsNavigationBar.searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
@@ -72,7 +136,6 @@ extension ListOfEventsViewController {
         self.addClickToDismissSearchBar()
         self.customSearchBar.delegate = self
     }
-    
     
     func showEventAlert(title:String,message:String)  {
            let alertController = UIAlertController(title:title, message: message, preferredStyle: .alert)
@@ -169,6 +232,9 @@ extension ListOfEventsViewController:UITableViewDataSource{
         let singleEvent = self.filteredEventArray.count > 0 ? self.filteredEventArray[indexPath.section] : self.eventsArray[indexPath.section]
  
         self.setAttandanceTableCellView(tableCellView:cell.eventCellView )
+        cell.contentView.layer.cornerRadius = 20.0
+          cell.contentView.layer.borderWidth = 1.0
+          cell.contentView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
         cell.eventNameLabel.text =  singleEvent.eventName
         cell.eventAddressLabel.text = singleEvent.eventAddress
         cell.eventStartTime.text = singleEvent.eventStartTime
@@ -176,6 +242,8 @@ extension ListOfEventsViewController:UITableViewDataSource{
         cell.eventDateLabel.text = singleEvent.eventDate
         cell.eventDateLabel.layer.cornerRadius = 7.0
         cell.selectionStyle = .none
+        cell.eventCellView.tag = Int(singleEvent.eventID)!
+        self.addEventCustomSwipe(cellView: cell.eventCellView, cell: cell)
         return cell
     }
 }
@@ -195,25 +263,7 @@ extension ListOfEventsViewController:UITableViewDelegate{
         AppManager.shared.eventID = self.eventsArray[indexPath.section].eventID
         performSegue(withIdentifier: "viewEventScreenSegue", sender: false)
     }
-    
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteContextualAction = UIContextualAction(style: .destructive, title: "Delete", handler: {
-            _,_,_ in
-            FireStoreManager.shared.deleteEventBy(id: self.eventsArray[indexPath.section].eventID, completion: {
-                err in
-                if err != nil {
-                    self.showEventAlert(title: "Error", message: "Error in deleting the event.")
-                } else {
-                    self.showEventAlert(title: "Success", message: "Event is deleted successfully.")
-                }
-            })
-        })
-        deleteContextualAction.backgroundColor = .red
-        deleteContextualAction.image = UIImage(named: "delete")
-        let configuration = UISwipeActionsConfiguration(actions: [deleteContextualAction])
-        return configuration
-    }
-    
+  
 }
 
 extension ListOfEventsViewController:UISearchBarDelegate{
