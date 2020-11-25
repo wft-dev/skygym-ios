@@ -66,6 +66,8 @@ class AdminProfileViewController: UIViewController {
     var isEdit:Bool = false
     var forNonEditLabelArray:[UILabel] = []
     var defaultLabelArray:[UILabel] = []
+    var previousPassword:String = ""
+    var previouEmail:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -102,7 +104,7 @@ class AdminProfileViewController: UIViewController {
                 if err != nil {
                     self.showAdminProfileAlert(title: "Error", message: "Error in uploading the user profile image, Please try again.")
                 } else {
-                    FireStoreManager.shared.register(id: adminID, adminDetail: self.getAdminDetailForUpdate(), result: {
+                    FireStoreManager.shared.updateAdminDetail(id: adminID, previousPassword: self.previousPassword, previousEmail: self.previouEmail, adminDetail: self.getAdminDetailForUpdate(), result: {
                         (err) in
                         self.isProfileImgSelected = false
                         AppManager.shared.isInitialUploaded = true
@@ -115,11 +117,12 @@ class AdminProfileViewController: UIViewController {
                 }
             })
         }  else {
-            FireStoreManager.shared.register(id: adminID, adminDetail: self.getAdminDetailForUpdate(), result: {
+            FireStoreManager.shared.updateAdminDetail(id: adminID, previousPassword: self.previousPassword, previousEmail: self.previouEmail, adminDetail: self.getAdminDetailForUpdate(), result: {
                 (err) in
                 SVProgressHUD.dismiss()
                 if err != nil {
-                    self.showAdminProfileAlert(title: "Error", message: "Error in updating admin details, please try again.")
+                    self.showAdminProfileAlert(title: "Error", message: "\(err!.localizedDescription)")
+                    //Error in updating admin details, please try again.
                 } else {
                     self.showAdminProfileAlert(title: "Success", message: "Admin details are updated successfully.")
                 }
@@ -218,12 +221,13 @@ extension AdminProfileViewController {
     
     func fetchAdminDetailBy(id:String) {
         SVProgressHUD.show()
-        FireStoreManager.shared.downloadUserImg(id: AppManager.shared.adminID, result: {
-            (url,err) in
-            if err != nil {
-                self.viewDidLoad()
-            } else{
-                if AppManager.shared.isInitialUploaded == true {
+        
+        if AppManager.shared.isInitialUploaded == true {
+            FireStoreManager.shared.downloadUserImg(id: AppManager.shared.adminID, result: {
+                (url,err) in
+                if err != nil {
+                    self.viewDidLoad()
+                } else{
                     do {
                         let imgData = try Data(contentsOf: url!)
                         self.adminImg.image = UIImage(data: imgData)
@@ -231,17 +235,16 @@ extension AdminProfileViewController {
                         print(error)
                     }
                 }
-                FireStoreManager.shared.getAdminDetailBy(id: AppManager.shared.adminID, result: {
-                    (data,err) in
-                    SVProgressHUD.dismiss()
-                    if err != nil {
-                        print("Error in fetching the admin details.")
-                    }else{
-                        let adminDetail = data?["adminDetail"] as! NSDictionary
-                        self.fillAdminDetail(adminDetail: AppManager.shared.getAdminProfile(adminDetails: adminDetail as! [String : String] ))
-                        
-                    }
-                })
+            })
+        }
+        FireStoreManager.shared.getAdminDetailBy(id: AppManager.shared.adminID, result: {
+            (data,err) in
+            SVProgressHUD.dismiss()
+            if err != nil {
+                print("Error in fetching the admin details.")
+            }else{
+                let adminDetail = data?["adminDetail"] as! NSDictionary
+                self.fillAdminDetail(adminDetail: AppManager.shared.getAdminProfile(adminDetails: adminDetail as! [String : String] ))
             }
         })
     }
@@ -257,6 +260,8 @@ extension AdminProfileViewController {
         self.emailNonEditLabel.text = adminDetail.email
         self.phoneNoNonEditLabel.text = adminDetail.phoneNO
         self.dobNonEditLabel.text = adminDetail.dob
+        self.previousPassword = adminDetail.password
+        self.previouEmail = adminDetail.email
         
         self.gymNameTextField.text = adminDetail.gymName
         self.gymIDTextField.text = adminDetail.gymID

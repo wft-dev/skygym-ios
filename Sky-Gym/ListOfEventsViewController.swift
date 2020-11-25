@@ -62,7 +62,6 @@ class ListOfEventsViewController: BaseViewController {
             destinationVC.eventID = (sender as! Bool) == false ? AppManager.shared.eventID : ""
         }
     }
-    
 }
 
 extension ListOfEventsViewController {
@@ -71,7 +70,6 @@ extension ListOfEventsViewController {
         UIView.animate(withDuration: 0.4, animations: {
             gesture.view?.frame.origin.x = -((gesture.view?.frame.width)!/2)
         })
-
     }
     
     @objc func eventRightSwipeAction(_ gesture:UIGestureRecognizer){

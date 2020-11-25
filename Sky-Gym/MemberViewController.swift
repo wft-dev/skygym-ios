@@ -76,13 +76,13 @@ class MemberViewController: BaseViewController {
     var img:UIImage? = nil
     var forNonEditLabelArray:[UILabel] = []
     var defaultLabelArray:[UILabel] = []
+    var previousEmail:String = ""
+    var previousPassword:String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.forNonEditLabelArray = [self.memberIDForNonEditLabel,self.dateOfJoiningForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.trainerNameForNonEditLabel,self.uploadForNonEditLabel,self.emailForNonEditLabel,self.addressForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
         self.defaultLabelArray = [self.memberID,self.dateOfJoining,self.gender,self.password,self.trainerName,self.uploadID,self.email,self.address,self.phoneNo,self.dob]
-       
-       // AppManager.shared.setScrollViewContentSize(scrollView: self.memberViewScrollView)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -100,7 +100,7 @@ class MemberViewController: BaseViewController {
     @IBAction func updateBtnAction(_ sender: Any) {
         SVProgressHUD.show()
 
-        FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID, memberDetail: self.getMemberProfileDetails(), handler: {
+        FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID,previousEmail: self.previousEmail, previousPassword: self.previousPassword,memberDetail: self.getMemberProfileDetails(), handler: {
             (err) in
         SVProgressHUD.dismiss()
             if err != nil {
@@ -117,7 +117,7 @@ class MemberViewController: BaseViewController {
                     })
                     self.isUserProfileSelected = false
                 }
-              
+
               else if self.isUserProfileSelected == true {
                     FireStoreManager.shared.uploadUserImg(imgData: (self.memberImg.image?.pngData())!, id: AppManager.shared.memberID, completion: {
                         err in
@@ -132,7 +132,6 @@ class MemberViewController: BaseViewController {
                 }
             }
         })
-        
     }
     
     @IBAction func generalToggleBtnAction(_ sender: Any) {
@@ -276,6 +275,9 @@ extension MemberViewController{
         self.phoneNoNonEditScreenLabel.text = memberDetail.phoneNo
         self.dobNonEditScreenLabel.text = memberDetail.dob
         self.setMemberProfileTrainerType(type: memberDetail.type)
+        
+        self.previousEmail = memberDetail.email
+        self.previousPassword = memberDetail.password
         
         self.memberIDTextField.text! = memberDetail.memberID
         self.dateOfJoiningTextField.text! = memberDetail.dateOfJoining

@@ -148,7 +148,7 @@ class AppManager: NSObject {
     
     func performLogout()  {
         SVProgressHUD.show()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
             AppManager.shared.isLoggedIn = false
             AppManager.shared.appDelegate.setRoot()
             SVProgressHUD.dismiss()
@@ -376,30 +376,37 @@ class AppManager: NSObject {
         let terminator = Calendar.current.component(.day, from: endDate)
         let endDateMonth = Calendar.current.component(.month, from: endDate)
         let startMonthArray = (attendence["\(year)"] as! NSDictionary)["\(startDateMonth)"] as! Array<NSDictionary>
-        let endMonthArray = (attendence["\(year)"] as! NSDictionary)["\(endDateMonth)"] as! Array<NSDictionary>
-
-        for eachDay in startMonthArray {
-            if  let status = eachDay["\(counter)/\(startDateMonth)/\(year)"] as? NSDictionary  {
-                attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(counter)/\(startDateMonth)/\(year)", value: status))
-                counter += 1
-                if counter > monthTerminator {
-                    counter = 1
-                    break
-                }
-            }
+        guard let endMonthArray:Array<NSDictionary> = (attendence["\(year)"] as? NSDictionary)?["\(endDateMonth)"] as? Array<NSDictionary> else {
+            let df = DateFormatter()
+            df.dateFormat = "dd-MM-yyyy"
+            let starDateStr = df.string(from: startDate)
+            attendenceArray = sameMonthSameYearAttendenceFetching(attendence: attendence, year: "\(year)", month: "\(startDateMonth)", startDate: starDateStr, endDate: "\(monthTerminator)/\(startDateMonth)/\(year)")
+            return attendenceArray
         }
         
-        for eachDay in endMonthArray {
-            if let status = eachDay["\(counter)/\(endDateMonth)/\(year)"] as? NSDictionary {
-                attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(counter)/\(endDateMonth)/\(year)", value: status))
-                counter += 1
-                if counter > terminator {
-                    counter = 1
-                    break
-                }
-            }
-        }
-        return attendenceArray
+        for eachDay in startMonthArray {
+             if  let status = eachDay["\(counter)/\(startDateMonth)/\(year)"] as? NSDictionary  {
+                 attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(counter)/\(startDateMonth)/\(year)", value: status))
+                 counter += 1
+                 if counter > monthTerminator {
+                     counter = 1
+                     break
+                 }
+             }
+         }
+         
+         for eachDay in endMonthArray {
+             if let status = eachDay["\(counter)/\(endDateMonth)/\(year)"] as? NSDictionary {
+                 attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(counter)/\(endDateMonth)/\(year)", value: status))
+                 counter += 1
+                 if counter > terminator {
+                     counter = 1
+                     break
+                 }
+             }
+         }
+         return attendenceArray
+
     }
     
     func differentMonthDifferentYearAttendenceFetching(attendence:NSDictionary,startDate:Date,endDate:Date) -> [Attendence]  {
@@ -437,7 +444,6 @@ class AppManager: NSObject {
                 }
             }
         }
-        
         return attendenceArray
     }
 
@@ -554,14 +560,6 @@ class AppManager: NSObject {
         
         return matchingDateDir
     }
-    
-    func getSwipGesture(direction:UISwipeGestureRecognizer.Direction) -> UISwipeGestureRecognizer {
-        let swipeGesture = UISwipeGestureRecognizer()
-        swipeGesture.direction = direction
-        return swipeGesture
-    }
-    
-
 }
 
 

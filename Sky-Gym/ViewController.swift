@@ -76,15 +76,14 @@ class ViewController: UIViewController {
             (loggedIn,err) in
             
             if err != nil {
-                self.showLoginAlert(title: "Error", message: "Error in finding admin, due to network connectivity.")
+                self.showLoginAlert(title: "Error", message: "\(err!.localizedDescription)")
             } else {
                 if loggedIn == true{
                     AppManager.shared.performLogin()
                 }else {
-                    self.showLoginAlert(title: "Error", message: "Username or Password is incorrect.")
+                    self.showLoginAlert(title: "Error", message: "\(err!.localizedDescription)")
                 }
             }
-            
         })
     }
     

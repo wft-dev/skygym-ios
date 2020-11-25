@@ -16,6 +16,7 @@ pod 'FirebaseFirestoreSwift'
 	pod 'SVProgressHUD'
 
 pod 'FirebaseStorage', '~> 3.9'
+pod 'Firebase/Auth'
 
 
 

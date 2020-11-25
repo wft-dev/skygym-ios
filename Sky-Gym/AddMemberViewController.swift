@@ -67,6 +67,8 @@ class AddMemberViewController: BaseViewController {
     var renewingMembershipID:String = ""
     var renewingMembershipDuration:String = ""
     var visitorProfileImgData:Data? = nil
+    var previousEmail:String = ""
+    var previousPassword:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -436,7 +438,7 @@ extension AddMemberViewController{
                         (err) in
                         if err != nil {
                             SVProgressHUD.dismiss()
-                            self.errorAlert(message: "Member is not registered successfully.")
+                            self.errorAlert(message: "\(err?.localizedDescription)")
                         } else {
                             SVProgressHUD.dismiss()
                             self.successAlert(message: "Member is registered successfully.")
@@ -451,7 +453,7 @@ extension AddMemberViewController{
         SVProgressHUD.show()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
             SVProgressHUD.dismiss()
-            FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID, memberDetail: self.getMemberDetails(), handler: {
+            FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID,previousEmail:self.previousEmail ,previousPassword: self.previousPassword, memberDetail: self.getMemberDetails(), handler: {
                 (err) in
                 if err != nil {
                     self.errorAlert(message: "Member Details are not updated successfully,Try again")
@@ -539,6 +541,10 @@ extension AddMemberViewController{
         self.addressTextView.text = memberDetail.address
         self.phoneNumberTextField.text = memberDetail.phoneNo
         self.dobTextField.text = memberDetail.dob
+        
+        self.previousPassword = memberDetail.password
+        self.previousEmail = memberDetail.email
+        
     }
        func retryMemberDataAlert() {
             let retryAlertController = UIAlertController(title: "Error", message: "Error in getting the member Detail.", preferredStyle: .alert)

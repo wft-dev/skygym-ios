@@ -10,6 +10,7 @@ import Foundation
 import FirebaseCore
 import FirebaseFirestore
 import FirebaseStorage
+import FirebaseAuth
 import SVProgressHUD
 
 
@@ -18,42 +19,105 @@ class FireStoreManager: NSObject {
     private override init() {}
     let fireDB = Firestore.firestore()
     let fireStorageRef = Storage.storage().reference()
+    let authRef = Auth.auth()
     
-
-    //FOR ADMIN LOGIN
-    func isAdminLogin(email:String,password:String,result:@escaping (Bool,Error?)->Void) {
-        var flag:Bool = false
-        fireDB.collection("Admin").getDocuments(completion: {
-            (querySnapshot,err) in
+    
+    
+    private  func updateCredential(previousEmail:String,previousPassword:String,updatedEmail:String,updatedPassword:String,completion:@escaping (Error?) -> Void ) {
+        
+        
+        
+        
+        
+        
+        let previousCredential = EmailAuthProvider.credential(withEmail: previousEmail, password: previousPassword)
+        authRef.currentUser?.reauthenticate(with: previousCredential, completion: {
+            (authResult,err) in
+            
             if err != nil {
-                result(false,err)
+                completion(err)
             } else {
-                for singleDoc in querySnapshot!.documents{
-                    let adminDetail = (singleDoc.data() as NSDictionary)["adminDetail"] as! [String:Any]
-                    
-                    let adminEmail = adminDetail["email"] as! String
-                    let adminPassword = adminDetail["password"] as! String
-                    
-                    if adminEmail == email && adminPassword == password {
-                        AppManager.shared.adminID = singleDoc.documentID
-                        AppManager.shared.gymID =  adminDetail["gymID"] as! String
-                        flag = true
-                        break
-                    }else {
-                        flag = false
-                    }
+                if previousEmail != updatedEmail {
+                    self.authRef.currentUser?.updateEmail(to: updatedEmail, completion: {
+                        (err) in
+                        completion(err)
+                    })
                 }
-                result(flag,nil)
+              else  if previousPassword != updatedPassword {
+                    self.authRef.currentUser?.updatePassword(to: updatedPassword, completion: {
+                        (err) in
+                        completion(err)
+                    })
+                }
+                else {
+                    completion(nil)
+                }
             }
         })
     }
     
-    func register(id:String,adminDetail:[String:Any],result:@escaping (Error?) ->Void) {
-        fireDB.collection("Admin").document("/\(id)").setData([
-        "adminDetail":adminDetail
-        ], completion: {
-            err in
-            result(err)
+    
+    
+    //FOR ADMIN LOGIN
+    func isAdminLogin(email:String,password:String,result:@escaping (Bool,Error?)->Void) {
+        
+        authRef.signIn(withEmail: email, password: password, completion: {
+            (authResult,err) in
+            
+            if err != nil {
+                result(false,err)
+            } else {
+                self.fireDB.collection("Admin").document("/\(authResult!.user.uid)").getDocument(completion: {
+                    (adminData,err) in
+                    if err != nil {
+                        result(false,err)
+                    } else {
+                        let adminDetail = ((adminData?.data())! as NSDictionary)["adminDetail"] as! [String:Any]
+                        AppManager.shared.adminID = adminData!.documentID
+                        AppManager.shared.gymID = adminDetail["gymID"] as! String
+                        result(true,nil)
+                    }
+                })
+            }
+        })
+    }
+    
+    func register(adminDetail:[String:Any],result:@escaping (Error?) ->Void) {
+        
+        authRef.createUser(withEmail: adminDetail["email"] as! String, password: adminDetail["password"] as! String, completion: {
+            (authResult,err) in
+            
+            if err != nil {
+                result(err)
+            }else {
+                self.fireDB.collection("Admin").document("/\(authResult!.user.uid)").setData([
+                    "adminDetail":adminDetail
+                    ], completion: {
+                        err in
+                        result(err)
+                })
+            }
+        })
+    }
+    
+    
+    func updateAdminDetail(id:String,previousPassword:String,previousEmail:String,adminDetail:[String:Any],result:@escaping (Error?)->Void) {
+        
+        let updatedPassword:String = adminDetail["password"] as! String
+        print("updatedPassword",updatedPassword)
+        updateCredential(previousEmail: previousEmail, previousPassword: previousPassword, updatedEmail: adminDetail["email"] as! String, updatedPassword: updatedPassword, completion: {
+            (err) in
+            
+            if err != nil {
+                result(err)
+            } else {
+                self.fireDB.collection("Admin").document("/\(id)").updateData([
+                    "adminDetail":adminDetail
+                    ], completion: {
+                        (err) in
+                        result(err)
+                })
+            }
         })
     }
     
@@ -125,23 +189,28 @@ class FireStoreManager: NSObject {
     
     func addMember(email:String,password:String,memberDetail:[String:String],memberships:[[String:String]],memberID:String,handler:@escaping (Error?) -> Void ) {
         let attendence = AppManager.shared.getCompleteMonthAttendenceStructure()
-
-        fireDB.collection("/Members").document("/\(memberID)").setData(
-            [
-                "adminID":AppManager.shared.adminID,
-                "gymID":AppManager.shared.gymID,
-                "email": email,
-                "password":password,
-                "memberDetail":memberDetail,
-                "memberships":memberships,
-                "attendence" :attendence
-        ] , completion: {
-            err in
-            handler(err)
+        
+        authRef.createUser(withEmail: email, password: password, completion: {
+            (authRef,err) in
+            
+            if err != nil {
+                handler(err)
+            }else {
+                self.fireDB.collection("/Members").document("/\(memberID)").setData(
+                    [
+                        "adminID":AppManager.shared.adminID,
+                        "gymID":AppManager.shared.gymID,
+                        "email": email,
+                        "memberDetail":memberDetail,
+                        "memberships":memberships,
+                        "attendence" :attendence
+                ] , completion: {
+                    err in
+                    handler(err)
+                })
+            }
         })
     }
-    
-  
     
     func addNewMembeship(memberID:String,membership:[String:String], completion:@escaping (Error?) -> Void) {
          let memberhipRef = fireDB.collection("/Members").document("\(memberID)")
@@ -312,16 +381,22 @@ class FireStoreManager: NSObject {
             }
         })
     }
-
-    func updateMemberDetails(id:String,memberDetail:[String:String],handler:@escaping (Error?) -> Void ) {
-        fireDB.collection("/Members").document("/\(id)")
-        .updateData([
-            "email": memberDetail["email"]!,
-            "password":memberDetail["password"]!,
-            "memberDetail":memberDetail
-        ], completion: {
-            err in
-            handler(err)
+    
+    func updateMemberDetails(id:String,previousEmail:String,previousPassword:String,memberDetail:[String:String],handler:@escaping (Error?) -> Void ) {
+        
+        self.updateCredential(previousEmail: previousEmail, previousPassword: previousPassword, updatedEmail: memberDetail["email"]!, updatedPassword: memberDetail["password"]!, completion: {
+            (err) in
+            
+            if err != nil {
+                handler(err)
+            }else {
+                self.fireDB.collection("Members").document("/\(id)").updateData([
+                    "memberDetail":memberDetail
+                    ], completion: {
+                        (err) in
+                        handler(err)
+                })
+            }
         })
     }
     
@@ -532,8 +607,11 @@ class FireStoreManager: NSObject {
             }
         })
     }
+    
+    
 
     func deleteMemberBy(id:String,completion:@escaping (Error?)->Void) {
+        
         let ref = fireDB.collection("/Members").document("/\(id)")
         ref.delete(completion: {
         err in
@@ -634,6 +712,7 @@ class FireStoreManager: NSObject {
             completion(err)
         })
     }
+    
     
     func getAllMembership(result:@escaping ([[String:Any]]?,Error?)->Void) {
         var membershipArray:[[String:Any]] = []
