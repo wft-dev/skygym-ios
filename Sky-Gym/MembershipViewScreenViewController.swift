@@ -61,7 +61,7 @@ class MembershipViewScreenViewController: BaseViewController {
             self.detailTextView.alpha = 0.0
             self.detailNonEditLabel.isHidden = false
             self.detailNonEditLabel.alpha = 1.0
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: nil, flag: true)
             self.doneBtn.isEnabled = false
             self.doneBtn.alpha = 0.4
         }else {
@@ -71,7 +71,7 @@ class MembershipViewScreenViewController: BaseViewController {
             self.detailTextView.alpha = 1.0
             self.detailNonEditLabel.isHidden = true
             self.detailNonEditLabel.alpha = 0.0
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: nil, flag: false)
             self.doneBtn.isEnabled = true
             self.doneBtn.alpha = 1.0
         }
@@ -126,7 +126,7 @@ extension  MembershipViewScreenViewController {
     @objc func editMembership() {
         if self.isEdit == true {
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: nil, flag: true)
             self.isEdit = false
             self.setHrLineView(isHidden: false, alpha: 1.0)
             self.detailTextView.isHidden = true
@@ -136,7 +136,7 @@ extension  MembershipViewScreenViewController {
             self.doneBtn.isEnabled = false
             self.doneBtn.alpha = 0.4
         } else{
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, flag: false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: nil, flag: false)
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
             self.isEdit = true
             self.setHrLineView(isHidden: true, alpha: 0.0)

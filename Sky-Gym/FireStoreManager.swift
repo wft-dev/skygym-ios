@@ -7,10 +7,10 @@
 //
 
 import Foundation
+import Firebase
 import FirebaseCore
 import FirebaseFirestore
 import FirebaseStorage
-import FirebaseAuth
 import SVProgressHUD
 
 
@@ -19,105 +19,81 @@ class FireStoreManager: NSObject {
     private override init() {}
     let fireDB = Firestore.firestore()
     let fireStorageRef = Storage.storage().reference()
-    let authRef = Auth.auth()
-    
-    
-    
-    private  func updateCredential(previousEmail:String,previousPassword:String,updatedEmail:String,updatedPassword:String,completion:@escaping (Error?) -> Void ) {
-        
-        
-        
-        
-        
-        
-        let previousCredential = EmailAuthProvider.credential(withEmail: previousEmail, password: previousPassword)
-        authRef.currentUser?.reauthenticate(with: previousCredential, completion: {
-            (authResult,err) in
-            
-            if err != nil {
-                completion(err)
-            } else {
-                if previousEmail != updatedEmail {
-                    self.authRef.currentUser?.updateEmail(to: updatedEmail, completion: {
-                        (err) in
-                        completion(err)
-                    })
-                }
-              else  if previousPassword != updatedPassword {
-                    self.authRef.currentUser?.updatePassword(to: updatedPassword, completion: {
-                        (err) in
-                        completion(err)
-                    })
-                }
-                else {
-                    completion(nil)
-                }
-            }
-        })
-    }
-    
-    
+   // let authRef = Auth.auth()
+
+//    private  func updateCredential(previousEmail:String,previousPassword:String,updatedEmail:String,updatedPassword:String,completion:@escaping (Error?) -> Void ) {
+//
+//        let previousCredential = EmailAuthProvider.credential(withEmail: previousEmail, password: previousPassword)
+//        authRef.currentUser?.reauthenticate(with: previousCredential, completion: {
+//            (authResult,err) in
+//
+//            if err != nil {
+//                completion(err)
+//            } else {
+//                if previousEmail != updatedEmail {
+//                    self.authRef.currentUser?.updateEmail(to: updatedEmail, completion: {
+//                        (err) in
+//                        completion(err)
+//                    })
+//                }
+//              else  if previousPassword != updatedPassword {
+//                    self.authRef.currentUser?.updatePassword(to: updatedPassword, completion: {
+//                        (err) in
+//                        completion(err)
+//                    })
+//                }
+//                else {
+//                    completion(nil)
+//                }
+//            }
+//        })
+//    }
     
     //FOR ADMIN LOGIN
     func isAdminLogin(email:String,password:String,result:@escaping (Bool,Error?)->Void) {
-        
-        authRef.signIn(withEmail: email, password: password, completion: {
-            (authResult,err) in
             
+        self.fireDB.collection("Admin")
+            .whereField("email", isEqualTo: email)
+            .whereField("password", isEqualTo: password)
+            .getDocuments(completion: {
+            (querySnapshot,err) in
             if err != nil {
                 result(false,err)
-            } else {
-                self.fireDB.collection("Admin").document("/\(authResult!.user.uid)").getDocument(completion: {
-                    (adminData,err) in
-                    if err != nil {
-                        result(false,err)
-                    } else {
-                        let adminDetail = ((adminData?.data())! as NSDictionary)["adminDetail"] as! [String:Any]
-                        AppManager.shared.adminID = adminData!.documentID
-                        AppManager.shared.gymID = adminDetail["gymID"] as! String
-                        result(true,nil)
-                    }
-                })
+            }else{
+                if (querySnapshot?.documents.count)! > 1 {
+                    result(false,nil)
+                }else{
+                    let adminData = querySnapshot?.documents.first?.data()
+                    AppManager.shared.adminID = adminData?["adminID"] as! String
+                    AppManager.shared.gymID = (adminData?["adminDetail"] as! [String:String])["gymID"]!
+                    result(true,nil)
+                }
             }
         })
     }
     
-    func register(adminDetail:[String:Any],result:@escaping (Error?) ->Void) {
+    func register(id:String,adminDetail:[String:Any],result:@escaping (Error?) ->Void) {
         
-        authRef.createUser(withEmail: adminDetail["email"] as! String, password: adminDetail["password"] as! String, completion: {
-            (authResult,err) in
-            
-            if err != nil {
+        self.fireDB.collection("Admin").document("/\(id)").setData([
+            "adminID": id ,
+            "email" : adminDetail["email"] as! String,
+            "password" : adminDetail["password"] as! String,
+            "adminDetail" : adminDetail
+            ], completion: {
+                (err) in
                 result(err)
-            }else {
-                self.fireDB.collection("Admin").document("/\(authResult!.user.uid)").setData([
-                    "adminDetail":adminDetail
-                    ], completion: {
-                        err in
-                        result(err)
-                })
-            }
         })
     }
     
     
-    func updateAdminDetail(id:String,previousPassword:String,previousEmail:String,adminDetail:[String:Any],result:@escaping (Error?)->Void) {
-        
-        let updatedPassword:String = adminDetail["password"] as! String
-        print("updatedPassword",updatedPassword)
-        updateCredential(previousEmail: previousEmail, previousPassword: previousPassword, updatedEmail: adminDetail["email"] as! String, updatedPassword: updatedPassword, completion: {
-            (err) in
-            
-            if err != nil {
+    func updateAdminDetail(id:String,adminDetail:[String:Any],result:@escaping (Error?)->Void) {
+        self.fireDB.collection("Admin").document("/\(id)").updateData([
+            "email" : adminDetail["email"] as! String,
+            "password" : adminDetail["password"] as! String,
+            "adminDetail" : adminDetail
+            ], completion: {
+                err in
                 result(err)
-            } else {
-                self.fireDB.collection("Admin").document("/\(id)").updateData([
-                    "adminDetail":adminDetail
-                    ], completion: {
-                        (err) in
-                        result(err)
-                })
-            }
         })
     }
     
@@ -190,25 +166,18 @@ class FireStoreManager: NSObject {
     func addMember(email:String,password:String,memberDetail:[String:String],memberships:[[String:String]],memberID:String,handler:@escaping (Error?) -> Void ) {
         let attendence = AppManager.shared.getCompleteMonthAttendenceStructure()
         
-        authRef.createUser(withEmail: email, password: password, completion: {
-            (authRef,err) in
-            
-            if err != nil {
+        self.fireDB.collection("/Members").document("/\(memberID)").setData(
+            [
+                "adminID":AppManager.shared.adminID,
+                "gymID":AppManager.shared.gymID,
+                "email": email,
+                "password":password,
+                "memberDetail":memberDetail,
+                "memberships":memberships,
+                "attendence" :attendence
+            ] , completion: {
+                err in
                 handler(err)
-            }else {
-                self.fireDB.collection("/Members").document("/\(memberID)").setData(
-                    [
-                        "adminID":AppManager.shared.adminID,
-                        "gymID":AppManager.shared.gymID,
-                        "email": email,
-                        "memberDetail":memberDetail,
-                        "memberships":memberships,
-                        "attendence" :attendence
-                ] , completion: {
-                    err in
-                    handler(err)
-                })
-            }
         })
     }
     
@@ -382,21 +351,15 @@ class FireStoreManager: NSObject {
         })
     }
     
-    func updateMemberDetails(id:String,previousEmail:String,previousPassword:String,memberDetail:[String:String],handler:@escaping (Error?) -> Void ) {
+    func updateMemberDetails(id:String,memberDetail:[String:String],handler:@escaping (Error?) -> Void ) {
         
-        self.updateCredential(previousEmail: previousEmail, previousPassword: previousPassword, updatedEmail: memberDetail["email"]!, updatedPassword: memberDetail["password"]!, completion: {
-            (err) in
-            
-            if err != nil {
+        self.fireDB.collection("Members").document("/\(id)").updateData([
+            "memberDetail":memberDetail,
+            "email": memberDetail["email"]!,
+            "password":memberDetail["password"]!,
+            ], completion: {
+                (err) in
                 handler(err)
-            }else {
-                self.fireDB.collection("Members").document("/\(id)").updateData([
-                    "memberDetail":memberDetail
-                    ], completion: {
-                        (err) in
-                        handler(err)
-                })
-            }
         })
     }
     
@@ -925,7 +888,7 @@ class FireStoreManager: NSObject {
         fireDB.collection("/Members").document("129078391").getDocument(completion: {
             (docRef,error) in
 
-            let attendence = ((docRef?.data())! as NSDictionary)["attendence"] as! NSDictionary
+         //   let attendence = ((docRef?.data())! as NSDictionary)["attendence"] as! NSDictionary
            // var monthArray = (attendence["2020"] as! NSDictionary)["11"] as! Array<NSDictionary>
            // print("ARRAY IS :\((monthArray.first!)["1/11/2020"] as! NSDictionary)")
            // print(monthArray)

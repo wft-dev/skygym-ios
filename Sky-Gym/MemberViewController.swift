@@ -99,14 +99,14 @@ class MemberViewController: BaseViewController {
     
     @IBAction func updateBtnAction(_ sender: Any) {
         SVProgressHUD.show()
-
-        FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID,previousEmail: self.previousEmail, previousPassword: self.previousPassword,memberDetail: self.getMemberProfileDetails(), handler: {
+        
+        FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID,memberDetail: self.getMemberProfileDetails(), handler: {
             (err) in
-        SVProgressHUD.dismiss()
+            SVProgressHUD.dismiss()
             if err != nil {
                 self.showMemberProfileAlert(title: "Error", message: "Member detail is not updated.")
             } else {
-               if self.isUploadIdSelected == true {
+                if self.isUploadIdSelected == true {
                     FireStoreManager.shared.uploadImg(url: self.imgURL!, membeID: AppManager.shared.memberID, imageName: self.uploadIDTextField.text!, completion: {
                         (err) in
                         if err != nil {
@@ -117,8 +117,8 @@ class MemberViewController: BaseViewController {
                     })
                     self.isUserProfileSelected = false
                 }
-
-              else if self.isUserProfileSelected == true {
+                    
+                else if self.isUserProfileSelected == true {
                     FireStoreManager.shared.uploadUserImg(imgData: (self.memberImg.image?.pngData())!, id: AppManager.shared.memberID, completion: {
                         err in
                         if err == nil {
@@ -127,8 +127,8 @@ class MemberViewController: BaseViewController {
                     })
                     self.isUserProfileSelected = false
                 }
-               else {
-                self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
+                else {
+                    self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
                 }
             }
         })
@@ -156,7 +156,7 @@ extension MemberViewController{
         setTextFields()
         self.updateBtn.layer.cornerRadius = 15.0
         AppManager.shared.performEditAction(dataFields: self.getMemberProfileFieldsAndLabelDic(), edit:  false)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: true)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: nil, flag: true)
         self.setHrLineView(isHidden: false, alpha: 1.0)
         self.addressNonEditLabel.isHidden = false
         self.addressNonEditLabel.alpha = 1.0
@@ -193,7 +193,7 @@ extension MemberViewController{
        if self.isEdit == true {
         self.memberImg.isUserInteractionEnabled = false
         AppManager.shared.performEditAction(dataFields:self.getMemberProfileFieldsAndLabelDic(), edit:  false)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: true)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: nil, flag: true)
         self.addressNonEditLabel.isHidden = false
         self.addressTextView.isHidden  = true
         self.addressTextView.alpha = 0.0
@@ -205,7 +205,7 @@ extension MemberViewController{
        } else{
         self.memberImg.isUserInteractionEnabled = true
         AppManager.shared.performEditAction(dataFields:self.getMemberProfileFieldsAndLabelDic(), edit:  true)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: false)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: nil, flag: false)
         self.setToggleBtns(isEnabled: true, alpha: 1.0)
         self.memberIDTextField.isEnabled = true
         self.memberIDTextField.layer.opacity = 0.4

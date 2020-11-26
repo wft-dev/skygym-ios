@@ -9,8 +9,6 @@
 import Foundation
 import UIKit
 
-
-
 enum Role:String {
     case Admin
     case Member
@@ -163,3 +161,5 @@ struct Event {
     var eventStartTime:String
     var eventEndTime:String
 }
+
+

@@ -61,13 +61,25 @@ class AdminProfileViewController: UIViewController {
     @IBOutlet weak var phoneNoForNonEditLabel: UILabel!
     @IBOutlet weak var dobForNonEditLabel: UILabel!
     
+    @IBOutlet weak var gymNameErrorLabel: UILabel!
+    @IBOutlet weak var gymIDErrorLabel: UILabel!
+    @IBOutlet weak var addressErrorLabel: UILabel!
+    @IBOutlet weak var firstNameErrorLabel: UILabel!
+    @IBOutlet weak var secondNameErrorLabel: UILabel!
+    @IBOutlet weak var passwordErrorLabel: UILabel!
+    @IBOutlet weak var genderErrorLabel: UILabel!
+    @IBOutlet weak var emailErrorLabel: UILabel!
+    @IBOutlet weak var phoneNumberErrorLabel: UILabel!
+    @IBOutlet weak var dobErrorLabel: UILabel!
+    
     var imagePicker = UIImagePickerController()
     var isProfileImgSelected:Bool = false
     var isEdit:Bool = false
     var forNonEditLabelArray:[UILabel] = []
     var defaultLabelArray:[UILabel] = []
-    var previousPassword:String = ""
-    var previouEmail:String = ""
+    var textFieldsArray:[UITextField] = []
+    var errorLabelArray:[UILabel] = []
+    let validation = ValidationManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,9 +89,14 @@ class AdminProfileViewController: UIViewController {
         self.imagePicker.delegate = self
         self.forNonEditLabelArray = [self.gymNameForNonEditLabel,self.gymIDForNonEditLabel,self.gymAddressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel]
         self.defaultLabelArray = [self.gymName,self.gymID,self.gymAddress,self.firstName,self.lastName,self.email,self.gender,self.password,self.phoneNo,self.dob]
+        
+        self.textFieldsArray = [self.gymNameTextField,self.gymIDTextField,self.adminFirstNameTextField,self.adminLastNameTextField,self.adminGenderTextField,self.adminPasswordTextField,self.emailTextField,self.phoneNoTextField,self.dobTextField]
+        
+        self.errorLabelArray = [self.gymNameErrorLabel,self.gymIDErrorLabel,self.addressErrorLabel,self.firstNameErrorLabel,self.secondNameErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel]
+        
         self.adminImg.makeRounded()
         AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: true)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
         self.setHrLineView(isHidden: false, alpha: 1.0)
         self.addressTextView.isHidden = true
         self.addressTextView.alpha = 0.0
@@ -87,6 +104,7 @@ class AdminProfileViewController: UIViewController {
         self.gymAddressNoEditLabel.alpha = 1.0
         self.updateBtn.isEnabled = false
         self.updateBtn.alpha = 0.4
+        self.gymIDTextField.isEnabled = false
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -104,7 +122,7 @@ class AdminProfileViewController: UIViewController {
                 if err != nil {
                     self.showAdminProfileAlert(title: "Error", message: "Error in uploading the user profile image, Please try again.")
                 } else {
-                    FireStoreManager.shared.updateAdminDetail(id: adminID, previousPassword: self.previousPassword, previousEmail: self.previouEmail, adminDetail: self.getAdminDetailForUpdate(), result: {
+                    FireStoreManager.shared.updateAdminDetail(id: adminID,adminDetail: self.getAdminDetailForUpdate(), result: {
                         (err) in
                         self.isProfileImgSelected = false
                         AppManager.shared.isInitialUploaded = true
@@ -117,7 +135,7 @@ class AdminProfileViewController: UIViewController {
                 }
             })
         }  else {
-            FireStoreManager.shared.updateAdminDetail(id: adminID, previousPassword: self.previousPassword, previousEmail: self.previouEmail, adminDetail: self.getAdminDetailForUpdate(), result: {
+            FireStoreManager.shared.updateAdminDetail(id: adminID, adminDetail: self.getAdminDetailForUpdate(), result: {
                 (err) in
                 SVProgressHUD.dismiss()
                 if err != nil {
@@ -132,6 +150,21 @@ class AdminProfileViewController: UIViewController {
 }
 
 extension AdminProfileViewController {
+    
+    
+    func updateProfileBtnEnabler(textFieldArray:[UITextField]) {
+        let flag = validation.isAllFieldsRequiredValidated(textFieldArray:textFieldArray)
+        
+        if flag == true  && validation.isTextViewRequiredValid(textView: self.addressTextView) == true {
+            self.updateBtn.isEnabled = true
+            self.updateBtn.alpha = 1.0
+        } else {
+            self.updateBtn.isEnabled = false
+            self.updateBtn.alpha = 0.4
+        }
+    }
+    
+    
     func setAdminProfileNavigationBar() {
         self.adminProfileNavigationBar.menuBtn.isHidden = false
         self.adminProfileNavigationBar.searchBtn.isHidden = true
@@ -145,7 +178,7 @@ extension AdminProfileViewController {
     @objc func editAdmin() {
              if self.isEdit == true {
                   AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-                  AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: true)
+                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
                   self.isEdit = false
                   self.setHrLineView(isHidden: false, alpha: 1.0)
                  self.addressTextView.isHidden = true
@@ -154,9 +187,10 @@ extension AdminProfileViewController {
                  self.gymAddressNoEditLabel.alpha = 1.0
                 self.updateBtn.isEnabled = false
                 self.updateBtn.alpha = 0.4
+                self.gymIDTextField.isEnabled = false
              } else{
                 AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, flag: false)
+                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray,errorLabels: self.errorLabelArray, flag: false)
                 self.isEdit = true
                 self.setHrLineView(isHidden: true, alpha: 0.0)
                 self.gymIDTextField.isEnabled = true
@@ -165,8 +199,6 @@ extension AdminProfileViewController {
                 self.addressTextView.alpha = 1.0
                 self.gymAddressNoEditLabel.isHidden = true
                 self.gymAddressNoEditLabel.alpha = 0.0
-                self.updateBtn.isEnabled = true
-                self.updateBtn.alpha = 1.0
         }
          }
 
@@ -198,6 +230,7 @@ extension AdminProfileViewController {
             $0?.layer.cornerRadius = 7.0
             $0?.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
             $0?.clipsToBounds = true
+            $0?.addTarget(self, action: #selector(checkProfileValidation(_:)), for: .editingChanged)
         }
         
         self.updateBtn.layer.cornerRadius = 12.0
@@ -210,6 +243,36 @@ extension AdminProfileViewController {
         self.addressTextView.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
         self.addressTextView.clipsToBounds = true
     }
+    
+    @objc func checkProfileValidation(_ textField:UITextField) {
+        self.allProfileFieldsRequiredValidation(textField: textField)
+        self.updateProfileBtnEnabler(textFieldArray: self.textFieldsArray)
+    }
+    
+    
+    func allProfileFieldsRequiredValidation(textField:UITextField)  {
+        switch textField.tag {
+        case 1:
+            validation.requiredValidation(textField: textField, errorLabel: self.gymNameErrorLabel, errorMessage: "Gym name required.")
+        case 3:
+            validation.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
+        case 4:
+            validation.requiredValidation(textField: textField, errorLabel: self.secondNameErrorLabel, errorMessage: "Last Name required." )
+        case 5:
+            validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Gender required.")
+        case 6:
+            validation.requiredValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password required.")
+        case 7:
+            validation.requiredValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Email required." )
+        case 8:
+            validation.requiredValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number required.")
+        case 9:
+            validation.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required." )
+        default:
+            break
+        }
+    }
+    
 
        func addPaddingToTextField(textField:UITextField) {
                 let paddingView: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
@@ -260,8 +323,6 @@ extension AdminProfileViewController {
         self.emailNonEditLabel.text = adminDetail.email
         self.phoneNoNonEditLabel.text = adminDetail.phoneNO
         self.dobNonEditLabel.text = adminDetail.dob
-        self.previousPassword = adminDetail.password
-        self.previouEmail = adminDetail.email
         
         self.gymNameTextField.text = adminDetail.gymName
         self.gymIDTextField.text = adminDetail.gymID
@@ -319,5 +380,13 @@ extension AdminProfileViewController : UIImagePickerControllerDelegate, UINaviga
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
+    }
+}
+
+
+extension AdminProfileViewController : UITextFieldDelegate{
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.allProfileFieldsRequiredValidation(textField: textField)
+        self.updateProfileBtnEnabler(textFieldArray: self.textFieldsArray)
     }
 }

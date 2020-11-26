@@ -37,24 +37,72 @@ class ViewEventScreenViewController: BaseViewController {
     @IBOutlet weak var addressForNonEditLabel: UILabel!
     @IBOutlet weak var eventStartTimeForNonEditLabel: UILabel!
     @IBOutlet weak var eventEndTimeForNontEditLabel: UILabel!
+    @IBOutlet weak var eventNameErrorTextLabel: UILabel!
+    @IBOutlet weak var eventDateErrorTextLabel: UILabel!
+    @IBOutlet weak var eventAddressErrorTextLabel: UILabel!
+    @IBOutlet weak var eventStarTimeErrorTextLabel: UILabel!
+    @IBOutlet weak var eventEndTimeErrorTextLabel: UILabel!
     
     var isNewEvent:Bool = false
     var eventID:String = ""
     var isEdit:Bool = false
     var forNonEditLabelArray:[UILabel]? = nil
     var defaultLabelArray:[UILabel]? = nil
+    var errorLabelArray:[UILabel]? = nil
+    var textFieldsArray:[UITextField]? = nil
+    let validation = ValidationManager.shared
+    var datePicker = UIDatePicker()
+    var timePicker = UIDatePicker()
+    let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+    var selectedTime:String = ""
+    var selectedDate:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViewEventNavigationBar()
         self.setTextFields()
         setBackAction(toView: self.viewEventNavigationBar)
+        self.eventUpdateBtn.isEnabled = false
+        self.eventUpdateBtn.alpha = 0.4
+         }
+    
+    @objc func checkValidation(_ textField:UITextField) {
+        self.allFieldsRequiredValidation(textField: textField, duplicateError: nil)
+        self.updateBtnEnabler(textFieldArray: self.textFieldsArray!)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.initialEventSetup()
+    }
+    
+    @IBAction func updateBtnAction(_ sender: Any) {
+        self.isNewEvent ?  self.addEvent() : self.updateEvent()
+    }
+}
+
+extension ViewEventScreenViewController {
+    
+    func updateBtnEnabler(textFieldArray:[UITextField]) {
+        let flag = validation.isAllFieldsRequiredValidated(textFieldArray:textFieldArray)
+        
+        if flag == true  && validation.isTextViewRequiredValid(textView: self.addressTextView) == true {
+            self.eventUpdateBtn.isEnabled = true
+            self.eventUpdateBtn.alpha = 1.0
+        } else {
+            self.eventUpdateBtn.isEnabled = false
+            self.eventUpdateBtn.alpha = 0.4
+        }
+    }
+    
+    func initialEventSetup() {
         self.forNonEditLabelArray = [self.addressForNonEditLabel,self.eventDateForNonEditLabel,self.eventEndTimeForNontEditLabel,self.eventNameForNonEditLabel,self.eventStartTimeForNonEditLabel]
         self.defaultLabelArray = [self.eventName,self.eventDate,self.address,self.eventStartTime,self.eventEndTime]
+        
+        self.errorLabelArray = [self.eventNameErrorTextLabel,self.eventDateErrorTextLabel,self.eventAddressErrorTextLabel,self.eventStarTimeErrorTextLabel,self.eventEndTimeErrorTextLabel]
+        
+        self.textFieldsArray = [self.eventNameTextField,self.eventDateTextField,self.eventStartTimeTextField,self.eventEndTimeTextField]
+        
         
         if self.isNewEvent == false {
             self.fetchEventBy(id: AppManager.shared.eventID)
@@ -64,26 +112,56 @@ class ViewEventScreenViewController: BaseViewController {
             self.addressTextView.isHidden = true
             self.addressTextView.alpha = 0.0
             self.addressNonEditLabel.alpha = 1.0
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!,errorLabels:self.errorLabelArray!, flag: true)
             self.eventUpdateBtn.isEnabled = false
             self.eventUpdateBtn.alpha = 0.4
         }else {
-             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
+            AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!,errorLabels:self.errorLabelArray!, flag: false)
             self.setHrLineView(isHidden: true, alpha: 0.0)
             self.addressNonEditLabel.isHidden = true
             self.addressTextView.isHidden = false
             self.addressTextView.alpha = 1.0
             self.addressNonEditLabel.alpha = 0.0
         }
+        
+        self.timePicker.datePickerMode = .time
+        self.datePicker.datePickerMode = .date
+        toolBar.barStyle = .default
+        let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
+        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar.sizeToFit()
     }
     
-    @IBAction func updateBtnAction(_ sender: Any) {
-        self.isNewEvent ?  self.addEvent() : self.updateEvent()
+    @objc func cancelTextField()  {
+        self.view.endEditing(true)
+        }
+     
+     @objc func doneTextField()  {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "h:mm a"
+        self.selectedTime = dateFormatter.string(from: timePicker.date)
+        dateFormatter.dateFormat = "dd-MMM-YYYY"
+        self.selectedDate = dateFormatter.string(from:datePicker.date )
+        self.view.endEditing(true)
+      }
+    
+    func allFieldsRequiredValidation(textField:UITextField,duplicateError:String?)  {
+        switch textField.tag {
+        case 1:
+            validation.requiredValidation(textField: textField, errorLabel: self.eventNameErrorTextLabel, errorMessage: "Event name required.")
+        case 2:
+            validation.requiredValidation(textField: textField, errorLabel: self.eventDateErrorTextLabel, errorMessage: "Event date required.")
+        case 3:
+            validation.requiredValidation(textField: textField, errorLabel: self.eventStarTimeErrorTextLabel, errorMessage: "Event start time required.")
+        case 4:
+            validation.requiredValidation(textField: textField, errorLabel: self.eventEndTimeErrorTextLabel, errorMessage: (duplicateError != nil ? duplicateError : "Event end time required.")! )
+        default:
+            break
+        }
     }
-}
-
-extension ViewEventScreenViewController {
 
     func setViewEventNavigationBar() {
         self.viewEventNavigationBar.menuBtn.isHidden = true
@@ -102,24 +180,25 @@ extension ViewEventScreenViewController {
     @objc func editEvent() {
              if self.isEdit == true {
                   AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-                  self.isEdit = false
-                  self.setHrLineView(isHidden: false, alpha: 1.0)
+                 self.isEdit = false
+                 self.setHrLineView(isHidden: false, alpha: 1.0)
                  self.addressTextView.isHidden = true
                  self.addressTextView.alpha = 0.0
                  self.addressNonEditLabel.isHidden = false
                  self.addressNonEditLabel.alpha = 1.0
-                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
+                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!,errorLabels:self.errorLabelArray!,flag: true)
                 self.eventUpdateBtn.isEnabled = false
                 self.eventUpdateBtn.alpha = 0.4
               } else{
                   AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-                  self.isEdit = true
-                  self.setHrLineView(isHidden: true, alpha: 0.0)
+                 self.isEdit = true
+                 self.setHrLineView(isHidden: true, alpha: 0.0)
                  self.addressTextView.isHidden = false
                  self.addressTextView.alpha = 1.0
                  self.addressNonEditLabel.isHidden = true
                  self.addressNonEditLabel.alpha = 0.0
-                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
+                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:
+                    self.defaultLabelArray!,errorLabels:self.errorLabelArray!, flag: false)
                 self.eventUpdateBtn.isEnabled = true
                 self.eventUpdateBtn.alpha = 1.0
               }
@@ -148,8 +227,8 @@ extension ViewEventScreenViewController {
             $0?.layer.cornerRadius = 7.0
             $0?.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
             $0?.clipsToBounds = true
+            $0?.addTarget(self, action: #selector(checkValidation(_:)), for: .editingChanged)
         }
-        
         self.addressTextView.addPaddingToTextView(top: 0, right: 10, bottom: 0, left: 10)
         self.addressTextView.layer.cornerRadius = 7.0
         self.addressTextView.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
@@ -180,7 +259,6 @@ extension ViewEventScreenViewController {
         return event
     }
     
-    
     func addEvent() {
         SVProgressHUD.show()
    
@@ -204,7 +282,6 @@ extension ViewEventScreenViewController {
             }else {
                 self.showEventAlert(title: "Success", message: "Event is updated successfully.")
             }
-
         })
     }
     
@@ -246,7 +323,76 @@ extension ViewEventScreenViewController {
         self.eventStartTimeTextField.text = event.eventStartTime
         self.eventEndTimeTextField.text = event.eventEndTime
     }
-    
     }
     
+extension ViewEventScreenViewController:UITextFieldDelegate{
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        switch textField.tag {
+        case 3:
+            textField.inputView = self.timePicker
+            textField.inputAccessoryView = self.toolBar
+        case 4:
+            textField.inputView = self.timePicker
+            textField.inputAccessoryView = self.toolBar
+        case 2 :
+            textField.inputView = self.datePicker
+            textField.inputAccessoryView = self.toolBar
+        default:
+            break
+        }
+  
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    if textField.tag == 3 || textField.tag == 4 {
+            return false
+        } else{
+            return true
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        var duplicateError:String? = nil
+        if self.selectedTime.count > 1 {
+            switch textField.tag {
+            case 3:
+                self.eventStartTimeTextField.text = self.selectedTime
+                self.selectedTime = ""
+            case 4:
+                if validation.isDuplicate(text1: self.eventStartTimeTextField.text!, text2: self.selectedTime) == false{
+                    self.eventEndTimeTextField.text = self.selectedTime
+                    self.selectedTime = ""
+                } else {
+                    self.eventEndTimeTextField.text = ""
+                    duplicateError = "Start time and end time can not be same."
+                }
+            case 2 :
+                self.eventDateTextField.text = self.selectedDate
+            default:
+                break
+            }
 
+        }
+        
+        self.allFieldsRequiredValidation(textField: textField, duplicateError: duplicateError)
+        self.updateBtnEnabler(textFieldArray: self.textFieldsArray!)
+        
+
+    }
+}
+
+extension ViewEventScreenViewController:UITextViewDelegate{
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        self.validation.requiredValidation(textView: textView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address required.")
+        self.updateBtnEnabler(textFieldArray: self.textFieldsArray!)
+        return true
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        self.validation.requiredValidation(textView: textView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address required.")
+     
+    }
+}

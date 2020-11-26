@@ -130,7 +130,7 @@ class AppManager: NSObject {
     }
     
     func isPasswordValid(text:String) -> Bool {
-        if text.count > 8 {
+        if text.count >= 8 {
                  return true
              }
              else {
@@ -497,7 +497,7 @@ class AppManager: NSObject {
         return attendence
     }
     
-    func setLabel(nonEditLabels:[UILabel],defaultLabels:[UILabel],flag:Bool) {
+    func setLabel(nonEditLabels:[UILabel],defaultLabels:[UILabel],errorLabels:[UILabel]?,flag:Bool) {
         if flag == true {
             nonEditLabels.forEach{
                 $0.isHidden = false
@@ -508,7 +508,13 @@ class AppManager: NSObject {
                 $0.isHidden = true
                 $0.alpha = 0.0
             }
-            
+            if errorLabels != nil {
+                errorLabels!.forEach{
+                    $0.isHidden = true
+                    $0.alpha = 0.0
+                }
+            }
+ 
         } else {
             nonEditLabels.forEach{
                 $0.isHidden = true
@@ -518,6 +524,13 @@ class AppManager: NSObject {
                 $0.isHidden = false
                 $0.alpha = 1.0
                 $0.textColor = UIColor.black
+            }
+            if errorLabels != nil {
+                errorLabels!.forEach{
+                    $0.isHidden = false
+                    $0.alpha = 1.0
+                    $0.textColor = UIColor.red
+                }
             }
         }
     }

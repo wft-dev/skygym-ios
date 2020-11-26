@@ -10,15 +10,11 @@ target 'Sky-Gym' do
 
 # add pods for desired Firebase products
 # https://firebase.google.com/docs/ios/setup#available-pods
-pod 'FirebaseFirestoreSwift'
 
+        pod 'FirebaseFirestoreSwift'
 	pod 'IQKeyboardManagerSwift'
 	pod 'SVProgressHUD'
-
-pod 'FirebaseStorage', '~> 3.9'
-pod 'Firebase/Auth'
-
-
-
+        pod 'FirebaseStorage', '~> 3.9'
+	pod 'Firebase'
 
 end

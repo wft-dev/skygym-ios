@@ -205,7 +205,7 @@ extension TrainerEditScreenViewController {
    @objc func makeEditable() {
     if self.isEdit == true {
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: true)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: nil, flag: true)
         self.addressNonEditLabel.isHidden = false
         self.addressView.isHidden  = true
         self.addressView.alpha = 0.0
@@ -227,7 +227,7 @@ extension TrainerEditScreenViewController {
         self.updateBtn.alpha = 0.4
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: false)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: nil, flag: false)
         self.setToggleBtns(isEnabled: true, alpha: 1.0)
         self.idTextField.isEnabled = true
         self.idTextField.layer.opacity = 0.4
@@ -424,11 +424,13 @@ extension TrainerEditScreenViewController {
         self.forNonEditLabelArray = [self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.idForNonEditLabel,self.phoneNoForNonEditLabel,self.emailForNonEditLabel,self.passwordForNonEditLabel,self.addressForNonEditLabel,self.genderForNonEditLabel,self.salaryForNonEditLabel,self.idProofForNonEditLabel,self.shiftDaysForNonEditLabel,self.shiftTimingForNonEditLabel,self.dobForNonEditLabel,self.dateOfJoinForNonEditLabel,self.typeForNonEditLabel,self.generalTypeForNonEditLabel,self.personalTypeForNonEditLabel]
         
         self.defaultArray = [self.firstName,self.lastName,self.id,self.phoneNo,self.email,self.password,self.address,self.gender,self.salary,self.shiftDays,self.idProof,self.shiftTimings,self.dob,self.dateOfJoin,self.generalTypeLabel,self.type,self.personalTypeLabel]
+        
+        
         userImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showUserImgPicker)))
         userImg.makeRounded()
         if self.isNewTrainer == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  false)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: nil, flag: true)
             self.setHrLineView(isHidden: false, alpha: 1.0)
             self.setToggleBtns(isEnabled: false, alpha: 0.9)
             self.addressNonEditLabel.isHidden = false
@@ -443,7 +445,7 @@ extension TrainerEditScreenViewController {
             self.permissions.textColor = .lightGray
         } else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, flag: false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: nil, flag: false)
             self.setHrLineView(isHidden: true, alpha: 0.0)
             self.setToggleBtns(isEnabled: true, alpha: 1.0)
             self.addressNonEditLabel.isHidden = true

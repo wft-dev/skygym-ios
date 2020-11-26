@@ -67,8 +67,6 @@ class AddMemberViewController: BaseViewController {
     var renewingMembershipID:String = ""
     var renewingMembershipDuration:String = ""
     var visitorProfileImgData:Data? = nil
-    var previousEmail:String = ""
-    var previousPassword:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -99,9 +97,9 @@ class AddMemberViewController: BaseViewController {
             }
         }
     }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //self.memberIDTextField.text = "\(UUID().hashValue)"
         self.memberIDTextField.text = "\(Int.random(in: 1..<100000))" 
         self.memberIDTextField.isEnabled = false
         self.memberIDTextField.alpha = 0.4
@@ -178,7 +176,7 @@ class AddMemberViewController: BaseViewController {
         }
             
         else{
-            self.updateMembership(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
+            self.addNewMembership(membershipDetail: self.getMembershipDetails())
         }
     }
     
@@ -438,7 +436,7 @@ extension AddMemberViewController{
                         (err) in
                         if err != nil {
                             SVProgressHUD.dismiss()
-                            self.errorAlert(message: "\(err?.localizedDescription)")
+                            self.errorAlert(message: "\(err?.localizedDescription ?? "Member is not registered successfully.")")
                         } else {
                             SVProgressHUD.dismiss()
                             self.successAlert(message: "Member is registered successfully.")
@@ -449,26 +447,29 @@ extension AddMemberViewController{
         })
     }
     
-    func updateMembership(memberDetail:[String:String],membershipDetail:[[String:String]]) {
+    func addNewMembership(membershipDetail:[[String:String]]) {
         SVProgressHUD.show()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
             SVProgressHUD.dismiss()
-            FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID,previousEmail:self.previousEmail ,previousPassword: self.previousPassword, memberDetail: self.getMemberDetails(), handler: {
+            
+            FireStoreManager.shared.addNewMembeship(memberID: AppManager.shared.memberID, membership: self.getMembershipDetails().first!, completion: {
                 (err) in
+                
                 if err != nil {
-                    self.errorAlert(message: "Member Details are not updated successfully,Try again")
-                } else{
-                    FireStoreManager.shared.addNewMembeship(memberID: AppManager.shared.memberID, membership: self.getMembershipDetails().first!, completion: {
-                        (err) in
-                        
-                        if err != nil {
-                            self.errorAlert(message: "New Membership is not added successfully, Try again.")
-                        } else {
-                            self.successAlert(message: "New Membership is added successfully.")
-                        }
-                    })
+                    self.errorAlert(message: "New Membership is not added successfully, Try again.")
+                } else {
+                    self.successAlert(message: "New Membership is added successfully.")
                 }
             })
+
+//            FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID, memberDetail: self.getMemberDetails(), handler: {
+//                (err) in
+//                if err != nil {
+//                    self.errorAlert(message: "Member Details are not updated successfully,Try again")
+//                } else{
+//
+//                }
+//            })
         })
     }
     
@@ -541,10 +542,6 @@ extension AddMemberViewController{
         self.addressTextView.text = memberDetail.address
         self.phoneNumberTextField.text = memberDetail.phoneNo
         self.dobTextField.text = memberDetail.dob
-        
-        self.previousPassword = memberDetail.password
-        self.previousEmail = memberDetail.email
-        
     }
        func retryMemberDataAlert() {
             let retryAlertController = UIAlertController(title: "Error", message: "Error in getting the member Detail.", preferredStyle: .alert)

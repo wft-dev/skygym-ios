@@ -77,7 +77,7 @@ class ViewVisitorScreenViewController: BaseViewController {
         
         if self.isNewVisitor == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: nil, flag: true)
             self.setHrLineView(isHidden: false, alpha: 1.0)
             self.visitorDetailTextView.isHidden = true
             self.visitorDetailTextView.alpha = 0.0
@@ -87,7 +87,7 @@ class ViewVisitorScreenViewController: BaseViewController {
             self.updateBtn.alpha = 0.4
         }else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: true)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: nil, flag: false)
             self.setHrLineView(isHidden: true, alpha: 0.0)
             self.visitorDetailTextView.isHidden = false
             self.visitorDetailTextView.alpha = 1.0
@@ -162,7 +162,7 @@ extension ViewVisitorScreenViewController {
     @objc func editVisitor() {
         if self.isEdit == true {
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: nil, flag: true)
             self.isEdit = false
             self.setHrLineView(isHidden: false, alpha: 1.0)
             self.visitorDetailTextView.isHidden = true
@@ -173,7 +173,7 @@ extension ViewVisitorScreenViewController {
             self.updateBtn.alpha = 0.4
         } else{
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, flag: false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: nil, flag: false)
             self.isEdit = true
             self.setHrLineView(isHidden: true, alpha: 0.0)
             self.visitorDetailTextView.isHidden = false

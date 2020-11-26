@@ -12,6 +12,7 @@
 		4231BF98253458A9007EFBBF /* ListOfEventsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF97253458A9007EFBBF /* ListOfEventsViewController.swift */; };
 		4231BF9A25347328007EFBBF /* ViewEventScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */; };
 		423F870A252B4846001C30D4 /* MemberDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423F8709252B4846001C30D4 /* MemberDetailViewController.swift */; };
+		42446A28256FA7AE00F966FD /* Validator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42446A27256FA7AE00F966FD /* Validator.swift */; };
 		424937232526094D0043ADFF /* AddMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424937222526094D0043ADFF /* AddMemberViewController.swift */; };
 		4249C38A251B12BD00DC9AE0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249C389251B12BD00DC9AE0 /* AppDelegate.swift */; };
 		4249C38C251B12BD00DC9AE0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249C38B251B12BD00DC9AE0 /* SceneDelegate.swift */; };
@@ -57,6 +58,7 @@
 		4231BF97253458A9007EFBBF /* ListOfEventsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfEventsViewController.swift; sourceTree = "<group>"; };
 		4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewEventScreenViewController.swift; sourceTree = "<group>"; };
 		423F8709252B4846001C30D4 /* MemberDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDetailViewController.swift; sourceTree = "<group>"; };
+		42446A27256FA7AE00F966FD /* Validator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validator.swift; sourceTree = "<group>"; };
 		424937222526094D0043ADFF /* AddMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemberViewController.swift; sourceTree = "<group>"; };
 		4249C386251B12BD00DC9AE0 /* Sky-Gym.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sky-Gym.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4249C389251B12BD00DC9AE0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 				4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */,
 				42B873AD2536E19E004CCD50 /* FireStoreManager.swift */,
 				42C3F50F25386B3C007DBC79 /* AppDataStructureManager.swift */,
+				42446A27256FA7AE00F966FD /* Validator.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -341,6 +344,7 @@
 				42F7DBB72521F790001F0050 /* BaseViewController.swift in Sources */,
 				42BC9BF8252DCEC200435000 /* MemberViewController.swift in Sources */,
 				42651AD425303F1500539B19 /* ListOfMembershipViewController.swift in Sources */,
+				42446A28256FA7AE00F966FD /* Validator.swift in Sources */,
 				42BC9BF6252D82EE00435000 /* MemberAttandanceViewController.swift in Sources */,
 				42A407A7251CC6A40087B02F /* MemberAndTrainerLoginViewController.swift in Sources */,
 				42F7DBB12521E870001F0050 /* AdminDashboardViewController.swift in Sources */,
