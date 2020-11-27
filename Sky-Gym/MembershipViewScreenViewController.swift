@@ -37,7 +37,13 @@ class MembershipViewScreenViewController: BaseViewController {
     @IBOutlet weak var detailForNonEditLabel: UILabel!
     @IBOutlet weak var startDateForNonEditLabel: UILabel!
     @IBOutlet weak var endDateForNonEditLabel: UILabel!
-
+    
+    @IBOutlet weak var titleErrorLabel: UILabel!
+    @IBOutlet weak var amountErrorLabel: UILabel!
+    @IBOutlet weak var detailErrorLabel: UILabel!
+    @IBOutlet weak var startDateErrorLabel: UILabel!
+    @IBOutlet weak var endDateErrorLabel: UILabel!
+    
     var isNewMemberhsip:Bool = false
     var datePicker = UIDatePicker()
     let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
@@ -47,12 +53,24 @@ class MembershipViewScreenViewController: BaseViewController {
     var isEdit:Bool = false
     var forNonEditLabelArray:[UILabel]? = nil
     var defaultLabelArray:[UILabel]? = nil
+    var errorLabelArray:[UILabel] = []
+    var textFieldArray:[UITextField] = []
+    let validation = ValidationManager.shared
+    var duplicateErrorText:String? = nil
  
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setMembershipView()
+        self.doneBtn.isEnabled = false
+        self.doneBtn.alpha = 0.4
+        
         self.forNonEditLabelArray = [self.titleForNonEditLabel,self.amountForNonEditLabel,self.detailForNonEditLabel,self.endDateForNonEditLabel,self.startDateForNonEditLabel]
+        
         self.defaultLabelArray = [self.titleLabel,self.amountLabel,self.detailLabel,self.startDateLabel,self.endDateLabel]
+        
+        self.errorLabelArray = [self.titleErrorLabel,self.amountErrorLabel,self.detailErrorLabel,self.startDateErrorLabel,self.endDateErrorLabel]
+        
+        self.textFieldArray = [self.titleTextField,self.amountTextField,self.startDateTextField,self.endDateTextField]
         
         if self.isNewMemberhsip == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
@@ -61,9 +79,8 @@ class MembershipViewScreenViewController: BaseViewController {
             self.detailTextView.alpha = 0.0
             self.detailNonEditLabel.isHidden = false
             self.detailNonEditLabel.alpha = 1.0
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: nil, flag: true)
-            self.doneBtn.isEnabled = false
-            self.doneBtn.alpha = 0.4
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: true)
+
         }else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: true)
             self.setHrLineView(isHidden: true, alpha: 0.0)
@@ -71,10 +88,9 @@ class MembershipViewScreenViewController: BaseViewController {
             self.detailTextView.alpha = 1.0
             self.detailNonEditLabel.isHidden = true
             self.detailNonEditLabel.alpha = 0.0
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: nil, flag: false)
-            self.doneBtn.isEnabled = true
-            self.doneBtn.alpha = 1.0
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: false)
         }
+
     }
     
     @IBAction func doneBtnAction(_ sender: Any) {
@@ -83,6 +99,23 @@ class MembershipViewScreenViewController: BaseViewController {
 }
 
 extension  MembershipViewScreenViewController {
+    
+    
+    
+    func allMembershipFieldsRequiredValidation(textField:UITextField,duplicateDateErrorText:String?)  {
+        switch textField.tag {
+        case 1:
+            validation.requiredValidation(textField: textField, errorLabel: self.titleErrorLabel, errorMessage: "Membership Title required.")
+        case 2:
+            validation.requiredValidation(textField: textField, errorLabel: self.amountErrorLabel, errorMessage: "Membership Amount required.")
+        case 3:
+            validation.requiredValidation(textField: textField, errorLabel: self.startDateErrorLabel, errorMessage: "Start date required." )
+        case 4:
+            validation.requiredValidation(textField: textField, errorLabel: self.endDateErrorLabel, errorMessage: (duplicateDateErrorText != nil ? (duplicateDateErrorText):" End date required.")! )
+        default:
+            break
+        }
+    }
 
     func setMembershipView() {
         self.setMembershipViewScreenNavigationBar()
@@ -149,7 +182,6 @@ extension  MembershipViewScreenViewController {
         }
     }
     
-    
     func getFieldsAndLabelDic() -> [UITextField:UILabel] {
         let dir = [
             self.titleTextField! : self.titleNonEditLabel!,
@@ -172,13 +204,19 @@ extension  MembershipViewScreenViewController {
             $0?.layer.cornerRadius = 7.0
             $0?.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
             $0?.clipsToBounds = true
+            $0?.addTarget(self, action: #selector(fieldsValidatorAction(_:)), for: .editingChanged)
         }
         self.detailTextView.addPaddingToTextView(top: 0, right: 8, bottom: 0, left: 8)
         self.detailTextView.layer.cornerRadius = 7.0
         self.detailTextView.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
         self.detailTextView.clipsToBounds = true
     }
-
+    
+    @objc func fieldsValidatorAction(_ textField:UITextField) {
+        self.allMembershipFieldsRequiredValidation(textField: textField, duplicateDateErrorText: duplicateErrorText)
+        validation.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: self.detailTextView, phoneNumberTextField: nil)
+    }
+    
     func getMembershipData() -> [String:String] {
         self.startDate = AppManager.shared.getDate(date: self.startDateTextField.text!)
         self.endDate = AppManager.shared.getDate(date: self.endDateTextField.text!)
@@ -281,7 +319,7 @@ extension  MembershipViewScreenViewController {
 
 extension MembershipViewScreenViewController :UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-         if textField.tag == 1 || textField.tag == 2 {
+         if textField.tag == 3 || textField.tag == 4 {
                    return false
                }else{
                    return true
@@ -290,26 +328,54 @@ extension MembershipViewScreenViewController :UITextFieldDelegate{
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         
-           if textField.tag == 1 || textField.tag  == 2 {
+           if textField.tag == 3 || textField.tag  == 4 {
                textField.inputAccessoryView = self.toolBar
                textField.inputView = datePicker
+            if textField.text!.count > 0  {
+                let df = DateFormatter()
+                df.dateFormat = "dd-MM-yyyy"
+                self.datePicker.date = df.date(from: textField.text!)!
+            }
            }
- 
        }
        
     func textFieldDidEndEditing(_ textField: UITextField) {
         if self.selectedDate.count > 1  {
             switch textField.tag {
-            case 1:
+            case 3:
                 self.startDateTextField.text = self.selectedDate
                 self.startDate = datePicker.date
-            case 2 :
-                self.endDateTextField.text = self.selectedDate
-                self.endDate = datePicker.date
+            case 4:
+                if validation.isDuplicate(text1: self.startDateTextField.text!, text2: self.selectedDate) == false{
+                    self.endDateTextField.text = self.selectedDate
+                    self.endDate = datePicker.date
+                    self.selectedDate = ""
+                    self.duplicateErrorText = nil
+                } else {
+                    self.endDateTextField.text = ""
+                    duplicateErrorText = "Start time and end time can not be same."
+                    self.selectedDate = ""
+                }
             default:
                 break
             }
         }
+        self.allMembershipFieldsRequiredValidation(textField: textField, duplicateDateErrorText: duplicateErrorText)
+        validation.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: self.detailTextView, phoneNumberTextField: nil)
+    }
+}
+
+
+extension MembershipViewScreenViewController:UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        self.validation.requiredValidation(textView: textView, errorLabel: self.detailErrorLabel, errorMessage: "Membership details required.")
+        validation.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: self.detailTextView, phoneNumberTextField: nil)
+        return true
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        self.validation.requiredValidation(textView: textView, errorLabel: self.detailErrorLabel, errorMessage: "Membership details required.")
+            validation.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: self.detailTextView, phoneNumberTextField: nil)
     }
 }
 

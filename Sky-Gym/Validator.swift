@@ -18,15 +18,26 @@ class ValidationManager: NSObject {
         return textView.text!.count > 0 ? true : false
     }
     
-    func isAllFieldsRequiredValidated(textFieldArray:[UITextField]) -> Bool {
+    func isAllFieldsRequiredValidated(textFieldArray:[UITextField],phoneNumberTextField:UITextField?) -> Bool {
         var flag:Bool = false
         
-        validatorLoop: for textField in textFieldArray{
-            if  textField.text!.count > 0 {
-                flag = true
-            }else {
-                flag = false
-                break validatorLoop
+        if phoneNumberTextField != nil  {
+            validatorLoop: for textField in textFieldArray{
+                if  textField.text!.count > 0 {
+                    flag = phoneNumberTextField?.text?.count  == 10 ? true : false
+                }else {
+                    flag = false
+                    break validatorLoop
+                }
+            }
+        } else {
+            validatorLoop: for textField in textFieldArray{
+                if  textField.text!.count > 0 {
+                    flag = true
+                }else {
+                    flag = false
+                    break validatorLoop
+                }
             }
         }
         return flag
@@ -44,6 +55,20 @@ class ValidationManager: NSObject {
             textField.layer.borderWidth = 1.0
         }
     }
+    
+    func phoneNumberValidation(textField:UITextField,errorLabel:UILabel,errorMessage:String)  {
+        if textField.text!.count == 10 {
+            errorLabel.text = ""
+            textField.borderStyle = .none
+            textField.layer.borderColor = UIColor.clear.cgColor
+            textField.layer.borderWidth = 0.0
+        } else {
+            errorLabel.text = errorMessage
+            textField.layer.borderColor = UIColor.red.cgColor
+            textField.layer.borderWidth = 1.0
+        }
+    }
+    
     
     func requiredValidation(textView:UITextView,errorLabel:UILabel,errorMessage:String)  {
         if textView.text!.count > 0 {
@@ -68,6 +93,24 @@ class ValidationManager: NSObject {
     
     func isDuplicate(text1:String,text2:String) -> Bool {
         return text1 == text2 ? true : false
+    }
+    
+    func updateBtnValidator(updateBtn:UIButton,textFieldArray:[UITextField],textView:UITextView,phoneNumberTextField:UITextField?) {
+        let flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField)
+        
+        if flag == true  && isTextViewRequiredValid(textView: textView) == true {
+            updateBtn.isEnabled = true
+            updateBtn.alpha = 1.0
+        } else {
+            updateBtn.isEnabled = false
+            updateBtn.alpha = 0.4
+        }
+    }
+    
+    func updateBtnValidatorWithCurrentTextField(updateBtn:UIButton,textField:UITextField) {
+        let flag = textField.text!.count > 0
+        updateBtn.isEnabled = flag == true  ? true : false
+        updateBtn.alpha = flag == true ? 1.0 : 0.4
     }
     
 }

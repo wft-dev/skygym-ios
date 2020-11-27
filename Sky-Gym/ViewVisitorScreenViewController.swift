@@ -57,6 +57,16 @@ class ViewVisitorScreenViewController: BaseViewController {
     @IBOutlet weak var genderForNonEditLabel: UILabel!
     @IBOutlet weak var phoneNoForNonEditLabel: UILabel!
     
+    @IBOutlet weak var firstNameErrorLabel: UILabel!
+    @IBOutlet weak var secondNameErrorLabel: UILabel!
+    @IBOutlet weak var emailErrorLabel: UILabel!
+    @IBOutlet weak var addressErrorLabel: UILabel!
+    @IBOutlet weak var dateOfJoinErrorLabel: UILabel!
+    @IBOutlet weak var dateOfVisitErrorLabel: UILabel!
+    @IBOutlet weak var noOfVisitErrorLabel: UILabel!
+    @IBOutlet weak var genderErrorLabel: UILabel!
+    @IBOutlet weak var phoneNumberErrorLabel: UILabel!
+    
     var imagePicker = UIImagePickerController()
     var isNewVisitor:Bool = false
     var datePicker = UIDatePicker()
@@ -67,40 +77,49 @@ class ViewVisitorScreenViewController: BaseViewController {
     var isEdit:Bool = false
     var forNonEditLabelArray:[UILabel]? = nil
     var defaultLabelArray:[UILabel]? = nil
+    var errorLabelArray:[UILabel] = []
+    var textFieldArray:[UITextField] = []
+    let validation = ValidationManager.shared
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setVisitorView()
         
         self.forNonEditLabelArray = [self.addressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.dateOfJoinForNonEditLabel,self.dateOfVisitForNonEditLabel,self.genderForNonEditLabel,self.noOfVisitForNonEditLabel,self.phoneNoForNonEditLabel]
+        
         self.defaultLabelArray = [self.firstName,self.lastName,self.address,self.email,self.dateOfJoin,self.dateOfVisit,self.gender,self.noOfVisit,self.phoneNo]
+    
+        self.textFieldArray = [self.visitorFirstName,self.visitorLastName,self.visitorEmailTextField,self.visitorDateOfJoinTextField,self.visitorDateOfVisitTextField,self.noOfVisitTextField,self.visitorGenderTextField,self.visitorPhoneNoTextField]
+        
+        self.errorLabelArray = [self.firstNameErrorLabel,self.secondNameErrorLabel,self.emailErrorLabel,self.addressErrorLabel,self.dateOfJoinErrorLabel,self.dateOfVisitErrorLabel,self.noOfVisitErrorLabel,self.genderErrorLabel,self.phoneNumberErrorLabel]
+        
         
         if self.isNewVisitor == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: nil, flag: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: true)
             self.setHrLineView(isHidden: false, alpha: 1.0)
             self.visitorDetailTextView.isHidden = true
             self.visitorDetailTextView.alpha = 0.0
             self.addressNonEditLabel.isHidden = false
             self.addressNonEditLabel.alpha = 1.0
-            self.updateBtn.isEnabled = false
-            self.updateBtn.alpha = 0.4
+
         }else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: true)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: nil, flag: false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: false)
             self.setHrLineView(isHidden: true, alpha: 0.0)
             self.visitorDetailTextView.isHidden = false
             self.visitorDetailTextView.alpha = 1.0
             self.addressNonEditLabel.isHidden = true
             self.addressNonEditLabel.alpha = 0.0
-            self.updateBtn.isEnabled = true
-            self.updateBtn.alpha = 1.0
         }
+        
+        self.updateBtn.isEnabled = false
+        self.updateBtn.alpha = 0.4
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-              self.userImg.makeRounded()
+        self.userImg.makeRounded()
         self.isNewVisitor == false ? self.fetchVisitor(id: AppManager.shared.visitorID) : self.clearVisitorTextFields()
     }
     
@@ -110,7 +129,31 @@ class ViewVisitorScreenViewController: BaseViewController {
 }
 
 extension ViewVisitorScreenViewController {
-    
+
+    func allVisitorFieldsRequiredValidation(textField:UITextField)  {
+        switch textField.tag {
+        case 1:
+            validation.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
+        case 2:
+            validation.requiredValidation(textField: textField, errorLabel: self.secondNameErrorLabel, errorMessage: "Last Name required.")
+        case 3:
+            validation.requiredValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Email required." )
+        case 4:
+            validation.requiredValidation(textField: textField, errorLabel: self.dateOfJoinErrorLabel, errorMessage: "Date of join required.")
+        case 5:
+            validation.requiredValidation(textField: textField, errorLabel: self.dateOfVisitErrorLabel, errorMessage: "Date of visit required.")
+        case 6:
+            validation.requiredValidation(textField: textField, errorLabel: self.noOfVisitErrorLabel, errorMessage: "No. of visit required." )
+        case 7:
+            validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "gender required.")
+        case 8:
+            validation.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
+
+        default:
+            break
+        }
+    }
+
     func setVisitorView()  {
         self.setVisitorViewNavigationBar()
         self.setTextFields()
@@ -162,7 +205,7 @@ extension ViewVisitorScreenViewController {
     @objc func editVisitor() {
         if self.isEdit == true {
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: nil, flag: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: true)
             self.isEdit = false
             self.setHrLineView(isHidden: false, alpha: 1.0)
             self.visitorDetailTextView.isHidden = true
@@ -173,7 +216,7 @@ extension ViewVisitorScreenViewController {
             self.updateBtn.alpha = 0.4
         } else{
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: nil, flag: false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: false)
             self.isEdit = true
             self.setHrLineView(isHidden: true, alpha: 0.0)
             self.visitorDetailTextView.isHidden = false
@@ -214,8 +257,8 @@ extension ViewVisitorScreenViewController {
             $0?.layer.cornerRadius = 7.0
             $0?.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
             $0?.clipsToBounds = true
+            $0?.addTarget(self, action: #selector(fieldsValidatorAction(_:)), for: .editingChanged)
         }
-        
         self.visitorDetailTextView.addPaddingToTextView(top: 0, right: 10, bottom: 0, left: 10)
         self.visitorDetailTextView.layer.cornerRadius = 7.0
         self.visitorDetailTextView.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
@@ -225,6 +268,12 @@ extension ViewVisitorScreenViewController {
         self.updateBtn.layer.borderWidth = 0.7
         self.updateBtn.clipsToBounds = true
     }
+    
+    @objc func fieldsValidatorAction(_ textField:UITextField)  {
+        self.allVisitorFieldsRequiredValidation(textField: textField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField)
+    }
+    
         
     func addPaddingToTextField(textField:UITextField) {
         let paddingView: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
@@ -276,7 +325,7 @@ extension ViewVisitorScreenViewController {
            let okAction = UIAlertAction(title: "OK", style: .default, handler:{
                _ in
                if title == "Success"{
-                    self.dismiss(animated: true, completion: nil)
+                self.fetchVisitor(id: AppManager.shared.visitorID)
                }
            })
            alert.addAction(okAction)
@@ -373,7 +422,7 @@ extension ViewVisitorScreenViewController {
 
 extension ViewVisitorScreenViewController:UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 1 || textField.tag == 2 {
+        if textField.tag == 4 || textField.tag == 5 {
             return false
         }else{
             return true
@@ -381,21 +430,36 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
     }
        
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        if textField.tag == 1 || textField.tag == 2 {
+        if textField.tag == 4 || textField.tag == 5 {
             textField.inputAccessoryView = self.toolBar
             textField.inputView = datePicker
+            if textField.text!.count > 0  {
+                let df = DateFormatter()
+                df.dateFormat = "dd-MM-yyyy"
+                self.datePicker.date = df.date(from: textField.text!)!
+            }
         }
+        self.allVisitorFieldsRequiredValidation(textField: textField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField)
     }
           
     func textFieldDidEndEditing(_ textField: UITextField) {
         switch textField.tag {
-        case 1:
-            self.visitorDateOfJoinTextField.text = self.selectedDate
-        case 2:
+        case 4:
+            if  self.selectedDate != "" {
+                self.visitorDateOfJoinTextField.text = self.selectedDate
+                self.selectedDate = ""
+            }
+        case 5:
+             if  self.selectedDate != "" {
             self.visitorDateOfVisitTextField.text = self.selectedDate
+            self.selectedDate = ""
+            }
         default:
             break
         }
+        self.allVisitorFieldsRequiredValidation(textField: textField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField)
     }
 }
 
@@ -409,4 +473,18 @@ extension ViewVisitorScreenViewController : UIImagePickerControllerDelegate,UINa
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
+}
+
+
+extension ViewVisitorScreenViewController : UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+     self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address required.")
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.visitorPhoneNoTextField)
+        return true
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address required.")
+    }
+    
 }

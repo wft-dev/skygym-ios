@@ -65,24 +65,41 @@ class MemberViewController: BaseViewController {
     @IBOutlet weak var passwordForNonEditLabel: UILabel!
     @IBOutlet weak var trainerTypeLabel: UILabel!
     @IBOutlet weak var memberViewScrollView: UIScrollView!
-    
+
+    @IBOutlet weak var memberIDErrorLabel: UILabel!
+    @IBOutlet weak var dateOfJoiningErrorLabel: UILabel!
+    @IBOutlet weak var genderErrorLabel: UILabel!
+    @IBOutlet weak var passwordErrorLabel: UILabel!
+    @IBOutlet weak var trainerNameErrorLabel: UILabel!
+    @IBOutlet weak var uploadIDErrorLabel: UILabel!
+    @IBOutlet weak var emailErrorLabel: UILabel!
+    @IBOutlet weak var addressErrorLabel: UILabel!
+    @IBOutlet weak var phoneNumberErrorLabel: UILabel!
+    @IBOutlet weak var dobErrorLabel: UILabel!
+
     var isEdit:Bool = false
     var firstName:String = ""
     var lastName:String = ""
     var imgPicker:UIImagePickerController = UIImagePickerController()
+    var datePicker = UIDatePicker()
+    let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
     var imgURL:URL? = nil
     var isUploadIdSelected:Bool = false
     var isUserProfileSelected:Bool = false
     var img:UIImage? = nil
     var forNonEditLabelArray:[UILabel] = []
     var defaultLabelArray:[UILabel] = []
-    var previousEmail:String = ""
-    var previousPassword:String = ""
-
+    var errorLabelArray:[UILabel] = []
+    var textFieldArray:[UITextField] = []
+    let validation = ValidationManager.shared
+    var selectedDate:String = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.forNonEditLabelArray = [self.memberIDForNonEditLabel,self.dateOfJoiningForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.trainerNameForNonEditLabel,self.uploadForNonEditLabel,self.emailForNonEditLabel,self.addressForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
         self.defaultLabelArray = [self.memberID,self.dateOfJoining,self.gender,self.password,self.trainerName,self.uploadID,self.email,self.address,self.phoneNo,self.dob]
+        self.errorLabelArray = [self.memberIDErrorLabel,self.dateOfJoiningErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.addressErrorLabel,self.trainerNameErrorLabel,self.uploadIDErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel]
+        self.textFieldArray = [self.memberIDTextField,self.dateOfJoiningTextField,self.genderTextField,self.passwordTextField,self.trainerNameTextField,self.uploadIDTextField,self.emailTextField,self.phoneNoTextField,self.dobTextField]
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -94,7 +111,7 @@ class MemberViewController: BaseViewController {
         self.imgPicker.delegate = self
         self.updateBtn.isEnabled = false
         self.updateBtn.alpha = 0.6
-         self.setMemberProfileCompleteView()
+        self.setMemberProfileCompleteView()
     }
     
     @IBAction func updateBtnAction(_ sender: Any) {
@@ -151,12 +168,37 @@ class MemberViewController: BaseViewController {
 
 extension MemberViewController{
     
+    func allMemberProfileFieldsRequiredValidation(textField:UITextField)  {
+        switch textField.tag {
+        case 1:
+            validation.requiredValidation(textField: textField, errorLabel: self.memberIDErrorLabel, errorMessage: "Member ID required.")
+        case 2:
+            validation.requiredValidation(textField: textField, errorLabel: self.dateOfJoiningErrorLabel, errorMessage: "Date of join required.")
+        case 3:
+            validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Member's gender required." )
+        case 4:
+            validation.requiredValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password required.")
+        case 5:
+            validation.requiredValidation(textField: textField, errorLabel: self.trainerNameErrorLabel, errorMessage: "Trainer's name required.")
+        case 6:
+            validation.requiredValidation(textField: textField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required." )
+        case 7:
+            validation.requiredValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Member's email required.")
+        case 8:
+            validation.phoneNumberValidation(textField: textField, errorLabel:self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
+        case 9:
+                validation.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required." )
+        default:
+            break
+        }
+    }
+    
     func setMemberProfileCompleteView()  {
         self.memberNavigationBar()
         setTextFields()
         self.updateBtn.layer.cornerRadius = 15.0
         AppManager.shared.performEditAction(dataFields: self.getMemberProfileFieldsAndLabelDic(), edit:  false)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: nil, flag: true)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
         self.setHrLineView(isHidden: false, alpha: 1.0)
         self.addressNonEditLabel.isHidden = false
         self.addressNonEditLabel.alpha = 1.0
@@ -164,7 +206,26 @@ extension MemberViewController{
         self.addressTextView.alpha = 0.0
         self.setToggleBtns(isEnabled: false, alpha: 0.9)
         self.addUploadTextFieldRightView()
+        
+        self.datePicker.datePickerMode = .date
+        toolBar.barStyle = .default
+        let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
+        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar.sizeToFit()
     }
+    
+    @objc func cancelTextField()  {
+        self.view.endEditing(true)
+        }
+     
+     @objc func doneTextField()  {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MMM-YYYY"
+        self.selectedDate = dateFormatter.string(from:datePicker.date )
+        self.view.endEditing(true)
+      }
     
     func memberNavigationBar()  {
         memberNaviagationBar.menuBtn.isHidden = true
@@ -184,16 +245,22 @@ extension MemberViewController{
                            $0?.layer.cornerRadius = 7.0
                            $0?.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
                            $0?.clipsToBounds = true
+            $0?.addTarget(self, action: #selector(fieldsValidatorAction(_:)), for: .editingChanged)
         }
-        
         self.addressTextView.layer.cornerRadius = 7.0
+    }
+    
+    
+    @objc func fieldsValidatorAction(_ textField:UITextField) {
+        self.allMemberProfileFieldsRequiredValidation(textField: textField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
     }
     
     @objc func makeEditable() {
        if self.isEdit == true {
         self.memberImg.isUserInteractionEnabled = false
         AppManager.shared.performEditAction(dataFields:self.getMemberProfileFieldsAndLabelDic(), edit:  false)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: nil, flag: true)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
         self.addressNonEditLabel.isHidden = false
         self.addressTextView.isHidden  = true
         self.addressTextView.alpha = 0.0
@@ -205,7 +272,7 @@ extension MemberViewController{
        } else{
         self.memberImg.isUserInteractionEnabled = true
         AppManager.shared.performEditAction(dataFields:self.getMemberProfileFieldsAndLabelDic(), edit:  true)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: nil, flag: false)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: errorLabelArray, flag: false)
         self.setToggleBtns(isEnabled: true, alpha: 1.0)
         self.memberIDTextField.isEnabled = true
         self.memberIDTextField.layer.opacity = 0.4
@@ -214,6 +281,7 @@ extension MemberViewController{
         self.addressTextView.isHidden  = false
         self.addressTextView.alpha = 1.0
         self.setHrLineView(isHidden: true, alpha: 0.0)
+        self.memberIDTextField.isEnabled = false
         self.updateBtn.isEnabled = true
         self.updateBtn.alpha = 1.0
         }
@@ -275,10 +343,7 @@ extension MemberViewController{
         self.phoneNoNonEditScreenLabel.text = memberDetail.phoneNo
         self.dobNonEditScreenLabel.text = memberDetail.dob
         self.setMemberProfileTrainerType(type: memberDetail.type)
-        
-        self.previousEmail = memberDetail.email
-        self.previousPassword = memberDetail.password
-        
+
         self.memberIDTextField.text! = memberDetail.memberID
         self.dateOfJoiningTextField.text! = memberDetail.dateOfJoining
         self.genderTextField.text! = memberDetail.gender
@@ -288,7 +353,6 @@ extension MemberViewController{
         self.addressTextView.text! = memberDetail.address
         self.phoneNoTextField.text! = memberDetail.phoneNo
         self.dobTextField.text! = memberDetail.dob
-         
      }
     
     func setMemberProfileTrainerType(type:String) {
@@ -331,7 +395,6 @@ extension MemberViewController{
          return memberDetail
      }
     
-    
     func showMemberProfileAlert(title:String,message:String)  {
            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
            let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
@@ -343,7 +406,6 @@ extension MemberViewController{
            alert.addAction(okAlertAction)
            present(alert, animated: true, completion: nil)
        }
-    
     
     func addUploadTextFieldRightView() {
         let imgView = UIImageView(image: UIImage(named: "cam.png"))
@@ -373,7 +435,6 @@ extension MemberViewController{
            self.imgPicker.sourceType = .photoLibrary
            present(self.imgPicker, animated: true, completion: nil)
        }
-    
 }
 
 extension MemberViewController : UIImagePickerControllerDelegate,UINavigationControllerDelegate {
@@ -392,12 +453,43 @@ extension MemberViewController : UIImagePickerControllerDelegate,UINavigationCon
                 self.isUploadIdSelected = true
                 dismiss(animated: true, completion: nil)
             }
-            
         }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         self.isUploadIdSelected = false
         dismiss(animated: true, completion: nil)
+    }
+}
+
+extension MemberViewController:UITextFieldDelegate{
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.tag == 2 || textField.tag == 9 {
+            textField.inputView = self.datePicker
+            textField.inputAccessoryView = self.toolBar
+            if textField.text!.count > 0  {
+                let df = DateFormatter()
+                df.dateFormat = "dd-MM-yyyy"
+                self.datePicker.date = df.date(from: textField.text!)!
+            }
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.allMemberProfileFieldsRequiredValidation(textField: textField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
+    }
+}
+
+extension MemberViewController:UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField)
+        return true
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
     }
 }

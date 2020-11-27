@@ -68,7 +68,7 @@ class ViewEventScreenViewController: BaseViewController {
     
     @objc func checkValidation(_ textField:UITextField) {
         self.allFieldsRequiredValidation(textField: textField, duplicateError: nil)
-        self.updateBtnEnabler(textFieldArray: self.textFieldsArray!)
+        validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,19 +82,7 @@ class ViewEventScreenViewController: BaseViewController {
 }
 
 extension ViewEventScreenViewController {
-    
-    func updateBtnEnabler(textFieldArray:[UITextField]) {
-        let flag = validation.isAllFieldsRequiredValidated(textFieldArray:textFieldArray)
-        
-        if flag == true  && validation.isTextViewRequiredValid(textView: self.addressTextView) == true {
-            self.eventUpdateBtn.isEnabled = true
-            self.eventUpdateBtn.alpha = 1.0
-        } else {
-            self.eventUpdateBtn.isEnabled = false
-            self.eventUpdateBtn.alpha = 0.4
-        }
-    }
-    
+
     func initialEventSetup() {
         self.forNonEditLabelArray = [self.addressForNonEditLabel,self.eventDateForNonEditLabel,self.eventEndTimeForNontEditLabel,self.eventNameForNonEditLabel,self.eventStartTimeForNonEditLabel]
         self.defaultLabelArray = [self.eventName,self.eventDate,self.address,self.eventStartTime,self.eventEndTime]
@@ -333,16 +321,31 @@ extension ViewEventScreenViewController:UITextFieldDelegate{
         case 3:
             textField.inputView = self.timePicker
             textField.inputAccessoryView = self.toolBar
+            if textField.text!.count > 0  {
+                let df = DateFormatter()
+                df.dateFormat = "h:mm a"
+                self.timePicker.date = df.date(from: textField.text!)!
+            }
+
         case 4:
             textField.inputView = self.timePicker
             textField.inputAccessoryView = self.toolBar
+            if textField.text!.count > 0  {
+                let df = DateFormatter()
+                df.dateFormat = "h:mm a"
+                self.timePicker.date = df.date(from: textField.text!)!
+            }
         case 2 :
             textField.inputView = self.datePicker
             textField.inputAccessoryView = self.toolBar
+            if textField.text!.count > 0  {
+                let df = DateFormatter()
+                df.dateFormat = "dd-MM-yyyy"
+                self.datePicker.date = df.date(from: textField.text!)!
+            }
         default:
             break
         }
-  
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -357,9 +360,14 @@ extension ViewEventScreenViewController:UITextFieldDelegate{
         var duplicateError:String? = nil
         if self.selectedTime.count > 1 {
             switch textField.tag {
+            case 2 :
+                self.eventDateTextField.text = self.selectedDate
+                self.selectedTime = ""
+                
             case 3:
                 self.eventStartTimeTextField.text = self.selectedTime
                 self.selectedTime = ""
+                
             case 4:
                 if validation.isDuplicate(text1: self.eventStartTimeTextField.text!, text2: self.selectedTime) == false{
                     self.eventEndTimeTextField.text = self.selectedTime
@@ -367,19 +375,16 @@ extension ViewEventScreenViewController:UITextFieldDelegate{
                 } else {
                     self.eventEndTimeTextField.text = ""
                     duplicateError = "Start time and end time can not be same."
+                     self.selectedTime = ""
                 }
-            case 2 :
-                self.eventDateTextField.text = self.selectedDate
+                
             default:
                 break
             }
-
         }
-        
-        self.allFieldsRequiredValidation(textField: textField, duplicateError: duplicateError)
-        self.updateBtnEnabler(textFieldArray: self.textFieldsArray!)
-        
 
+        self.allFieldsRequiredValidation(textField: textField, duplicateError: duplicateError)
+         validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil)
     }
 }
 
@@ -387,12 +392,12 @@ extension ViewEventScreenViewController:UITextViewDelegate{
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         self.validation.requiredValidation(textView: textView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address required.")
-        self.updateBtnEnabler(textFieldArray: self.textFieldsArray!)
+        validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil)
         return true
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         self.validation.requiredValidation(textView: textView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address required.")
-     
     }
+    
 }

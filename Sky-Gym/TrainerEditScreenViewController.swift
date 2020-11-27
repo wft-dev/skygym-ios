@@ -102,6 +102,23 @@ class TrainerEditScreenViewController: BaseViewController {
     @IBOutlet weak var generalTypeLabel: UILabel!
     @IBOutlet weak var personalTypeLabel: UILabel!
     
+    @IBOutlet weak var firstNameErrorLabel: UILabel!
+    @IBOutlet weak var lastNameErrorLabel: UILabel!
+    @IBOutlet weak var idErrorLabel: UILabel!
+    @IBOutlet weak var phoneNumberErrorLabel: UILabel!
+    @IBOutlet weak var emailErrorLabel: UILabel!
+    @IBOutlet weak var passwordErrorLabel: UILabel!
+    @IBOutlet weak var addressErrorLabel: UILabel!
+    @IBOutlet weak var genderErrorLabel: UILabel!
+    @IBOutlet weak var salaryErrorLabel: UILabel!
+    @IBOutlet weak var uploadIDErrorLabel: UILabel!
+    @IBOutlet weak var shiftDaysErrorLabel: UILabel!
+    @IBOutlet weak var shiftTimingErrorLabel: UILabel!
+    @IBOutlet weak var dobErrorLabel: UILabel!
+    @IBOutlet weak var dateOfJoinErrorLabel: UILabel!
+    
+    
+    
     var isNewTrainer:Bool = false
     let imagePicker = UIImagePickerController()
     var imgURL:URL? = nil

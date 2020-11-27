@@ -75,6 +75,9 @@ class AdminProfileViewController: UIViewController {
     var imagePicker = UIImagePickerController()
     var isProfileImgSelected:Bool = false
     var isEdit:Bool = false
+    var datePicker = UIDatePicker()
+    let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+    var selectedDate:String = ""
     var forNonEditLabelArray:[UILabel] = []
     var defaultLabelArray:[UILabel] = []
     var textFieldsArray:[UITextField] = []
@@ -84,7 +87,7 @@ class AdminProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setAdminProfileNavigationBar()
-        setTextFields()
+        self.setTextFields()
         self.adminImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPicker)))
         self.imagePicker.delegate = self
         self.forNonEditLabelArray = [self.gymNameForNonEditLabel,self.gymIDForNonEditLabel,self.gymAddressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel]
@@ -104,7 +107,6 @@ class AdminProfileViewController: UIViewController {
         self.gymAddressNoEditLabel.alpha = 1.0
         self.updateBtn.isEnabled = false
         self.updateBtn.alpha = 0.4
-        self.gymIDTextField.isEnabled = false
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -151,19 +153,17 @@ class AdminProfileViewController: UIViewController {
 
 extension AdminProfileViewController {
     
-    
-    func updateProfileBtnEnabler(textFieldArray:[UITextField]) {
-        let flag = validation.isAllFieldsRequiredValidated(textFieldArray:textFieldArray)
-        
-        if flag == true  && validation.isTextViewRequiredValid(textView: self.addressTextView) == true {
-            self.updateBtn.isEnabled = true
-            self.updateBtn.alpha = 1.0
-        } else {
-            self.updateBtn.isEnabled = false
-            self.updateBtn.alpha = 0.4
-        }
-    }
-    
+//    func updateProfileBtnEnabler(textFieldArray:[UITextField]) {
+//        let flag = validation.isAllFieldsRequiredValidated(textFieldArray:textFieldArray)
+//
+//        if flag == true  && validation.isTextViewRequiredValid(textView: self.addressTextView) == true {
+//            self.updateBtn.isEnabled = true
+//            self.updateBtn.alpha = 1.0
+//        } else {
+//            self.updateBtn.isEnabled = false
+//            self.updateBtn.alpha = 0.4
+//        }
+//    }
     
     func setAdminProfileNavigationBar() {
         self.adminProfileNavigationBar.menuBtn.isHidden = false
@@ -172,7 +172,6 @@ extension AdminProfileViewController {
         self.adminProfileNavigationBar.editBtn.isHidden = false
         self.adminProfileNavigationBar.editBtn.alpha = 1.0
         self.adminProfileNavigationBar.editBtn.addTarget(self, action: #selector(editAdmin), for: .touchUpInside)
-        
     }
     
     @objc func editAdmin() {
@@ -187,7 +186,7 @@ extension AdminProfileViewController {
                  self.gymAddressNoEditLabel.alpha = 1.0
                 self.updateBtn.isEnabled = false
                 self.updateBtn.alpha = 0.4
-                self.gymIDTextField.isEnabled = false
+               
              } else{
                 AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
                 AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray,errorLabels: self.errorLabelArray, flag: false)
@@ -199,6 +198,7 @@ extension AdminProfileViewController {
                 self.addressTextView.alpha = 1.0
                 self.gymAddressNoEditLabel.isHidden = true
                 self.gymAddressNoEditLabel.alpha = 0.0
+                self.gymIDTextField.isEnabled = false
         }
          }
 
@@ -242,13 +242,32 @@ extension AdminProfileViewController {
         self.addressTextView.layer.cornerRadius = 7.0
         self.addressTextView.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
         self.addressTextView.clipsToBounds = true
+        
+        self.datePicker.datePickerMode = .date
+        toolBar.barStyle = .default
+        let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
+        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar.sizeToFit()
     }
     
+    @objc func cancelTextField()  {
+             self.view.endEditing(true)
+         }
+      
+    @objc func doneTextField()  {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat =  "dd-MMM-YYYY"
+        selectedDate = dateFormatter.string(from: datePicker.date)
+        self.view.endEditing(true)
+    }
+
     @objc func checkProfileValidation(_ textField:UITextField) {
         self.allProfileFieldsRequiredValidation(textField: textField)
-        self.updateProfileBtnEnabler(textFieldArray: self.textFieldsArray)
+      //  self.updateProfileBtnEnabler(textFieldArray: self.textFieldsArray)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
     }
-    
     
     func allProfileFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {
@@ -265,15 +284,13 @@ extension AdminProfileViewController {
         case 7:
             validation.requiredValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Email required." )
         case 8:
-            validation.requiredValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number required.")
+            validation.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
         case 9:
             validation.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required." )
         default:
             break
         }
     }
-    
-
        func addPaddingToTextField(textField:UITextField) {
                 let paddingView: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
                 textField.leftView = paddingView
@@ -335,10 +352,9 @@ extension AdminProfileViewController {
         self.phoneNoTextField.text = adminDetail.phoneNO
         self.dobTextField.text = adminDetail.dob
     }
-
     
     func getAdminDetailForUpdate() -> [String:Any] {
-        let admin:[String:Any] =  [
+        let admin:[String:Any] = [
             "dob":self.dobTextField.text!,
             "email":self.emailTextField.text!,
             "firstName":self.adminFirstNameTextField.text!,
@@ -352,9 +368,15 @@ extension AdminProfileViewController {
         ]
         return admin
     }
+    
     func showAdminProfileAlert(title:String,message:String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAlertAction = UIAlertAction(title: "Ok", style: .default, handler:nil)
+        let okAlertAction = UIAlertAction(title: "Ok", style: .default, handler:{
+        _ in
+            if title == "Success" {
+                self.fetchAdminDetailBy(id: AppManager.shared.adminID)
+            }
+        })
          alertController.addAction(okAlertAction)
         present(alertController, animated: true, completion: nil)
     }
@@ -366,8 +388,8 @@ extension AdminProfileViewController {
         self.imagePicker.modalPresentationStyle = .fullScreen
         present(self.imagePicker, animated: true, completion: nil)
     }
+    
 }
-
 
 extension AdminProfileViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -383,10 +405,37 @@ extension AdminProfileViewController : UIImagePickerControllerDelegate, UINaviga
     }
 }
 
-
 extension AdminProfileViewController : UITextFieldDelegate{
-    func textFieldDidEndEditing(_ textField: UITextField) {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if textField.tag == 9 {
+            return false
+        }else{
+            return true
+        }
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        if textField.tag == 9 {
+            textField.inputView = self.datePicker
+            textField.inputAccessoryView = self.toolBar
+            if textField.text!.count > 0 {
+                let df = DateFormatter()
+                df.dateFormat = "dd-MM-yyyy"
+                self.datePicker.date = df.date(from: textField.text!)!
+            }
+        }
+        
         self.allProfileFieldsRequiredValidation(textField: textField)
-        self.updateProfileBtnEnabler(textFieldArray: self.textFieldsArray)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField.tag == 9 && self.selectedDate != "" {
+            textField.text = self.selectedDate
+            self.selectedDate = ""
+        }
+        self.allProfileFieldsRequiredValidation(textField: textField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
     }
 }
