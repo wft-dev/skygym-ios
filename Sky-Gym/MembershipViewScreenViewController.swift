@@ -90,7 +90,6 @@ class MembershipViewScreenViewController: BaseViewController {
             self.detailNonEditLabel.alpha = 0.0
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: false)
         }
-
     }
     
     @IBAction func doneBtnAction(_ sender: Any) {
@@ -99,9 +98,7 @@ class MembershipViewScreenViewController: BaseViewController {
 }
 
 extension  MembershipViewScreenViewController {
-    
-    
-    
+
     func allMembershipFieldsRequiredValidation(textField:UITextField,duplicateDateErrorText:String?)  {
         switch textField.tag {
         case 1:
@@ -109,7 +106,7 @@ extension  MembershipViewScreenViewController {
         case 2:
             validation.requiredValidation(textField: textField, errorLabel: self.amountErrorLabel, errorMessage: "Membership Amount required.")
         case 3:
-            validation.requiredValidation(textField: textField, errorLabel: self.startDateErrorLabel, errorMessage: "Start date required." )
+            validation.requiredValidation(textField: textField, errorLabel: self.startDateErrorLabel, errorMessage: "Start date required.")
         case 4:
             validation.requiredValidation(textField: textField, errorLabel: self.endDateErrorLabel, errorMessage: (duplicateDateErrorText != nil ? (duplicateDateErrorText):" End date required.")! )
         default:
@@ -159,7 +156,7 @@ extension  MembershipViewScreenViewController {
     @objc func editMembership() {
         if self.isEdit == true {
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: nil, flag: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: true)
             self.isEdit = false
             self.setHrLineView(isHidden: false, alpha: 1.0)
             self.detailTextView.isHidden = true
@@ -169,7 +166,7 @@ extension  MembershipViewScreenViewController {
             self.doneBtn.isEnabled = false
             self.doneBtn.alpha = 0.4
         } else{
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: nil, flag: false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: false)
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
             self.isEdit = true
             self.setHrLineView(isHidden: true, alpha: 0.0)

@@ -486,5 +486,4 @@ extension ViewVisitorScreenViewController : UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address required.")
     }
-    
 }

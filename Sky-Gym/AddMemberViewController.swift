@@ -52,6 +52,26 @@ class AddMemberViewController: BaseViewController {
     @IBOutlet weak var lastNameTextField: UITextField!
     @IBOutlet weak var memberImg: UIImageView!
     
+    @IBOutlet weak var firstNameErrorLabel: UILabel!
+    @IBOutlet weak var lastNameErrorLabel: UILabel!
+    @IBOutlet weak var memberIDErrorLabel: UILabel!
+    @IBOutlet weak var dateOfJoinErrorLabel: UILabel!
+    @IBOutlet weak var genderErrorLabel: UILabel!
+    @IBOutlet weak var passwordErrorLabel: UILabel!
+    @IBOutlet weak var trainerNameErrorLabel: UILabel!
+    @IBOutlet weak var uploadIDErrorLabel: UILabel!
+    @IBOutlet weak var emailErrorLabel: UILabel!
+    @IBOutlet weak var addressErrorLabel: UILabel!
+    @IBOutlet weak var phoneNumberErrorLabel: UILabel!
+    @IBOutlet weak var dobErrorLabel: UILabel!
+    @IBOutlet weak var membershipPlanErrorLabel: UILabel!
+    @IBOutlet weak var amountErrorLabel: UILabel!
+    @IBOutlet weak var startDateErrorLabel: UILabel!
+    @IBOutlet weak var totalAmountErrorLabel: UILabel!
+    @IBOutlet weak var discountErrorLabel: UILabel!
+    @IBOutlet weak var paymentErrorLabel: UILabel!
+    @IBOutlet weak var dueAmountErrorLabel: UILabel!
+    
     let imagePicker = UIImagePickerController()
     var imgUrl:URL? = nil
     var isNewMember:Bool = false
@@ -67,6 +87,11 @@ class AddMemberViewController: BaseViewController {
     var renewingMembershipID:String = ""
     var renewingMembershipDuration:String = ""
     var visitorProfileImgData:Data? = nil
+    let validation = ValidationManager.shared
+    var errorLabelArray:[UILabel] = []
+    var memberProfileFieldArray :[UITextField] = []
+    var membershipFieldArray:[UITextField] = []
+    var textFieldArray:[UITextField] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -107,7 +132,7 @@ class AddMemberViewController: BaseViewController {
         self.endDateTextField.alpha = 0.4
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
             if self.isNewMember == false {
-               self.myScrollView.contentSize.height = 800
+               self.myScrollView.contentSize.height = 900
             }
         })
         
@@ -209,10 +234,61 @@ class AddMemberViewController: BaseViewController {
         self.membershipDetailTextView.isEditable = false
         self.membershipDetailTextView.alpha = 0.4
     }
-    
 }
 
 extension AddMemberViewController{
+    
+    func allNewMemberFieldsRequiredValidation(textField:UITextField)  {
+        switch textField.tag {
+        case 1:
+            validation.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
+        case 2:
+            validation.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last Name required.")
+        case 3:
+            validation.requiredValidation(textField: textField, errorLabel: self.memberIDErrorLabel, errorMessage: "Member ID required." )
+        case 4:
+            validation.requiredValidation(textField: textField, errorLabel: self.dateOfJoinErrorLabel, errorMessage: "Date of join required.")
+        case 5:
+            validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Member's gender required.")
+        case 6:
+            validation.requiredValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password required." )
+        case 7:
+            validation.requiredValidation(textField: textField, errorLabel: self.trainerNameErrorLabel, errorMessage: "Trainer's name required.")
+        case 8:
+                validation.requiredValidation(textField: textField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required." )
+        case 9:
+                validation.requiredValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Email Required required.")
+        case 10:
+                validation.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
+            
+        case 11:
+            validation.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required.")
+            
+        case 12:
+            validation.requiredValidation(textField: textField, errorLabel: self.membershipPlanErrorLabel, errorMessage: "Please select membership plan.")
+            
+        case 13:
+            validation.requiredValidation(textField: textField, errorLabel: self.amountErrorLabel, errorMessage: "Membership amount required.")
+            
+        case 14:
+            validation.requiredValidation(textField: textField, errorLabel: self.startDateErrorLabel, errorMessage: "Start date require." )
+            
+        case 16:
+            validation.requiredValidation(textField: textField, errorLabel: self.totalAmountErrorLabel, errorMessage: "Enter total amount." )
+            
+        case 17:
+            validation.requiredValidation(textField: textField, errorLabel: self.discountErrorLabel, errorMessage: "Enter discount amount or 0." )
+            
+        case 18:
+            validation.requiredValidation(textField: textField, errorLabel: self.paymentErrorLabel, errorMessage: "Payment type required.")
+            
+        case 19:
+            validation.requiredValidation(textField: textField, errorLabel: self.dueAmountErrorLabel, errorMessage: "Enter due amount or 0." )
+
+        default:
+            break
+        }
+    }
 
     func addTopAndBottomBorders(toView:UIView) {
         let thickness: CGFloat = 0.9
@@ -272,6 +348,7 @@ extension AddMemberViewController{
             $0?.layer.cornerRadius = 7.0
             $0?.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
             $0?.clipsToBounds = true
+            $0?.addTarget(self, action:#selector(errorValidator(_:)), for: .editingChanged)
         }
         
         [self.emailTextField,self.phoneNumberTextField,self.dobTextField,self.membershipPlanTextField,self.amountTextField,self.startDateTextField,self.endDateTextField,self.totalAmountTextField,self.discountTextField,self.firstNameTextField,self.lastNameTextField].forEach{
@@ -279,6 +356,7 @@ extension AddMemberViewController{
             $0?.layer.cornerRadius = 7.0
             $0?.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
             $0?.clipsToBounds = true
+            $0?.addTarget(self, action:#selector(errorValidator(_:)), for: .editingChanged)
         }
         
         [self.addressTextView,self.membershipDetailTextView].forEach{
@@ -290,6 +368,12 @@ extension AddMemberViewController{
         [self.nextBtn,self.updateBtn].forEach{
             $0.layer.cornerRadius = 15.0
         }
+    }
+    
+    @objc func errorValidator(_ textField:UITextField) {
+        self.allNewMemberFieldsRequiredValidation(textField: textField)
+        self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField)
+        
     }
     
     func addPaddingToTextField(textField:UITextField) {
@@ -309,6 +393,7 @@ extension AddMemberViewController{
         self.membershipView.isHidden = false
         self.membershipView.alpha = 1.0
     }
+    
     func showProfileScreen() {
         self.myScrollView.contentSize.height = 1157
         self.profileBtn.backgroundColor = UIColor(red: 236/255, green: 217/255, blue: 72/255, alpha: 1.0)
@@ -318,6 +403,7 @@ extension AddMemberViewController{
         self.membershipView.isHidden = true
         self.membershipView.alpha = 0.0
     }
+    
     func setNavigationBar() {
         addMemberNavigationBar.navigationTitleLabel.text = "Member"
         addMemberNavigationBar.menuBtn.isHidden = true
@@ -504,6 +590,14 @@ extension AddMemberViewController{
         self.membershipPlanView.clipsToBounds = true
         self.membershipPlanTable.tableFooterView = UIView()
         
+        self.errorLabelArray = [self.firstNameErrorLabel,self.lastNameErrorLabel,self.memberIDErrorLabel,self.dateOfJoinErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.uploadIDErrorLabel,self.trainerNameErrorLabel,self.emailErrorLabel,self.addressErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel,self.membershipPlanErrorLabel,self.amountErrorLabel,self.startDateErrorLabel,self.totalAmountErrorLabel,self.discountErrorLabel,self.paymentErrorLabel,self.discountErrorLabel]
+        
+        self.memberProfileFieldArray = [self.firstNameTextField,self.lastNameTextField,self.memberIDTextField,self.dateOfJoiningTextField,self.genderTextField,self.passwordTextField,self.trainerNameTextField,self.uploadIDTextField,self.emailTextField,self.phoneNumberTextField,self.dobTextField]
+        
+        self.membershipFieldArray = [self.membershipPlanTextField,self.amountTextField,self.startDateTextField,self.endDateTextField,self.totalAmountTextField,self.discountTextField,self.paymentTypeTextField,self.dueAmountTextField]
+        
+        self.textFieldArray = Array(Set(self.membershipFieldArray + self.membershipFieldArray ))
+        
         self.datePicker.datePickerMode = .date
         self.datePicker.date = Date()
         toolBar.barStyle = .default
@@ -608,7 +702,6 @@ extension AddMemberViewController{
             }
         })
     }
-    
 }
 
 extension AddMemberViewController: UIImagePickerControllerDelegate,UINavigationControllerDelegate {
@@ -627,7 +720,7 @@ extension AddMemberViewController: UIImagePickerControllerDelegate,UINavigationC
 
 extension AddMemberViewController:UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 7 || textField.tag == 9 || textField.tag.isMultiple(of: 2) == true{
+        if textField.tag == 4 || textField.tag == 11 || textField.tag == 14{
             return false
         } else {
             return true
@@ -635,20 +728,27 @@ extension AddMemberViewController:UITextFieldDelegate{
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        if textField.tag.isMultiple(of: 2) == true {
+        if textField.tag == 4 || textField.tag == 11 || textField.tag == 14{
             textField.inputAccessoryView = self.toolBar
-            textField.inputView = datePicker   
+            textField.inputView = datePicker
+            if textField.text!.count > 0  {
+                let df = DateFormatter()
+                df.dateFormat = "dd-MM-yyyy"
+                self.datePicker.date = df.date(from: textField.text!)!
+            }
         }
+        self.allNewMemberFieldsRequiredValidation(textField: textField)
+        self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.membershipPlanView.isHidden == false ? self.membershipFieldArray : self.memberProfileFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         if self.selectedDate != nil  {
             switch textField.tag {
-                              case 2:
-                                self.dateOfJoiningTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
                               case 4:
+                                self.dateOfJoiningTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
+                              case 11:
                                 self.dobTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
-                              case 6:
+                              case 14:
                                 if self.isRenewMembership == true {
                                     self.membershipDuration = Int(self.renewingMembershipDuration)!
                                 }
@@ -658,9 +758,24 @@ extension AddMemberViewController:UITextFieldDelegate{
                                   break
                               }
         }
+        self.allNewMemberFieldsRequiredValidation(textField: textField)
+        self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField)
     }
 }
 
+extension AddMemberViewController:UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if memberProfileView.isHidden == false {
+            self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
+        }
+        
+        return true
+    }
+    func textViewDidEndEditing(_ textView: UITextView) {
+        self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
+        self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.membershipPlanView.isHidden == false ? self.membershipFieldArray : self.memberProfileFieldArray, textView: textView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField)
+    }
+}
 
 extension AddMemberViewController:UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

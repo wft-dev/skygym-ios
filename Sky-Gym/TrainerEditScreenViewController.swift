@@ -117,8 +117,6 @@ class TrainerEditScreenViewController: BaseViewController {
     @IBOutlet weak var dobErrorLabel: UILabel!
     @IBOutlet weak var dateOfJoinErrorLabel: UILabel!
     
-    
-    
     var isNewTrainer:Bool = false
     let imagePicker = UIImagePickerController()
     var imgURL:URL? = nil
@@ -132,7 +130,10 @@ class TrainerEditScreenViewController: BaseViewController {
     var isEdit: Bool = false
     var forNonEditLabelArray:[UILabel] = []
     var defaultArray:[UILabel] = []
+    var errorLabelArray:[UILabel] = []
+    var textFieldArray:[UITextField] = []
     var trainerType:String = ""
+    let validation = ValidationManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -204,6 +205,39 @@ class TrainerEditScreenViewController: BaseViewController {
 }
 
 extension TrainerEditScreenViewController {
+    
+    func allTrainerFieldsRequiredValidation(textField:UITextField)  {
+        switch textField.tag {
+        case 1:
+            validation.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
+        case 2:
+            validation.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last Name required.")
+        case 3:
+            validation.requiredValidation(textField: textField, errorLabel: self.idErrorLabel, errorMessage: "Trainer ID required")
+        case 4:
+            validation.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
+        case 5:
+            validation.requiredValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Email required.")
+        case 6:
+            validation.requiredValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password required." )
+        case 7:
+            validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Gender required.")
+        case 8:
+            validation.requiredValidation(textField: textField, errorLabel: self.salaryErrorLabel, errorMessage: "Salary required.")
+        case 9:
+            validation.requiredValidation(textField: textField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required.")
+        case 10:
+            validation.requiredValidation(textField: textField, errorLabel: self.shiftDaysErrorLabel, errorMessage: "Shift days required.")
+        case 11:
+            validation.requiredValidation(textField: textField, errorLabel: self.shiftTimingErrorLabel, errorMessage: "Shift timings required.")
+        case 12:
+            validation.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required.")
+        case 13:
+            validation.requiredValidation(textField: textField, errorLabel: self.dateOfJoinErrorLabel, errorMessage: "Date of join required.")
+        default:
+            break
+        }
+    }
 
     func setTrainerEditScreenNavigationBar()  {
         let navigationBar  = self.trainerEditScreenNavigationBar
@@ -222,7 +256,7 @@ extension TrainerEditScreenViewController {
    @objc func makeEditable() {
     if self.isEdit == true {
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: nil, flag: true)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: true)
         self.addressNonEditLabel.isHidden = false
         self.addressView.isHidden  = true
         self.addressView.alpha = 0.0
@@ -244,7 +278,7 @@ extension TrainerEditScreenViewController {
         self.updateBtn.alpha = 0.4
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: nil, flag: false)
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
         self.setToggleBtns(isEnabled: true, alpha: 1.0)
         self.idTextField.isEnabled = true
         self.idTextField.layer.opacity = 0.4
@@ -264,6 +298,9 @@ extension TrainerEditScreenViewController {
             $0?.isHidden = true
             $0?.alpha = 0.0
         }
+        
+        self.idTextField.isEnabled = false
+        self.idTextField.layer.opacity = 0.4
         self.setTrainerType(type: self.trainerType, generalBtn: self.generalTypeBtn, personalBtn: self.personalTypeBtn)
         self.updateBtn.isEnabled = true
         self.updateBtn.alpha = 1.0
@@ -311,6 +348,7 @@ extension TrainerEditScreenViewController {
             $0?.layer.cornerRadius = 7.0
             $0?.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
             $0?.clipsToBounds = true
+            $0?.addTarget(self, action: #selector(errorValidator(_:)), for: .editingChanged)
         }
         
         [self.addressView].forEach{
@@ -332,6 +370,11 @@ extension TrainerEditScreenViewController {
             $0?.layer.borderWidth = 0.7
             $0?.clipsToBounds = true
         }
+    }
+    
+    @objc func errorValidator(_ textField:UITextField) {
+        self.allTrainerFieldsRequiredValidation(textField: textField)
+        self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField)
     }
     
     func addPaddingToTextField(textField:UITextField) {
@@ -442,12 +485,14 @@ extension TrainerEditScreenViewController {
         
         self.defaultArray = [self.firstName,self.lastName,self.id,self.phoneNo,self.email,self.password,self.address,self.gender,self.salary,self.shiftDays,self.idProof,self.shiftTimings,self.dob,self.dateOfJoin,self.generalTypeLabel,self.type,self.personalTypeLabel]
         
+        self.errorLabelArray = [self.firstNameErrorLabel,self.lastNameErrorLabel,self.idErrorLabel,self.phoneNumberErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.addressErrorLabel,self.genderErrorLabel,self.salaryErrorLabel,self.uploadIDErrorLabel,self.shiftDaysErrorLabel,self.shiftTimingErrorLabel,self.dobErrorLabel,self.dateOfJoinErrorLabel]
         
+        self.textFieldArray = [ self.firstNameTextField,self.secondNameTextField,self.idTextField,self.phoneNoTextField,self.emailTextField,self.passwordTextField,self.genderTextField,self.salaryTextField,self.uploadIDProofTextField,self.shiftDaysTextField,self.shiftTimingsTextField,self.dobTextField,self.dateOfJoinTextField ]
         userImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showUserImgPicker)))
         userImg.makeRounded()
         if self.isNewTrainer == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  false)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: nil, flag: true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: true)
             self.setHrLineView(isHidden: false, alpha: 1.0)
             self.setToggleBtns(isEnabled: false, alpha: 0.9)
             self.addressNonEditLabel.isHidden = false
@@ -462,7 +507,7 @@ extension TrainerEditScreenViewController {
             self.permissions.textColor = .lightGray
         } else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
-            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: nil, flag: false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
             self.setHrLineView(isHidden: true, alpha: 0.0)
             self.setToggleBtns(isEnabled: true, alpha: 1.0)
             self.addressNonEditLabel.isHidden = true
@@ -619,9 +664,7 @@ extension TrainerEditScreenViewController {
         self.shiftTimingsTextField.text = trainerDetails.shiftTimings
         self.dateOfJoinTextField.text = trainerDetails.dateOfJoining
         self.dobTextField.text = trainerDetails.dob
-        
-        self.idTextField.isEnabled = false
-        self.idTextField.layer.opacity = 0.4
+
         
         self.setTrainerType(type:trainerDetails.type,generalBtn:self.generalBtnForNonEditLabel,personalBtn: self.personalBtnForNonEditLabel )
         self.setTrainerPermission(memberPermission: trainerPermissions.canAddMember, visitorPermission: trainerPermissions.canAddVisitor, eventPermission:trainerPermissions.canAddEvent)
@@ -656,7 +699,6 @@ extension TrainerEditScreenViewController {
     }
 }
 
-
 extension TrainerEditScreenViewController:UIImagePickerControllerDelegate,UINavigationControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -685,33 +727,58 @@ extension TrainerEditScreenViewController:UIImagePickerControllerDelegate,UINavi
 extension TrainerEditScreenViewController:UITextFieldDelegate{
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            if textField.tag == 1 || textField.tag == 2 {
+            if textField.tag == 12 || textField.tag == 13 {
                       return false
                   }else{
                       return true
                   }
        }
-       
-       func textFieldDidBeginEditing(_ textField: UITextField) {
-              if textField.tag == 1 || textField.tag == 2 {
-                  textField.inputAccessoryView = self.toolBar
-                  textField.inputView = datePicker
-              }
-          }
-          
-          func textFieldDidEndEditing(_ textField: UITextField) {
-            if self.selectedDate.count > 1 {
-                switch textField.tag {
-                case 1:
-                    self.dobTextField.text = self.selectedDate
-                case 2:
-                   self.dateOfJoinTextField.text = self.selectedDate
-                default:
-                    break
-                }
-
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.tag == 12 || textField.tag == 13 {
+            textField.inputAccessoryView = self.toolBar
+            textField.inputView = datePicker
+            
+            if textField.text!.count > 0  {
+                let df = DateFormatter()
+                df.dateFormat = "dd-MM-yyyy"
+                self.datePicker.date = df.date(from: textField.text!)!
             }
         }
+        self.allTrainerFieldsRequiredValidation(textField: textField)
+        self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField)
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if self.selectedDate.count > 1 {
+            switch textField.tag {
+            case 12:
+                self.dobTextField.text = self.selectedDate
+            case 13:
+                self.dateOfJoinTextField.text = self.selectedDate
+            default:
+                break
+            }
+        }
+        self.allTrainerFieldsRequiredValidation(textField: textField)
+        self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField)
+    }
 }
+
+extension TrainerEditScreenViewController:UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+     self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Trainer's address required.")
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField)
+        return true
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Trainer's address required.")
+    }
+}
+
+
+
+
 
 
