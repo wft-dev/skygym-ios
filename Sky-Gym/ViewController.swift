@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class ViewController: UIViewController {
 
@@ -72,16 +73,17 @@ class ViewController: UIViewController {
        }
     
     @IBAction func loginBtnAction(_ sender: Any) {
+        SVProgressHUD.show()
         FireStoreManager.shared.isAdminLogin(email: (self.emailTextField?.text)!, password: (self.passwordTextField?.text)!, result: {
             (loggedIn,err) in
-            
+            SVProgressHUD.dismiss()
             if err != nil {
-                self.showLoginAlert(title: "Error", message: "\(err!.localizedDescription)")
+                self.showLoginAlert(title: "Error", message: "Error in logging, due to network.")
             } else {
                 if loggedIn == true{
                     AppManager.shared.performLogin()
                 }else {
-                    self.showLoginAlert(title: "Error", message: "\(err!.localizedDescription)")
+                    self.showLoginAlert(title: "Error", message: "Username or password is incorrect.")
                 }
             }
         })

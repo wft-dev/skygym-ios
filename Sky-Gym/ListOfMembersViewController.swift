@@ -189,8 +189,6 @@ override func viewWillAppear(_ animated: Bool) {
         self.grayView.backgroundColor = UIColor.darkGray
         self.addBtn.isHidden = true
     }
-    
-    
 }
 
 extension ListOfMembersViewController : UITableViewDataSource{
@@ -221,7 +219,6 @@ extension ListOfMembersViewController : UITableViewDataSource{
         self.setCellRenewMembershipBtn(memberCell: cell, memberID: singleMember.memberID,dueAmount: singleMember.dueAmount)
         self.addCustomSwipe(cellView: cell.listOfmemberTCView, cell: cell)
         
-        
         return cell
     }
 
@@ -234,11 +231,6 @@ extension ListOfMembersViewController : UITableViewDataSource{
           headerView.backgroundColor = UIColor.clear
           return headerView
       }
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-
-        cell.backgroundColor = .clear
-
-    }
 }
 
 extension ListOfMembersViewController : UITableViewDelegate{
@@ -289,6 +281,7 @@ extension ListOfMembersViewController{
         deleteView.addSubview(trashImgView)
         trashImgView.translatesAutoresizingMaskIntoConstraints = false
         trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
+      //  trashImgView.topAnchor.constraint(equalTo: deleteView.topAnchor, constant: 30).isActive = true
         trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/2)).isActive = true
         trashImgView.heightAnchor.constraint(equalToConstant: 25).isActive = true
         trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
@@ -297,7 +290,7 @@ extension ListOfMembersViewController{
         deleteView.heightAnchor.constraint(equalToConstant: cell.frame.height).isActive = true
         deleteView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
         deleteView.translatesAutoresizingMaskIntoConstraints = true
-        deleteView.tag = 1
+      //  deleteView.tag = 1
         deleteView.backgroundColor = .red
         cell.contentView.addSubview(deleteView)
         
@@ -305,8 +298,9 @@ extension ListOfMembersViewController{
         cellView.addGestureRecognizer(rightSwipGesture)
         cellView.isUserInteractionEnabled = true
         cellView.backgroundColor = .white
+        cell.contentView.backgroundColor = .white
+        cell.layer.cornerRadius = 20
         cellView.layer.cornerRadius = 20
-        cellView.layer.cornerRadius = 15.0
         cellView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
         cellView.layer.borderWidth = 1.0
         

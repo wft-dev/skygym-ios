@@ -103,6 +103,9 @@ extension ListOfEventsViewController {
         deleteView.addSubview(trashImgView)
         trashImgView.translatesAutoresizingMaskIntoConstraints = false
         trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
+        
+      //  trashImgView.topAnchor.constraint(equalTo: deleteView.topAnchor, constant: 30).isActive = true
+        
         trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/2)).isActive = true
         trashImgView.heightAnchor.constraint(equalToConstant: 25).isActive = true
         trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
@@ -119,13 +122,12 @@ extension ListOfEventsViewController {
         cellView.isUserInteractionEnabled = true
         cellView.backgroundColor = .white
         cellView.layer.cornerRadius = 20
-        cellView.layer.cornerRadius = 15.0
+        cell.layer.cornerRadius = 20
         cellView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
         cellView.layer.borderWidth = 1.0
         
         deleteView.superview?.sendSubviewToBack(deleteView)
     }
-    
     
     func setEventsNavigationBar()  {
         self.eventsNavigationBar.navigationTitleLabel.text = "Events"
@@ -170,24 +172,26 @@ extension ListOfEventsViewController {
     func setSearchBar()  {
                self.customSearchBar.backgroundColor = .clear
                self.customSearchBar.layer.borderColor = .none
-               for s in customSearchBar.subviews[0].subviews{
-                   if s is UITextField{
-                       let searchTextField = s as! UITextField
-                       searchTextField.clipsToBounds = true
-                       searchTextField.borderStyle = .none
-                       let imagView = UIImageView(image: UIImage(named: "search-2"))
-                       let emptyView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-                       let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: 35, height: 24))
-                       stackView.insertArrangedSubview(imagView, at: 0)
-                       stackView.insertArrangedSubview(emptyView, at: 1)
-                       searchTextField.leftViewMode = .always
-                       searchTextField.leftView = stackView
-                      searchTextField.attributedPlaceholder = NSAttributedString(string: "Search Event",
-                                                                                 attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 192/255, green: 192/255, blue: 192/255, alpha: 1),
-                                                                                              NSAttributedString.Key.font:UIFont(name: "poppins", size: 18) as Any
-                      ])
-                   }
-               }
+                if  let searchTextField = self.customSearchBar.value(forKey: "searchField") as? UITextField {
+                searchTextField.clipsToBounds = true
+                searchTextField.borderStyle = .none
+                let imagView = UIImageView(image: UIImage(named: "search-2"))
+                let emptyView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+                    emptyView.backgroundColor = .red
+                let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: 40, height: searchTextField.frame.height))
+                stackView.translatesAutoresizingMaskIntoConstraints = false
+                stackView.widthAnchor.constraint(equalToConstant: 25).isActive = true
+                stackView.heightAnchor.constraint(equalToConstant: 25).isActive = true
+                stackView.alignment = .center
+                stackView.insertArrangedSubview(imagView, at: 0)
+                stackView.insertArrangedSubview(emptyView, at: 1)
+                searchTextField.leftViewMode = .always
+                searchTextField.leftView = stackView
+                searchTextField.attributedPlaceholder = NSAttributedString(string: "Search Event",
+                                                                           attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 192/255, green: 192/255, blue: 192/255, alpha: 1),
+                                                                                        NSAttributedString.Key.font:UIFont(name: "Poppins-Medium", size: 18) as Any
+                ])
+            }
            }
     
     @objc  func showSearchBar()  {
@@ -261,7 +265,6 @@ extension ListOfEventsViewController:UITableViewDelegate{
         AppManager.shared.eventID = self.eventsArray[indexPath.section].eventID
         performSegue(withIdentifier: "viewEventScreenSegue", sender: false)
     }
-  
 }
 
 extension ListOfEventsViewController:UISearchBarDelegate{

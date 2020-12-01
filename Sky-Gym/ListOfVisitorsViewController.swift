@@ -150,7 +150,7 @@ extension ListOfVisitorsViewController {
         cellView.isUserInteractionEnabled = true
         cellView.backgroundColor = .white
         cellView.layer.cornerRadius = 20
-        cellView.layer.cornerRadius = 15.0
+        cell.layer.cornerRadius = 20
         cellView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
         cellView.layer.borderWidth = 1.0
         

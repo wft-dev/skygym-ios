@@ -217,9 +217,9 @@ extension TrainerEditScreenViewController {
         case 4:
             validation.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
         case 5:
-            validation.requiredValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Email required.")
+            validation.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid email address.")
         case 6:
-            validation.requiredValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password required." )
+            validation.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 character." )
         case 7:
             validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Gender required.")
         case 8:
@@ -262,7 +262,7 @@ extension TrainerEditScreenViewController {
         self.addressView.alpha = 0.0
         self.isEdit = false
         self.setHrLineView(isHidden: false, alpha: 1.0)
-        self.setToggleBtns(isEnabled: false, alpha: 0.9)
+     //   self.setToggleBtns(isEnabled: false, alpha: 0.9)
         self.type.textColor = .lightGray
         self.permissions.textColor = .lightGray
         [self.generalTypeBtn,self.personalTypeBtn].forEach{
@@ -279,7 +279,7 @@ extension TrainerEditScreenViewController {
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
-        self.setToggleBtns(isEnabled: true, alpha: 1.0)
+     //   self.setToggleBtns(isEnabled: true, alpha: 1.0)
         self.idTextField.isEnabled = true
         self.idTextField.layer.opacity = 0.4
         self.addressNonEditLabel.isHidden = true
@@ -494,7 +494,7 @@ extension TrainerEditScreenViewController {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  false)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: true)
             self.setHrLineView(isHidden: false, alpha: 1.0)
-            self.setToggleBtns(isEnabled: false, alpha: 0.9)
+         //   self.setToggleBtns(isEnabled: false, alpha: 0.9)
             self.addressNonEditLabel.isHidden = false
             self.addressView.isHidden = true
             self.addressView.alpha = 0.0
@@ -504,6 +504,12 @@ extension TrainerEditScreenViewController {
                 $0?.isHidden = true
                 $0?.alpha = 0.0
             }
+            
+            [self.generalBtnForNonEditLabel,self.personalBtnForNonEditLabel].forEach{
+                $0?.isHidden = false
+                $0?.alpha = 1.0
+            }
+            
             self.permissions.textColor = .lightGray
         } else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
@@ -519,6 +525,11 @@ extension TrainerEditScreenViewController {
                 $0?.isHidden = false
                 $0?.alpha = 1.0
             }
+            [self.generalBtnForNonEditLabel,self.personalBtnForNonEditLabel].forEach{
+                $0?.isHidden = true
+                $0?.alpha = 0.0
+            }
+            
             self.permissions.textColor = .black
         }
     }
@@ -570,16 +581,25 @@ extension TrainerEditScreenViewController {
     
     func registerTrainer(email:String,password:String,id:String,trainerDetail:[String:String],trainerPermission:[String:Bool]) {
         SVProgressHUD.show()
-        if imgURL == nil && self.isNewTrainer == false {
-            FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
-                err in
-                if err != nil {
-                    self.showAlert(title: "Error", message: "Error in updating the trainer details, please try again.")
-                } else {
-                    self.showAlert(title: "Success", message: "Trainer Detail is updated successfully.")
-                }
-            })
-
+        if self.isNewTrainer == false {
+            if self.userImg.image?.pngData() != nil {
+                FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
+                    err in
+                    if err != nil {
+                        self.showAlert(title: "Error", message: "Error in uploading changed user profile photo.")
+                    } else {
+                        FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
+                            err in
+                            SVProgressHUD.dismiss()
+                            if err != nil {
+                                self.showAlert(title: "Error", message: "Error in updating the trainer details, please try again.")
+                            } else {
+                                self.showAlert(title: "Success", message: "Trainer Detail is updated successfully.")
+                            }
+                        })
+                    }
+                })
+            }
         } else {
             if imgURL == nil {
                  self.showAlert(title: "Error", message: "Please select id proof.")
@@ -617,7 +637,7 @@ extension TrainerEditScreenViewController {
         let okAction = UIAlertAction(title: "OK", style: .default, handler:{
             _ in
             if title == "Success"{
-                 self.dismiss(animated: true, completion: nil)
+                self.showTrainerBy(id: AppManager.shared.trainerID)
             }
         })
         alert.addAction(okAction)
@@ -727,7 +747,7 @@ extension TrainerEditScreenViewController:UIImagePickerControllerDelegate,UINavi
 extension TrainerEditScreenViewController:UITextFieldDelegate{
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            if textField.tag == 12 || textField.tag == 13 {
+            if textField.tag == 12 || textField.tag == 13 || textField.tag == 9 {
                       return false
                   }else{
                       return true

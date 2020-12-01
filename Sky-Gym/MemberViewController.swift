@@ -463,6 +463,13 @@ extension MemberViewController : UIImagePickerControllerDelegate,UINavigationCon
 }
 
 extension MemberViewController:UITextFieldDelegate{
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if textField.tag == 2 || textField.tag == 9 {
+            return false
+        } else{
+            return true
+        }
+    }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField.tag == 2 || textField.tag == 9 {
@@ -477,6 +484,17 @@ extension MemberViewController:UITextFieldDelegate{
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
+        if self.selectedDate.count > 1 {
+            switch textField.tag {
+            case 2:
+                self.dateOfJoiningTextField.text = self.selectedDate
+            case 9:
+                self.dobTextField.text = self.selectedDate
+            default:
+                break
+            }
+        }
+
         self.allMemberProfileFieldsRequiredValidation(textField: textField)
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
     }

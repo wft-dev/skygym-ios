@@ -69,6 +69,43 @@ class ValidationManager: NSObject {
         }
     }
     
+    func emailValidation(textField:UITextField,errorLabel:UILabel,errorMessage:String) {
+        if textField.text!.count > 0 {
+            if AppManager.shared.isEmailValid(email: textField.text!){
+                errorLabel.text = ""
+                textField.borderStyle = .none
+                textField.layer.borderColor = UIColor.clear.cgColor
+                textField.layer.borderWidth = 0.0
+            } else{
+                errorLabel.text = errorMessage
+                textField.layer.borderColor = UIColor.red.cgColor
+                textField.layer.borderWidth = 1.0
+            }
+        } else {
+            errorLabel.text = "Email required."
+            textField.layer.borderColor = UIColor.red.cgColor
+            textField.layer.borderWidth = 1.0
+        }
+    }
+    
+    func passwordValidation(textField:UITextField,errorLabel:UILabel,errorMessage:String) {
+        if textField.text!.count > 0 {
+            if AppManager.shared.isPasswordValid(text: textField.text!) {
+                errorLabel.text = ""
+                textField.borderStyle = .none
+                textField.layer.borderColor = UIColor.clear.cgColor
+                textField.layer.borderWidth = 0.0
+            } else{
+                errorLabel.text = errorMessage
+                textField.layer.borderColor = UIColor.red.cgColor
+                textField.layer.borderWidth = 1.0
+            }
+        } else {
+            errorLabel.text = "Password required."
+            textField.layer.borderColor = UIColor.red.cgColor
+            textField.layer.borderWidth = 1.0
+        }
+    }
     
     func requiredValidation(textView:UITextView,errorLabel:UILabel,errorMessage:String)  {
         if textView.text!.count > 0 {

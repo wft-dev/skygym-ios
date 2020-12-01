@@ -562,16 +562,32 @@ class AppManager: NSObject {
         return m
     }
     
-    func getSingleDateDetail(attendence:NSDictionary,forDate:Date) -> NSDictionary {
+    func getSingleDateDetail(trainerORmember:String,id:String,attendence:NSDictionary,forDate:Date) -> NSDictionary? {
         let year = Calendar.current.component(.year, from: forDate)
         let month = Calendar.current.component(.month, from: forDate)
         let day = Calendar.current.component(.day, from: forDate)
         let index = (day - 1)
-        
-        let monthArray = (attendence["\(year)"] as! NSDictionary)["\(month)"] as! Array<NSDictionary>
-        let matchingDateDir = monthArray[index]
-        
-        return matchingDateDir
+       
+        if let monthArray:[NSDictionary] = (attendence["\(year)"] as! NSDictionary)["\(month)"] as? Array<NSDictionary>  {
+           let matchingDateDir = monthArray[index]
+           return matchingDateDir
+        }
+    return nil
+    }
+    
+    func getAttandenceNewMonth(trainerORmember:String,id:String,year:String,month:String,completion:@escaping (Array<NSDictionary>?)->Void) {
+        FireStoreManager.shared.uploadAttandance(trainerORmember: trainerORmember, id: id, present: false, checkIn: "", checkOut: "", completion: {
+            err in
+            
+            if err == nil {
+                FireStoreManager.shared.getAttandance(trainerORmember: trainerORmember, id: id, year: year, month: month, result: {
+                    (attendence) in
+                    
+                    print("Attendence is \(attendence)")
+                    
+                })
+            }
+        })
     }
 }
 

@@ -497,7 +497,7 @@ extension AddMemberViewController{
             self.generalTypeOptionBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
             self.personalTypeOptionBtn.setImage(UIImage(named: "selelecte"), for: .normal)
         }
-       }
+    }
 
     func errorAlert(message:String)  {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
@@ -556,6 +556,7 @@ extension AddMemberViewController{
 //
 //                }
 //            })
+            
         })
     }
     
@@ -720,7 +721,7 @@ extension AddMemberViewController: UIImagePickerControllerDelegate,UINavigationC
 
 extension AddMemberViewController:UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 4 || textField.tag == 11 || textField.tag == 14{
+        if textField.tag == 4 || textField.tag == 11 || textField.tag == 14 || textField.tag == 8{
             return false
         } else {
             return true
@@ -737,8 +738,8 @@ extension AddMemberViewController:UITextFieldDelegate{
                 self.datePicker.date = df.date(from: textField.text!)!
             }
         }
-        self.allNewMemberFieldsRequiredValidation(textField: textField)
-        self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.membershipPlanView.isHidden == false ? self.membershipFieldArray : self.memberProfileFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField)
+//        self.allNewMemberFieldsRequiredValidation(textField: textField)
+//        self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.membershipPlanView.isHidden == false ? self.membershipFieldArray : self.memberProfileFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {

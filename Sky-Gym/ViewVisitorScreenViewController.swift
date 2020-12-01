@@ -137,7 +137,7 @@ extension ViewVisitorScreenViewController {
         case 2:
             validation.requiredValidation(textField: textField, errorLabel: self.secondNameErrorLabel, errorMessage: "Last Name required.")
         case 3:
-            validation.requiredValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Email required." )
+            validation.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "invalid email address.")
         case 4:
             validation.requiredValidation(textField: textField, errorLabel: self.dateOfJoinErrorLabel, errorMessage: "Date of join required.")
         case 5:
