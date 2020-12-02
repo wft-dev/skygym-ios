@@ -161,7 +161,13 @@ extension CurrentMembershipDetailViewController {
                     self.paidStatusLabel.attributedText = NSAttributedString(string: "No Active Membership", attributes: [ NSAttributedString.Key.foregroundColor: UIColor.red ])
                     if memberships.count > 0 {
                     let latestMembership = AppManager.shared.getLatestMembership(membershipsArray: docSnapshot?["memberships"] as! NSArray)
-                        self.membershipStartDateLabel.attributedText = NSAttributedString(string: "starts from \(latestMembership.startDate)", attributes: [NSAttributedString.Key.font:UIFont(name: "Poppins-Medium", size: 11)!])
+                        let dateComponentDiff = AppManager.shared.getDateDifferenceComponent(startDate: AppManager.shared.getDate(date: latestMembership.endDate), endDate: AppManager.shared.getStandardFormatDate(date: Date()))
+                        
+                        if dateComponentDiff.year! < 0 || dateComponentDiff.month! < 0 || dateComponentDiff.day! < 0 {
+                            self.membershipStartDateLabel.attributedText = NSAttributedString(string: "Ended on  \(latestMembership.endDate)", attributes: [NSAttributedString.Key.font:UIFont(name: "Poppins-Medium", size: 11)!])
+                        } else{
+                            self.membershipStartDateLabel.attributedText = NSAttributedString(string: "starts from \(latestMembership.startDate)", attributes: [NSAttributedString.Key.font:UIFont(name: "Poppins-Medium", size: 11)!])
+                        }
                     } else {
                         self.membershipStartDateLabel.text = "--"
                     }

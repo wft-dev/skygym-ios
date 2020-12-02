@@ -107,6 +107,10 @@ class AddMemberViewController: BaseViewController {
                         if currentMembership.count > 0 {
                             self.setRenewingMembershipData(membership: currentMembership.first!)
                             self.renewingMembershipID = currentMembership.first!.membershipID
+                        } else {
+                            let previousMembership = AppManager.shared.getPreviousMembership(membershipArray: memberships)
+                            self.setRenewingMembershipData(membership: previousMembership)
+                            self.renewingMembershipID = previousMembership.membershipID
                         }
                     }
                 })
@@ -373,7 +377,6 @@ extension AddMemberViewController{
     @objc func errorValidator(_ textField:UITextField) {
         self.allNewMemberFieldsRequiredValidation(textField: textField)
         self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField)
-        
     }
     
     func addPaddingToTextField(textField:UITextField) {
@@ -721,7 +724,7 @@ extension AddMemberViewController: UIImagePickerControllerDelegate,UINavigationC
 
 extension AddMemberViewController:UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 4 || textField.tag == 11 || textField.tag == 14 || textField.tag == 8{
+        if textField.tag == 4 || textField.tag == 11 || textField.tag == 14 || textField.tag == 8 {
             return false
         } else {
             return true
@@ -740,6 +743,7 @@ extension AddMemberViewController:UITextFieldDelegate{
         }
 //        self.allNewMemberFieldsRequiredValidation(textField: textField)
 //        self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.membershipPlanView.isHidden == false ? self.membershipFieldArray : self.memberProfileFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField)
+        
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {

@@ -116,6 +116,13 @@ class TrainerEditScreenViewController: BaseViewController {
     @IBOutlet weak var shiftTimingErrorLabel: UILabel!
     @IBOutlet weak var dobErrorLabel: UILabel!
     @IBOutlet weak var dateOfJoinErrorLabel: UILabel!
+    @IBOutlet weak var permissionForNonEditLabel: UILabel!
+    @IBOutlet weak var visitorPermissionNonEditView: UIView!
+    @IBOutlet weak var visitorPermissionNonEditBtn: UIButton!
+    @IBOutlet weak var memberPermissionNonEditView: UIView!
+    @IBOutlet weak var eventPermissionNonEditView: UIView!
+    @IBOutlet weak var memberPermissionNonEditBtn: UIButton!
+    @IBOutlet weak var eventPermissionNonEditBtn: UIButton!
     
     var isNewTrainer:Bool = false
     let imagePicker = UIImagePickerController()
@@ -134,6 +141,9 @@ class TrainerEditScreenViewController: BaseViewController {
     var textFieldArray:[UITextField] = []
     var trainerType:String = ""
     let validation = ValidationManager.shared
+    var memberPermission:Bool = false
+    var visitorPermission:Bool = false
+    var eventPermission:Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -264,7 +274,6 @@ extension TrainerEditScreenViewController {
         self.setHrLineView(isHidden: false, alpha: 1.0)
      //   self.setToggleBtns(isEnabled: false, alpha: 0.9)
         self.type.textColor = .lightGray
-        self.permissions.textColor = .lightGray
         [self.generalTypeBtn,self.personalTypeBtn].forEach{
             $0?.isHidden = true
             $0?.alpha = 0.0
@@ -276,11 +285,13 @@ extension TrainerEditScreenViewController {
         self.setTrainerType(type: self.trainerType, generalBtn: self.generalBtnForNonEditLabel, personalBtn: self.personalBtnForNonEditLabel)
         self.updateBtn.isEnabled = false
         self.updateBtn.alpha = 0.4
+        self.setPermissionView(isHidden: true)
+        self.setPermissionLabel(isHidden: true)
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
      //   self.setToggleBtns(isEnabled: true, alpha: 1.0)
-        self.idTextField.isEnabled = true
+     //   self.idTextField.isEnabled = true
         self.idTextField.layer.opacity = 0.4
         self.addressNonEditLabel.isHidden = true
         self.addressView.isHidden = false
@@ -304,6 +315,9 @@ extension TrainerEditScreenViewController {
         self.setTrainerType(type: self.trainerType, generalBtn: self.generalTypeBtn, personalBtn: self.personalTypeBtn)
         self.updateBtn.isEnabled = true
         self.updateBtn.alpha = 1.0
+        self.setPermissionView(isHidden: false)
+        self.setPermissionLabel(isHidden: false)
+        self.setTrainerPermission(memberPermissionBtn: self.memberPermissionToggleBtn, visitorPermissionBtn: self.visitorPermissionToggleBtn, eventPermissionBtn: self.eventPermissionToggleBtn, memberPermission: self.memberPermission, visitorPermission: self.visitorPermission, eventPermission: self.eventPermission)
     }
     }
 
@@ -333,6 +347,24 @@ extension TrainerEditScreenViewController {
         return dir
     }
     
+    func setPermissionView(isHidden:Bool)  {
+        [self.memberPermissionView,self.eventPermissionView,self.visitorPermissionView].forEach{
+            $0?.isHidden = isHidden
+            $0?.alpha = isHidden == false ? 1.0 : 0.4
+        }
+        [self.memberPermissionNonEditView,self.visitorPermissionNonEditView,self.eventPermissionNonEditView].forEach{
+            $0?.isHidden = !isHidden
+            $0?.alpha = !isHidden ? 1.0 : 0.4
+        }
+    }
+    
+    func setPermissionLabel(isHidden:Bool)  {
+        self.permissions.isHidden = isHidden
+        self.permissions.alpha = isHidden ? 0.0 : 1.0
+        self.permissionForNonEditLabel.isHidden = !isHidden
+        self.permissionForNonEditLabel.alpha = !isHidden == false ? 1.0 : 0.0
+    }
+    
     func setToggleBtns(isEnabled:Bool,alpha:CGFloat) {
         [self.generalTypeBtn,self.personalTypeBtn,self.visitorPermissionToggleBtn,self.memberPermissionToggleBtn,self.eventPermissionToggleBtn].forEach{
             $0?.isEnabled = isEnabled
@@ -357,7 +389,7 @@ extension TrainerEditScreenViewController {
             $0?.clipsToBounds = true
         }
         
-        [self.visitorPermissionView,self.memberPermissionView,self.eventPermissionView].forEach{
+        [self.visitorPermissionView,self.memberPermissionView,self.eventPermissionView,self.memberPermissionNonEditView,self.visitorPermissionNonEditView,self.eventPermissionNonEditView].forEach{
             $0?.layer.cornerRadius = 7.0
             $0?.layer.borderColor =  UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0).cgColor
             $0?.layer.borderWidth = 1.2
@@ -488,6 +520,7 @@ extension TrainerEditScreenViewController {
         self.errorLabelArray = [self.firstNameErrorLabel,self.lastNameErrorLabel,self.idErrorLabel,self.phoneNumberErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.addressErrorLabel,self.genderErrorLabel,self.salaryErrorLabel,self.uploadIDErrorLabel,self.shiftDaysErrorLabel,self.shiftTimingErrorLabel,self.dobErrorLabel,self.dateOfJoinErrorLabel]
         
         self.textFieldArray = [ self.firstNameTextField,self.secondNameTextField,self.idTextField,self.phoneNoTextField,self.emailTextField,self.passwordTextField,self.genderTextField,self.salaryTextField,self.uploadIDProofTextField,self.shiftDaysTextField,self.shiftTimingsTextField,self.dobTextField,self.dateOfJoinTextField ]
+        
         userImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showUserImgPicker)))
         userImg.makeRounded()
         if self.isNewTrainer == false {
@@ -504,13 +537,12 @@ extension TrainerEditScreenViewController {
                 $0?.isHidden = true
                 $0?.alpha = 0.0
             }
-            
             [self.generalBtnForNonEditLabel,self.personalBtnForNonEditLabel].forEach{
                 $0?.isHidden = false
                 $0?.alpha = 1.0
             }
-            
-            self.permissions.textColor = .lightGray
+            self.setPermissionView(isHidden: true)
+            self.setPermissionLabel(isHidden: true)
         } else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
@@ -529,8 +561,8 @@ extension TrainerEditScreenViewController {
                 $0?.isHidden = true
                 $0?.alpha = 0.0
             }
-            
-            self.permissions.textColor = .black
+            self.setPermissionView(isHidden: false)
+            self.setPermissionLabel(isHidden: false)
         }
     }
     
@@ -685,13 +717,16 @@ extension TrainerEditScreenViewController {
         self.dateOfJoinTextField.text = trainerDetails.dateOfJoining
         self.dobTextField.text = trainerDetails.dob
 
-        
         self.setTrainerType(type:trainerDetails.type,generalBtn:self.generalBtnForNonEditLabel,personalBtn: self.personalBtnForNonEditLabel )
-        self.setTrainerPermission(memberPermission: trainerPermissions.canAddMember, visitorPermission: trainerPermissions.canAddVisitor, eventPermission:trainerPermissions.canAddEvent)
+        self.setTrainerPermission(memberPermissionBtn: self.memberPermissionNonEditBtn, visitorPermissionBtn: self.visitorPermissionNonEditBtn, eventPermissionBtn: self.eventPermissionNonEditBtn,memberPermission: trainerPermissions.canAddMember, visitorPermission: trainerPermissions.canAddVisitor, eventPermission:trainerPermissions.canAddEvent)
         
         self.name = "\(trainerDetails.firstName) \(trainerDetails.lastName)"
         self.addressStr = trainerDetails.address
         self.trainerType = trainerDetails.type
+        
+        self.memberPermission = trainerPermissions.canAddMember
+        self.eventPermission = trainerPermissions.canAddEvent
+        self.visitorPermission = trainerPermissions.canAddVisitor
     }
 
     func clearTextFields() {
@@ -712,10 +747,10 @@ extension TrainerEditScreenViewController {
         }
     }
     
-    func setTrainerPermission(memberPermission:Bool,visitorPermission:Bool,eventPermission:Bool) {
-        self.memberPermissionToggleBtn.setImage(UIImage(named: memberPermission ? "toggle-on": "toggle-off"), for: .normal)
-        self.visitorPermissionToggleBtn.setImage(UIImage(named: visitorPermission ? "toggle-on" : "toggle-off"), for: .normal)
-        self.eventPermissionToggleBtn.setImage(UIImage(named: eventPermission ? "toggle-on" : "toggle-off"), for: .normal)
+    func setTrainerPermission(memberPermissionBtn:UIButton,visitorPermissionBtn:UIButton,eventPermissionBtn:UIButton,memberPermission:Bool,visitorPermission:Bool,eventPermission:Bool) {
+        memberPermissionBtn.setImage(UIImage(named: memberPermission ? "toggle-on": "toggle-off"), for: .normal)
+        visitorPermissionBtn.setImage(UIImage(named: visitorPermission ? "toggle-on" : "toggle-off"), for: .normal)
+        eventPermissionBtn.setImage(UIImage(named: eventPermission ? "toggle-on" : "toggle-off"), for: .normal)
     }
 }
 

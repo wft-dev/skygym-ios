@@ -20,12 +20,10 @@ class MembershipTableCell: UITableViewCell {
 
 class ListOfMembershipViewController: BaseViewController {
     
-    
     @IBOutlet weak var membershipNavigationBar: CustomNavigationBar!
     @IBOutlet weak var membershipTable: UITableView!
     let refreshControl = UIRefreshControl()
     var membershipDetailArray:[Memberhisp] = []
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,6 +35,7 @@ class ListOfMembershipViewController: BaseViewController {
         self.refreshControl.addTarget(self, action: #selector(refreshMembershipList), for: .valueChanged)
         self.membershipTable.refreshControl = self.refreshControl
     }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
@@ -117,10 +116,9 @@ extension ListOfMembershipViewController {
         cellView.isUserInteractionEnabled = true
         cellView.backgroundColor = .white
         cellView.layer.cornerRadius = 20
-         cell.layer.cornerRadius = 20
+        cell.layer.cornerRadius = 20
         cellView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
         cellView.layer.borderWidth = 1.0
-        
         deleteView.superview?.sendSubviewToBack(deleteView)
     }
 
@@ -146,6 +144,7 @@ extension ListOfMembershipViewController {
             }
         })
     }
+    
     func showMembershipAlert(title:String,message:String)  {
         let alertController = UIAlertController(title:title, message: message, preferredStyle: .alert)
         let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
@@ -205,5 +204,4 @@ extension ListOfMembershipViewController:UITableViewDelegate{
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 15
     }
-    
 }

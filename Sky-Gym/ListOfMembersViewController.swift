@@ -150,13 +150,24 @@ class ListOfMembersViewController: BaseViewController {
     
 override func viewWillAppear(_ animated: Bool) {
      super.viewWillAppear(animated)
-
  }
     
     @objc func refreshMembers(){
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
             self.refreshControl.endRefreshing()
-              self.showMembers()
+           //   self.showMembers()
+            switch self.filterationLabel {
+            case "allMemberFilteration":
+                self.showMembers()
+            case "expiredMemberFilteration":
+                self.expiredMemberFilterationAction()
+            case "checkInMemberFilteration":
+                self.checkFilterationAction(checkFor: "checkIn")
+            case "checkOutMemberFilteration":
+                self.checkFilterationAction(checkFor: "checkOut")
+            default:
+                break
+            }
         })
     }
     
@@ -216,7 +227,7 @@ extension ListOfMembersViewController : UITableViewDataSource{
         cell.customCellDelegate = self
         cell.selectionStyle = .none
         self.setCellAttendeneBtn(memberCell: cell, memberID: singleMember.memberID)
-        self.setCellRenewMembershipBtn(memberCell: cell, memberID: singleMember.memberID,dueAmount: singleMember.dueAmount)
+        self.setCellRenewMembershipBtn(memberCell: cell, memberID: singleMember.memberID,dueAmount: singleMember.dueAmount, dateOfExpiry: singleMember.dateOfExp)
         self.addCustomSwipe(cellView: cell.listOfmemberTCView, cell: cell)
         
         return cell
@@ -396,16 +407,16 @@ extension ListOfMembersViewController{
                     searchTextField.borderStyle = .none
                     let imagView = UIImageView(image: UIImage(named: "search-2"))
                     let emptyView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-                   let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: 25, height: searchTextField.frame.height))
+                    let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: 25, height: searchTextField.frame.height))
                     stackView.translatesAutoresizingMaskIntoConstraints = false
                     stackView.widthAnchor.constraint(equalToConstant: 25).isActive = true
-                   stackView.heightAnchor.constraint(equalToConstant: 25).isActive = true
+                    stackView.heightAnchor.constraint(equalToConstant: 25).isActive = true
                     stackView.alignment = .center
                     stackView.insertArrangedSubview(imagView, at: 0)
                     stackView.insertArrangedSubview(emptyView, at: 1)
                     searchTextField.leftViewMode = .always
                     searchTextField.leftView = stackView
-                   searchTextField.attributedPlaceholder = NSAttributedString(string: "Search Members",
+                    searchTextField.attributedPlaceholder = NSAttributedString(string: "Search Members",
                                                                               attributes: [NSAttributedString.Key.foregroundColor: UIColor(red: 192/255, green: 192/255, blue: 192/255, alpha: 1),
                                                                                            NSAttributedString.Key.font:UIFont(name: "Poppins-Medium", size: 18)!
                    ])
@@ -436,7 +447,6 @@ extension ListOfMembersViewController{
                         }else {
                         membership = MembershipDetailStructure(membershipID: "__", membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", purchaseTime: "--", purchaseDate: "--", membershipDuration: "--")
                         }
-                        
                         let member = ListOfMemberStr(memberID: memberDetail.memberID, userImg: UIImage(named: "user1")!, userName: "\(memberDetail.firstName) \(memberDetail.lastName)", phoneNumber: memberDetail.phoneNo, dateOfExp:membership!.endDate , dueAmount: membership!.dueAmount, uploadName: memberDetail.uploadIDName)
                             self.listOfMemberArray.append(member)
                     }
@@ -514,12 +524,14 @@ extension ListOfMembersViewController{
               $0.setImage(UIImage(named: "non_selecte"), for: .normal)
           }
     }
+    
     @objc func expiredMembersFilter() {
           self.expiredMembersFilterBtn.setImage(UIImage(named: "selelecte"), for: .normal)
            [self.allMemberFilterBtn,self.CheckinFilterBtn,self.checkoutFilterBtn].forEach{
                     $0.setImage(UIImage(named: "non_selecte"), for: .normal)
                 }
        }
+    
     @objc func checkInFilter() {
           self.CheckinFilterBtn.setImage(UIImage(named: "selelecte"), for: .normal)
            [self.allMemberFilterBtn,self.expiredMembersFilterBtn,self.checkoutFilterBtn].forEach{
@@ -588,20 +600,26 @@ extension ListOfMembersViewController{
         })
     }
     
-    func setCellRenewMembershipBtn(memberCell:ListOfMembersTableCell,memberID:String,dueAmount:String)  {
+    func setCellRenewMembershipBtn(memberCell:ListOfMembersTableCell,memberID:String,dueAmount:String,dateOfExpiry:String)  {
         FireStoreManager.shared.isCurrentMembership(memberOrTrainer: .Member, memberID: memberID, result: {
             (flag,err) in
             
-            if err == nil && flag == false {
-                memberCell.renewImg?.isUserInteractionEnabled = flag!
-                memberCell.renewImg?.alpha = flag == true ? 1.0 : 0.4
-                memberCell.renewPackageLabel.alpha = flag == true ? 1.0 : 0.4
+            if err == nil {
                 memberCell.attendImg?.isUserInteractionEnabled = flag!
                 memberCell.attendImg?.alpha = flag == true ? 1.0 : 0.4
                 memberCell.attendenceLabel.alpha = flag == true ? 1.0 : 0.4
-                memberCell.dueAmount.text = dueAmount
-                memberCell.dateOfExpiry.text = "--"
+                memberCell.dueAmount.text =  flag == true ? dueAmount : "0"
+                memberCell.dateOfExpiry.text = flag == true ? dateOfExpiry :  "--"
             }
+            
+
+      //      if err == nil && flag == false {
+//                memberCell.renewImg?.isUserInteractionEnabled = flag!
+//                memberCell.renewImg?.alpha = flag == true ? 1.0 : 0.4
+//                memberCell.renewPackageLabel.alpha = flag == true ? 1.0 : 0.4
+        //    }
+            
+            
         })
     }
 }
@@ -622,7 +640,6 @@ extension ListOfMembersViewController:UISearchBarDelegate{
             self.listOfMemberTable.reloadData()
         }
     }
-    
 }
 
 extension ListOfMembersViewController:CustomCellSegue{

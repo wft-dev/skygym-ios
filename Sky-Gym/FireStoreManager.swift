@@ -268,21 +268,24 @@ class FireStoreManager: NSObject {
                 for doc in querySnapshot!.documents {
                     let memberDetail = (doc.data())["memberDetail"] as! [String:String]
                     let membershipArray = (doc.data())["memberships"] as! NSArray
-                    let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
+                  //  let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
+                    let latestMembership = AppManager.shared.getLatestMembership(membershipsArray: membershipArray as NSArray)
                     
-                    for singleCurrentMembership in currentMembership {
-                        let expiredDate = AppManager.shared.getDate(date: singleCurrentMembership.endDate)
-                        let df = DateFormatter()
-                        df.dateFormat = "dd-MMM-yyyy"
-                        let startDate = AppManager.shared.getDate(date: df.string(from: Date()))
-                        //let dayDiff = calculateDaysBetweenTwoDates(start: Date(), end: expiredDate)
-                        let difference = Calendar.current.dateComponents([.year,.month,.day], from: startDate, to: expiredDate)
+                //    for singleCurrentMembership in latestMembership {
+//                        let expiredDate = AppManager.shared.getDate(date: singleCurrentMembership.endDate)
+//                        let df = DateFormatter()
+//                        df.dateFormat = "dd-MMM-yyyy"
+//                        let startDate = AppManager.shared.getDate(date: df.string(from: Date()))
+//                        //let dayDiff = calculateDaysBetweenTwoDates(start: Date(), end: expiredDate)
+//                        let difference = Calendar.current.dateComponents([.year,.month,.day], from: startDate, to: expiredDate)
+
+                        let dateComponentDifference = AppManager.shared.getDateDifferenceComponent(startDate: AppManager.shared.getDate(date: latestMembership.endDate), endDate: Date())
                         
-                        if difference.day! < 0 {
-                            let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: singleCurrentMembership.endDate, dueAmount:singleCurrentMembership.dueAmount, uploadName: memberDetail["uploadIDName"]!)
+                        if dateComponentDifference.year! < 0 || dateComponentDifference.month! < 0 || dateComponentDifference.day! < 0  {
+                            let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: latestMembership.endDate, dueAmount:latestMembership.dueAmount, uploadName: memberDetail["uploadIDName"]!)
                             memberArray.append(member)
                         }
-                    }
+               //     }
                 }
             }
             result(memberArray,nil)
@@ -590,8 +593,6 @@ class FireStoreManager: NSObject {
             }
         })
     }
-    
-    
 
     func deleteMemberBy(id:String,completion:@escaping (Error?)->Void) {
         
@@ -627,7 +628,6 @@ class FireStoreManager: NSObject {
             }
         })
     }
-    
     
     func addTrainer(email:String,password:String,trainerID:String,trainerDetail:[String:String],trainerPermission:[String:Bool],completion:@escaping (Error?)->Void) {
        // let attendence = [String:[String:[String:Bool]]]()
@@ -695,8 +695,7 @@ class FireStoreManager: NSObject {
             completion(err)
         })
     }
-    
-    
+
     func getAllMembership(result:@escaping ([[String:Any]]?,Error?)->Void) {
         var membershipArray:[[String:Any]] = []
         fireDB.collection("/Memberships").whereField("adminID", isEqualTo: AppManager.shared.adminID)   .getDocuments(completion: {
@@ -903,6 +902,7 @@ class FireStoreManager: NSObject {
             }
         })
     }
+    
 
     func dummyAttendence() {
         fireDB.collection("/Members").document("129078391").getDocument(completion: {

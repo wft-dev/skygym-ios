@@ -170,11 +170,11 @@ class AppManager: NSObject {
           return member
       }
       
-      func getLatestMembership(membershipsArray:NSArray) -> MembershipDetailStructure{
-          let lastMemberhipData = membershipsArray.lastObject as! NSDictionary
+    func getLatestMembership(membershipsArray:NSArray) -> MembershipDetailStructure{
+        let lastMemberhipData = membershipsArray.lastObject as! NSDictionary
         let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"] as! String, membershipPlan: lastMemberhipData["membershipPlan"] as! String, membershipDetail: lastMemberhipData["membershipDetail"] as! String, amount: lastMemberhipData["amount"] as! String, startDate: lastMemberhipData["startDate"] as! String, endDate: lastMemberhipData["endDate"] as! String, totalAmount: lastMemberhipData["totalAmount"] as! String, discount: lastMemberhipData["discount"] as! String, paymentType:lastMemberhipData["paymentType"] as! String , dueAmount: lastMemberhipData["dueAmount"] as! String,purchaseTime: lastMemberhipData["purchaseTime"] as! String,purchaseDate: lastMemberhipData["purchaseDate"] as! String, membershipDuration: lastMemberhipData["membershipDuration"] as! String)
-          return latestMemberhsip
-      }
+        return latestMemberhsip
+    }
     
     func getCurrentMembership(membershipArray:NSArray) -> [MembershipDetailStructure] {
         var currentMembershipDataArray:[MembershipDetailStructure] = []
@@ -271,11 +271,46 @@ class AppManager: NSObject {
     }
     
     func getMembershipEndDate(startDate:Date,duration:Int) -> Date {
+        
+        
+        var flag:Bool = false
+     //  let startDateComponent = Calendar.current.dateComponents([.day,.month,.year], from: startDate)
         let endDate = Calendar.current.date(byAdding: .month, value: duration, to: startDate)!
-        let lastEndDate = Calendar.current.date(byAdding: .day, value: -1, to: endDate)!
-        return lastEndDate
-      }
+        var lastEndDate = Calendar.current.date(byAdding: .day, value: -1, to: endDate)!
+        let lastDateMonthAndYear = Calendar.current.dateComponents([.month,.year], from: lastEndDate)
+        
+//        if lastDateMonthAndYear.month! == 2  {
+//            let lastDayOfFeb = lastDay(ofMonth: lastDateMonthAndYear.month!, year: lastDateMonthAndYear.year!)
+//            let lastDateStr = "\(lastDayOfFeb)/0\(lastDateMonthAndYear.month!)/\(lastDateMonthAndYear.year!)"
 
+//            var s = df.string(from: lastEndDate)
+//
+//            while flag == false {
+//                if s == lastDateStr {
+//                    flag = true
+//                    lastEndDate = AppManager.shared.getDate(date: lastDateStr)
+//                } else {
+//                    s = df.string(from: Calendar.current.date(byAdding: .day, value: -1, to: lastEndDate)!)
+//                }
+//            }
+//
+//
+
+        let validLastDate = "\(lastDay(ofMonth: lastDateMonthAndYear.month!, year: lastDateMonthAndYear.year!))/\(lastDateMonthAndYear.month!)/\(lastDateMonthAndYear.year!)"
+        let df = DateFormatter()
+        df.dateFormat = "dd/M/yyyy"
+         var s = df.string(from: lastEndDate)
+
+        while flag == false {
+            if s == validLastDate {
+                flag = true
+                lastEndDate = AppManager.shared.getDate(date: validLastDate)
+            } else{
+                s = df.string(from: Calendar.current.date(byAdding: .day, value: -1, to: lastEndDate)!)
+        }
+        return lastEndDate
+    }
+    }
     func dateWithMonthName(date:Date) ->String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "dd-MMM-yyyy"
@@ -406,7 +441,6 @@ class AppManager: NSObject {
              }
          }
          return attendenceArray
-
     }
     
     func differentMonthDifferentYearAttendenceFetching(attendence:NSDictionary,startDate:Date,endDate:Date) -> [Attendence]  {
@@ -575,19 +609,15 @@ class AppManager: NSObject {
     return nil
     }
     
-    func getAttandenceNewMonth(trainerORmember:String,id:String,year:String,month:String,completion:@escaping (Array<NSDictionary>?)->Void) {
-        FireStoreManager.shared.uploadAttandance(trainerORmember: trainerORmember, id: id, present: false, checkIn: "", checkOut: "", completion: {
-            err in
-            
-            if err == nil {
-                FireStoreManager.shared.getAttandance(trainerORmember: trainerORmember, id: id, year: year, month: month, result: {
-                    (attendence) in
-                    
-                    print("Attendence is \(attendence)")
-                    
-                })
-            }
-        })
+    func getDateDifferenceComponent(startDate:Date, endDate:Date) -> DateComponents {
+        let diff = Calendar.current.dateComponents([.year,.month,.day], from: endDate, to: startDate)
+        return diff
+    }
+    
+    func getPreviousMembership(membershipArray:NSArray) -> MembershipDetailStructure {
+        let lastMemberhipData = membershipArray.lastObject as! NSDictionary
+        let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"] as! String, membershipPlan: lastMemberhipData["membershipPlan"] as! String, membershipDetail: lastMemberhipData["membershipDetail"] as! String, amount: lastMemberhipData["amount"] as! String, startDate: lastMemberhipData["startDate"] as! String, endDate: lastMemberhipData["endDate"] as! String, totalAmount: lastMemberhipData["totalAmount"] as! String, discount: lastMemberhipData["discount"] as! String, paymentType:lastMemberhipData["paymentType"] as! String , dueAmount: lastMemberhipData["dueAmount"] as! String,purchaseTime: lastMemberhipData["purchaseTime"] as! String,purchaseDate: lastMemberhipData["purchaseDate"] as! String, membershipDuration: lastMemberhipData["membershipDuration"] as! String)
+        return latestMemberhsip
     }
 }
 
