@@ -32,7 +32,7 @@ class ValidationManager: NSObject {
             }
         } else {
             validatorLoop: for textField in textFieldArray{
-                if  textField.text!.count > 0 {
+                if  textField.text!.count > 3 {
                     flag = true
                 }else {
                     flag = false
@@ -41,6 +41,13 @@ class ValidationManager: NSObject {
             }
         }
         return flag
+    }
+
+    func isEmailValid(email:String) -> Bool {
+        return AppManager.shared.isEmailValid(email: email) ? true : false
+    }
+    func isPasswordValid(password:String) -> Bool {
+        return AppManager.shared.isPasswordValid(text: password) ? true : false
     }
 
     func requiredValidation(textField:UITextField,errorLabel:UILabel,errorMessage:String)  {
@@ -119,7 +126,6 @@ class ValidationManager: NSObject {
         }
     }
     
-    
     func maxCharacterValidation(textField:UITextField,max:Int) -> Bool {
         return textField.text!.count < max ? true : false
     }
@@ -132,9 +138,25 @@ class ValidationManager: NSObject {
         return text1 == text2 ? true : false
     }
     
-    func updateBtnValidator(updateBtn:UIButton,textFieldArray:[UITextField],textView:UITextView,phoneNumberTextField:UITextField?) {
-        let flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField)
+    func updateBtnValidator(updateBtn:UIButton,textFieldArray:[UITextField],textView:UITextView,phoneNumberTextField:UITextField?,email:String?,password:String?) {
+        var flag:Bool = false
         
+        if email != nil && password == nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) == true ? true : false
+        }
+            
+        else if password != nil && email == nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isPasswordValid(password: password!) == true ? true : false
+        }
+            
+        else if email != nil && password != nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray: textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) && isPasswordValid(password: password!) == true ? true : false
+        }
+            
+        else {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField)
+        }
+
         if flag == true  && isTextViewRequiredValid(textView: textView) == true {
             updateBtn.isEnabled = true
             updateBtn.alpha = 1.0
@@ -142,12 +164,6 @@ class ValidationManager: NSObject {
             updateBtn.isEnabled = false
             updateBtn.alpha = 0.4
         }
-    }
-    
-    func updateBtnValidatorWithCurrentTextField(updateBtn:UIButton,textField:UITextField) {
-        let flag = textField.text!.count > 0
-        updateBtn.isEnabled = flag == true  ? true : false
-        updateBtn.alpha = flag == true ? 1.0 : 0.4
     }
     
 }

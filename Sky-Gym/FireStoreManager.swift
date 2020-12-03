@@ -348,11 +348,23 @@ class FireStoreManager: NSObject {
                         let d = eachDay as! NSDictionary
                         if  let status = d["\(todayDate)"] as? NSDictionary  {
                             let check = status["\(checkFor)"] as! String
+                            let d = checkFor == "checkIn" ? "checkOut" : "checkIn"
+                            let anotherCheck = status["\(d)"] as! String
                             let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
                             
-                            if check != "" {
-                                let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.count > 0 ? currentMembership.first!.endDate : "--", dueAmount: currentMembership.count > 0 ? currentMembership.first!.dueAmount : "--", uploadName: memberDetail["uploadIDName"]!)
-                                checkArray.append(member)
+                            switch checkFor {
+                            case "checkIn":
+                                if check != "" && check != "-"  && anotherCheck == "-" {
+                                    let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.count > 0 ? currentMembership.first!.endDate : "--", dueAmount: currentMembership.count > 0 ? currentMembership.first!.dueAmount : "--", uploadName: memberDetail["uploadIDName"]!)
+                                    checkArray.append(member)
+                                }
+                            case "checkOut" :
+                                if check != "" && check != "-"  && anotherCheck != "" && anotherCheck != "-"  {
+                                    let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.count > 0 ? currentMembership.first!.endDate : "--", dueAmount: currentMembership.count > 0 ? currentMembership.first!.dueAmount : "--", uploadName: memberDetail["uploadIDName"]!)
+                                    checkArray.append(member)
+                                }
+                            default:
+                                break
                             }
                         }
                     }
@@ -497,7 +509,6 @@ class FireStoreManager: NSObject {
             err in
             handler(err)
         })
-        
       }
     
     private func markAttendence(attendenceDir:NSDictionary,trainerORmember:String,id:String,year:Int,month:Int,day:Int,present:Bool,checkIn:String,checkOut:String,handler:@escaping (Error?) -> Void ) {
@@ -670,6 +681,7 @@ class FireStoreManager: NSObject {
             if err != nil {
                 completion(nil,err)
             } else {
+                
                 let data = docSnapshot?.data()
                 AppManager.shared.trainerID =  (data?["trainerDetail"] as! [String:String])["trainerID"]!
                 completion(data,nil)

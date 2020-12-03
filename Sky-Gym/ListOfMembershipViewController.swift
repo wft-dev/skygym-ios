@@ -91,26 +91,28 @@ extension ListOfMembershipViewController {
         let rightSwipGesture = UISwipeGestureRecognizer(target: self, action: #selector(membershipRightSwipeAction(_:)))
         leftSwipeGesture.direction = .left
         rightSwipGesture.direction = .right
-        let deleteView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: cellView.frame.height))
+        let deleteView = UIView(frame: CGRect(x: 0, y: 0, width: cellView.frame.width, height: cellView.frame.height))
         let trashImgView = UIImageView(image: UIImage(named: "delete"))
         trashImgView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
         trashImgView.isUserInteractionEnabled = true
         trashImgView.tag = cellView.tag
-        
+        deleteView.backgroundColor = .red
+        cell.contentView.addSubview(deleteView)
         deleteView.addSubview(trashImgView)
         trashImgView.translatesAutoresizingMaskIntoConstraints = false
+        deleteView.translatesAutoresizingMaskIntoConstraints = false
+        
         trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
-        trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/2)).isActive = true
+        trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/4)).isActive = true
         trashImgView.heightAnchor.constraint(equalToConstant: 25).isActive = true
         trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
         trashImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(deleteMembership(_:))))
         
-        deleteView.heightAnchor.constraint(equalToConstant: cell.frame.height).isActive = true
-        deleteView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
-        deleteView.translatesAutoresizingMaskIntoConstraints = true
-        deleteView.backgroundColor = .red
-        cell.contentView.addSubview(deleteView)
-        
+        deleteView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 0).isActive = true
+        deleteView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: 0).isActive = true
+        deleteView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 0).isActive = true
+        deleteView.bottomAnchor.constraint(greaterThanOrEqualTo: cell.contentView.bottomAnchor, constant: 0).isActive = true
+
         cellView.addGestureRecognizer(leftSwipeGesture)
         cellView.addGestureRecognizer(rightSwipGesture)
         cellView.isUserInteractionEnabled = true

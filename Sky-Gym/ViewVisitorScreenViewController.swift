@@ -89,7 +89,7 @@ class ViewVisitorScreenViewController: BaseViewController {
         
         self.defaultLabelArray = [self.firstName,self.lastName,self.address,self.email,self.dateOfJoin,self.dateOfVisit,self.gender,self.noOfVisit,self.phoneNo]
     
-        self.textFieldArray = [self.visitorFirstName,self.visitorLastName,self.visitorEmailTextField,self.visitorDateOfJoinTextField,self.visitorDateOfVisitTextField,self.noOfVisitTextField,self.visitorGenderTextField,self.visitorPhoneNoTextField]
+        self.textFieldArray = [self.visitorFirstName,self.visitorLastName,self.visitorDateOfJoinTextField,self.visitorDateOfVisitTextField,self.noOfVisitTextField,self.visitorGenderTextField,self.visitorPhoneNoTextField]
         
         self.errorLabelArray = [self.firstNameErrorLabel,self.secondNameErrorLabel,self.emailErrorLabel,self.addressErrorLabel,self.dateOfJoinErrorLabel,self.dateOfVisitErrorLabel,self.noOfVisitErrorLabel,self.genderErrorLabel,self.phoneNumberErrorLabel]
         
@@ -271,7 +271,7 @@ extension ViewVisitorScreenViewController {
     
     @objc func fieldsValidatorAction(_ textField:UITextField)  {
         self.allVisitorFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email: visitorEmailTextField.text!,password:nil)
     }
     
         
@@ -440,7 +440,7 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
             }
         }
         self.allVisitorFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
     }
           
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -459,7 +459,7 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
             break
         }
         self.allVisitorFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
     }
 }
 
@@ -479,7 +479,7 @@ extension ViewVisitorScreenViewController : UIImagePickerControllerDelegate,UINa
 extension ViewVisitorScreenViewController : UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
      self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address required.")
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.visitorPhoneNoTextField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
         return true
     }
     

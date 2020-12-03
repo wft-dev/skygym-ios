@@ -68,7 +68,7 @@ class ViewEventScreenViewController: BaseViewController {
     
     @objc func checkValidation(_ textField:UITextField) {
         self.allFieldsRequiredValidation(textField: textField, duplicateError: nil)
-        validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil)
+   //     validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -384,7 +384,7 @@ extension ViewEventScreenViewController:UITextFieldDelegate{
         }
 
         self.allFieldsRequiredValidation(textField: textField, duplicateError: duplicateError)
-         validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil)
+         validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil,email: nil,password: nil)
     }
 }
 
@@ -392,7 +392,7 @@ extension ViewEventScreenViewController:UITextViewDelegate{
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         self.validation.requiredValidation(textView: textView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address required.")
-        validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil)
+        validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil,email: nil,password: nil)
         return true
     }
     

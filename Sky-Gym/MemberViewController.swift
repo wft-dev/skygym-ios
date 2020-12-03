@@ -99,7 +99,7 @@ class MemberViewController: BaseViewController {
         self.forNonEditLabelArray = [self.memberIDForNonEditLabel,self.dateOfJoiningForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.trainerNameForNonEditLabel,self.uploadForNonEditLabel,self.emailForNonEditLabel,self.addressForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
         self.defaultLabelArray = [self.memberID,self.dateOfJoining,self.gender,self.password,self.trainerName,self.uploadID,self.email,self.address,self.phoneNo,self.dob]
         self.errorLabelArray = [self.memberIDErrorLabel,self.dateOfJoiningErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.addressErrorLabel,self.trainerNameErrorLabel,self.uploadIDErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel]
-        self.textFieldArray = [self.memberIDTextField,self.dateOfJoiningTextField,self.genderTextField,self.passwordTextField,self.trainerNameTextField,self.uploadIDTextField,self.emailTextField,self.phoneNoTextField,self.dobTextField]
+        self.textFieldArray = [self.memberIDTextField,self.dateOfJoiningTextField,self.genderTextField,self.trainerNameTextField,self.uploadIDTextField,self.phoneNoTextField,self.dobTextField]
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -177,13 +177,13 @@ extension MemberViewController{
         case 3:
             validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Member's gender required." )
         case 4:
-            validation.requiredValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password required.")
+            validation.passwordValidation(textField: textField, errorLabel:self.passwordErrorLabel, errorMessage: "Password must be greater than 8 character.")
         case 5:
             validation.requiredValidation(textField: textField, errorLabel: self.trainerNameErrorLabel, errorMessage: "Trainer's name required.")
         case 6:
             validation.requiredValidation(textField: textField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required." )
         case 7:
-            validation.requiredValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Member's email required.")
+            validation.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid email address.")
         case 8:
             validation.phoneNumberValidation(textField: textField, errorLabel:self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
         case 9:
@@ -253,7 +253,8 @@ extension MemberViewController{
     
     @objc func fieldsValidatorAction(_ textField:UITextField) {
         self.allMemberProfileFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
+//        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
+        
     }
     
     @objc func makeEditable() {
@@ -496,14 +497,14 @@ extension MemberViewController:UITextFieldDelegate{
         }
 
         self.allMemberProfileFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
     }
 }
 
 extension MemberViewController:UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
         return true
     }
     

@@ -93,7 +93,7 @@ class AdminProfileViewController: UIViewController {
         self.forNonEditLabelArray = [self.gymNameForNonEditLabel,self.gymIDForNonEditLabel,self.gymAddressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel]
         self.defaultLabelArray = [self.gymName,self.gymID,self.gymAddress,self.firstName,self.lastName,self.email,self.gender,self.password,self.phoneNo,self.dob]
         
-        self.textFieldsArray = [self.gymNameTextField,self.gymIDTextField,self.adminFirstNameTextField,self.adminLastNameTextField,self.adminGenderTextField,self.adminPasswordTextField,self.emailTextField,self.phoneNoTextField,self.dobTextField]
+        self.textFieldsArray = [self.gymNameTextField,self.gymIDTextField,self.adminFirstNameTextField,self.adminLastNameTextField,self.adminGenderTextField,self.phoneNoTextField,self.dobTextField]
         
         self.errorLabelArray = [self.gymNameErrorLabel,self.gymIDErrorLabel,self.addressErrorLabel,self.firstNameErrorLabel,self.secondNameErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel]
         
@@ -266,7 +266,7 @@ extension AdminProfileViewController {
     @objc func checkProfileValidation(_ textField:UITextField) {
         self.allProfileFieldsRequiredValidation(textField: textField)
       //  self.updateProfileBtnEnabler(textFieldArray: self.textFieldsArray)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.adminPasswordTextField.text!)
     }
     
     func allProfileFieldsRequiredValidation(textField:UITextField)  {
@@ -280,9 +280,9 @@ extension AdminProfileViewController {
         case 5:
             validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Gender required.")
         case 6:
-            validation.requiredValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password required.")
+            validation.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 character.")
         case 7:
-            validation.requiredValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Email required." )
+            validation.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid Email.")
         case 8:
             validation.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
         case 9:
@@ -427,7 +427,7 @@ extension AdminProfileViewController : UITextFieldDelegate{
         }
         
         self.allProfileFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.adminPasswordTextField.text!)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -436,6 +436,6 @@ extension AdminProfileViewController : UITextFieldDelegate{
             self.selectedDate = ""
         }
         self.allProfileFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.adminPasswordTextField.text!)
     }
 }

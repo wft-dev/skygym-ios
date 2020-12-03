@@ -271,46 +271,10 @@ class AppManager: NSObject {
     }
     
     func getMembershipEndDate(startDate:Date,duration:Int) -> Date {
-        
-        
-        var flag:Bool = false
-     //  let startDateComponent = Calendar.current.dateComponents([.day,.month,.year], from: startDate)
         let endDate = Calendar.current.date(byAdding: .month, value: duration, to: startDate)!
-        var lastEndDate = Calendar.current.date(byAdding: .day, value: -1, to: endDate)!
-        let lastDateMonthAndYear = Calendar.current.dateComponents([.month,.year], from: lastEndDate)
-        
-//        if lastDateMonthAndYear.month! == 2  {
-//            let lastDayOfFeb = lastDay(ofMonth: lastDateMonthAndYear.month!, year: lastDateMonthAndYear.year!)
-//            let lastDateStr = "\(lastDayOfFeb)/0\(lastDateMonthAndYear.month!)/\(lastDateMonthAndYear.year!)"
-
-//            var s = df.string(from: lastEndDate)
-//
-//            while flag == false {
-//                if s == lastDateStr {
-//                    flag = true
-//                    lastEndDate = AppManager.shared.getDate(date: lastDateStr)
-//                } else {
-//                    s = df.string(from: Calendar.current.date(byAdding: .day, value: -1, to: lastEndDate)!)
-//                }
-//            }
-//
-//
-
-        let validLastDate = "\(lastDay(ofMonth: lastDateMonthAndYear.month!, year: lastDateMonthAndYear.year!))/\(lastDateMonthAndYear.month!)/\(lastDateMonthAndYear.year!)"
-        let df = DateFormatter()
-        df.dateFormat = "dd/M/yyyy"
-         var s = df.string(from: lastEndDate)
-
-        while flag == false {
-            if s == validLastDate {
-                flag = true
-                lastEndDate = AppManager.shared.getDate(date: validLastDate)
-            } else{
-                s = df.string(from: Calendar.current.date(byAdding: .day, value: -1, to: lastEndDate)!)
-        }
-        return lastEndDate
+         return endDate
     }
-    }
+    
     func dateWithMonthName(date:Date) ->String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "dd-MMM-yyyy"
