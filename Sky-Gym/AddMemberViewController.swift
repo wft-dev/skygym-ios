@@ -90,6 +90,7 @@ class AddMemberViewController: BaseViewController {
     let validation = ValidationManager.shared
     var errorLabelArray:[UILabel] = []
     var memberProfileFieldArray :[UITextField] = []
+    var completeMemberProfileFieldArray :[UITextField] = []
     var membershipFieldArray:[UITextField] = []
     var textFieldArray:[UITextField] = []
     
@@ -141,9 +142,9 @@ class AddMemberViewController: BaseViewController {
         })
         
         if self.isNewMember == false {
-            self.showMemberScreen()
+            self.showMembershipScreen()
             self.profileAndMembershipBarView.isUserInteractionEnabled = false
-            self.profileAndMembershipBarView.alpha = 0.6
+            self.profileAndMembershipBarView.isHidden = true
             self.featchMemberDetail(id: AppManager.shared.memberID)
         }
         else {
@@ -160,11 +161,11 @@ class AddMemberViewController: BaseViewController {
     }
     
     @IBAction func memberBtnAction(_ sender: Any) {
-        self.showMemberScreen()
+        self.memberValidation()
     }
     
     @IBAction func nextBtnAction(_ sender: Any) {
-        self.showMemberScreen()
+        self.memberValidation()
     }
     
     @IBAction func generalTypeOpitonBtnAction(_ sender: Any) {
@@ -241,6 +242,17 @@ class AddMemberViewController: BaseViewController {
 }
 
 extension AddMemberViewController{
+    
+    func memberValidation() {
+        for textField in self.completeMemberProfileFieldArray {
+            self.allNewMemberFieldsRequiredValidation(textField: textField)
+        }
+        self.validation.requiredValidation(textView: self.addressTextView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
+        
+        if self.validation.isMemberProfileValidated(textFieldArray: self.completeMemberProfileFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) ==  true {
+            self.showMembershipScreen()
+        }
+    }
     
     func allNewMemberFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {
@@ -322,7 +334,7 @@ extension AddMemberViewController{
             imgView.frame = CGRect(x: 0.0, y: 0.0, width: 20.0, height: 20)
             v = UIView(frame: CGRect(x: 0, y: 0, width: imgView.frame.width + 10 , height: imgView.frame.height))
             v!.addSubview(imgView)
-            v?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showMemberPlan)))
+            v?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showMembershipPlan)))
         }
         toTextField.rightView = v
         toTextField.rightViewMode = .always
@@ -335,7 +347,7 @@ extension AddMemberViewController{
         present(self.imagePicker, animated: true, completion: nil)
     }
     
-    @objc func showMemberPlan(){
+    @objc func showMembershipPlan(){
         if self.membershipPlanView.isHidden == true {
             self.membershipPlanView.isHidden = false
             self.membershipPlanView.alpha = 1.0
@@ -376,7 +388,11 @@ extension AddMemberViewController{
     
     @objc func errorValidator(_ textField:UITextField) {
         self.allNewMemberFieldsRequiredValidation(textField: textField)
-        self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+        if self.isNewMember == true {
+            self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+        } else {
+            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
+        }
     }
     
     func addPaddingToTextField(textField:UITextField) {
@@ -387,7 +403,7 @@ extension AddMemberViewController{
         textField.textColor = UIColor.black
     }
     
-    func showMemberScreen()  {
+    func showMembershipScreen()  {
         self.myScrollView.contentSize.height = 800
         self.membershipBtn.backgroundColor = UIColor(red: 236/255, green: 217/255, blue: 72/255, alpha: 1.0)
         self.profileBtn.backgroundColor = .clear
@@ -408,7 +424,7 @@ extension AddMemberViewController{
     }
     
     func setNavigationBar() {
-        addMemberNavigationBar.navigationTitleLabel.text = "Member"
+        addMemberNavigationBar.navigationTitleLabel.text = self.isNewMember == true ? "Member" : "Membership"
         addMemberNavigationBar.menuBtn.isHidden = true
         addMemberNavigationBar.leftArrowBtn.isHidden = false
         addMemberNavigationBar.leftArrowBtn.alpha = 1.0
@@ -550,16 +566,6 @@ extension AddMemberViewController{
                     self.successAlert(message: "New Membership is added successfully.")
                 }
             })
-
-//            FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID, memberDetail: self.getMemberDetails(), handler: {
-//                (err) in
-//                if err != nil {
-//                    self.errorAlert(message: "Member Details are not updated successfully,Try again")
-//                } else{
-//
-//                }
-//            })
-            
         })
     }
     
@@ -594,14 +600,23 @@ extension AddMemberViewController{
         self.membershipPlanView.clipsToBounds = true
         self.membershipPlanTable.tableFooterView = UIView()
         
+        self.membershipDetailTextView.isEditable = false
+        self.membershipDetailTextView.alpha = 0.6
+        self.amountTextField.isEnabled = false
+        self.amountTextField.alpha = 0.6
+        
+        
         self.errorLabelArray = [self.firstNameErrorLabel,self.lastNameErrorLabel,self.memberIDErrorLabel,self.dateOfJoinErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.uploadIDErrorLabel,self.trainerNameErrorLabel,self.emailErrorLabel,self.addressErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel,self.membershipPlanErrorLabel,self.amountErrorLabel,self.startDateErrorLabel,self.totalAmountErrorLabel,self.discountErrorLabel,self.paymentErrorLabel,self.discountErrorLabel]
         
         self.memberProfileFieldArray = [self.firstNameTextField,self.lastNameTextField,self.memberIDTextField,self.dateOfJoiningTextField,self.genderTextField,self.trainerNameTextField,self.uploadIDTextField,self.emailTextField,self.dobTextField]
         
         self.membershipFieldArray = [self.membershipPlanTextField,self.amountTextField,self.startDateTextField,self.endDateTextField,self.totalAmountTextField,self.discountTextField,self.paymentTypeTextField,self.dueAmountTextField]
         
-        self.textFieldArray = Array(Set(self.membershipFieldArray + self.membershipFieldArray ))
+        self.completeMemberProfileFieldArray = [
+            self.firstNameTextField,self.lastNameTextField,self.memberIDTextField,self.dateOfJoiningTextField,self.genderTextField,self.trainerNameTextField,self.uploadIDTextField,self.emailTextField,self.dobTextField,self.phoneNumberTextField,self.passwordTextField
+        ]
         
+        self.textFieldArray = Array(Set(self.membershipFieldArray + self.membershipFieldArray ))
         self.datePicker.datePickerMode = .date
         self.datePicker.date = Date()
         toolBar.barStyle = .default
@@ -716,15 +731,17 @@ extension AddMemberViewController: UIImagePickerControllerDelegate,UINavigationC
             self.uploadIDTextField.text = imgaeName
             picker.dismiss(animated: true, completion: nil)
         }
+        self.validation.requiredValidation(textField: self.uploadIDTextField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required.")
     }
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
+        self.validation.requiredValidation(textField: self.uploadIDTextField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required.")
     }
 }
 
 extension AddMemberViewController:UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 4 || textField.tag == 11 || textField.tag == 14 || textField.tag == 8 {
+        if textField.tag == 4 || textField.tag == 11 || textField.tag == 12  || textField.tag == 13  ||   textField.tag == 14 || textField.tag == 8 {
             return false
         } else {
             return true
@@ -741,9 +758,22 @@ extension AddMemberViewController:UITextFieldDelegate{
                 self.datePicker.date = df.date(from: textField.text!)!
             }
         }
-//        self.allNewMemberFieldsRequiredValidation(textField: textField)
-//        self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.membershipPlanView.isHidden == false ? self.membershipFieldArray : self.memberProfileFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField)
+
+        if textField.tag == 8 {
+            self.view.endEditing(true)
+        }
         
+        if textField.tag == 12  {
+            self.showMembershipPlan()
+            self.view.endEditing(true)
+        }
+        
+//        self.allNewMemberFieldsRequiredValidation(textField: textField)
+//        if self.isNewMember == true {
+//            self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+//        } else {
+//            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
+//        }
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -764,21 +794,36 @@ extension AddMemberViewController:UITextFieldDelegate{
                               }
         }
         self.allNewMemberFieldsRequiredValidation(textField: textField)
-        self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+        if self.isNewMember == true {
+            self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+        } else {
+            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
+        }
     }
 }
 
 extension AddMemberViewController:UITextViewDelegate {
+
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        
         if memberProfileView.isHidden == false {
             self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
         }
         
-        return true
+        if textView.tag == 2 {
+            return false
+        }else{
+            return true
+        }
     }
+    
     func textViewDidEndEditing(_ textView: UITextView) {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
-        self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.membershipPlanView.isHidden == false ? self.membershipFieldArray : self.memberProfileFieldArray, textView: textView, phoneNumberTextField: self.membershipPlanView.isHidden == true ? nil : self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+        if self.isNewMember == true {
+            self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+        } else {
+            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
+        }
     }
 }
 
@@ -806,9 +851,11 @@ extension AddMemberViewController:UITableViewDelegate {
             self.membershipPlanTextField.text = membership.title
             self.membershipDetailTextView.text = membership.detail
             self.amountTextField.text = membership.amount
-            self.startDateTextField.text = membership.startDate
-            self.endDateTextField.text = membership.endDate
+//            self.startDateTextField.text = membership.startDate
+//            self.endDateTextField.text = membership.endDate
             self.membershipDuration = Int(membership.duration)!
+            self.allNewMemberFieldsRequiredValidation(textField: self.membershipPlanTextField)
+
         })
         self.membershipPlanView.isHidden = true
     }

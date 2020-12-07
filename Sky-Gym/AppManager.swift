@@ -346,11 +346,13 @@ class AppManager: NSObject {
            return cal.component(.day, from: date)
        }
 
-    func sameMonthSameYearAttendenceFetching(attendence:NSDictionary,year:String,month:String,startDate:String,endDate:String) -> [Attendence]{
+    func sameMonthSameYearAttendenceFetching(attendence:NSDictionary,year:String,month:String,startDate:String,endDate:String) -> [Attendence]?{
         var  attendenceArray:[Attendence] = []
         let startD = AppManager.shared.getDate(date:startDate)
         let endD = AppManager.shared.getDate(date: endDate)
-        let monthArray = (attendence["\(year)"] as! NSDictionary)["\(month)"] as! Array<NSDictionary>
+        guard let monthArray = (attendence["\(year)"] as? NSDictionary)?["\(month)"] as? Array<NSDictionary> else {
+            return nil
+        }
         var counter = Calendar.current.component(.day, from: startD)
         let terminator = Calendar.current.component(.day, from: endD)
         for eachDay in monthArray {
@@ -379,7 +381,7 @@ class AppManager: NSObject {
             let df = DateFormatter()
             df.dateFormat = "dd-MM-yyyy"
             let starDateStr = df.string(from: startDate)
-            attendenceArray = sameMonthSameYearAttendenceFetching(attendence: attendence, year: "\(year)", month: "\(startDateMonth)", startDate: starDateStr, endDate: "\(monthTerminator)/\(startDateMonth)/\(year)")
+            attendenceArray = sameMonthSameYearAttendenceFetching(attendence: attendence, year: "\(year)", month: "\(startDateMonth)", startDate: starDateStr, endDate: "\(monthTerminator)/\(startDateMonth)/\(year)") ?? []
             return attendenceArray
         }
         

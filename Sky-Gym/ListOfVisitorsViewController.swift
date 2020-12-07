@@ -8,6 +8,7 @@
 
 import UIKit
 import SVProgressHUD
+import MessageUI
 
 class VisitorTableCell: UITableViewCell {
     @IBOutlet weak var visitorCellView: UIView!
@@ -369,6 +370,11 @@ extension ListOfVisitorsViewController:UISearchBarDelegate{
 }
 
 extension ListOfVisitorsViewController:CustomCellSegue{
+    func showMessage(vc: MFMessageComposeViewController) {
+        print("")
+    }
+    
+    
     func applySegue(id: String) {
         self.performSegue(withIdentifier: "visitorMemberSegue", sender: id)
     }

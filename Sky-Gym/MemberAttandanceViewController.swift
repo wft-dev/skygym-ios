@@ -31,7 +31,7 @@ class MemberAttandanceViewController: BaseViewController {
     @IBOutlet weak var startDateLabel: UILabel!
     @IBOutlet weak var endDateLabel: UILabel!
     
-    var attandanceArray:[Attendence] = [ ]
+    var attandanceArray:[Attendence] = []
     var memberName:String = ""
     var memberAddress:String = ""
     var toolBar = UIToolbar()
@@ -60,10 +60,15 @@ class MemberAttandanceViewController: BaseViewController {
             , result: {
                 array in
                 // self.attandanceArray.removeAll()
-                self.attandanceArray = array
-                self.startDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: array.first!.date))
-                self.endDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: array.last!.date))
-                self.memberAttandanceTable.reloadData()
+                if array != nil {
+                    self.attandanceArray = array!
+                    self.startDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array?.first!.date)!))
+                    self.endDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array?.last!.date)!))
+                    self.memberAttandanceTable.reloadData()
+                    self.memberAttandanceTable.alpha = 1.0
+                } else {
+                    print("ATTENDENCE NOT FOUND.")
+                }
         })
     }
 }
@@ -121,7 +126,7 @@ extension MemberAttandanceViewController {
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Members", id: AppManager.shared.memberID, startDate:startDate, endDate:endDate, result: {
             (attendenceArray) in
             self.attandanceArray.removeAll()
-            self.attandanceArray = attendenceArray
+            self.attandanceArray = attendenceArray ?? []
             self.memberAttandanceTable.reloadData()
         })
     }

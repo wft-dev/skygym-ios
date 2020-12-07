@@ -31,6 +31,7 @@
 		42651AD425303F1500539B19 /* ListOfMembershipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD325303F1500539B19 /* ListOfMembershipViewController.swift */; };
 		42651AD62530657400539B19 /* MembershipViewScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD52530657400539B19 /* MembershipViewScreenViewController.swift */; };
 		42651AD825307F7600539B19 /* ListOfVisitorsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD725307F7600539B19 /* ListOfVisitorsViewController.swift */; };
+		429F714B257DF2E300965DB8 /* MessengerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429F714A257DF2E300965DB8 /* MessengerManager.swift */; };
 		42A407A1251C59940087B02F /* AdminRegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A407A0251C59940087B02F /* AdminRegistrationViewController.swift */; };
 		42A407A3251C780A0087B02F /* AdminRegistrationSecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A407A2251C780A0087B02F /* AdminRegistrationSecondViewController.swift */; };
 		42A407A5251C78570087B02F /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A407A4251C78570087B02F /* AppManager.swift */; };
@@ -79,6 +80,7 @@
 		42651AD325303F1500539B19 /* ListOfMembershipViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfMembershipViewController.swift; sourceTree = "<group>"; };
 		42651AD52530657400539B19 /* MembershipViewScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipViewScreenViewController.swift; sourceTree = "<group>"; };
 		42651AD725307F7600539B19 /* ListOfVisitorsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfVisitorsViewController.swift; sourceTree = "<group>"; };
+		429F714A257DF2E300965DB8 /* MessengerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessengerManager.swift; sourceTree = "<group>"; };
 		42A407A0251C59940087B02F /* AdminRegistrationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminRegistrationViewController.swift; sourceTree = "<group>"; };
 		42A407A2251C780A0087B02F /* AdminRegistrationSecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminRegistrationSecondViewController.swift; sourceTree = "<group>"; };
 		42A407A4251C78570087B02F /* AppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 				42B873AD2536E19E004CCD50 /* FireStoreManager.swift */,
 				42C3F50F25386B3C007DBC79 /* AppDataStructureManager.swift */,
 				42446A27256FA7AE00F966FD /* Validator.swift */,
+				429F714A257DF2E300965DB8 /* MessengerManager.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -357,6 +360,7 @@
 				424937232526094D0043ADFF /* AddMemberViewController.swift in Sources */,
 				42B873AE2536E19E004CCD50 /* FireStoreManager.swift in Sources */,
 				42F7DBAF2521A444001F0050 /* MenuItemsViewController.swift in Sources */,
+				429F714B257DF2E300965DB8 /* MessengerManager.swift in Sources */,
 				42A407A3251C780A0087B02F /* AdminRegistrationSecondViewController.swift in Sources */,
 				42D13390252ECB6E00BA7EE5 /* ListOfTrainersViewController.swift in Sources */,
 				4231BF9425342965007EFBBF /* ViewVisitorScreenViewController.swift in Sources */,

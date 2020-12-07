@@ -32,7 +32,7 @@ class ValidationManager: NSObject {
             }
         } else {
             validatorLoop: for textField in textFieldArray{
-                if  textField.text!.count > 3 {
+                if  textField.text!.count > 0 {
                     flag = true
                 }else {
                     flag = false
@@ -115,7 +115,7 @@ class ValidationManager: NSObject {
     }
     
     func requiredValidation(textView:UITextView,errorLabel:UILabel,errorMessage:String)  {
-        if textView.text!.count > 0 {
+        if textView.text!.count > 1 {
             errorLabel.text = ""
             textView.layer.borderColor = UIColor.clear.cgColor
             textView.layer.borderWidth = 0.0
@@ -165,6 +165,28 @@ class ValidationManager: NSObject {
             updateBtn.alpha = 0.4
         }
     }
-    
+
+    func isMemberProfileValidated(textFieldArray:[UITextField],textView:UITextView,phoneNumberTextField:UITextField?,email:String?,password:String?) -> Bool {
+        var flag:Bool = false
+        
+        if email != nil && password == nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) == true ? true : false
+        }
+            
+        else if password != nil && email == nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isPasswordValid(password: password!) == true ? true : false
+        }
+            
+        else if email != nil && password != nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray: textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) && isPasswordValid(password: password!) == true ? true : false
+        }
+            
+        else {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField)
+        }
+
+        return flag
+    }
+  
 }
 

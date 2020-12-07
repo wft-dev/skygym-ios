@@ -577,7 +577,7 @@ class FireStoreManager: NSObject {
         })
     }
     
-    func getAttendenceFrom(trainerORmember:String,id:String,startDate:String,endDate:String,result:@escaping ([Attendence]) -> Void) {
+    func getAttendenceFrom(trainerORmember:String,id:String,startDate:String,endDate:String,result:@escaping ([Attendence]?) -> Void) {
         let startD = AppManager.shared.getDate(date: startDate)
         let endD = AppManager.shared.getDate(date: endDate)
         let yearDiff = Calendar.current.component(.year, from: startD) - Calendar.current.component(.year, from: endD)
@@ -591,8 +591,12 @@ class FireStoreManager: NSObject {
                 
                 if yearDiff == 0 {
                     if monthDiff == 0 {
-                        let a = AppManager.shared.sameMonthSameYearAttendenceFetching(attendence: attendence, year:"\(Calendar.current.component(.year, from: startD))" , month: "\(Calendar.current.component(.month, from: startD))", startDate: AppManager.shared.changeDateFormatToStandard(dateStr: startDate), endDate:  AppManager.shared.changeDateFormatToStandard(dateStr: endDate))
-                        result(a)
+                         let a = AppManager.shared.sameMonthSameYearAttendenceFetching(attendence: attendence, year:"\(Calendar.current.component(.year, from: startD))" , month: "\(Calendar.current.component(.month, from: startD))", startDate: AppManager.shared.changeDateFormatToStandard(dateStr: startDate), endDate:  AppManager.shared.changeDateFormatToStandard(dateStr: endDate))
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+                             result(a)
+                        })
+                       
                     } else {
                         let a = AppManager.shared.sameYearDifferenctMonthAttedenceFetching(attendence: attendence, startDate: startD, endDate: endD)
                         result(a)

@@ -52,10 +52,10 @@ class TrainerAttendanceViewController: BaseViewController {
 
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Trainers", id: AppManager.shared.trainerID, startDate: "\(dateFormatter.string(from: Date()))", endDate: "\(AppManager.shared.getNext7DaysDate(startDate: Date()))", result: {
             array in
-            self.attendenceStartDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: array.first!.date))
-            self.attendenceEndDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: array.last!.date))
+            self.attendenceStartDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array?.first!.date)!))
+            self.attendenceEndDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array?.last!.date)!))
             self.trainerAttendanceArray.removeAll()
-            self.trainerAttendanceArray = array
+            self.trainerAttendanceArray = array ?? []
             self.trainerAttendanceTable.reloadData()
         })
     }
@@ -118,7 +118,7 @@ extension TrainerAttendanceViewController{
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Trainers", id: AppManager.shared.trainerID, startDate:startDate, endDate:endDate, result: {
             (attendenceArray) in
             self.trainerAttendanceArray.removeAll()
-            self.trainerAttendanceArray = attendenceArray
+            self.trainerAttendanceArray = attendenceArray ?? []
             self.trainerAttendanceTable.reloadData()
         })
     }

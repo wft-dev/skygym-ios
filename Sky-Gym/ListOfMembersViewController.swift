@@ -8,6 +8,7 @@
 
 import UIKit
 import SVProgressHUD
+import MessageUI
 
 class ListOfMembersTableCell: UITableViewCell {
     @IBOutlet weak var userImag: UIImageView!
@@ -25,8 +26,7 @@ class ListOfMembersTableCell: UITableViewCell {
     @IBOutlet weak var attendenceLabel: UILabel!
     var customCellDelegate:CustomCellSegue?
     var imageName:String = "red"
-    
-    
+    let messenger = MessengerManager()
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -48,7 +48,11 @@ class ListOfMembersTableCell: UITableViewCell {
     }
 
     @objc func msg(_ sender: UITapGestureRecognizer) {
-        print("Perfom msg")
+        if  messenger.canSendText() {
+            customCellDelegate?.showMessage(vc: messenger.configuredMessageComposeViewController())
+        }else {
+            print("Error in sending message.")
+        }
      }
     
     @objc func attendance(_ sender: UITapGestureRecognizer) {
@@ -632,6 +636,10 @@ extension ListOfMembersViewController:UISearchBarDelegate{
 }
 
 extension ListOfMembersViewController:CustomCellSegue{
+    func showMessage(vc: MFMessageComposeViewController) {
+        present(vc, animated: true, completion: nil)
+    }
+
     func applySegue(id: String) {
            AppManager.shared.memberID = id
         performSegue(withIdentifier: "addMemberSegue", sender: false)

@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import MessageUI
 
 enum Role:String {
     case Admin
@@ -92,7 +93,8 @@ struct Attendence {
 }
 
 protocol CustomCellSegue {
-    func applySegue(id:String) 
+    func applySegue(id:String)
+    func showMessage(vc:MFMessageComposeViewController)
 }
 
 struct TrainerDataStructure {
