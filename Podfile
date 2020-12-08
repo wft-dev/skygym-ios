@@ -16,5 +16,5 @@ target 'Sky-Gym' do
 	pod 'SVProgressHUD'
         pod 'FirebaseStorage', '~> 3.9'
 	pod 'Firebase'
-
+	pod 'iOSDropDown', '~> 0.3'
 end

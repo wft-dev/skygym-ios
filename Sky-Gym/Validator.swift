@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import iOSDropDown
 
 
 class ValidationManager: NSObject {
@@ -62,6 +63,20 @@ class ValidationManager: NSObject {
             textField.layer.borderWidth = 1.0
         }
     }
+    
+    func requiredValidation(dropDown:DropDown,errorLabel:UILabel,errorMessage:String)  {
+        if dropDown.text!.count > 0 {
+            errorLabel.text = ""
+            dropDown.borderStyle = .none
+            dropDown.borderColor  = .clear
+            dropDown.borderWidth  = 0.0
+        } else {
+            errorLabel.text = errorMessage
+            dropDown.borderColor = .red
+            dropDown.borderWidth = 1.0
+        }
+    }
+    
     
     func phoneNumberValidation(textField:UITextField,errorLabel:UILabel,errorMessage:String)  {
         if textField.text!.count == 10 {

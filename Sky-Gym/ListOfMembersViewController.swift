@@ -490,6 +490,7 @@ extension ListOfMembersViewController{
         self.navigationView.alpha = 1.0
         self.searchBarView.isHidden = true
         self.searchBarView.alpha = 0.0
+        self.view.endEditing(true)
     }
 
     @objc  func showSearchBar()  {

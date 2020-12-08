@@ -27,7 +27,7 @@ class TrainerAttendanceViewController: BaseViewController {
     @IBOutlet weak var trainerAddressLabel: UILabel!
     @IBOutlet weak var attendenceStartDateLabel: UILabel!
     @IBOutlet weak var attendenceEndDateLabel: UILabel!
-    var trainerAttendanceArray:[Attendence] = []
+    var trainerAttendanceArray:[Attendence?] = []
     var trainerName:String = ""
     var trainerAddress:String = ""
     var toolBar = UIToolbar()
@@ -50,12 +50,12 @@ class TrainerAttendanceViewController: BaseViewController {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "dd MMM yyyy"
 
-        FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Trainers", id: AppManager.shared.trainerID, startDate: "\(dateFormatter.string(from: Date()))", endDate: "\(AppManager.shared.getNext7DaysDate(startDate: Date()))", result: {
-            array in
-            self.attendenceStartDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array?.first!.date)!))
-            self.attendenceEndDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array?.last!.date)!))
+        FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Trainers", id: AppManager.shared.trainerID, startDate: "\(dateFormatter.string(from: Date()))", endDate: "\(AppManager.shared.getNext7DaysDate(startDate: Date()))", s: {
+            (array,_) in
+            self.attendenceStartDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.first!.date)))
+            self.attendenceEndDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.last!.date)))
             self.trainerAttendanceArray.removeAll()
-            self.trainerAttendanceArray = array ?? []
+            self.trainerAttendanceArray = array
             self.trainerAttendanceTable.reloadData()
         })
     }
@@ -115,10 +115,10 @@ extension TrainerAttendanceViewController{
          }
     
     func fetchTrainerAttendenceFrom(startDate:String,endDate:String) {
-        FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Trainers", id: AppManager.shared.trainerID, startDate:startDate, endDate:endDate, result: {
-            (attendenceArray) in
+        FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Trainers", id: AppManager.shared.trainerID, startDate:startDate, endDate:endDate, s: {
+            (attendenceArray,_) in
             self.trainerAttendanceArray.removeAll()
-            self.trainerAttendanceArray = attendenceArray ?? []
+            self.trainerAttendanceArray = attendenceArray 
             self.trainerAttendanceTable.reloadData()
         })
     }
@@ -137,16 +137,16 @@ extension TrainerAttendanceViewController:UITableViewDataSource{
         cell.checkInTimeView.layer.cornerRadius = 12.0
         cell.checkOutTimeView.layer.cornerRadius = 12.0
         
-        cell.weekdayLabel.text = AppManager.shared.getTodayWeekDay(date: self.trainerAttendanceArray[indexPath.row].date)
+        cell.weekdayLabel.text = AppManager.shared.getTodayWeekDay(date: self.trainerAttendanceArray[indexPath.row]!.date)
 
-        if self.trainerAttendanceArray[indexPath.row].present == false {
+        if self.trainerAttendanceArray[indexPath.row]?.present == false {
             cell.attendanceImg.image = UIImage(named: "red")
             cell.checkInTimeLabel.text = "-"
             cell.checkOutTimeLabel.text = "-"
         } else {
              cell.attendanceImg.image = UIImage(named: "green")
-            cell.checkInTimeLabel.text = self.trainerAttendanceArray[indexPath.row].checkIn
-            cell.checkOutTimeLabel.text = self.trainerAttendanceArray[indexPath.row].checkOut
+            cell.checkInTimeLabel.text = self.trainerAttendanceArray[indexPath.row]?.checkIn
+            cell.checkOutTimeLabel.text = self.trainerAttendanceArray[indexPath.row]?.checkOut
         }
         
         return cell

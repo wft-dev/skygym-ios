@@ -31,7 +31,7 @@ class MemberAttandanceViewController: BaseViewController {
     @IBOutlet weak var startDateLabel: UILabel!
     @IBOutlet weak var endDateLabel: UILabel!
     
-    var attandanceArray:[Attendence] = []
+    var attandanceArray:[Attendence?] = []
     var memberName:String = ""
     var memberAddress:String = ""
     var toolBar = UIToolbar()
@@ -56,18 +56,20 @@ class MemberAttandanceViewController: BaseViewController {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "dd MMM yyyy"
         
+        SVProgressHUD.show()
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Members", id: AppManager.shared.memberID, startDate: "\(dateFormatter.string(from: Date()))", endDate: "\(AppManager.shared.getNext7DaysDate(startDate: Date()))"
-            , result: {
-                array in
+            , s: {
+               ( array,flag)  in
+                SVProgressHUD.dismiss()
                 // self.attandanceArray.removeAll()
-                if array != nil {
-                    self.attandanceArray = array!
-                    self.startDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array?.first!.date)!))
-                    self.endDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array?.last!.date)!))
+                if array.count < 1 {
+                    print("ATTENDENCE NOT FOUND.")
+                } else {
+                    self.attandanceArray = array
+                    self.startDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.first?.date)!))
+                    self.endDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.last?.date)!))
                     self.memberAttandanceTable.reloadData()
                     self.memberAttandanceTable.alpha = 1.0
-                } else {
-                    print("ATTENDENCE NOT FOUND.")
                 }
         })
     }
@@ -123,10 +125,12 @@ extension MemberAttandanceViewController {
     }
     
     func fetchAttendenceFrom(startDate:String,endDate:String) {
-        FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Members", id: AppManager.shared.memberID, startDate:startDate, endDate:endDate, result: {
-            (attendenceArray) in
+        SVProgressHUD.show()
+        FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Members", id: AppManager.shared.memberID, startDate:startDate, endDate:endDate, s: {
+            (attendenceArray,_)  in
+            SVProgressHUD.dismiss()
             self.attandanceArray.removeAll()
-            self.attandanceArray = attendenceArray ?? []
+            self.attandanceArray = attendenceArray
             self.memberAttandanceTable.reloadData()
         })
     }
@@ -143,16 +147,16 @@ extension MemberAttandanceViewController:UITableViewDataSource {
         self.setAttandanceTableCellView(tableCellView: cell.tableCellView)
         cell.checkInTimeView.layer.cornerRadius = 12.0
         cell.checkoutTimeView.layer.cornerRadius = 12.0
-        cell.weekdayNameLabel.text = AppManager.shared.getTodayWeekDay(date: singleAttendenceStatus.date)
+        cell.weekdayNameLabel.text = AppManager.shared.getTodayWeekDay(date: singleAttendenceStatus?.date ?? "")
 
-        if singleAttendenceStatus.present == false {
+        if singleAttendenceStatus?.present == false {
             cell.attandanceImg.image = UIImage(named: "red")
             cell.checkOutTime.text = "-"
             cell.checkInTime.text = "-"
         } else {
             cell.attandanceImg.image = UIImage(named: "green")
-            cell.checkInTime.text = singleAttendenceStatus.checkIn
-            cell.checkOutTime.text = singleAttendenceStatus.checkOut
+            cell.checkInTime.text = singleAttendenceStatus?.checkIn
+            cell.checkOutTime.text = singleAttendenceStatus?.checkOut
         }
         return cell
     }

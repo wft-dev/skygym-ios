@@ -14,8 +14,8 @@ class MembershipTableCell: UITableViewCell {
     @IBOutlet weak var membershipPriceLabel: UILabel!
     @IBOutlet weak var membershipTitleLabel: UILabel!
     @IBOutlet weak var membershipDetailLabel: UILabel!
-    @IBOutlet weak var membershipStartDate: UILabel!
-    @IBOutlet weak var membershipEndDate: UILabel!
+//    @IBOutlet weak var membershipStartDate: UILabel!
+//    @IBOutlet weak var membershipEndDate: UILabel!
     }
 
 class ListOfMembershipViewController: BaseViewController {
@@ -180,8 +180,8 @@ extension ListOfMembershipViewController:UITableViewDataSource {
         cell.membershipTitleLabel.text = singleMembership.title
         cell.membershipDetailLabel.text = singleMembership.detail
         cell.membershipPriceLabel.text = singleMembership.amount
-        cell.membershipStartDate.text = singleMembership.startDate
-        cell.membershipEndDate.text = singleMembership.endDate
+//        cell.membershipStartDate.text = singleMembership.startDate
+//        cell.membershipEndDate.text = singleMembership.endDate
         cell.selectionStyle = .none
         cell.membershipCellView.tag = Int(singleMembership.membershipID)!
         self.addMembershipCustomSwipe(cellView: cell.membershipCellView, cell: cell)

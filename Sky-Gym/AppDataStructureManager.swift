@@ -135,8 +135,8 @@ struct Memberhisp {
     var title:String
     var amount:String
     var detail:String
-    var startDate:String
-    var endDate:String
+//    var startDate:String
+//    var endDate:String
     var duration:String
 }
 
