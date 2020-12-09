@@ -197,6 +197,7 @@ extension MemberViewController{
         self.memberNavigationBar()
         setTextFields()
         self.updateBtn.layer.cornerRadius = 15.0
+        self.updateBtn.isHidden = true
         AppManager.shared.performEditAction(dataFields: self.getMemberProfileFieldsAndLabelDic(), edit:  false)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
         self.setHrLineView(isHidden: false, alpha: 1.0)
@@ -206,6 +207,7 @@ extension MemberViewController{
         self.addressTextView.alpha = 0.0
         self.setToggleBtns(isEnabled: false, alpha: 0.9)
         self.addUploadTextFieldRightView()
+        self.memberImg.isUserInteractionEnabled = false
         
         self.datePicker.datePickerMode = .date
         toolBar.barStyle = .default
@@ -268,8 +270,7 @@ extension MemberViewController{
         self.isEdit = false
         self.setHrLineView(isHidden: false, alpha: 1.0)
         self.setToggleBtns(isEnabled: false, alpha: 0.9)
-        self.updateBtn.isEnabled = false
-        self.updateBtn.alpha = 0.6
+        self.updateBtn.isHidden = true
        } else{
         self.memberImg.isUserInteractionEnabled = true
         AppManager.shared.performEditAction(dataFields:self.getMemberProfileFieldsAndLabelDic(), edit:  true)
@@ -283,7 +284,7 @@ extension MemberViewController{
         self.addressTextView.alpha = 1.0
         self.setHrLineView(isHidden: true, alpha: 0.0)
         self.memberIDTextField.isEnabled = false
-        self.updateBtn.isEnabled = true
+        self.updateBtn.isHidden = false
         self.updateBtn.alpha = 1.0
         }
        }

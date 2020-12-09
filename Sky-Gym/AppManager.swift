@@ -197,7 +197,7 @@ class AppManager: NSObject {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd-MM-yyyy"
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        let dateS = dateFormatter.date(from: date) ??  Date()
+        let dateS = dateFormatter.date(from: date)!
         return dateS
     }
     
@@ -233,7 +233,7 @@ class AppManager: NSObject {
     }
     
     func getMembership(membership:[String:String],membershipID:String) -> Memberhisp {
-        let membership = Memberhisp(membershipID:membershipID,title: membership["title"]!, amount: membership["amount"]!, detail: membership["detail"]!, duration: membership["duration"]!)
+        let membership = Memberhisp(membershipID:membershipID,title: membership["title"]!, amount: membership["amount"]!, detail: membership["detail"]!, duration: membership["duration"]!, selectedIndex: membership["selectedIndex"]!)
         
         return membership
     }
@@ -278,6 +278,7 @@ class AppManager: NSObject {
     func dateWithMonthName(date:Date) ->String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "dd-MMM-yyyy"
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
        let  strDate = dateFormatter.string(from: date)
         return strDate
     }

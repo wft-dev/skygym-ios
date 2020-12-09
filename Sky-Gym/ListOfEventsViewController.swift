@@ -95,9 +95,7 @@ extension ListOfEventsViewController {
         leftSwipeGesture.direction = .left
         rightSwipGesture.direction = .right
         let deleteView = UIView(frame: CGRect(x: 0, y: 0, width: cellView.frame.width, height:cellView.frame.height))
-        
-     //   let deleteView = UIView()
-        
+
         let trashImgView = UIImageView(image: UIImage(named: "delete"))
         trashImgView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
         trashImgView.isUserInteractionEnabled = true
@@ -114,10 +112,6 @@ extension ListOfEventsViewController {
         trashImgView.heightAnchor.constraint(equalToConstant: 25).isActive = true
         trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
         trashImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(deleteVisitor(_:))))
-        
-       // deleteView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 0).isActive = true
-      //  deleteView.heightAnchor.constraint(equalToConstant: self.view.frame.height).isActive = true
-      //  deleteView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
         
         deleteView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 0).isActive = true
         deleteView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: 0).isActive = true
@@ -239,11 +233,11 @@ extension ListOfEventsViewController:UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "eventsCell", for: indexPath) as! EventCellClass
         let singleEvent = self.filteredEventArray.count > 0 ? self.filteredEventArray[indexPath.section] : self.eventsArray[indexPath.section]
- 
+        
         self.setAttandanceTableCellView(tableCellView:cell.eventCellView )
         cell.contentView.layer.cornerRadius = 20.0
-          cell.contentView.layer.borderWidth = 1.0
-          cell.contentView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
+        cell.contentView.layer.borderWidth = 1.0
+        cell.contentView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
         cell.eventNameLabel.text =  singleEvent.eventName
         cell.eventAddressLabel.text = singleEvent.eventAddress
         cell.eventStartTime.text = singleEvent.eventStartTime

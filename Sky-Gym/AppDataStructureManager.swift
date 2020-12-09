@@ -138,6 +138,7 @@ struct Memberhisp {
 //    var startDate:String
 //    var endDate:String
     var duration:String
+    var selectedIndex:String
 }
 
 struct Visitor {

@@ -55,6 +55,7 @@ class MembershipViewScreenViewController: BaseViewController {
 //    var startDate:Date? = nil
 //    var endDate:Date? = nil
     var duration:Int = 0
+    var selectedIndex:Int = 0
     var selectedOption:String = ""
     var isEdit:Bool = false
     var forNonEditLabelArray:[UILabel]? = nil
@@ -67,15 +68,10 @@ class MembershipViewScreenViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setMembershipView()
-        self.doneBtn.isEnabled = false
-        self.doneBtn.alpha = 0.4
         
         self.forNonEditLabelArray = [self.titleForNonEditLabel,self.amountForNonEditLabel,self.detailForNonEditLabel]
-        
         self.defaultLabelArray = [self.titleLabel,self.amountLabel,self.detailLabel]
-        
         self.errorLabelArray = [self.titleErrorLabel,self.amountErrorLabel,self.detailErrorLabel]
-        
         self.textFieldArray = [self.amountTextField]
         
         self.membershipDropDownTitleTextField.optionArray = [
@@ -94,7 +90,6 @@ class MembershipViewScreenViewController: BaseViewController {
         ]
         
         self.membershipDropDownTitleTextField.optionIds = [1,2,3,4,5,6,7,8,9,10,11,12]
-
         
         if self.isNewMemberhsip == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
@@ -104,7 +99,8 @@ class MembershipViewScreenViewController: BaseViewController {
             self.detailNonEditLabel.isHidden = false
             self.detailNonEditLabel.alpha = 1.0
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: true)
-
+            self.hideMembershipTitleDropDown(hide: true)
+             self.doneBtn.isHidden = true
         }else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: true)
             self.setHrLineView(isHidden: true, alpha: 0.0)
@@ -113,6 +109,8 @@ class MembershipViewScreenViewController: BaseViewController {
             self.detailNonEditLabel.isHidden = true
             self.detailNonEditLabel.alpha = 0.0
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: false)
+            self.hideMembershipTitleDropDown(hide: false)
+             self.doneBtn.isHidden = false
         }
     }
     
@@ -122,6 +120,14 @@ class MembershipViewScreenViewController: BaseViewController {
 }
 
 extension  MembershipViewScreenViewController {
+    
+    func hideMembershipTitleDropDown(hide:Bool) {
+        self.titleNonEditLabel.text = self.membershipDropDownTitleTextField.text
+        self.membershipDropDownTitleTextField.isHidden = hide
+        self.titleNonEditLabel.isHidden = !hide
+        self.titleNonEditLabel.alpha = !hide == false ? 1.0 : 0.0
+        self.membershipDropDownTitleTextField.alpha = hide == true ? 0.0 : 1.0
+    }
 
     func allMembershipFieldsRequiredValidation(textField:UITextField,duplicateDateErrorText:String?)  {
         switch textField.tag {
@@ -154,19 +160,23 @@ extension  MembershipViewScreenViewController {
 //        toolBar.sizeToFit()
         
         self.membershipDropDownTitleTextField.listWillAppear {
-            self.membershipDropDownTitleTextField.text = self.selectedOption
+            self.membershipDropDownTitleTextField.text =  self.titleNonEditLabel.text!.count > 0 ? self.titleNonEditLabel.text : self.selectedOption
+            self.membershipDropDownTitleTextField.selectedIndex = self.selectedIndex
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-            self.validation.requiredValidation(dropDown: self.membershipDropDownTitleTextField, errorLabel: self.titleErrorLabel, errorMessage: "Membership Title required.")
-            })
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+//            self.validation.requiredValidation(dropDown: self.membershipDropDownTitleTextField, errorLabel: self.titleErrorLabel, errorMessage: "Membership Title required.")
+//            })
         }
         
         self.membershipDropDownTitleTextField.didSelect(completion: {
             (selectedText,index,id) in
             self.selectedOption = selectedText
+            self.duration = id
+            self.selectedIndex = index
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
             self.validation.requiredValidation(dropDown: self.membershipDropDownTitleTextField, errorLabel: self.titleErrorLabel, errorMessage: "Membership Title required.")
+                 })
         })
-        
     }
     
 //    @objc func cancelTextField()  {
@@ -202,8 +212,9 @@ extension  MembershipViewScreenViewController {
             self.detailTextView.alpha = 0.0
             self.detailNonEditLabel.isHidden = false
             self.detailNonEditLabel.alpha = 1.0
-            self.doneBtn.isEnabled = false
-            self.doneBtn.alpha = 0.4
+            self.doneBtn.isHidden = true
+          //  self.doneBtn.alpha = 0.4
+            self.hideMembershipTitleDropDown(hide: true)
         } else{
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: false)
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
@@ -213,8 +224,9 @@ extension  MembershipViewScreenViewController {
             self.detailTextView.alpha = 1.0
             self.detailNonEditLabel.isHidden = true
             self.detailNonEditLabel.alpha = 0.0
-            self.doneBtn.isEnabled = true
+            self.doneBtn.isHidden = false
             self.doneBtn.alpha = 1.0
+            self.hideMembershipTitleDropDown(hide: false)
         }
     }
     
@@ -249,7 +261,7 @@ extension  MembershipViewScreenViewController {
         self.amountTextField.clipsToBounds = true
         self.amountTextField.addTarget(self, action: #selector(fieldsValidatorAction(_:)), for: .editingChanged)
 
-        self.membershipDropDownTitleTextField.addPaddingToTextField()
+        self.membershipDropDownTitleTextField.addPaddingToTextField(height: 10, Width: 10)
         self.membershipDropDownTitleTextField.borderStyle = .none
         self.membershipDropDownTitleTextField.cornerRadius = 7.0
         self.membershipDropDownTitleTextField.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
@@ -274,10 +286,11 @@ extension  MembershipViewScreenViewController {
 //        self.startDate = AppManager.shared.getDate(date: self.startDateTextField.text!)
 //        self.endDate = AppManager.shared.getDate(date: self.endDateTextField.text!)
         let membership = [
-            "title":self.titleTextField.text!,
+            "title": self.membershipDropDownTitleTextField.text!,
             "detail":self.detailTextView.text!,
             "amount":self.amountTextField.text!,
-            "duration": "\(duration)"
+            "duration": "\(duration)",
+            "selectedIndex" : "\(selectedIndex)"
         ]
         return membership
     }
@@ -356,6 +369,7 @@ extension  MembershipViewScreenViewController {
         self.membershipDropDownTitleTextField.text = membership.title
         self.amountTextField.text = membership.amount
         self.detailTextView.text = membership.detail
+        self.selectedIndex = Int(membership.selectedIndex)!
 //        self.startDateTextField.text  = membership.startDate
 //        self.endDateTextField.text = membership.endDate
     }
@@ -371,25 +385,21 @@ extension  MembershipViewScreenViewController {
 
 extension MembershipViewScreenViewController :UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-//         if textField.tag == 3 || textField.tag == 4 {
+//         if textField.tag == 1 {
+//
 //                   return false
 //               }else{
 //                   return true
 //               }
-        return true
+       return true
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         
-//           if textField.tag == 3 || textField.tag  == 4 {
-//               textField.inputAccessoryView = self.toolBar
-//               textField.inputView = datePicker
-//            if textField.text!.count > 0  {
-//                let df = DateFormatter()
-//                df.dateFormat = "dd-MM-yyyy"
-//                self.datePicker.date = df.date(from: textField.text!)!
-//            }
-//           }
+           if textField.tag == 1 {
+               self.view.endEditing(true)
+            self.membershipDropDownTitleTextField.showList()
+           }
        }
        
     func textFieldDidEndEditing(_ textField: UITextField) {

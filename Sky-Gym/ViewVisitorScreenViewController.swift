@@ -89,7 +89,7 @@ class ViewVisitorScreenViewController: BaseViewController {
         
         self.defaultLabelArray = [self.firstName,self.lastName,self.address,self.email,self.dateOfJoin,self.dateOfVisit,self.gender,self.noOfVisit,self.phoneNo]
     
-        self.textFieldArray = [self.visitorFirstName,self.visitorLastName,self.visitorDateOfJoinTextField,self.visitorDateOfVisitTextField,self.noOfVisitTextField,self.visitorGenderTextField,self.visitorPhoneNoTextField]
+        self.textFieldArray = [self.visitorFirstName,self.visitorLastName,self.visitorDateOfJoinTextField,self.visitorDateOfVisitTextField,self.noOfVisitTextField,self.visitorGenderTextField,self.visitorPhoneNoTextField,self.visitorEmailTextField]
         
         self.errorLabelArray = [self.firstNameErrorLabel,self.secondNameErrorLabel,self.emailErrorLabel,self.addressErrorLabel,self.dateOfJoinErrorLabel,self.dateOfVisitErrorLabel,self.noOfVisitErrorLabel,self.genderErrorLabel,self.phoneNumberErrorLabel]
         
@@ -102,6 +102,8 @@ class ViewVisitorScreenViewController: BaseViewController {
             self.visitorDetailTextView.alpha = 0.0
             self.addressNonEditLabel.isHidden = false
             self.addressNonEditLabel.alpha = 1.0
+            self.updateBtn.isHidden = true
+            self.userImg.isUserInteractionEnabled = false
 
         }else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: true)
@@ -111,10 +113,9 @@ class ViewVisitorScreenViewController: BaseViewController {
             self.visitorDetailTextView.alpha = 1.0
             self.addressNonEditLabel.isHidden = true
             self.addressNonEditLabel.alpha = 0.0
+            self.updateBtn.isHidden = false
+            self.userImg.isUserInteractionEnabled = true
         }
-        
-        self.updateBtn.isEnabled = false
-        self.updateBtn.alpha = 0.4
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -124,7 +125,18 @@ class ViewVisitorScreenViewController: BaseViewController {
     }
     
     @IBAction func updateBtnAction(_ sender: Any) {
-        self.isNewVisitor ? self.registerVisitor() : self.updateVisitor()
+        self.visitorValidation()
+        
+        if self.validation.isVisitorValidated(textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!) {
+          self.isNewVisitor ? self.registerVisitor() : self.updateVisitor()
+        }
+    }
+    
+    func visitorValidation() {
+        for textField in self.textFieldArray{
+            self.allVisitorFieldsRequiredValidation(textField: textField)
+        }
+        self.validation.requiredValidation(textView: self.visitorDetailTextView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address require.")
     }
 }
 
@@ -212,8 +224,8 @@ extension ViewVisitorScreenViewController {
             self.visitorDetailTextView.alpha = 0.0
             self.addressNonEditLabel.isHidden = false
             self.addressNonEditLabel.alpha = 1.0
-            self.updateBtn.isEnabled = false
-            self.updateBtn.alpha = 0.4
+            self.updateBtn.isHidden = true
+            self.userImg.isUserInteractionEnabled = false
         } else{
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: false)
@@ -223,8 +235,8 @@ extension ViewVisitorScreenViewController {
             self.visitorDetailTextView.alpha = 1.0
             self.addressNonEditLabel.isHidden = true
             self.addressNonEditLabel.alpha = 0.0
-            self.updateBtn.isEnabled = true
-            self.updateBtn.alpha = 1.0
+            self.updateBtn.isHidden = false
+            self.userImg.isUserInteractionEnabled = true
         }
     }
 

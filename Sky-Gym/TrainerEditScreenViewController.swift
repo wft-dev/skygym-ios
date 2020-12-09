@@ -287,6 +287,8 @@ extension TrainerEditScreenViewController {
         self.updateBtn.alpha = 0.4
         self.setPermissionView(isHidden: true)
         self.setPermissionLabel(isHidden: true)
+        self.updateBtn.isHidden = true
+        self.userImg.isUserInteractionEnabled = false
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
@@ -318,6 +320,8 @@ extension TrainerEditScreenViewController {
         self.setPermissionView(isHidden: false)
         self.setPermissionLabel(isHidden: false)
         self.setTrainerPermission(memberPermissionBtn: self.memberPermissionToggleBtn, visitorPermissionBtn: self.visitorPermissionToggleBtn, eventPermissionBtn: self.eventPermissionToggleBtn, memberPermission: self.memberPermission, visitorPermission: self.visitorPermission, eventPermission: self.eventPermission)
+        self.updateBtn.isHidden = false
+        self.userImg.isUserInteractionEnabled = true
     }
     }
 
@@ -543,6 +547,8 @@ extension TrainerEditScreenViewController {
             }
             self.setPermissionView(isHidden: true)
             self.setPermissionLabel(isHidden: true)
+            self.updateBtn.isHidden = true
+            self.userImg.isUserInteractionEnabled = false
         } else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
@@ -563,6 +569,8 @@ extension TrainerEditScreenViewController {
             }
             self.setPermissionView(isHidden: false)
             self.setPermissionLabel(isHidden: false)
+            self.updateBtn.isHidden = false
+            self.userImg.isUserInteractionEnabled = true
         }
     }
     

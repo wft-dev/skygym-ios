@@ -105,8 +105,8 @@ class AdminProfileViewController: UIViewController {
         self.addressTextView.alpha = 0.0
         self.gymAddressNoEditLabel.isHidden = false
         self.gymAddressNoEditLabel.alpha = 1.0
-        self.updateBtn.isEnabled = false
-        self.updateBtn.alpha = 0.4
+        self.updateBtn.isHidden = true
+        self.adminImg.isUserInteractionEnabled = false
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -175,19 +175,18 @@ extension AdminProfileViewController {
     }
     
     @objc func editAdmin() {
-             if self.isEdit == true {
-                  AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
-                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
-                  self.isEdit = false
-                  self.setHrLineView(isHidden: false, alpha: 1.0)
-                 self.addressTextView.isHidden = true
-                 self.addressTextView.alpha = 0.0
-                 self.gymAddressNoEditLabel.isHidden = false
-                 self.gymAddressNoEditLabel.alpha = 1.0
-                self.updateBtn.isEnabled = false
-                self.updateBtn.alpha = 0.4
-               
-             } else{
+        if self.isEdit == true {
+            AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
+            self.isEdit = false
+            self.setHrLineView(isHidden: false, alpha: 1.0)
+            self.addressTextView.isHidden = true
+            self.addressTextView.alpha = 0.0
+            self.gymAddressNoEditLabel.isHidden = false
+            self.gymAddressNoEditLabel.alpha = 1.0
+            self.updateBtn.isHidden = true
+            self.adminImg.isUserInteractionEnabled = false
+        } else{
                 AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
                 AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray,errorLabels: self.errorLabelArray, flag: false)
                 self.isEdit = true
@@ -197,8 +196,8 @@ extension AdminProfileViewController {
                 self.addressTextView.isHidden = false
                 self.addressTextView.alpha = 1.0
                 self.gymAddressNoEditLabel.isHidden = true
-                self.gymAddressNoEditLabel.alpha = 0.0
-                self.gymIDTextField.isEnabled = false
+                self.updateBtn.isHidden = false
+                self.adminImg.isUserInteractionEnabled = true
         }
          }
 

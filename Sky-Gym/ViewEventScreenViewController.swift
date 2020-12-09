@@ -62,8 +62,7 @@ class ViewEventScreenViewController: BaseViewController {
         self.setViewEventNavigationBar()
         self.setTextFields()
         setBackAction(toView: self.viewEventNavigationBar)
-        self.eventUpdateBtn.isEnabled = false
-        self.eventUpdateBtn.alpha = 0.4
+        self.eventUpdateBtn.isHidden = true
          }
     
     @objc func checkValidation(_ textField:UITextField) {
@@ -77,7 +76,17 @@ class ViewEventScreenViewController: BaseViewController {
     }
     
     @IBAction func updateBtnAction(_ sender: Any) {
-        self.isNewEvent ?  self.addEvent() : self.updateEvent()
+        self.eventValidation()
+        if self.validation.isEventFieldsValidated(textFieldArray: self.textFieldsArray!, textView: self.addressTextView) == true {
+            self.isNewEvent ?  self.addEvent() : self.updateEvent()
+        }
+    }
+    
+    func eventValidation()  {
+        for textField in self.textFieldsArray! {
+            self.allFieldsRequiredValidation(textField: textField, duplicateError: nil)
+        }
+        self.validation.requiredValidation(textView: self.addressTextView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address require.")
     }
 }
 
@@ -101,8 +110,7 @@ extension ViewEventScreenViewController {
             self.addressTextView.alpha = 0.0
             self.addressNonEditLabel.alpha = 1.0
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!,errorLabels:self.errorLabelArray!, flag: true)
-            self.eventUpdateBtn.isEnabled = false
-            self.eventUpdateBtn.alpha = 0.4
+                self.eventUpdateBtn.isHidden = true
         }else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!,errorLabels:self.errorLabelArray!, flag: false)
@@ -111,6 +119,8 @@ extension ViewEventScreenViewController {
             self.addressTextView.isHidden = false
             self.addressTextView.alpha = 1.0
             self.addressNonEditLabel.alpha = 0.0
+            self.eventUpdateBtn.isHidden = false
+            self.eventUpdateBtn.alpha = 1.0
         }
         
         self.timePicker.datePickerMode = .time
@@ -175,8 +185,7 @@ extension ViewEventScreenViewController {
                  self.addressNonEditLabel.isHidden = false
                  self.addressNonEditLabel.alpha = 1.0
                 AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!,errorLabels:self.errorLabelArray!,flag: true)
-                self.eventUpdateBtn.isEnabled = false
-                self.eventUpdateBtn.alpha = 0.4
+                self.eventUpdateBtn.isHidden = true
               } else{
                   AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
                  self.isEdit = true
@@ -187,7 +196,7 @@ extension ViewEventScreenViewController {
                  self.addressNonEditLabel.alpha = 0.0
                 AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:
                     self.defaultLabelArray!,errorLabels:self.errorLabelArray!, flag: false)
-                self.eventUpdateBtn.isEnabled = true
+                self.eventUpdateBtn.isHidden = false
                 self.eventUpdateBtn.alpha = 1.0
               }
          }

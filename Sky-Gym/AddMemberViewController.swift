@@ -71,6 +71,9 @@ class AddMemberViewController: BaseViewController {
     @IBOutlet weak var discountErrorLabel: UILabel!
     @IBOutlet weak var paymentErrorLabel: UILabel!
     @IBOutlet weak var dueAmountErrorLabel: UILabel!
+    @IBOutlet weak var membershipDetailErrorLabel: UILabel!
+    @IBOutlet weak var endDateErrorLabel: UILabel!
+    
     
     let imagePicker = UIImagePickerController()
     var imgUrl:URL? = nil
@@ -97,6 +100,7 @@ class AddMemberViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCompleteView()
+        
         
         if self.isRenewMembership == true {
             if self.renewingMembershipID == "" {
@@ -183,30 +187,34 @@ class AddMemberViewController: BaseViewController {
     }
     
     @IBAction func updateBtnAction(_ sender: Any) {
-        SVProgressHUD.show()
-        if self.isNewMember == true {
-            if self.visitorID != "" {
-                FireStoreManager.shared.uploadUserImg(imgData: self.visitorProfileImgData!, id: self.memberIDTextField.text!, completion: {
-                    (err) in
-                    
-                    if err != nil {
-                        SVProgressHUD.dismiss()
-                        self.errorAlert(message: "Error in registering member,Please try again.")
-                    }else{
-                        self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
-                    }
-                })
-            } else {
-                self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
+
+        self.membershipValidation()
+        if self.validation.isMembershipFieldsValidated(textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView) == true {
+            SVProgressHUD.show()
+            if self.isNewMember == true {
+                if self.visitorID != "" {
+                    FireStoreManager.shared.uploadUserImg(imgData: self.visitorProfileImgData!, id: self.memberIDTextField.text!, completion: {
+                        (err) in
+                        
+                        if err != nil {
+                            SVProgressHUD.dismiss()
+                            self.errorAlert(message: "Error in registering member,Please try again.")
+                        }else{
+                            self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
+                        }
+                    })
+                } else {
+                    self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
+                }
             }
-        }
-            
-        else if self.isRenewMembership == true {
-            self.updateMembershipBy(memberID: AppManager.shared.memberID, membershipId: self.membershipID)
-        }
-            
-        else{
-            self.addNewMembership(membershipDetail: self.getMembershipDetails())
+                
+            else if self.isRenewMembership == true {
+                self.updateMembershipBy(memberID: AppManager.shared.memberID, membershipId: self.membershipID)
+            }
+                
+            else{
+                self.addNewMembership(membershipDetail: self.getMembershipDetails())
+            }
         }
     }
     
@@ -215,7 +223,7 @@ class AddMemberViewController: BaseViewController {
        }
     
     @objc func doneTextField()  {
-        self.selectedDate = datePicker.date
+        self.selectedDate = AppManager.shared.getStandardFormatDate(date: datePicker.date)
         self.view.endEditing(true)
     }
     
@@ -254,6 +262,14 @@ extension AddMemberViewController{
         }
     }
     
+    func membershipValidation()  {
+        for textField in self.membershipFieldArray  {
+            self.allNewMemberFieldsRequiredValidation(textField: textField)
+        }
+        self.validation.requiredValidation(textView: self.membershipDetailTextView, errorLabel: self.membershipDetailErrorLabel, errorMessage: "Membership Detail required.")
+    }
+    
+    
     func allNewMemberFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {
         case 1:
@@ -288,6 +304,9 @@ extension AddMemberViewController{
             
         case 14:
             validation.requiredValidation(textField: textField, errorLabel: self.startDateErrorLabel, errorMessage: "Start date require." )
+            
+        case 15:
+                validation.requiredValidation(textField: textField, errorLabel: self.endDateErrorLabel, errorMessage: "End date require." )
             
         case 16:
             validation.requiredValidation(textField: textField, errorLabel: self.totalAmountErrorLabel, errorMessage: "Enter total amount." )
@@ -591,6 +610,8 @@ extension AddMemberViewController{
         self.personalTypeOptionBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         imagePicker.delegate = self
         
+        datePicker.timeZone = TimeZone(secondsFromGMT: 0)
+        
         self.membershipPlanView.layer.cornerRadius = 12.0
         self.membershipPlanView.layer.shadowColor = UIColor.black.cgColor
         self.membershipPlanView.layer.shadowOffset = .zero
@@ -755,6 +776,7 @@ extension AddMemberViewController:UITextFieldDelegate{
             if textField.text!.count > 0  {
                 let df = DateFormatter()
                 df.dateFormat = "dd-MM-yyyy"
+                df.timeZone = TimeZone(secondsFromGMT: 0)
                 self.datePicker.date = df.date(from: textField.text!)!
             }
         }
@@ -774,6 +796,7 @@ extension AddMemberViewController:UITextFieldDelegate{
 //        } else {
 //            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
 //        }
+        
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -788,7 +811,12 @@ extension AddMemberViewController:UITextFieldDelegate{
                                     self.membershipDuration = Int(self.renewingMembershipDuration)!
                                 }
                                 self.startDateTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
-                                self.endDateTextField.text = AppManager.shared.dateWithMonthName(date: AppManager.shared.getMembershipEndDate(startDate: AppManager.shared.getStandardFormatDate(date: self.selectedDate!), duration:self.membershipDuration))
+                                let endDate = AppManager.shared.getMembershipEndDate(startDate:self.selectedDate!, duration: self.membershipDuration)
+                                let endDateFormatted = AppManager.shared.dateWithMonthName(date: endDate)
+                                self.endDateTextField.text =  endDateFormatted
+                
+                                self.validation.requiredValidation(textField: self.endDateTextField, errorLabel: self.endDateErrorLabel, errorMessage: "End Date require.")
+                
                               default:
                                   break
                               }
@@ -854,7 +882,9 @@ extension AddMemberViewController:UITableViewDelegate {
 //            self.startDateTextField.text = membership.startDate
 //            self.endDateTextField.text = membership.endDate
             self.membershipDuration = Int(membership.duration)!
-            self.allNewMemberFieldsRequiredValidation(textField: self.membershipPlanTextField)
+            self.validation.requiredValidation(textField: self.membershipPlanTextField, errorLabel: self.membershipPlanErrorLabel, errorMessage: "Please select a membership plan.")
+            self.validation.requiredValidation(textField: self.amountTextField, errorLabel: self.amountErrorLabel, errorMessage: "Amount required.")
+            self.validation.requiredValidation(textView: self.membershipDetailTextView, errorLabel: self.membershipDetailErrorLabel, errorMessage: "Membership Detail Required.")
 
         })
         self.membershipPlanView.isHidden = true
