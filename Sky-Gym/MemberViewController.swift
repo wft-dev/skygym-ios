@@ -168,6 +168,9 @@ class MemberViewController: BaseViewController {
 
 extension MemberViewController{
     
+    
+
+    
     func allMemberProfileFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {
         case 1:

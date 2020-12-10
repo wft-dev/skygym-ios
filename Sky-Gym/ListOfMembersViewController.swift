@@ -26,6 +26,7 @@ class ListOfMembersTableCell: UITableViewCell {
     @IBOutlet weak var attendenceLabel: UILabel!
     var customCellDelegate:CustomCellSegue?
     var imageName:String = "red"
+    var attendenceAlreadyMarked:Bool = false
     let messenger = MessengerManager()
 
     override func awakeFromNib() {
@@ -82,15 +83,28 @@ class ListOfMembersTableCell: UITableViewCell {
     private func performAttandance(id:String){
         switch self.imageName{
         case "red":
-            self.markAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "-")
+            print("ATTENDECE IS \(self.attendenceAlreadyMarked)")
+            if attendenceAlreadyMarked == false {
+             self.markAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "-")
+            }else{
+                print("new attendence marked.")
+            }
+
             imageName = "green"
             self.attendImg?.image = UIImage(named: imageName)
         case "green":
             imageName = "red"
              self.attendImg?.image = UIImage(named: imageName)
-            FireStoreManager.shared.uploadCheckOutTime(trainerORmember: "Members", id: id, checkOut: AppManager.shared.getTimeFrom(date: Date()), completion: {
-                _ in
-            })
+            if attendenceAlreadyMarked == false{
+                FireStoreManager.shared.uploadCheckOutTime(trainerORmember: "Members", id: id, checkOut: AppManager.shared.getTimeFrom(date: Date()), completion: {
+                    err in
+                    self.attendenceAlreadyMarked = err == nil ? true : false
+                    print("\(self.attendenceAlreadyMarked)")
+                })
+            } else {
+                
+            }
+
         default:
             break
         }
