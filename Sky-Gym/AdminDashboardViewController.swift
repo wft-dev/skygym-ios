@@ -38,7 +38,14 @@ class AdminDashboardViewController: BaseViewController {
         self.totalMemberView.layer.borderColor = self.lightGrayColor.cgColor
         adjustFonts()
         self.setDashboardValues()
-     FireStoreManager.shared.updateAttendence()
+//        FireStoreManager.shared.addMember(email: "sagar@gmail.com", password: "sagar@0540", memberDetail: ["Name":"Sagar"], memberships: [["Membership":"1"]], memberID: "9002", handler: {
+//            err in
+//            if err != nil {
+//                print("Error in adding members.")
+//            }else{
+//                print("Success in adding members.")
+//            }
+//        })
     }
     
     func adjustFonts()  {

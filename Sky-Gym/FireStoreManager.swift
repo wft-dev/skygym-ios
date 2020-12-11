@@ -141,8 +141,8 @@ class FireStoreManager: NSObject {
        }
     
     func addMember(email:String,password:String,memberDetail:[String:String],memberships:[[String:String]],memberID:String,handler:@escaping (Error?) -> Void ) {
-        let attendence = AppManager.shared.getCompleteMonthAttendenceStructure()
-        
+     //   let attendence = AppManager.shared.getCompleteMonthAttendenceStructure()
+        let attendence = AppManager.shared.getCompleteInitialStructure(year: 2020, month: 12,checkIn: "", checkOut: "", present: false)
         self.fireDB.collection("/Members").document("/\(memberID)").setData(
             [
                 "adminID":AppManager.shared.adminID,
@@ -352,12 +352,12 @@ class FireStoreManager: NSObject {
             if err != nil {
                 print("Errror in fetching the member attandance.")
             } else {
-                let attandanceDic = ((docSnapshot?.data())! as NSDictionary)["attendence"] as! NSDictionary
+                let attandanceDic = ((docSnapshot?.data())! as NSDictionary)["attendence"] as! Dictionary<String, Any>
                 if attandanceDic.count > 0{
                     let currentYear = attandanceDic["\(year)"] as! NSDictionary
                     let currentMonth =  currentYear["\(month)"] as! NSDictionary
                     for (key,value) in currentMonth{
-                        attendenceArray.append(AppManager.shared.getAttendanceData(key: key as! String, value: value as! NSDictionary))
+                        attendenceArray.append(AppManager.shared.getAttendanceData(key: key as! String, value: value as! Dictionary<String, Any> ))
                     }
                 }
             }
@@ -372,7 +372,7 @@ class FireStoreManager: NSObject {
         let day = Calendar.current.component(.day, from: Date())
         
         let ref = fireDB.collection("/\(trainerORmember)").document("/\(id)")
-        print(ref.path)
+      //  print(ref.path)
         ref.getDocument(completion: {
             (docSnapshot,err) in
             if err != nil {
@@ -381,18 +381,18 @@ class FireStoreManager: NSObject {
                 let attandanceDic = ((docSnapshot?.data())! as NSDictionary)["attendence"] as! NSDictionary
                 if let year:NSDictionary = (attandanceDic["\(currentYear)"] as? NSDictionary){
                     if  let _:Array = year["\(currentMonth)"] as? Array<NSDictionary>{
-                        self.markAttendence(attendenceDir: attandanceDic, trainerORmember: trainerORmember, id: id, year: currentYear, month: currentMonth, day: day, present: present, checkIn: checkIn, checkOut: checkOut, handler: {
+                        self.updateAttendence(trainerORmember: trainerORmember, id: id, present: present, checkInA: checkIn, checkOutA: checkOut, completion: {
                             err in
                             completion(err)
                         })
                     }else {
-                        self.addMonth(attendenceDir: attandanceDic, trainerORmember: trainerORmember, id: id, year: currentYear, month: currentMonth, day: day, present: present, checkIn: checkIn, checkOut: checkOut, handler: {
+                        self.addMonth(attendenceDir: attandanceDic as! Dictionary<String, Any>, trainerORmember: trainerORmember, id: id, year: currentYear, month: currentMonth, day: day, present: present, checkIn: checkIn, checkOut: checkOut, handler: {
                             err in
                             completion(err)
                         })
                     }
                 } else {
-                    self.addYear(attendenceDir: attandanceDic, trainerORmember: trainerORmember, id: id, year: currentYear, month: currentMonth, day: day, present: present, checkIn: checkIn, checkOut: checkOut, handler: {
+                    self.addYear(attendenceDir: attandanceDic as! Dictionary<String, Any>, trainerORmember: trainerORmember, id: id, year: currentYear, month: currentMonth, day: day, present: present, checkIn: checkIn, checkOut: checkOut, handler: {
                         err in
                         completion(err)
                     })
@@ -408,13 +408,16 @@ class FireStoreManager: NSObject {
             if err != nil {
                 result(false,err)
             }else {
-                let attendenceDictionary = ((docSnapshot?.data())! as NSDictionary)["attendence"] as! NSDictionary
-                let matchingDateDir = AppManager.shared.getSingleDateDetail(trainerORmember:role,id: memberID, attendence: attendenceDictionary, forDate: Date())
+                let attendenceDictionary = ((docSnapshot?.data())! as NSDictionary)["attendence"] as! Dictionary<String,Any>
+                let matchingDateArray = AppManager.shared.getArrayOfOneDayAttendence(trainerORmember: role, id: memberID, attendence: attendenceDictionary, forDate: Date())
                 
-                if matchingDateDir != nil {
-                    let matchingDate = AppManager.shared.getAttendanceData(key: "\(matchingDateDir?.allKeys.first as! String)", value: matchingDateDir?.value(forKey: "\(matchingDateDir?.allKeys.first as! String)") as! NSDictionary )
+                if matchingDateArray != nil {
+                    let  singleMatchingDate = matchingDateArray?.last
+                    let present = singleMatchingDate?["present"] as! Bool
+                    let checkIn = singleMatchingDate?["checkIn"] as! String
+                    let checkOut = singleMatchingDate?["checkOut"] as! String
                     
-                    if  matchingDate.present == true && matchingDate.checkIn != "" && matchingDate.checkOut == "-"  {
+                    if  present == true && checkIn != "" && checkOut == "-"  {
                         result(true,nil)
                     }else {
                         result(false,nil)
@@ -439,30 +442,31 @@ class FireStoreManager: NSObject {
         })
     }
       
- private   func addMonth(attendenceDir:NSDictionary,trainerORmember:String,id:String,year:Int,month:Int,day:Int,present:Bool,checkIn:String,checkOut:String,handler:@escaping (Error?)->Void) {
-            
-        let yearDir = attendenceDir["\(year)"] as! NSDictionary
+    private   func addMonth(attendenceDir:Dictionary<String,Any>,trainerORmember:String,id:String,year:Int,month:Int,day:Int,present:Bool,checkIn:String,checkOut:String,handler:@escaping (Error?)->Void) {
+        var attendence = attendenceDir
+        var yearDir = attendenceDir["\(year)"] as! Dictionary<String,Any>
         let nextMonth = month
-        let monthAttendence = AppManager.shared.getMonthAttendenceStructure(year: year, month: nextMonth, markingDate: "\(day)/\(nextMonth)/\(year)", checkIn: checkIn, checkOut: checkOut, present: true)
-        yearDir.setValue(monthAttendence, forKey: "\(nextMonth)")
-        attendenceDir.setValue(yearDir, forKey: "\(year)")
-
+        let monthAttendence = AppManager.shared.getMonthAttendenceStructure(year:year,month:month,checkIn: checkIn, checkOut: checkOut, present: true)
+        yearDir.updateValue(monthAttendence, forKey: "\(nextMonth)")
+        attendence.updateValue(yearDir, forKey: "\(year)")
+        
         fireDB.collection("\(trainerORmember)").document("\(id)").updateData([
-           "attendence" : attendenceDir
-        ], completion: {
-            err in
-            handler(err)
+            "attendence" : attendence
+            ], completion: {
+                err in
+                handler(err)
         })
-      }
+    }
       
-  private   func addYear(attendenceDir:NSDictionary,trainerORmember:String,id:String,year:Int,month:Int,day:Int,present:Bool,checkIn:String,checkOut:String,handler: @escaping (Error?)->Void) {
+  private   func addYear(attendenceDir:Dictionary<String,Any>,trainerORmember:String,id:String,year:Int,month:Int,day:Int,present:Bool,checkIn:String,checkOut:String,handler: @escaping (Error?)->Void) {
+    var attendence = attendenceDir
         let nextYear = year
-        let monthAttendence = AppManager.shared.getMonthAttendenceStructure(year: nextYear, month: 1, markingDate:  "\(day)/\(month)/\(nextYear)", checkIn: checkIn, checkOut: checkOut, present: present)
-        let monthArray = ["\(month)":monthAttendence]
-        attendenceDir.setValue(monthArray, forKey: "\(nextYear)")
+        let monthAttendence = AppManager.shared.getMonthAttendenceStructure( year:year,month:month, checkIn: checkIn, checkOut: checkOut, present: present)
+        let nextYearAttendence:Dictionary<String,Any> = ["\(month)":monthAttendence]
+        attendence.updateValue(nextYearAttendence, forKey: "\(nextYear)")
           
         fireDB.collection("\(trainerORmember)").document("\(id)").updateData([
-                "attendence" : attendenceDir
+                "attendence" : attendence
         ], completion: {
             err in
             handler(err)
@@ -480,13 +484,12 @@ class FireStoreManager: NSObject {
             "present" : present
         ]
         monthArray.remove(at: i)
-        monthArray.insert(["\(todayDate)":status] as NSDictionary, at:i )
+        monthArray.insert(["\(todayDate)":status] as NSDictionary, at:i)
         
-         var allMonthDic = (attendenceDir["\(year)"] as! [String:Any])
-         allMonthDic["\(month)"] = monthArray
-         let attendence = ["\(year)":allMonthDic]
+        var allMonthDic = (attendenceDir["\(year)"] as! [String:Any])
+        allMonthDic["\(month)"] = monthArray
+        let attendence = ["\(year)":allMonthDic]
         
-       // let attendence = ["\(year)":["\(month)":monthArray]]
         let ref = fireDB.collection("/\(trainerORmember)").document("/\(id)")
         ref.updateData([
             "attendence": attendence
@@ -495,33 +498,7 @@ class FireStoreManager: NSObject {
                 handler(err)
         })
     }
-    
-    private func markAttendenceAgain(attendenceDir:NSDictionary,trainerORmember:String,id:String,year:Int,month:Int,day:Int,checkIn:String,checkOut:String,handler:@escaping (Error?) -> Void ) {
-        let todayDate = "\(day)/\(month)/\(year)"
-        let i = (day - 1)
-        
-        var monthArray = (attendenceDir["\(year)"] as! NSDictionary)["\(month)"] as! Array<NSDictionary>
-        let status:[String:Any] = [
-            "checkInAgain":"\(checkIn)",
-            "checkOutAgain":"\(checkOut)",
-        ]
-        monthArray.remove(at: i)
-        monthArray.insert(["\(todayDate)":status] as NSDictionary, at:i )
-        
-         var allMonthDic = (attendenceDir["\(year)"] as! [String:Any])
-         allMonthDic["\(month)"] = monthArray
-         let attendence = ["\(year)":allMonthDic]
-        
-       // let attendence = ["\(year)":["\(month)":monthArray]]
-        let ref = fireDB.collection("/\(trainerORmember)").document("/\(id)")
-        ref.updateData([
-            "attendence": attendence
-            ], completion: {
-                err in
-                handler(err)
-        })
-    }
-    
+
     func uploadCheckOutTime(trainerORmember:String,id:String,checkOut:String,completion:@escaping (Error?)->Void) {
         let currentYear = Calendar.current.component(.year, from: Date())
         let currentMonth = Calendar.current.component(.month, from: Date())
@@ -572,7 +549,7 @@ class FireStoreManager: NSObject {
             (docSnapshot,err) in
             
             if err == nil {
-                let attendence = (((docSnapshot?.data())! as NSDictionary )["attendence"]) as! NSDictionary
+                let attendence = (((docSnapshot?.data())! as NSDictionary )["attendence"]) as! Dictionary<String,Any>
                 
                 if yearDiff == 0 {
                     if monthDiff == 0 {
@@ -898,7 +875,10 @@ class FireStoreManager: NSObject {
             }
         })
     }
-
+    
+    
+    
+    // NEW ATTENDENCE FUNCTIONS
 
     func addAttendence()  {
         let ref = fireDB.collection("/Members").document("9001")
@@ -911,11 +891,11 @@ class FireStoreManager: NSObject {
                 var currentYear = attandanceDic["2020"] as! [String:Any]
                 var currentMonth = currentYear["11"] as! Array<Any>
                 let firstElement = currentMonth.first as! Dictionary<String,Any>
-                var currentDay = firstElement["2/8/1997"] as! Array<Dictionary<String,Any>>
-                let newAttendence = ["checkIn":"6:00 AM","checkOut":"7:00 AM"]
+                var currentDay = firstElement["11/12/2020"] as! Array<Dictionary<String,Any>>
+                let newAttendence = ["checkIn":"6:30 AM","checkOut":"7:30 AM","present":true] as Dictionary<String,Any>
                 currentDay.append(newAttendence)
                 currentMonth.remove(at: 0)
-                currentMonth.insert(["2/8/1997":currentDay], at: 0)
+                currentMonth.insert(["11/12/2020":currentDay], at: 0)
                 currentYear.updateValue(currentMonth, forKey: "11")
                 attandanceDic.updateValue(currentYear, forKey: "2020")
                 
@@ -935,29 +915,10 @@ class FireStoreManager: NSObject {
         })
     }
     
-    
     func addFirstAttendence() {
         let ref = fireDB.collection("/Members").document("9001")
-        
-        let attendenceDir = [
-            "2020":[
-                "11":[
-                    [
-                        "2/8/1997": [
-                            [
-                                "checkIn": "1:00 PM",
-                                "checkOut": "4:00 PM"
-                            ],
-                            [
-                                "checkIn": "2:00 PM",
-                                "checkOut": "5:00 PM"
-                            ],
-                        ]
-                    ]
-                ]
-            ]
-        ]
-        
+        let attendenceDir = AppManager.shared.getMonthAttendenceStructure(year:2020,month:12,checkIn: "3:30 PM", checkOut: "4:30 PM", present: true)
+ 
         ref.setData([
             "attendence" :attendenceDir
         ], completion: {
@@ -970,34 +931,36 @@ class FireStoreManager: NSObject {
         })
     }
 
-    func updateAttendence()  {
-           let ref = fireDB.collection("/Members").document("9001")
+    func updateAttendence(trainerORmember:String,id:String,present:Bool,checkInA:String,checkOutA:String ,completion:@escaping (Error?)->Void)  {
+        let currentYear = Calendar.current.component(.year, from: Date())
+        let currentMonth = Calendar.current.component(.month, from: Date())
+        let day = Calendar.current.component(.day, from: Date())
+        let currentDate = "\(day)/\(currentMonth)/\(currentYear)"
+        let ref = fireDB.collection("\(trainerORmember)").document("\(id)")
+        
            ref.getDocument(completion: {
                (docSnapshot,err) in
                if err != nil {
                    print("Errror in fetching the member attandance.")
                } else {
                    var attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
-                   var currentYear = attandanceDic["2020"] as! [String:Any]
-                   var currentMonth = currentYear["11"] as! Array<Any>
-                   let firstElement = currentMonth.last as! Dictionary<String,Any>
-                   var currentDay = firstElement["2/8/1997"] as! Array<Dictionary<String, Any>>
-                   var firstTimeAttendence = currentDay.first
-                   let _ = currentDay.last
+                   var year = attandanceDic["\(currentYear)"] as! Dictionary<String,Any>
+                   var month = year["\(currentMonth)"] as! Array<Any>
+                   let firstElement = month[day] as! Dictionary<String,Any>
+                   var currentDay = firstElement["\(currentDate)"] as! Array<Dictionary<String, Any>>
+                   var firstTimeAttendence = currentDay.last
                    var checkIn = firstTimeAttendence?["checkIn"] as! String
                    var checkOut = firstTimeAttendence?["checkOut"] as! String
-                   
-                   checkIn =  "11:34 AM"
-                   checkOut = "1:34 PM"
-                   
+                   checkIn =  "\(checkInA)"
+                   checkOut = "\(checkOutA)"
                    firstTimeAttendence?.updateValue(checkIn, forKey: "checkIn")
                    firstTimeAttendence?.updateValue(checkOut, forKey: "checkOut")
                    currentDay.remove(at: 0)
                    currentDay.insert(firstTimeAttendence!, at: 0)
-                   currentMonth.remove(at: 0)
-                   currentMonth.insert(["2/8/1997":currentDay], at: 0)
-                   currentYear.updateValue(currentMonth, forKey: "11")
-                   attandanceDic.updateValue(currentYear, forKey: "2020")
+                   month.remove(at: day)
+                   month.insert(["\(currentDate)":currentDay], at: day)
+                   year.updateValue(month, forKey: "\(currentMonth)")
+                   attandanceDic.updateValue(year, forKey: "\(currentYear)")
                    ref.updateData([
                      "attendence" : attandanceDic
                    ], completion: {
@@ -1012,6 +975,71 @@ class FireStoreManager: NSObject {
                }
            })
        }
+    
+    func markAttendenceFor(attendenceDir:Dictionary<String,Any>,trainerORmember:String,id:String,year:Int,month:Int,day:Int,present:Bool,checkIn:String,checkOut:String,handler:@escaping (Error?) -> Void) {
+        let ref = fireDB.collection("\(trainerORmember)").document("\(id)")
+        var attandanceDic = attendenceDir
+        let todayDate = "\(day)/\(month)/\(year)"
+        var currentYear = attandanceDic["\(year)"] as! Dictionary<String,Any>
+        var currentMonth = currentYear["\(month)"] as! Array<Dictionary<String,Any>>
+        let singleTimeAttendence:Dictionary<String,Any> = ["checkIn":"\(checkIn)","checkOut":"\(checkOut)","present":present]
+        let AttendenceArray:Array<Dictionary<String,Any>> = [singleTimeAttendence]
+        let dayAttendence:Dictionary<String,Any> = ["\(todayDate)":AttendenceArray]
+        
+        currentMonth.append(dayAttendence)
+        currentYear.updateValue(currentMonth, forKey: "\(month)")
+        attandanceDic.updateValue(currentYear, forKey: "\(year)")
+        
+        ref.updateData([
+            "attendence" : attandanceDic
+            ], completion: {
+                err in
+                if err != nil {
+                    print("Error in marking next day attendence.")
+                }else {
+                    print("Success in marking next day attendence.")
+                }
+        })
+    }
+    
+    func addNewMonth(month:Int) {
+        let ref = fireDB.collection("/Members").document("9001")
+        
+        ref.getDocument(completion: {
+            (docSnapshot,err) in
+            
+            if err != nil {
+                print("Errror in fetching the member attandance.")
+            } else {
+                var attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
+                self.addMonth(attendenceDir: attandanceDic , trainerORmember: "Members", id: "9001", year: 2020, month: 12, day: 1, present: true, checkIn: "1:00 AM", checkOut: "1:30 AM", handler:{
+                    err in
+                    if err != nil {
+                        print("Error in adding new month.")
+                    }else {
+                        print("Success in adding new month.")
+                    }
+                })
+            }
+        })
+    }
+    
+    func addNewYear(year:Int,month:Int) {
+         let ref = fireDB.collection("/Members").document("9001")
+        
+        ref.getDocument(completion: {
+            (docSnapshot,err) in
+            if err != nil {
+                print("Errror in fetching the member attandance.")
+            } else {
+                var attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
+                self.addYear(attendenceDir: attandanceDic, trainerORmember: "Members", id: "9001", year: year, month: month, day: 1, present: true, checkIn: "checkInNew", checkOut: "checkOutNew", handler: {
+                    err in
+                    err != nil ? print("Error in adding new year.") : print("Success in adding new year.")
+                })
+            }
+        })
+    }
 }
     
 
