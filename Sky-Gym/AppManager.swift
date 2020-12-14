@@ -350,20 +350,24 @@ class AppManager: NSObject {
 
     func sameMonthSameYearAttendenceFetching(attendence:Dictionary<String,Any>,year:String,month:String,startDate:String,endDate:String) -> [Attendence]{
         var  attendenceArray:[Attendence] = []
+        var i = 0
         let startD = AppManager.shared.getDate(date:startDate)
         let endD = AppManager.shared.getDate(date: endDate)
-        if let monthArray = (attendence["\(year)"] as? NSDictionary)?["\(month)"] as? Array<NSDictionary> {
-            var counter = Calendar.current.component(.day, from: startD)
+        if let monthArray = (attendence["\(year)"] as? Dictionary<String,Any>)?["\(month)"] as? Array<Dictionary<String,Any>> {
+            let counter = Calendar.current.component(.day, from: startD)
             let terminator = Calendar.current.component(.day, from: endD)
-            for eachDay in monthArray {
-                let d = eachDay
-                if  let status = d["\(counter)/\(month)/\(year)"] as? NSDictionary  {
-                    attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(counter)/\(month)/\(year)", value: status as! Dictionary<String, Any>))
-                    counter += 1
-                    if counter > terminator {
-                        break
+            //monthArray.removeFirst()
+            
+            while i <= terminator {
+                if i >= counter && i <= terminator {
+                    let dateStr = "\(i)/\(month)/\(year)"
+                    let eachDay = monthArray[i]
+                    let day = eachDay["\(dateStr)"] as! Array<Dictionary<String,Any>>
+                    for eachEntry in day {
+                        attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(i)/\(month)/\(year)", value: eachEntry ))
                     }
                 }
+            i += 1
             }
             return attendenceArray
         }

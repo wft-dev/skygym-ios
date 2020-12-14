@@ -30,6 +30,8 @@ class MemberAttandanceViewController: BaseViewController {
     @IBOutlet weak var memberAddressLabel: UILabel!
     @IBOutlet weak var startDateLabel: UILabel!
     @IBOutlet weak var endDateLabel: UILabel!
+    @IBOutlet weak var mainScrollView: UIScrollView!
+    @IBOutlet weak var mainView: UIView!
     
     var attandanceArray:[Attendence?] = []
     var memberName:String = ""
@@ -48,10 +50,25 @@ class MemberAttandanceViewController: BaseViewController {
         self.memberNameLabel.text = self.memberName
         self.memberAddressLabel.text = self.memberAddress
         self.checkByDateBtn.addTarget(self, action: #selector(checkByDateAction), for: .touchUpInside)
+       // self.updateScrollSize()
+      //  self.memberAttandanceTable.translatesAutoresizingMaskIntoConstraints = true
+      //  self.mainScrollView.translatesAutoresizingMaskIntoConstraints = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+           //  self.mainScrollView.contentSize.height = 900
+        })
+    // self.mainView.frame.size.height = 617
+        
+       // self.memberAttandanceTable.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)
+    }
+    
+    override func viewDidLayoutSubviews(){
+        self.memberAttandanceTable.frame = CGRect(x: self.memberAttandanceTable.frame.origin.x, y: self.memberAttandanceTable.frame.origin.y, width: self.memberAttandanceTable.frame.size.width, height: self.memberAttandanceTable.contentSize.height)
+         self.memberAttandanceTable.reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.memberAttandanceTable.frame = CGRect(x: self.memberAttandanceTable.frame.origin.x, y: self.memberAttandanceTable.frame.origin.y, width: self.memberAttandanceTable.frame.size.width, height: self.memberAttandanceTable.contentSize.height)
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "dd MMM yyyy"
@@ -70,12 +87,30 @@ class MemberAttandanceViewController: BaseViewController {
                     self.endDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.last?.date)!))
                     self.memberAttandanceTable.reloadData()
                     self.memberAttandanceTable.alpha = 1.0
+                    self.updateScrollSize()
                 }
         })
     }
 }
 
 extension MemberAttandanceViewController {
+    
+    func updateScrollSize() {
+//        DispatchQueue.main.async {
+//            var contentRect = CGRect.zero
+//            for view in self.mainScrollView.subviews {
+//                contentRect = contentRect.union(view.frame)
+//            }
+//            self.mainScrollView.contentSize = contentRect.size
+//        }
+        
+        
+//        let height = self.memberAttandanceTable.frame.size.height
+//        let pos = self.memberAttandanceTable.frame.origin.y
+//        let sizeOfContent = height + pos + 10
+//        self.mainScrollView.contentSize.height = sizeOfContent
+    }
+    
     func setMemberAttandanceNavigation()  {
         memberAttandanceNavigationBar.menuBtn.isHidden = true
         memberAttandanceNavigationBar.leftArrowBtn.isHidden = false
@@ -132,12 +167,14 @@ extension MemberAttandanceViewController {
             self.attandanceArray.removeAll()
             self.attandanceArray = attendenceArray
             self.memberAttandanceTable.reloadData()
+            self.updateScrollSize()
         })
     }
 }
 
 extension MemberAttandanceViewController:UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print("count : \(attandanceArray.count)")
         return self.attandanceArray.count
     }
     
@@ -147,6 +184,7 @@ extension MemberAttandanceViewController:UITableViewDataSource {
         self.setAttandanceTableCellView(tableCellView: cell.tableCellView)
         cell.checkInTimeView.layer.cornerRadius = 12.0
         cell.checkoutTimeView.layer.cornerRadius = 12.0
+        cell.selectionStyle = .none
         cell.weekdayNameLabel.text = AppManager.shared.getTodayWeekDay(date: singleAttendenceStatus?.date ?? "")
 
         if singleAttendenceStatus?.present == false {
@@ -158,6 +196,17 @@ extension MemberAttandanceViewController:UITableViewDataSource {
             cell.checkInTime.text = singleAttendenceStatus?.checkIn
             cell.checkOutTime.text = singleAttendenceStatus?.checkOut
         }
+
         return cell
+    }
+
+}
+
+
+extension MemberAttandanceViewController:UITableViewDelegate{
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        var frame = tableView.frame
+//         frame.size.height = tableView.contentSize.height
+//         tableView.frame = frame
     }
 }

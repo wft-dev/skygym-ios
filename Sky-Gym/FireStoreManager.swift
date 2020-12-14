@@ -381,7 +381,7 @@ class FireStoreManager: NSObject {
                 let attandanceDic = ((docSnapshot?.data())! as NSDictionary)["attendence"] as! NSDictionary
                 if let year:NSDictionary = (attandanceDic["\(currentYear)"] as? NSDictionary){
                     if  let _:Array = year["\(currentMonth)"] as? Array<NSDictionary>{
-                        self.updateAttendence(trainerORmember: trainerORmember, id: id, present: present, checkInA: checkIn, checkOutA: checkOut, completion: {
+                        self.updateAttendence(trainerORmember: trainerORmember, id: id,checkOutA: checkOut, completion: {
                             err in
                             completion(err)
                         })
@@ -549,7 +549,7 @@ class FireStoreManager: NSObject {
             (docSnapshot,err) in
             
             if err == nil {
-                let attendence = (((docSnapshot?.data())! as NSDictionary )["attendence"]) as! Dictionary<String,Any>
+                let attendence = (((docSnapshot?.data())! as Dictionary<String,Any> )["attendence"]) as! Dictionary<String,Any>
                 
                 if yearDiff == 0 {
                     if monthDiff == 0 {
@@ -880,24 +880,33 @@ class FireStoreManager: NSObject {
     
     // NEW ATTENDENCE FUNCTIONS
 
-    func addAttendence()  {
-        let ref = fireDB.collection("/Members").document("9001")
+    func addAttendence(trainerORmember:String,id:String,present:Bool,checkInA:String,checkOutA:String)  {
+        let year = Calendar.current.component(.year, from: Date())
+        let month = Calendar.current.component(.month, from: Date())
+        let day = Calendar.current.component(.day, from: Date())
+        let currentDate = "\(day)/\(month)/\(year)"
+        let ref = fireDB.collection("/\(trainerORmember)").document("\(id)")
         ref.getDocument(completion: {
             (docSnapshot,err) in
             if err != nil {
                 print("Error")
             }else {
-                var attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
-                var currentYear = attandanceDic["2020"] as! [String:Any]
-                var currentMonth = currentYear["11"] as! Array<Any>
-                let firstElement = currentMonth.first as! Dictionary<String,Any>
-                var currentDay = firstElement["11/12/2020"] as! Array<Dictionary<String,Any>>
-                let newAttendence = ["checkIn":"6:30 AM","checkOut":"7:30 AM","present":true] as Dictionary<String,Any>
+               var attandanceDic = ((docSnapshot?.data())! as Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
+                var currentYear = attandanceDic["\(year)"] as! Dictionary<String, Any>
+                var currentMonth = currentYear["\(month)"] as! Array<Any>
+                let firstElement = currentMonth[day] as! Dictionary<String,Any>
+                var currentDay = firstElement["\(currentDate)"] as! Array<Dictionary<String,Any>>
+                let newAttendence = [
+                    "checkIn":"\(checkInA)",
+                    "checkOut":"\(checkOutA)",
+                    "present":present
+                    ] as Dictionary<String,Any>
+                
                 currentDay.append(newAttendence)
-                currentMonth.remove(at: 0)
-                currentMonth.insert(["11/12/2020":currentDay], at: 0)
-                currentYear.updateValue(currentMonth, forKey: "11")
-                attandanceDic.updateValue(currentYear, forKey: "2020")
+                currentMonth.remove(at: day)
+                currentMonth.insert(["\(currentDate)":currentDay], at: day)
+                currentYear.updateValue(currentMonth, forKey: "\(month)")
+                attandanceDic.updateValue(currentYear, forKey: "\(year)")
                 
                 ref.updateData([
                     "attendence" :attandanceDic
@@ -931,7 +940,7 @@ class FireStoreManager: NSObject {
         })
     }
 
-    func updateAttendence(trainerORmember:String,id:String,present:Bool,checkInA:String,checkOutA:String ,completion:@escaping (Error?)->Void)  {
+    func updateAttendence(trainerORmember:String,id:String,checkOutA:String ,completion:@escaping (Error?)->Void)  {
         let currentYear = Calendar.current.component(.year, from: Date())
         let currentMonth = Calendar.current.component(.month, from: Date())
         let day = Calendar.current.component(.day, from: Date())
@@ -943,20 +952,20 @@ class FireStoreManager: NSObject {
                if err != nil {
                    print("Errror in fetching the member attandance.")
                } else {
-                   var attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
+                   var attandanceDic = ((docSnapshot?.data())! as Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
                    var year = attandanceDic["\(currentYear)"] as! Dictionary<String,Any>
                    var month = year["\(currentMonth)"] as! Array<Any>
                    let firstElement = month[day] as! Dictionary<String,Any>
                    var currentDay = firstElement["\(currentDate)"] as! Array<Dictionary<String, Any>>
                    var firstTimeAttendence = currentDay.last
-                   var checkIn = firstTimeAttendence?["checkIn"] as! String
                    var checkOut = firstTimeAttendence?["checkOut"] as! String
-                   checkIn =  "\(checkInA)"
                    checkOut = "\(checkOutA)"
-                   firstTimeAttendence?.updateValue(checkIn, forKey: "checkIn")
+                
                    firstTimeAttendence?.updateValue(checkOut, forKey: "checkOut")
-                   currentDay.remove(at: 0)
-                   currentDay.insert(firstTimeAttendence!, at: 0)
+                //   currentDay.remove(at: 0)
+                   currentDay.removeLast()
+                  // currentDay.insert(firstTimeAttendence!, at: 0)
+                   currentDay.append(firstTimeAttendence!)
                    month.remove(at: day)
                    month.insert(["\(currentDate)":currentDay], at: day)
                    year.updateValue(month, forKey: "\(currentMonth)")

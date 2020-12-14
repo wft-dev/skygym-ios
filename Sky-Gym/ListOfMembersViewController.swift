@@ -85,22 +85,23 @@ class ListOfMembersTableCell: UITableViewCell {
         case "red":
             print("ATTENDECE IS \(self.attendenceAlreadyMarked)")
             if attendenceAlreadyMarked == false {
-             self.markAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "-")
+//             self.markAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "-")
+            FireStoreManager.shared.addAttendence(trainerORmember: "Members", id: id, present: true, checkInA: AppManager.shared.getTimeFrom(date: Date()), checkOutA: "-")
             }else{
-                print("new attendence marked.")
+                print("new attendence check In time marked.")
             }
-
             imageName = "green"
             self.attendImg?.image = UIImage(named: imageName)
         case "green":
             imageName = "red"
              self.attendImg?.image = UIImage(named: imageName)
             if attendenceAlreadyMarked == false{
-                FireStoreManager.shared.uploadCheckOutTime(trainerORmember: "Members", id: id, checkOut: AppManager.shared.getTimeFrom(date: Date()), completion: {
+                FireStoreManager.shared.updateAttendence(trainerORmember: "Members", id: id, checkOutA: AppManager.shared.getTimeFrom(date: Date()), completion: {
                     err in
                     self.attendenceAlreadyMarked = err == nil ? true : false
                     print("\(self.attendenceAlreadyMarked)")
                 })
+                
             } else {
                 
             }
