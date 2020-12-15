@@ -46,6 +46,10 @@ class AdminDashboardViewController: BaseViewController {
 //                print("Success in adding members.")
 //            }
 //        })
+        
+      //  FireStoreManager.shared.addNewYear(year: 2021, month: 1)
+      //  FireStoreManager.shared.addNewMonth(month: 2)
+      //  FireStoreManager.shared.addNewMonth(month: 1)
     }
     
     func adjustFonts()  {

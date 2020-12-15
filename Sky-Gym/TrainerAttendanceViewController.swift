@@ -27,11 +27,14 @@ class TrainerAttendanceViewController: BaseViewController {
     @IBOutlet weak var trainerAddressLabel: UILabel!
     @IBOutlet weak var attendenceStartDateLabel: UILabel!
     @IBOutlet weak var attendenceEndDateLabel: UILabel!
+    @IBOutlet weak var trainerAttendenceHeigthConstriant: NSLayoutConstraint!
+    
     var trainerAttendanceArray:[Attendence?] = []
     var trainerName:String = ""
     var trainerAddress:String = ""
     var toolBar = UIToolbar()
     var datePicker  = UIDatePicker()
+    var  heightConstraint:CGFloat = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +50,7 @@ class TrainerAttendanceViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.trainerAttendanceTable.rowHeight = 66
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "dd MMM yyyy"
 
@@ -56,7 +60,12 @@ class TrainerAttendanceViewController: BaseViewController {
             self.attendenceEndDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.last!.date)))
             self.trainerAttendanceArray.removeAll()
             self.trainerAttendanceArray = array
+            self.heightConstraint = CGFloat(self.trainerAttendanceArray.count * 66)
+            DispatchQueue.main.async {
+            self.trainerAttendenceHeigthConstriant.constant = self.heightConstraint
+            print("Calculated attendence is : \(self.heightConstraint)")
             self.trainerAttendanceTable.reloadData()
+            }
         })
     }
     
@@ -109,6 +118,7 @@ extension TrainerAttendanceViewController{
              self.datePicker.removeFromSuperview()
             self.fetchTrainerAttendenceFrom(startDate: self.attendenceStartDateLabel.text!, endDate: self.attendenceEndDateLabel.text!)
          }
+    
          @objc func onCancelButtonClick() {
              self.toolBar.removeFromSuperview()
              self.datePicker.removeFromSuperview()
@@ -118,11 +128,15 @@ extension TrainerAttendanceViewController{
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Trainers", id: AppManager.shared.trainerID, startDate:startDate, endDate:endDate, s: {
             (attendenceArray,_) in
             self.trainerAttendanceArray.removeAll()
-            self.trainerAttendanceArray = attendenceArray 
+            self.trainerAttendanceArray = attendenceArray
+            self.heightConstraint = CGFloat(self.trainerAttendanceArray.count * 66)
+            DispatchQueue.main.async {
+            self.trainerAttendenceHeigthConstriant.constant = self.heightConstraint
+                  print("Calculated attendence is : \(self.heightConstraint)")
             self.trainerAttendanceTable.reloadData()
+            }
         })
     }
-    
 }
 
 extension TrainerAttendanceViewController:UITableViewDataSource{
@@ -148,7 +162,6 @@ extension TrainerAttendanceViewController:UITableViewDataSource{
             cell.checkInTimeLabel.text = self.trainerAttendanceArray[indexPath.row]?.checkIn
             cell.checkOutTimeLabel.text = self.trainerAttendanceArray[indexPath.row]?.checkOut
         }
-        
         return cell
     }
 }

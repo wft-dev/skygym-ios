@@ -412,16 +412,19 @@ class FireStoreManager: NSObject {
                 let matchingDateArray = AppManager.shared.getArrayOfOneDayAttendence(trainerORmember: role, id: memberID, attendence: attendenceDictionary, forDate: Date())
                 
                 if matchingDateArray != nil {
-                    let  singleMatchingDate = matchingDateArray?.last
-                    let present = singleMatchingDate?["present"] as! Bool
-                    let checkIn = singleMatchingDate?["checkIn"] as! String
-                    let checkOut = singleMatchingDate?["checkOut"] as! String
-                    
-                    if  present == true && checkIn != "" && checkOut == "-"  {
-                        result(true,nil)
-                    }else {
-                        result(false,nil)
+                    if let singleMatchingDate = matchingDateArray?.last {
+                        let present = singleMatchingDate["present"] as! Bool
+                        let checkIn = singleMatchingDate["checkIn"] as! String
+                        let checkOut = singleMatchingDate["checkOut"] as! String
+                        
+                        if  present == true && checkIn != "" && checkOut == "-"  {
+                            result(true,nil)
+                        }else {
+                            result(false,nil)
+                        }
                     }
+                    result(false,nil)
+
                 } else {
                    result(false,nil)
                 }
@@ -602,8 +605,9 @@ class FireStoreManager: NSObject {
     }
     
     func addTrainer(email:String,password:String,trainerID:String,trainerDetail:[String:String],trainerPermission:[String:Bool],completion:@escaping (Error?)->Void) {
-       // let attendence = [String:[String:[String:Bool]]]()
-        let attendence = AppManager.shared.getCompleteMonthAttendenceStructure()
+        let year = Calendar.current.component(.year, from: Date())
+        let month = Calendar.current.component(.month, from: Date())
+        let attendence = AppManager.shared.getCompleteInitialStructure(year: year, month: month, checkIn: "", checkOut: "", present: false)
         fireDB.collection("/Trainers").document("\(trainerID)").setData([
             "adminID":AppManager.shared.adminID,
             "gymID":AppManager.shared.gymID,
@@ -876,14 +880,12 @@ class FireStoreManager: NSObject {
         })
     }
     
-    
-    
     // NEW ATTENDENCE FUNCTIONS
-
     func addAttendence(trainerORmember:String,id:String,present:Bool,checkInA:String,checkOutA:String)  {
         let year = Calendar.current.component(.year, from: Date())
         let month = Calendar.current.component(.month, from: Date())
         let day = Calendar.current.component(.day, from: Date())
+        let index = (day-1)
         let currentDate = "\(day)/\(month)/\(year)"
         let ref = fireDB.collection("/\(trainerORmember)").document("\(id)")
         ref.getDocument(completion: {
@@ -894,17 +896,23 @@ class FireStoreManager: NSObject {
                var attandanceDic = ((docSnapshot?.data())! as Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
                 var currentYear = attandanceDic["\(year)"] as! Dictionary<String, Any>
                 var currentMonth = currentYear["\(month)"] as! Array<Any>
-                let firstElement = currentMonth[day] as! Dictionary<String,Any>
+                let firstElement = currentMonth[index] as! Dictionary<String,Any>
                 var currentDay = firstElement["\(currentDate)"] as! Array<Dictionary<String,Any>>
+                let firstAttendence = (currentDay[0])["present"] as! Bool
                 let newAttendence = [
                     "checkIn":"\(checkInA)",
                     "checkOut":"\(checkOutA)",
                     "present":present
                     ] as Dictionary<String,Any>
                 
-                currentDay.append(newAttendence)
-                currentMonth.remove(at: day)
-                currentMonth.insert(["\(currentDate)":currentDay], at: day)
+                if firstAttendence == false {
+                    currentDay.remove(at: 0)
+                    currentDay.insert(newAttendence, at: 0)
+                }else {
+                     currentDay.append(newAttendence)
+                }
+                currentMonth.remove(at: index)
+                currentMonth.insert(["\(currentDate)":currentDay], at: index)
                 currentYear.updateValue(currentMonth, forKey: "\(month)")
                 attandanceDic.updateValue(currentYear, forKey: "\(year)")
                 
@@ -944,6 +952,7 @@ class FireStoreManager: NSObject {
         let currentYear = Calendar.current.component(.year, from: Date())
         let currentMonth = Calendar.current.component(.month, from: Date())
         let day = Calendar.current.component(.day, from: Date())
+        let index = (day-1)
         let currentDate = "\(day)/\(currentMonth)/\(currentYear)"
         let ref = fireDB.collection("\(trainerORmember)").document("\(id)")
         
@@ -955,19 +964,16 @@ class FireStoreManager: NSObject {
                    var attandanceDic = ((docSnapshot?.data())! as Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
                    var year = attandanceDic["\(currentYear)"] as! Dictionary<String,Any>
                    var month = year["\(currentMonth)"] as! Array<Any>
-                   let firstElement = month[day] as! Dictionary<String,Any>
+                   let firstElement = month[index] as! Dictionary<String,Any>
                    var currentDay = firstElement["\(currentDate)"] as! Array<Dictionary<String, Any>>
                    var firstTimeAttendence = currentDay.last
                    var checkOut = firstTimeAttendence?["checkOut"] as! String
                    checkOut = "\(checkOutA)"
-                
                    firstTimeAttendence?.updateValue(checkOut, forKey: "checkOut")
-                //   currentDay.remove(at: 0)
                    currentDay.removeLast()
-                  // currentDay.insert(firstTimeAttendence!, at: 0)
                    currentDay.append(firstTimeAttendence!)
-                   month.remove(at: day)
-                   month.insert(["\(currentDate)":currentDay], at: day)
+                   month.remove(at: index)
+                   month.insert(["\(currentDate)":currentDay], at: index)
                    year.updateValue(month, forKey: "\(currentMonth)")
                    attandanceDic.updateValue(year, forKey: "\(currentYear)")
                    ref.updateData([
@@ -994,7 +1000,6 @@ class FireStoreManager: NSObject {
         let singleTimeAttendence:Dictionary<String,Any> = ["checkIn":"\(checkIn)","checkOut":"\(checkOut)","present":present]
         let AttendenceArray:Array<Dictionary<String,Any>> = [singleTimeAttendence]
         let dayAttendence:Dictionary<String,Any> = ["\(todayDate)":AttendenceArray]
-        
         currentMonth.append(dayAttendence)
         currentYear.updateValue(currentMonth, forKey: "\(month)")
         attandanceDic.updateValue(currentYear, forKey: "\(year)")
@@ -1011,17 +1016,18 @@ class FireStoreManager: NSObject {
         })
     }
     
+
     func addNewMonth(month:Int) {
-        let ref = fireDB.collection("/Members").document("9001")
-        
+        let ref = fireDB.collection("/Members").document("97528")
+
         ref.getDocument(completion: {
             (docSnapshot,err) in
-            
+
             if err != nil {
                 print("Errror in fetching the member attandance.")
             } else {
                 var attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
-                self.addMonth(attendenceDir: attandanceDic , trainerORmember: "Members", id: "9001", year: 2020, month: 12, day: 1, present: true, checkIn: "1:00 AM", checkOut: "1:30 AM", handler:{
+                self.addMonth(attendenceDir: attandanceDic , trainerORmember: "Members", id: "97528", year: 2021, month: month, day: 1, present: true, checkIn: "1:00 AM", checkOut: "1:30 AM", handler:{
                     err in
                     if err != nil {
                         print("Error in adding new month.")
@@ -1032,17 +1038,17 @@ class FireStoreManager: NSObject {
             }
         })
     }
-    
+
     func addNewYear(year:Int,month:Int) {
-         let ref = fireDB.collection("/Members").document("9001")
-        
+         let ref = fireDB.collection("/Members").document("97528")
+
         ref.getDocument(completion: {
             (docSnapshot,err) in
             if err != nil {
                 print("Errror in fetching the member attandance.")
             } else {
-                var attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
-                self.addYear(attendenceDir: attandanceDic, trainerORmember: "Members", id: "9001", year: year, month: month, day: 1, present: true, checkIn: "checkInNew", checkOut: "checkOutNew", handler: {
+                let attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
+                self.addYear(attendenceDir: attandanceDic, trainerORmember: "Members", id: "97528", year: year, month: month, day: 1, present: true, checkIn: "checkInNew", checkOut: "checkOutNew", handler: {
                     err in
                     err != nil ? print("Error in adding new year.") : print("Success in adding new year.")
                 })

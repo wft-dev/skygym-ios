@@ -356,12 +356,11 @@ class AppManager: NSObject {
         if let monthArray = (attendence["\(year)"] as? Dictionary<String,Any>)?["\(month)"] as? Array<Dictionary<String,Any>> {
             let counter = Calendar.current.component(.day, from: startD)
             let terminator = Calendar.current.component(.day, from: endD)
-            //monthArray.removeFirst()
             
             while i <= terminator {
                 if i >= counter && i <= terminator {
                     let dateStr = "\(i)/\(month)/\(year)"
-                    let eachDay = monthArray[i]
+                    let eachDay = monthArray[(i-1)]
                     let day = eachDay["\(dateStr)"] as! Array<Dictionary<String,Any>>
                     for eachEntry in day {
                         attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(i)/\(month)/\(year)", value: eachEntry ))
@@ -373,17 +372,18 @@ class AppManager: NSObject {
         }
         return []
     }
-
+    
     func sameYearDifferenctMonthAttedenceFetching(attendence:Dictionary<String,Any>,startDate:Date,endDate:Date) -> [Attendence] {
         var attendenceArray:[Attendence] = []
+        var i = 0
         let year = Calendar.current.component(.year, from: startDate)
         let startDateMonth = Calendar.current.component(.month, from: startDate)
-        var counter = Calendar.current.component(.day, from: startDate)
+        let counter = Calendar.current.component(.day, from: startDate)
         let monthTerminator = lastDay(ofMonth: startDateMonth, year: year)
         let terminator = Calendar.current.component(.day, from: endDate)
         let endDateMonth = Calendar.current.component(.month, from: endDate)
-        let startMonthArray = (attendence["\(year)"] as! NSDictionary)["\(startDateMonth)"] as! Array<NSDictionary>
-        guard let endMonthArray:Array<NSDictionary> = (attendence["\(year)"] as? NSDictionary)?["\(endDateMonth)"] as? Array<NSDictionary> else {
+        let startMonthArray = (attendence["\(year)"] as! Dictionary<String,Any>)["\(startDateMonth)"] as! Array<Dictionary<String,Any>>
+        guard let endMonthArray:Array<Dictionary<String,Any>> = (attendence["\(year)"] as? Dictionary<String,Any>)?["\(endDateMonth)"] as? Array<Dictionary<String,Any>> else {
             let df = DateFormatter()
             df.dateFormat = "dd-MM-yyyy"
             let starDateStr = df.string(from: startDate)
@@ -391,28 +391,35 @@ class AppManager: NSObject {
             return attendenceArray
         }
         
-        for eachDay in startMonthArray {
-             if  let status = eachDay["\(counter)/\(startDateMonth)/\(year)"] as? NSDictionary  {
-                attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(counter)/\(startDateMonth)/\(year)", value: status as! Dictionary<String, Any>))
-                 counter += 1
-                 if counter > monthTerminator {
-                     counter = 1
-                     break
-                 }
-             }
-         }
-         
-         for eachDay in endMonthArray {
-             if let status = eachDay["\(counter)/\(endDateMonth)/\(year)"] as? NSDictionary {
-                attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(counter)/\(endDateMonth)/\(year)", value: status as! Dictionary<String, Any>))
-                 counter += 1
-                 if counter > terminator {
-                     counter = 1
-                     break
-                 }
-             }
-         }
-         return attendenceArray
+        if startMonthArray.count > 0 {
+            while i <= monthTerminator {
+                if i >= counter && i <= monthTerminator {
+                    let dateStr = "\(i)/\(startDateMonth)/\(year)"
+                    let eachDay = startMonthArray[i-1]
+                    let day = eachDay["\(dateStr)"] as! Array<Dictionary<String,Any>>
+                    for eachEntry in day {
+                        attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(i)/\(startDateMonth)/\(year)", value: eachEntry ))
+                    }
+                }
+                i += 1
+            }
+        }
+        
+        if endMonthArray.count > 0 {
+            i = 1
+            while i <= terminator {
+                if i >= 1 && i <= monthTerminator {
+                    let dateStr = "\(i)/\(endDateMonth)/\(year)"
+                    let eachDay = endMonthArray[i-1]
+                    let day = eachDay["\(dateStr)"] as! Array<Dictionary<String,Any>>
+                    for eachEntry in day {
+                        attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(i)/\(endDateMonth)/\(year)", value: eachEntry ))
+                    }
+                }
+                i += 1
+            }
+        }
+        return attendenceArray
     }
     
     func differentMonthDifferentYearAttendenceFetching(attendence:Dictionary<String,Any>,startDate:Date,endDate:Date) -> [Attendence]  {
@@ -420,88 +427,71 @@ class AppManager: NSObject {
         let startDateYear = Calendar.current.component(.year, from: startDate)
         let endDateYear = Calendar.current.component(.year, from: endDate)
         let startDateMonth = Calendar.current.component(.month, from: startDate)
-        var counter = Calendar.current.component(.day, from: startDate)
+        let counter = Calendar.current.component(.day, from: startDate)
         let monthTerminator = lastDay(ofMonth: startDateMonth, year: startDateYear)
         let terminator = Calendar.current.component(.day, from: endDate)
         let endDateMonth = Calendar.current.component(.month, from: endDate)
-        let startYearDir = attendence["\(startDateYear)"] as! NSDictionary
-        let endYearDir = attendence["\(endDateYear)"] as! NSDictionary
-        let startMonthArray = startYearDir["\(startDateMonth)"] as! Array<NSDictionary>
-        let endMonthArray = endYearDir["\(endDateMonth)"] as! Array<NSDictionary>
-        
-        for eachDay in startMonthArray {
-            if  let status = eachDay["\(counter)/\(startDateMonth)/\(startDateYear)"] as? Dictionary<String,Any>  {
-                attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(counter)/\(startDateMonth)/\(startDateYear)", value: status))
-                counter += 1
-                if counter > monthTerminator {
-                    counter = 1
-                    break
-                }
-            }
+        let startYearDir = attendence["\(startDateYear)"] as! Dictionary<String,Any>
+        guard  let endYearDir = attendence["\(endDateYear)"] as? Dictionary<String,Any> else {
+            return []
         }
-        
-        for eachDay in endMonthArray {
-            if let status = eachDay["\(counter)/\(endDateMonth)/\(endDateYear)"] as? Dictionary<String,Any> {
-                attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(counter)/\(endDateMonth)/\(endDateYear)", value: status))
-                counter += 1
-                if counter > terminator {
-                    counter = 1
-                    break
-                }
-            }
+        let startMonthArray = startYearDir["\(startDateMonth)"] as! Array<Dictionary<String,Any>>
+        guard let endMonthArray = endYearDir["\(endDateMonth)"] as? Array<Dictionary<String,Any>> else {
+            return []
         }
+        var i = 0
+
+        if startMonthArray.count > 0 {
+                  while i <= monthTerminator {
+                      if i >= counter && i <= monthTerminator {
+                          let dateStr = "\(i)/\(startDateMonth)/\(startDateYear)"
+                          let eachDay = startMonthArray[i-1]
+                          let day = eachDay["\(dateStr)"] as! Array<Dictionary<String,Any>>
+                          for eachEntry in day {
+                              attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(i)/\(startDateMonth)/\(startDateYear)", value: eachEntry ))
+                          }
+                      }
+                      i += 1
+                  }
+              }
+              
+              if endMonthArray.count > 0 {
+                  i = 1
+                  while i <= terminator {
+                      if i >= 1 && i <= monthTerminator {
+                          let dateStr = "\(i)/\(endDateMonth)/\(endDateYear)"
+                          let eachDay = endMonthArray[i-1]
+                          let day = eachDay["\(dateStr)"] as! Array<Dictionary<String,Any>>
+                          for eachEntry in day {
+                              attendenceArray.append(AppManager.shared.getAttendanceData(key: "\(i)/\(endDateMonth)/\(endDateYear)", value: eachEntry ))
+                          }
+                      }
+                      i += 1
+                  }
+              }
+
         return attendenceArray
     }
 
-    func getCompleteMonthAttendenceStructure() -> [String:Any] {
-        var completeMonthAttendenceArray = [NSDictionary]()
-        let currentYear = Calendar.current.component(.year, from: Date())
-        let currentMonth = Calendar.current.component(.month, from: Date())
-        var counter:Int = 1
-        let lastDate = lastDay(ofMonth: currentMonth, year: currentYear)
-        var dates = "\(counter)/\(currentMonth)/\(currentYear)"
-        let status:[String:Any] = [
-            "checkIn" : "",
-            "checkOut": "",
-            "present" : false
-        ]
-        while counter <= lastDate {
-            completeMonthAttendenceArray.append(["\(dates)":status])
-            counter += 1
-            dates = "\(counter)/\(currentMonth)/\(currentYear)"
-        }
-        let attendence = ["\(currentYear)":["\(currentMonth)":completeMonthAttendenceArray]]
-        return attendence
-    }
-//
-//    func getMonthAttendenceStructure(year:Int,month:Int,markingDate:String,checkIn:String,checkOut:String,present:Bool) -> [NSDictionary] {
+//    func getCompleteMonthAttendenceStructure() -> [String:Any] {
 //        var completeMonthAttendenceArray = [NSDictionary]()
+//        let currentYear = Calendar.current.component(.year, from: Date())
+//        let currentMonth = Calendar.current.component(.month, from: Date())
 //        var counter:Int = 1
-//        let lastDate = lastDay(ofMonth: month, year: year)
-//        var dates = "\(counter)/\(month)/\(year)"
-//
+//        let lastDate = lastDay(ofMonth: currentMonth, year: currentYear)
+//        var dates = "\(counter)/\(currentMonth)/\(currentYear)"
+//        let status:[String:Any] = [
+//            "checkIn" : "",
+//            "checkOut": "",
+//            "present" : false
+//        ]
 //        while counter <= lastDate {
-//            if dates == markingDate {
-//                let status:NSDictionary = [
-//                    "checkIn" : "\(checkIn)",
-//                    "checkOut": "\(checkOut)",
-//                    "present" : present
-//                ]
 //            completeMonthAttendenceArray.append(["\(dates)":status])
-//            } else {
-//                let status:NSDictionary = [
-//                    "checkIn" : "",
-//                    "checkOut": "",
-//                    "present" : false
-//                ]
-//            completeMonthAttendenceArray.append(["\(dates)":status])
-//            }
 //            counter += 1
-//            dates = "\(counter)/\(month)/\(year)"
+//            dates = "\(counter)/\(currentMonth)/\(currentYear)"
 //        }
-//
-//        return completeMonthAttendenceArray
-//
+//        let attendence = ["\(currentYear)":["\(currentMonth)":completeMonthAttendenceArray]]
+//        return attendence
 //    }
 
     func getMonthAttendenceStructure(year:Int,month:Int,checkIn:String,checkOut:String,present:Bool) -> Array<Dictionary<String,Any>>{
@@ -527,7 +517,7 @@ class AppManager: NSObject {
     
     func getCompleteInitialStructure(year:Int,month:Int,checkIn:String,checkOut:String,present:Bool)  -> Dictionary<String,Any> {
         var completeMonthAttendenceArray: Dictionary<String,Any> = [:]
-        var monthArray:Array<Dictionary<String,Any>> = [[:]]
+        var monthArray:Array<Dictionary<String,Any>> = []
         var counter = 1
         let lastDate = lastDay(ofMonth: month, year: year)
         var dates = "\(counter)/\(month)/\(year)"
@@ -537,17 +527,13 @@ class AppManager: NSObject {
         ]
         var dayArray:Array<Dictionary<String,Any>> = []
         dayArray.append(firstAttendence)
-        
         while counter <= lastDate {
-           // "\(markingDate)":dayArray
             monthArray.append(["\(dates)":dayArray])
             counter += 1
             dates = "\(counter)/\(month)/\(year)"
         }
-        
         let monthArrayDictionary:Dictionary<String,Any> = ["\(month)":monthArray]
         completeMonthAttendenceArray = ["\(year)":monthArrayDictionary]
-        
         return completeMonthAttendenceArray
     }
 
@@ -623,7 +609,7 @@ class AppManager: NSObject {
         let currentYear = attendence["\(year)"] as! Dictionary<String,Any>
         
         if let monthArray:Array<Dictionary<String,Any>> = currentYear["\(month)"] as? Array<Dictionary<String,Any>>{
-            let matchingDateDir = (monthArray[day])["\(day)/\(month)/\(year)"] as! Array<Dictionary<String,Any>>
+            let matchingDateDir = (monthArray[day-1])["\(day)/\(month)/\(year)"] as! Array<Dictionary<String,Any>>
            return matchingDateDir
         }
     return nil

@@ -30,14 +30,15 @@ class MemberAttandanceViewController: BaseViewController {
     @IBOutlet weak var memberAddressLabel: UILabel!
     @IBOutlet weak var startDateLabel: UILabel!
     @IBOutlet weak var endDateLabel: UILabel!
+    @IBOutlet weak var attendenceTableHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mainScrollView: UIScrollView!
-    @IBOutlet weak var mainView: UIView!
     
     var attandanceArray:[Attendence?] = []
     var memberName:String = ""
     var memberAddress:String = ""
     var toolBar = UIToolbar()
     var datePicker  = UIDatePicker()
+    var attendenceTableHeight:CGFloat = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,26 +51,12 @@ class MemberAttandanceViewController: BaseViewController {
         self.memberNameLabel.text = self.memberName
         self.memberAddressLabel.text = self.memberAddress
         self.checkByDateBtn.addTarget(self, action: #selector(checkByDateAction), for: .touchUpInside)
-       // self.updateScrollSize()
-      //  self.memberAttandanceTable.translatesAutoresizingMaskIntoConstraints = true
-      //  self.mainScrollView.translatesAutoresizingMaskIntoConstraints = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
-           //  self.mainScrollView.contentSize.height = 900
-        })
-    // self.mainView.frame.size.height = 617
-        
-       // self.memberAttandanceTable.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height)
     }
-    
-    override func viewDidLayoutSubviews(){
-        self.memberAttandanceTable.frame = CGRect(x: self.memberAttandanceTable.frame.origin.x, y: self.memberAttandanceTable.frame.origin.y, width: self.memberAttandanceTable.frame.size.width, height: self.memberAttandanceTable.contentSize.height)
-         self.memberAttandanceTable.reloadData()
-    }
-    
+
     override func viewWillAppear(_ animated: Bool) {
+        memberAttandanceTable.rowHeight = 66;
+        memberAttandanceTable.estimatedRowHeight = 66;
         super.viewWillAppear(animated)
-        self.memberAttandanceTable.frame = CGRect(x: self.memberAttandanceTable.frame.origin.x, y: self.memberAttandanceTable.frame.origin.y, width: self.memberAttandanceTable.frame.size.width, height: self.memberAttandanceTable.contentSize.height)
-        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "dd MMM yyyy"
         
@@ -83,34 +70,19 @@ class MemberAttandanceViewController: BaseViewController {
                     print("ATTENDENCE NOT FOUND.")
                 } else {
                     self.attandanceArray = array
+                    print("Array count: \(self.attandanceArray.count)")
+                    self.attendenceTableHeight = CGFloat((self.attandanceArray.count * 66))
                     self.startDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.first?.date)!))
                     self.endDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.last?.date)!))
-                    self.memberAttandanceTable.reloadData()
                     self.memberAttandanceTable.alpha = 1.0
-                    self.updateScrollSize()
+                    self.attendenceTableHeightConstraint.constant = self.attendenceTableHeight
+                    self.memberAttandanceTable.reloadData()
                 }
         })
     }
 }
 
 extension MemberAttandanceViewController {
-    
-    func updateScrollSize() {
-//        DispatchQueue.main.async {
-//            var contentRect = CGRect.zero
-//            for view in self.mainScrollView.subviews {
-//                contentRect = contentRect.union(view.frame)
-//            }
-//            self.mainScrollView.contentSize = contentRect.size
-//        }
-        
-        
-//        let height = self.memberAttandanceTable.frame.size.height
-//        let pos = self.memberAttandanceTable.frame.origin.y
-//        let sizeOfContent = height + pos + 10
-//        self.mainScrollView.contentSize.height = sizeOfContent
-    }
-    
     func setMemberAttandanceNavigation()  {
         memberAttandanceNavigationBar.menuBtn.isHidden = true
         memberAttandanceNavigationBar.leftArrowBtn.isHidden = false
@@ -166,17 +138,23 @@ extension MemberAttandanceViewController {
             SVProgressHUD.dismiss()
             self.attandanceArray.removeAll()
             self.attandanceArray = attendenceArray
+            self.attendenceTableHeight = CGFloat((self.attandanceArray.count * 66))
+            DispatchQueue.main.async {
+            self.attendenceTableHeightConstraint.constant = self.attendenceTableHeight
             self.memberAttandanceTable.reloadData()
-            self.updateScrollSize()
+            }
         })
     }
 }
 
 extension MemberAttandanceViewController:UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("count : \(attandanceArray.count)")
         return self.attandanceArray.count
     }
+//    
+//   func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+//       return tableView.estimatedRowHeight
+//   }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "attendanceCell", for: indexPath) as! AttandanceTableCell
@@ -196,17 +174,6 @@ extension MemberAttandanceViewController:UITableViewDataSource {
             cell.checkInTime.text = singleAttendenceStatus?.checkIn
             cell.checkOutTime.text = singleAttendenceStatus?.checkOut
         }
-
         return cell
-    }
-
-}
-
-
-extension MemberAttandanceViewController:UITableViewDelegate{
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        var frame = tableView.frame
-//         frame.size.height = tableView.contentSize.height
-//         tableView.frame = frame
     }
 }
