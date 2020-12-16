@@ -210,11 +210,21 @@ class TrainerEditScreenViewController: BaseViewController {
     }
     
     @IBAction func doneBtnAction(_ sender: Any) {
-        self.registerTrainer(email: self.emailTextField.text!, password: self.passwordTextField.text!, id: self.idTextField.text!, trainerDetail: self.getTrainerFieldsData(), trainerPermission: self.getTrainerPermissionData())
+        self.trainerValidation()
+        if self.validation.isTrainerProfileValidated(textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) == true {
+                   self.registerTrainer(email: self.emailTextField.text!, password: self.passwordTextField.text!, id: self.idTextField.text!, trainerDetail: self.getTrainerFieldsData(), trainerPermission: self.getTrainerPermissionData())
+        }
     }
 }
 
 extension TrainerEditScreenViewController {
+    
+    func trainerValidation() {
+        for textField in self.textFieldArray {
+            self.allTrainerFieldsRequiredValidation(textField: textField)
+        }
+        self.validation.requiredValidation(textView: self.addressView, errorLabel: self.addressErrorLabel, errorMessage:"Trainer's address require.")
+    }
     
     func allTrainerFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {
@@ -521,9 +531,9 @@ extension TrainerEditScreenViewController {
         
         self.defaultArray = [self.firstName,self.lastName,self.id,self.phoneNo,self.email,self.password,self.address,self.gender,self.salary,self.shiftDays,self.idProof,self.shiftTimings,self.dob,self.dateOfJoin,self.generalTypeLabel,self.type,self.personalTypeLabel]
         
-        self.errorLabelArray = [self.firstNameErrorLabel,self.lastNameErrorLabel,self.idErrorLabel,self.phoneNumberErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.addressErrorLabel,self.genderErrorLabel,self.salaryErrorLabel,self.uploadIDErrorLabel,self.shiftDaysErrorLabel,self.shiftTimingErrorLabel,self.dobErrorLabel,self.dateOfJoinErrorLabel]
+        self.errorLabelArray = [self.firstNameErrorLabel,self.lastNameErrorLabel,self.idErrorLabel,self.phoneNumberErrorLabel,self.emailErrorLabel,self.passwordErrorLabel,self.addressErrorLabel,self.genderErrorLabel,self.salaryErrorLabel,self.uploadIDErrorLabel,self.shiftDaysErrorLabel,self.shiftTimingErrorLabel,self.dobErrorLabel,self.dateOfJoinErrorLabel]
         
-        self.textFieldArray = [ self.firstNameTextField,self.secondNameTextField,self.idTextField,self.phoneNoTextField,self.genderTextField,self.salaryTextField,self.uploadIDProofTextField,self.shiftDaysTextField,self.shiftTimingsTextField,self.dobTextField,self.dateOfJoinTextField ]
+        self.textFieldArray = [ self.firstNameTextField,self.secondNameTextField,self.idTextField,self.phoneNoTextField,self.genderTextField,self.salaryTextField,self.uploadIDProofTextField,self.shiftDaysTextField,self.shiftTimingsTextField,self.dobTextField,self.dateOfJoinTextField,self.emailTextField,self.passwordTextField ]
         
         userImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showUserImgPicker)))
         userImg.makeRounded()
@@ -626,6 +636,7 @@ extension TrainerEditScreenViewController {
                 FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
                     err in
                     if err != nil {
+                        SVProgressHUD.dismiss()
                         self.showAlert(title: "Error", message: "Error in uploading changed user profile photo.")
                     } else {
                         FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
@@ -642,25 +653,30 @@ extension TrainerEditScreenViewController {
             }
         } else {
             if imgURL == nil {
+                 SVProgressHUD.dismiss()
                  self.showAlert(title: "Error", message: "Please select id proof.")
             } else {
                 FireStoreManager.shared.uploadImgForTrainer(url: self.imgURL!, trainerid: id, imageName: self.uploadIDProofTextField.text!, completion: {
                     err in
                     SVProgressHUD.dismiss()
                     if err != nil {
-                        self.showAlert(title: "Error", message: "Error in uploading the id proof.")
+                         SVProgressHUD.dismiss()
+                        self.showAlert(title: "Error", message: "Some fields are not field properly.")
                     } else {
                         FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
                             err in
                             
                             if err != nil {
+                                 SVProgressHUD.dismiss()
                                 self.showAlert(title: "Error", message: "Error in uploading the user profile imgage.")
                             } else {
                                 FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
                                     err in
                                     if err != nil {
+                                         SVProgressHUD.dismiss()
                                         self.showAlert(title: "Error", message: "Error in registering the trainer, please try again.")
                                     } else {
+                                         SVProgressHUD.dismiss()
                                         self.showAlert(title: "Success", message: "Trainer is registerd successfully.")
                                     }
                                 })

@@ -32,6 +32,7 @@ class MemberAttandanceViewController: BaseViewController {
     @IBOutlet weak var endDateLabel: UILabel!
     @IBOutlet weak var attendenceTableHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mainScrollView: UIScrollView!
+    @IBOutlet weak var mainView: UIView!
     
     var attandanceArray:[Attendence?] = []
     var memberName:String = ""
@@ -52,7 +53,7 @@ class MemberAttandanceViewController: BaseViewController {
         self.memberAddressLabel.text = self.memberAddress
         self.checkByDateBtn.addTarget(self, action: #selector(checkByDateAction), for: .touchUpInside)
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         memberAttandanceTable.rowHeight = 66;
         memberAttandanceTable.estimatedRowHeight = 66;
@@ -65,21 +66,44 @@ class MemberAttandanceViewController: BaseViewController {
             , s: {
                ( array,flag)  in
                 SVProgressHUD.dismiss()
-                // self.attandanceArray.removeAll()
                 if array.count < 1 {
                     print("ATTENDENCE NOT FOUND.")
                 } else {
                     self.attandanceArray = array
-                    print("Array count: \(self.attandanceArray.count)")
                     self.attendenceTableHeight = CGFloat((self.attandanceArray.count * 66))
                     self.startDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.first?.date)!))
                     self.endDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.last?.date)!))
                     self.memberAttandanceTable.alpha = 1.0
-                    self.attendenceTableHeightConstraint.constant = self.attendenceTableHeight
-                    self.memberAttandanceTable.reloadData()
+                    DispatchQueue.main.async {
+                        self.attendenceTableHeightConstraint.constant = self.attendenceTableHeight
+                        self.memberAttandanceTable.reloadData()
+                    }
                 }
         })
     }
+    
+   
+    @IBAction func previousWeekAttendenceAction(_ sender: Any) {
+        let startDate = self.startDateLabel.text!
+        let endDate = AppManager.shared.getDate(date: startDate)
+        let sevenDayPreviousDate = AppManager.shared.getPrevious7DaysDate(startDate: endDate)
+        
+        self.fetchAttendenceFrom(startDate: sevenDayPreviousDate, endDate:startDate)
+        self.startDateLabel.text = sevenDayPreviousDate
+        self.endDateLabel.text = startDate
+    }
+    
+    
+    @IBAction func forwardWeekAttendenceAction(_ sender: Any) {
+        
+        let startDate = self.endDateLabel.text!
+        let endDate = AppManager.shared.getDate(date: startDate)
+        let sevenDayForwardDate = AppManager.shared.getNext7DaysDate(startDate: endDate)
+        self.fetchAttendenceFrom(startDate: startDate, endDate: sevenDayForwardDate)
+        self.startDateLabel.text = startDate
+        self.endDateLabel.text = sevenDayForwardDate
+    }
+  
 }
 
 extension MemberAttandanceViewController {
@@ -135,14 +159,14 @@ extension MemberAttandanceViewController {
         SVProgressHUD.show()
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Members", id: AppManager.shared.memberID, startDate:startDate, endDate:endDate, s: {
             (attendenceArray,_)  in
-            SVProgressHUD.dismiss()
             self.attandanceArray.removeAll()
             self.attandanceArray = attendenceArray
             self.attendenceTableHeight = CGFloat((self.attandanceArray.count * 66))
-            DispatchQueue.main.async {
-            self.attendenceTableHeightConstraint.constant = self.attendenceTableHeight
-            self.memberAttandanceTable.reloadData()
-            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+                 SVProgressHUD.dismiss()
+                self.attendenceTableHeightConstraint.constant = self.attendenceTableHeight
+                self.memberAttandanceTable.reloadData()
+            })
         })
     }
 }
@@ -151,11 +175,7 @@ extension MemberAttandanceViewController:UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.attandanceArray.count
     }
-//    
-//   func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-//       return tableView.estimatedRowHeight
-//   }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "attendanceCell", for: indexPath) as! AttandanceTableCell
         let singleAttendenceStatus = self.attandanceArray[indexPath.row]

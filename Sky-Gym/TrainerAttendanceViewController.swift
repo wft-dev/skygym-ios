@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class TrainerAttendanceTableCell: UITableViewCell {
     @IBOutlet weak var attendanceImg: UIImageView!
@@ -28,7 +29,7 @@ class TrainerAttendanceViewController: BaseViewController {
     @IBOutlet weak var attendenceStartDateLabel: UILabel!
     @IBOutlet weak var attendenceEndDateLabel: UILabel!
     @IBOutlet weak var trainerAttendenceHeigthConstriant: NSLayoutConstraint!
-    
+
     var trainerAttendanceArray:[Attendence?] = []
     var trainerName:String = ""
     var trainerAddress:String = ""
@@ -63,7 +64,6 @@ class TrainerAttendanceViewController: BaseViewController {
             self.heightConstraint = CGFloat(self.trainerAttendanceArray.count * 66)
             DispatchQueue.main.async {
             self.trainerAttendenceHeigthConstriant.constant = self.heightConstraint
-            print("Calculated attendence is : \(self.heightConstraint)")
             self.trainerAttendanceTable.reloadData()
             }
         })
@@ -72,6 +72,41 @@ class TrainerAttendanceViewController: BaseViewController {
     @IBAction func backBtnAction(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
+    
+    
+    @IBAction func previousWeekTrainerAttendenceAction(_ sender: Any) {
+        let startDate = self.attendenceStartDateLabel.text!
+        let endDate = AppManager.shared.getDate(date: startDate)
+        let sevenDayPreviousDate = AppManager.shared.getPrevious7DaysDate(startDate: endDate)
+
+        self.fetchTrainerAttendenceFrom(startDate: sevenDayPreviousDate, endDate:startDate)
+        self.attendenceStartDateLabel.text = sevenDayPreviousDate
+        self.attendenceEndDateLabel.text = startDate
+    }
+    
+    @IBAction func nextWeekTrainerAttendenceAction(_ sender: Any) {
+        
+        let startDate = self.attendenceEndDateLabel.text!
+        let endDate = AppManager.shared.getDate(date: startDate)
+        let sevenDayForwardDate = AppManager.shared.getNext7DaysDate(startDate: endDate)
+        self.fetchTrainerAttendenceFrom(startDate: startDate, endDate: sevenDayForwardDate)
+        self.attendenceStartDateLabel.text = startDate
+        self.attendenceEndDateLabel.text = sevenDayForwardDate
+        
+    }
+    
+    
+//    @IBAction func previousWeekAttendenceAction(_ sender: Any) {
+
+//    }
+//
+//
+//    @IBAction func forwardWeekAttendenceAction(_ sender: Any) {
+//
+
+  //  }
+    
+    
 }
 
 extension TrainerAttendanceViewController{
@@ -125,14 +160,15 @@ extension TrainerAttendanceViewController{
          }
     
     func fetchTrainerAttendenceFrom(startDate:String,endDate:String) {
+        SVProgressHUD.show()
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Trainers", id: AppManager.shared.trainerID, startDate:startDate, endDate:endDate, s: {
             (attendenceArray,_) in
             self.trainerAttendanceArray.removeAll()
             self.trainerAttendanceArray = attendenceArray
             self.heightConstraint = CGFloat(self.trainerAttendanceArray.count * 66)
             DispatchQueue.main.async {
+                SVProgressHUD.dismiss()
             self.trainerAttendenceHeigthConstriant.constant = self.heightConstraint
-                  print("Calculated attendence is : \(self.heightConstraint)")
             self.trainerAttendanceTable.reloadData()
             }
         })

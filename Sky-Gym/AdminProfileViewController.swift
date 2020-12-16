@@ -191,12 +191,13 @@ extension AdminProfileViewController {
                 AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray,errorLabels: self.errorLabelArray, flag: false)
                 self.isEdit = true
                 self.setHrLineView(isHidden: true, alpha: 0.0)
-                self.gymIDTextField.isEnabled = true
                 self.gymIDTextField.layer.opacity = 0.4
                 self.addressTextView.isHidden = false
                 self.addressTextView.alpha = 1.0
                 self.gymAddressNoEditLabel.isHidden = true
                 self.updateBtn.isHidden = false
+                self.updateBtn.isEnabled = true
+                self.gymIDTextField.isEnabled = false
                 self.adminImg.isUserInteractionEnabled = true
         }
          }

@@ -494,8 +494,10 @@ extension AddMemberViewController{
             (action) in
             
             if self.visitorID != "" {
+                SVProgressHUD.show()
                 FireStoreManager.shared.deleteImgBy(id: self.visitorID, result: {
                     err in
+                    SVProgressHUD.dismiss()
                     if err != nil {
                         
                     } else {
@@ -510,6 +512,7 @@ extension AddMemberViewController{
                     }
                 })
             } else {
+                SVProgressHUD.dismiss()
                 self.dismiss(animated: true, completion: nil)
             }
         })
@@ -611,7 +614,6 @@ extension AddMemberViewController{
         imagePicker.delegate = self
         
         datePicker.timeZone = TimeZone(secondsFromGMT: 0)
-        
         self.membershipPlanView.layer.cornerRadius = 12.0
         self.membershipPlanView.layer.shadowColor = UIColor.black.cgColor
         self.membershipPlanView.layer.shadowOffset = .zero
@@ -620,12 +622,10 @@ extension AddMemberViewController{
         self.membershipPlanView.layer.borderWidth = 1.0
         self.membershipPlanView.clipsToBounds = true
         self.membershipPlanTable.tableFooterView = UIView()
-        
         self.membershipDetailTextView.isEditable = false
         self.membershipDetailTextView.alpha = 0.6
         self.amountTextField.isEnabled = false
         self.amountTextField.alpha = 0.6
-        
         
         self.errorLabelArray = [self.firstNameErrorLabel,self.lastNameErrorLabel,self.memberIDErrorLabel,self.dateOfJoinErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.uploadIDErrorLabel,self.trainerNameErrorLabel,self.emailErrorLabel,self.addressErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel,self.membershipPlanErrorLabel,self.amountErrorLabel,self.startDateErrorLabel,self.totalAmountErrorLabel,self.discountErrorLabel,self.paymentErrorLabel,self.discountErrorLabel]
         

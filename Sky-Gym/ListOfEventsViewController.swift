@@ -42,8 +42,8 @@ class ListOfEventsViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-      
     }
+    
     @objc func refreshEventList(){
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
             self.refreshControl.endRefreshing()
@@ -126,7 +126,6 @@ extension ListOfEventsViewController {
         cell.layer.cornerRadius = 20
         cellView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
         cellView.layer.borderWidth = 1.0
-        
         deleteView.superview?.sendSubviewToBack(deleteView)
     }
     

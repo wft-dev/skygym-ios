@@ -195,14 +195,14 @@ class FireStoreManager: NSObject {
     }
     
     func getMemberByID(id:String,completion:@escaping ([String:Any]?,Error?) -> Void) {
-        var singalMember:[String:Any] = [:]
+        var singalMember:Dictionary<String,Any> = [:]
         fireDB.collection("/Members").document("/\(id)").getDocument(completion: {
             (docSnapshot,err) in
             if err != nil {
                 completion(nil,err)
             }else {
                 if docSnapshot?.documentID == id {
-                    singalMember = (docSnapshot?.data())! as [String : Any]
+                    singalMember = (docSnapshot?.data())! as Dictionary<String,Any>
                     completion(singalMember,nil)
                 }
             }
@@ -215,19 +215,17 @@ class FireStoreManager: NSObject {
             if err != nil {
                 result(nil,err)
             } else {
-                let membershipArray = ((memberDate?.data())! as NSDictionary)["memberships"] as! Array<NSDictionary>
+                let membershipArray = ((memberDate?.data())! as Dictionary<String,Any>)["memberships"] as! Array<Dictionary<String,Any>>
                 
                 for currentMembership in membershipArray {
                     let currentMembershipID = currentMembership["membershipID"] as! String
                     if currentMembershipID == membershipID {
-                        result(AppManager.shared.getCompleteMembershipDetail(membershipDetail: currentMembership as! [String:String]) , nil)
- 
+                        result(AppManager.shared.getCompleteMembershipDetail(membershipDetail: currentMembership as! Dictionary<String,String>) , nil)
                     }
                 }
             }
         })
     }
-    
     
     func expiredMemberFilterAction(result:@escaping ([ListOfMemberStr]?,Error?) -> Void) {
         var memberArray:[ListOfMemberStr] =  []
@@ -246,44 +244,43 @@ class FireStoreManager: NSObject {
                             let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: latestMembership.endDate, dueAmount:latestMembership.dueAmount, uploadName: memberDetail["uploadIDName"]!)
                             memberArray.append(member)
                         }
-               //     }
                 }
             }
             result(memberArray,nil)
         })
     }
-    
-    func checkInFilterAction(result:@escaping ([ListOfMemberStr]?,Error?) -> Void) {
-        var checkInArray:[ListOfMemberStr] = []
-        let currentYear = Calendar.current.component(.year, from: Date())
-        let currentMonth = Calendar.current.component(.month, from: Date())
-        let day = Calendar.current.component(.day, from: Date())
-        let todayDate = "\(day)/\(currentMonth)/\(currentYear)"
-        fireDB.collection("/Members").getDocuments(completion: {
-            (querySnapshot,err) in
-            if err != nil {
-                result(nil,err)
-            }else {
-                for doc in querySnapshot!.documents {
-                    let memberDetail = (doc.data())["memberDetail"] as! [String:String]
-                    let membershipArray = (doc.data())["memberships"] as! NSArray
-                    let attendence = (doc.data())["attendence"] as! [String:Any]
-                    let day = ((attendence["\(currentYear)"] as! NSDictionary)["\(currentMonth)"] as! NSDictionary)["\(todayDate)"] as! NSDictionary
-                    let checkIn = day["checkIn"] as! String
-                    let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
-                    
-                    if checkIn != "" {
-                        let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.last!.endDate, dueAmount:currentMembership.last!.dueAmount, uploadName: memberDetail["uploadIDName"]!)
-                        checkInArray.append(member)
-                    } else {
-                        print("COMES OUT OF CHECK IN FILTER : \(memberDetail["firstName"]!)")
-                    }
-                    
-                }
-                result(checkInArray,nil)
-            }
-        })
-    }
+//
+//    func checkInFilterAction(result:@escaping ([ListOfMemberStr]?,Error?) -> Void) {
+//        var checkInArray:[ListOfMemberStr] = []
+//        let currentYear = Calendar.current.component(.year, from: Date())
+//        let currentMonth = Calendar.current.component(.month, from: Date())
+//        let day = Calendar.current.component(.day, from: Date())
+//        let todayDate = "\(day)/\(currentMonth)/\(currentYear)"
+//        fireDB.collection("/Members").getDocuments(completion: {
+//            (querySnapshot,err) in
+//            if err != nil {
+//                result(nil,err)
+//            }else {
+//                for doc in querySnapshot!.documents {
+//                    let memberDetail = (doc.data())["memberDetail"] as! [String:String]
+//                    let membershipArray = (doc.data())["memberships"] as! NSArray
+//                    let attendence = (doc.data())["attendence"] as! [String:Any]
+//                    let day = ((attendence["\(currentYear)"] as! NSDictionary)["\(currentMonth)"] as! NSDictionary)["\(todayDate)"] as! NSDictionary
+//                    let checkIn = day["checkIn"] as! String
+//                    let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
+//
+//                    if checkIn != "" {
+//                        let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.last!.endDate, dueAmount:currentMembership.last!.dueAmount, uploadName: memberDetail["uploadIDName"]!)
+//                        checkInArray.append(member)
+//                    } else {
+//                        print("COMES OUT OF CHECK IN FILTER : \(memberDetail["firstName"]!)")
+//                    }
+//
+//                }
+//                result(checkInArray,nil)
+//            }
+//        })
+//    }
 
     func checkFilterAction(checkFor:String,result:@escaping ([ListOfMemberStr]?,Error?) -> Void) {
         var checkArray:[ListOfMemberStr] = []
@@ -299,32 +296,31 @@ class FireStoreManager: NSObject {
                 for doc in querySnapshot!.documents {
                     let memberDetail = (doc.data())["memberDetail"] as! [String:String]
                     let membershipArray = (doc.data())["memberships"] as! NSArray
-                    let attendence = (doc.data())["attendence"] as! [String:Any]
-                    let monthArray = (attendence["\(currentYear)"] as! NSDictionary)["\(currentMonth)"] as! Array<NSDictionary>
+                    let attendence = (doc.data())["attendence"] as! Dictionary<String,Any>
+                    let monthArray = (attendence["\(currentYear)"] as! Dictionary<String,Any>)["\(currentMonth)"] as! Array<Dictionary<String,Any>>
                     
-                    for eachDay in monthArray {
-                        let d = eachDay as! NSDictionary
-                        if  let status = d["\(todayDate)"] as? NSDictionary  {
-                            let check = status["\(checkFor)"] as! String
-                            let d = checkFor == "checkIn" ? "checkOut" : "checkIn"
-                            let anotherCheck = status["\(d)"] as! String
-                            let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
-                            
-                            switch checkFor {
-                            case "checkIn":
-                                if check != "" && check != "-"  && anotherCheck == "-" {
-                                    let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.count > 0 ? currentMembership.first!.endDate : "--", dueAmount: currentMembership.count > 0 ? currentMembership.first!.dueAmount : "--", uploadName: memberDetail["uploadIDName"]!)
-                                    checkArray.append(member)
-                                }
-                            case "checkOut" :
-                                if check != "" && check != "-"  && anotherCheck != "" && anotherCheck != "-"  {
-                                    let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.count > 0 ? currentMembership.first!.endDate : "--", dueAmount: currentMembership.count > 0 ? currentMembership.first!.dueAmount : "--", uploadName: memberDetail["uploadIDName"]!)
-                                    checkArray.append(member)
-                                }
-                            default:
-                                break
-                            }
+                    let filteringDay = monthArray[(day-1)]
+                    let dayAttendenceArray = filteringDay["\(todayDate)"] as! Array<Dictionary<String,Any>>
+                    let eachAttendence = dayAttendenceArray.last!
+                    
+                    let check = eachAttendence["\(checkFor)"] as! String
+                    let d = checkFor == "checkIn" ? "checkOut" : "checkIn"
+                    let anotherCheck = eachAttendence["\(d)"] as! String
+                    let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
+                    
+                    switch checkFor {
+                    case "checkIn":
+                        if check != "" && check != "-"  && anotherCheck == "-" {
+                            let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.count > 0 ? currentMembership.first!.endDate : "--", dueAmount: currentMembership.count > 0 ? currentMembership.first!.dueAmount : "--", uploadName: memberDetail["uploadIDName"]!)
+                            checkArray.append(member)
                         }
+                    case "checkOut" :
+                        if check != "" && check != "-"  && anotherCheck != "" && anotherCheck != "-"  {
+                            let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.count > 0 ? currentMembership.first!.endDate : "--", dueAmount: currentMembership.count > 0 ? currentMembership.first!.dueAmount : "--", uploadName: memberDetail["uploadIDName"]!)
+                            checkArray.append(member)
+                        }
+                    default:
+                        break
                     }
                 }
                 result(checkArray,nil)
@@ -408,10 +404,10 @@ class FireStoreManager: NSObject {
             if err != nil {
                 result(false,err)
             }else {
-                let attendenceDictionary = ((docSnapshot?.data())! as NSDictionary)["attendence"] as! Dictionary<String,Any>
+                let attendenceDictionary = ((docSnapshot?.data())! as Dictionary<String,Any>)["attendence"] as! Dictionary<String,Any>
                 let matchingDateArray = AppManager.shared.getArrayOfOneDayAttendence(trainerORmember: role, id: memberID, attendence: attendenceDictionary, forDate: Date())
                 
-                if matchingDateArray != nil {
+                if matchingDateArray!.count > 0  {
                     if let singleMatchingDate = matchingDateArray?.last {
                         let present = singleMatchingDate["present"] as! Bool
                         let checkIn = singleMatchingDate["checkIn"] as! String
@@ -423,8 +419,6 @@ class FireStoreManager: NSObject {
                             result(false,nil)
                         }
                     }
-                    result(false,nil)
-
                 } else {
                    result(false,nil)
                 }

@@ -13,13 +13,11 @@ import iOSDropDown
 class MembershipViewScreenViewController: BaseViewController {
     
     @IBOutlet weak var viewMembershipNavigationBar: CustomNavigationBar!
-    
     @IBOutlet weak var membershipDropDownTitleTextField: DropDown!
-    
-    @IBOutlet weak var titleTextField: UITextField!
+  //  @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
-    @IBOutlet weak var startDateTextField: UITextField!
-    @IBOutlet weak var endDateTextField: UITextField!
+//    @IBOutlet weak var startDateTextField: UITextField!
+//    @IBOutlet weak var endDateTextField: UITextField!
     @IBOutlet weak var doneBtn: UIButton!
     @IBOutlet weak var detailTextView: UITextView!
     @IBOutlet weak var titleLabel: UILabel!
@@ -31,22 +29,21 @@ class MembershipViewScreenViewController: BaseViewController {
     @IBOutlet weak var detailLabel: UILabel!
     @IBOutlet weak var detailNonEditLabel: UILabel!
     @IBOutlet weak var detailHrLineView: UIView!
-    @IBOutlet weak var startDateLabel: UILabel!
-    @IBOutlet weak var startDateNonEdtiLabel: UILabel!
-    @IBOutlet weak var startDateHrLineView: UIView!
-    @IBOutlet weak var endDateLabel: UILabel!
-    @IBOutlet weak var endDateNonEditLabel: UILabel!
+//    @IBOutlet weak var startDateLabel: UILabel!
+//    @IBOutlet weak var startDateNonEdtiLabel: UILabel!
+//    @IBOutlet weak var startDateHrLineView: UIView!
+//    @IBOutlet weak var endDateLabel: UILabel!
+//    @IBOutlet weak var endDateNonEditLabel: UILabel!
     @IBOutlet weak var titleForNonEditLabel: UILabel!
     @IBOutlet weak var amountForNonEditLabel: UILabel!
     @IBOutlet weak var detailForNonEditLabel: UILabel!
-    @IBOutlet weak var startDateForNonEditLabel: UILabel!
-    @IBOutlet weak var endDateForNonEditLabel: UILabel!
-    
+//    @IBOutlet weak var startDateForNonEditLabel: UILabel!
+//    @IBOutlet weak var endDateForNonEditLabel: UILabel!
     @IBOutlet weak var titleErrorLabel: UILabel!
     @IBOutlet weak var amountErrorLabel: UILabel!
     @IBOutlet weak var detailErrorLabel: UILabel!
-    @IBOutlet weak var startDateErrorLabel: UILabel!
-    @IBOutlet weak var endDateErrorLabel: UILabel!
+//    @IBOutlet weak var startDateErrorLabel: UILabel!
+//    @IBOutlet weak var endDateErrorLabel: UILabel!
     
     var isNewMemberhsip:Bool = false
 //    var datePicker = UIDatePicker()
@@ -88,9 +85,7 @@ class MembershipViewScreenViewController: BaseViewController {
             "Membership for 11 months",
             "Membership for 12 months"
         ]
-        
         self.membershipDropDownTitleTextField.optionIds = [1,2,3,4,5,6,7,8,9,10,11,12]
-        
         if self.isNewMemberhsip == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
             self.setHrLineView(isHidden: false, alpha: 1.0)
@@ -115,11 +110,23 @@ class MembershipViewScreenViewController: BaseViewController {
     }
     
     @IBAction func doneBtnAction(_ sender: Any) {
-        self.isNewMemberhsip ? self.registerNewMembership() : self.updateMembership()
-   }
+        self.membershipValidation()
+       if self.validation.isMembershipFieldsValidated(textFieldArray: self.textFieldArray, textView: self.detailTextView) == true {
+            self.isNewMemberhsip ? self.registerNewMembership() : self.updateMembership()
+        }
+    }
 }
 
 extension  MembershipViewScreenViewController {
+    
+    func membershipValidation()  {
+        
+        for textField in self.textFieldArray {
+            self.allMembershipFieldsRequiredValidation(textField: textField, duplicateDateErrorText: nil)
+        }
+        self.validation.requiredValidation(textView: self.detailTextView, errorLabel: self.detailErrorLabel, errorMessage: "Membership detail required.")
+        self.validation.requiredValidation(dropDown: self.membershipDropDownTitleTextField, errorLabel: self.titleErrorLabel, errorMessage: "Membership title required.")
+    }
     
     func hideMembershipTitleDropDown(hide:Bool) {
         self.titleNonEditLabel.text = self.membershipDropDownTitleTextField.text
@@ -240,7 +247,7 @@ extension  MembershipViewScreenViewController {
         return dir
     }
       func setHrLineView(isHidden:Bool,alpha:CGFloat) {
-        [self.titleHrLineView,self.amountHrLineView,self.detailHrLineView,self.startDateHrLineView].forEach{
+        [self.titleHrLineView,self.amountHrLineView,self.detailHrLineView].forEach{
               $0?.isHidden = isHidden
               $0?.alpha = alpha
           }

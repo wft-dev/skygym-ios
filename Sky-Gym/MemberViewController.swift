@@ -289,6 +289,7 @@ extension MemberViewController{
         self.memberIDTextField.isEnabled = false
         self.updateBtn.isHidden = false
         self.updateBtn.alpha = 1.0
+        self.updateBtn.isEnabled = true
         }
        }
 

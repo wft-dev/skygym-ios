@@ -203,6 +203,30 @@ class ValidationManager: NSObject {
         return flag
     }
     
+    
+    
+    func isTrainerProfileValidated(textFieldArray:[UITextField],textView:UITextView,phoneNumberTextField:UITextField?,email:String?,password:String?) -> Bool {
+        var flag:Bool = false
+        
+        if email != nil && password == nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) == true ? true : false
+        }
+            
+        else if password != nil && email == nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isPasswordValid(password: password!) == true ? true : false
+        }
+            
+        else if email != nil && password != nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray: textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) && isPasswordValid(password: password!) == true ? true : false
+        }
+            
+        else {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField)
+        }
+
+        return flag
+    }
+
     func isMembershipFieldsValidated(textFieldArray:[UITextField],textView:UITextView) -> Bool {
         var flag:Bool = false
         flag = isAllFieldsRequiredValidated(textFieldArray: textFieldArray, phoneNumberTextField: nil) &&

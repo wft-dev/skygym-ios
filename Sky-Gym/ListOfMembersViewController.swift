@@ -83,12 +83,9 @@ class ListOfMembersTableCell: UITableViewCell {
     private func performAttandance(id:String){
         switch self.imageName{
         case "red":
-            print("ATTENDECE IS \(self.attendenceAlreadyMarked)")
+         //   print("ATTENDECE IS \(self.attendenceAlreadyMarked)")
             if attendenceAlreadyMarked == false {
-//             self.markAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "-")
             FireStoreManager.shared.addAttendence(trainerORmember: "Members", id: id, present: true, checkInA: AppManager.shared.getTimeFrom(date: Date()), checkOutA: "-")
-            }else{
-                print("new attendence check In time marked.")
             }
             imageName = "green"
             self.attendImg?.image = UIImage(named: imageName)
@@ -99,23 +96,11 @@ class ListOfMembersTableCell: UITableViewCell {
                 FireStoreManager.shared.updateAttendence(trainerORmember: "Members", id: id, checkOutA: AppManager.shared.getTimeFrom(date: Date()), completion: {
                     err in
                     self.attendenceAlreadyMarked = err == nil ? true : false
-                    print("\(self.attendenceAlreadyMarked)")
                 })
-                
-            } else {
-                
             }
-
         default:
             break
         }
-    }
-    
-    private func markAttandance(present:Bool,memberID:String,checkInTime:String,checkOutTime:String){
-        FireStoreManager.shared.uploadAttandance(trainerORmember:"Members",id:memberID,present: present,checkIn:checkInTime,checkOut:checkOutTime, completion: {
-            _ in
-            
-        })
     }
 }
 
@@ -172,9 +157,8 @@ override func viewWillAppear(_ animated: Bool) {
  }
     
     @objc func refreshMembers(){
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
             self.refreshControl.endRefreshing()
-           //   self.showMembers()
             switch self.filterationLabel {
             case "allMemberFilteration":
                 self.showMembers()
@@ -210,6 +194,7 @@ override func viewWillAppear(_ animated: Bool) {
         self.grayView.isHidden = true
         self.grayView.alpha = 0
         self.addBtn.isHidden = false
+        AppManager.shared.setStatusBarBackgroundColor(color: .clear, alpha: 1.0)
     }
     func showFilterView() {
         self.filterView.isHidden = false
@@ -218,6 +203,8 @@ override func viewWillAppear(_ animated: Bool) {
         self.grayView.alpha = 0.4
         self.grayView.backgroundColor = UIColor.darkGray
         self.addBtn.isHidden = true
+        AppManager.shared.setStatusBarBackgroundColor(color: .gray, alpha: 0.4)
+        
     }
 }
 
@@ -441,6 +428,7 @@ extension ListOfMembersViewController{
         }
     
     func showMembers() {
+        self.view.isUserInteractionEnabled = false
         var membership:MembershipDetailStructure? = nil
         SVProgressHUD.show()
         
@@ -469,6 +457,7 @@ extension ListOfMembersViewController{
                     }
                 }
                 self.listOfMemberTable.reloadData()
+                self.view.isUserInteractionEnabled = true
             }
         })
     }
@@ -482,6 +471,7 @@ extension ListOfMembersViewController{
             $0!.layer.cornerRadius = 15.0
             $0!.layer.borderColor = UIColor(red: 211/255, green: 211/255, blue: 211/255, alpha: 1).cgColor
             $0!.layer.borderWidth = 1.0
+            $0!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(enableSelectionWithFilterView(_:))))
         }
         self.filterApplyBtn.layer.cornerRadius = 15.0
         self.filterApplyBtn.clipsToBounds = true
@@ -489,6 +479,21 @@ extension ListOfMembersViewController{
         self.setSearchBar()
         addClickToDismissSearchBar()
         self.customSearchBar.delegate = self
+    }
+    
+    @objc func enableSelectionWithFilterView(_ gesture:UITapGestureRecognizer){
+        switch gesture.view?.tag {
+        case 1:
+            self.allMemberFilter()
+        case 2:
+            self.expiredMembersFilter()
+        case 3:
+            self.checkInFilter()
+        case 4:
+            self.checkoutFilter()
+        default:
+            break
+        }
     }
     
     private func addClickToDismissSearchBar() {
@@ -626,8 +631,8 @@ extension ListOfMembersViewController{
                 memberCell.attendImg?.isUserInteractionEnabled = flag!
                 memberCell.attendImg?.alpha = flag == true ? 1.0 : 0.4
                 memberCell.attendenceLabel.alpha = flag == true ? 1.0 : 0.4
-                memberCell.dueAmount.text =  flag == true ? dueAmount : "0"
-                memberCell.dateOfExpiry.text = flag == true ? dateOfExpiry :  "--"
+                memberCell.dueAmount.text =  flag == true ? dueAmount :"0"
+                memberCell.dateOfExpiry.text = flag == true ? dateOfExpiry : "--"
             }
         })
     }
@@ -662,11 +667,11 @@ extension ListOfMembersViewController:CustomCellSegue{
     }
 }
 
-extension UIView {
-    func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
-        let path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        let mask = CAShapeLayer()
-        mask.path = path.cgPath
-        self.layer.mask = mask
-    }
-}
+//extension UIView {
+//    func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
+//        let path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+//        let mask = CAShapeLayer()
+//        mask.path = path.cgPath
+//        self.layer.mask = mask
+//    }
+//}

@@ -123,6 +123,13 @@ class AppManager: NSObject {
           }
       }
 
+    func setStatusBarBackgroundColor(color: UIColor,alpha:CGFloat) {
+        guard let statusBar = UIApplication.shared.value(forKeyPath: "statusBarWindow.statusBar") as? UIView else { return }
+        statusBar.backgroundColor = color
+        statusBar.alpha = alpha
+    }
+    
+
     func isEmailValid(email:String) -> Bool {
                let emailFormat = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
                let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailFormat)
@@ -298,6 +305,15 @@ class AppManager: NSObject {
         let  endDate = dateFormatter.string(from: next7DaysDate)
         return endDate
     }
+    
+    func getPrevious7DaysDate(startDate:Date) -> String {
+        let next7DaysDate = Calendar.current.date(byAdding: .day, value: -6, to: startDate)!
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat =  "dd MMM yyyy"
+        let  endDate = dateFormatter.string(from: next7DaysDate)
+        return endDate
+    }
+
     
     func changeDateFormatToStandard(dateStr:String) -> String {
         let df = DateFormatter()

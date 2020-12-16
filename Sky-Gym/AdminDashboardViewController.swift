@@ -38,18 +38,6 @@ class AdminDashboardViewController: BaseViewController {
         self.totalMemberView.layer.borderColor = self.lightGrayColor.cgColor
         adjustFonts()
         self.setDashboardValues()
-//        FireStoreManager.shared.addMember(email: "sagar@gmail.com", password: "sagar@0540", memberDetail: ["Name":"Sagar"], memberships: [["Membership":"1"]], memberID: "9002", handler: {
-//            err in
-//            if err != nil {
-//                print("Error in adding members.")
-//            }else{
-//                print("Success in adding members.")
-//            }
-//        })
-        
-      //  FireStoreManager.shared.addNewYear(year: 2021, month: 1)
-      //  FireStoreManager.shared.addNewMonth(month: 2)
-      //  FireStoreManager.shared.addNewMonth(month: 1)
     }
     
     func adjustFonts()  {
@@ -68,6 +56,7 @@ class AdminDashboardViewController: BaseViewController {
     
     func setDashboardValues()  {
         SVProgressHUD.show()
+        self.view.isUserInteractionEnabled = false
         FireStoreManager.shared.getTotalOf(role: .Trainer, adminID: AppManager.shared.adminID, result: {
             (trainerCount,_)  in
             self.trainerDetailView.numberOfPaidUserLabel.text = trainerCount < 10 ? "0\(trainerCount)" : "\(trainerCount)"
@@ -89,6 +78,7 @@ class AdminDashboardViewController: BaseViewController {
                         } else{
                             self.paidMemberView.numberOfPaidUserLabel.text = paidMemberCount < 10 ?  "0\(paidMemberCount)" : "\(paidMemberCount)"
                             self.expiredMemberView.numberOfPaidUserLabel.text = AppManager.shared.expiredMember < 10 ? "0\(AppManager.shared.expiredMember)" : "\(AppManager.shared.expiredMember)"
+                            self.view.isUserInteractionEnabled = true
                         }
                     })
                     
