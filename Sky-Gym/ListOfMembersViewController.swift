@@ -129,6 +129,7 @@ class ListOfMembersViewController: BaseViewController {
     var userImg:UIImage? = nil
     var filterationLabel:String = "allMemberFilteration"
     let refreshControl = UIRefreshControl()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -150,10 +151,12 @@ class ListOfMembersViewController: BaseViewController {
         self.refreshControl.tintColor = .black
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Member List")
         self.listOfMemberTable.refreshControl = self.refreshControl
+
     }
     
 override func viewWillAppear(_ animated: Bool) {
      super.viewWillAppear(animated)
+
  }
     
     @objc func refreshMembers(){
@@ -264,24 +267,38 @@ extension ListOfMembersViewController : UITableViewDelegate{
 extension ListOfMembersViewController{
     
     @objc func deleteMember(_ gesture:UIGestureRecognizer) {
-        SVProgressHUD.show()
-        FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
-            err in
-
-            if err == nil {
-                FireStoreManager.shared.deleteMemberBy(id: "\(gesture.view?.tag ?? 0)", completion: {
-                    err in
-                    SVProgressHUD.dismiss()
-                    if err != nil {
-                        self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
-                    } else {
-                        self.alertBox(title: "Success", message: "Member is deleted successfully.")
-                    }
-                })
-            } else{
-                self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
-            }
+        
+        let alertController = UIAlertController(title: "Attention", message: "Do you want to remove this member.", preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
+            _ in
+            AppManager.shared.closeSwipe(gesture: gesture)
+            SVProgressHUD.show()
+            FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
+                err in
+                
+                if err == nil {
+                    FireStoreManager.shared.deleteMemberBy(id: "\(gesture.view?.tag ?? 0)", completion: {
+                        err in
+                        SVProgressHUD.dismiss()
+                        if err != nil {
+                            self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
+                        } else {
+                            self.alertBox(title: "Success", message: "Member is deleted successfully.")
+                        }
+                    })
+                } else{
+                    self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
+                }
+            })
         })
+        let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler: {
+            _ in
+            AppManager.shared.closeSwipe(gesture: gesture)
+        })
+
+        alertController.addAction(okAlertAction)
+        alertController.addAction(cancelAlertAction)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     func addCustomSwipe(cellView:UIView,cell:ListOfMembersTableCell) {
@@ -314,7 +331,7 @@ extension ListOfMembersViewController{
         cellView.addGestureRecognizer(leftSwipeGesture)
         cellView.addGestureRecognizer(rightSwipGesture)
         cellView.isUserInteractionEnabled = true
-        cellView.backgroundColor = .white
+        cellView.tag = 11
         cell.contentView.backgroundColor = .white
         cell.layer.cornerRadius = 20
         cellView.layer.cornerRadius = 20
@@ -367,7 +384,7 @@ extension ListOfMembersViewController{
             (imgUrl,err) in
             SVProgressHUD.dismiss()
             if err != nil {
-                return
+               
             } else {
                 do{
                     let imgData = try Data(contentsOf: imgUrl!)
@@ -436,8 +453,7 @@ extension ListOfMembersViewController{
             (dataDirctionary,err) in
             SVProgressHUD.dismiss()
             if err != nil {
-                print("Error in getting the members list")
-                self.viewWillAppear(true)
+                self.alertBox(title: "Retry", message: "Error in fetching member's list, please try again.")
             }else{
                 self.listOfMemberArray.removeAll()
                 for singleData in dataDirctionary! {
@@ -497,7 +513,6 @@ extension ListOfMembersViewController{
     }
     
     private func addClickToDismissSearchBar() {
-
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissPresentedView(_:)))
         tapRecognizer.cancelsTouchesInView = false
         self.view.isUserInteractionEnabled = true
@@ -602,10 +617,9 @@ extension ListOfMembersViewController{
           let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
           _ in
             
-            if title == "Success" {
+            if title == "Success" || title == "Retry" {
                 self.showMembers()
             }
-            
           })
         alertController.addAction(okAlertAction)
         present(alertController, animated: true, completion: nil)

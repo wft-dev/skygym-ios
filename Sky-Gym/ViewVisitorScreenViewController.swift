@@ -336,8 +336,10 @@ extension ViewVisitorScreenViewController {
            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
            let okAction = UIAlertAction(title: "OK", style: .default, handler:{
                _ in
-               if title == "Success"{
-                self.fetchVisitor(id: AppManager.shared.visitorID)
+               if title == "Success" || title == "Retry"{
+                if message == "Visitor is added successfully." {
+                    self.dismiss(animated: true, completion: nil)
+                }else { self.fetchVisitor(id: AppManager.shared.visitorID) }
                }
            })
            alert.addAction(okAction)
@@ -352,7 +354,7 @@ extension ViewVisitorScreenViewController {
             if err != nil {
                 self.showVisitorAlert(title: "Error", message: "Error in adding the visitor,Please try again.")
             }else{
-                self.showVisitorAlert(title: "Success", message: "Visitor is added successfully. ")
+                self.showVisitorAlert(title: "Success", message: "Visitor is added successfully.")
             }
         })
     }
@@ -372,27 +374,28 @@ extension ViewVisitorScreenViewController {
     
     func fetchVisitor(id:String) {
         SVProgressHUD.show()
-        FireStoreManager.shared.downloadUserImg(id: id, result: {
-            (url,err) in
+        
+        FireStoreManager.shared.getVisitorBy(id: id, result: {
+            (visitor,err) in
             SVProgressHUD.dismiss()
             if err != nil {
-                self.viewDidLoad()
+                self.showVisitorAlert(title: "Retry", message: "Error in fetching visitor details, Please try again.")
             } else {
-                do {
-                self.userImg.image =  try UIImage(data: Data(contentsOf: url!))
-                } catch let error as NSError {
-                    print(error)
-                }
-                FireStoreManager.shared.getVisitorBy(id: id, result: {
-                    (visitor,err) in
-                    
+                self.fillVisitorDetails(visitor: AppManager.shared.getVisitor(visitorDetail: visitor?["visitorDetail"] as! [String : String], id: visitor?["id"] as! String))
+                
+                FireStoreManager.shared.downloadUserImg(id: id, result: {
+                    (url,err) in
                     if err != nil {
-                        self.viewWillAppear(true)
+                         SVProgressHUD.dismiss()
                     } else {
-                        self.fillVisitorDetails(visitor: AppManager.shared.getVisitor(visitorDetail: visitor?["visitorDetail"] as! [String : String], id: visitor?["id"] as! String))
+                         SVProgressHUD.dismiss()
+                        do {
+                            self.userImg.image =  try UIImage(data: Data(contentsOf: url!))
+                        } catch let error as NSError {
+                            print(error)
+                        }
                     }
                 })
-
             }
         })
     }

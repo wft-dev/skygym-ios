@@ -59,16 +59,16 @@ class AdminDashboardViewController: BaseViewController {
         self.view.isUserInteractionEnabled = false
         FireStoreManager.shared.getTotalOf(role: .Trainer, adminID: AppManager.shared.adminID, result: {
             (trainerCount,_)  in
-            self.trainerDetailView.numberOfPaidUserLabel.text = trainerCount < 10 ? "0\(trainerCount)" : "\(trainerCount)"
+            self.trainerDetailView.numberOfPaidUserLabel.text = "\(trainerCount)"
             
             FireStoreManager.shared.getTotalOf(role: .Member, adminID: AppManager.shared.adminID, result: {
                 (memberCount,_) in
-                self.numberOfMembersLabel.text = memberCount < 10 ? "0\(memberCount)" : "\(memberCount)"
+                self.numberOfMembersLabel.text = "\(memberCount)"
                 
                 FireStoreManager.shared.getTotalOf(role: .Visitor, adminID: AppManager.shared.adminID, result: {
                     (visitorCount,_) in
                     SVProgressHUD.dismiss()
-                    self.numberOfVisitorsLabel.text = visitorCount < 10 ? "0\(visitorCount)" : "\(visitorCount)"
+                    self.numberOfVisitorsLabel.text = "\(visitorCount)"
                     
                     FireStoreManager.shared.numberOfPaidMembers(adminID: AppManager.shared.adminID, result: {
                         (paidMemberCount,err) in
@@ -76,8 +76,8 @@ class AdminDashboardViewController: BaseViewController {
                         if err != nil {
                             print("Errror")
                         } else{
-                            self.paidMemberView.numberOfPaidUserLabel.text = paidMemberCount < 10 ?  "0\(paidMemberCount)" : "\(paidMemberCount)"
-                            self.expiredMemberView.numberOfPaidUserLabel.text = AppManager.shared.expiredMember < 10 ? "0\(AppManager.shared.expiredMember)" : "\(AppManager.shared.expiredMember)"
+                            self.paidMemberView.numberOfPaidUserLabel.text = "\(paidMemberCount)"
+                            self.expiredMemberView.numberOfPaidUserLabel.text = "\(AppManager.shared.expiredMember)"
                             self.view.isUserInteractionEnabled = true
                         }
                     })
@@ -89,7 +89,6 @@ class AdminDashboardViewController: BaseViewController {
     }
     
 }
-
 
 extension UIImageView {
 

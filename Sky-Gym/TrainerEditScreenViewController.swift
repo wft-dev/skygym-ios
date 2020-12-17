@@ -144,6 +144,7 @@ class TrainerEditScreenViewController: BaseViewController {
     var memberPermission:Bool = false
     var visitorPermission:Bool = false
     var eventPermission:Bool = false
+    var actualPassword:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -168,6 +169,7 @@ class TrainerEditScreenViewController: BaseViewController {
             let destinationVC = segue.destination as! TrainerAttendanceViewController
             destinationVC.trainerName = self.name
             destinationVC.trainerAddress = self.addressStr
+            destinationVC.trainerImgData = self.userImg.image?.pngData()
         }
     }
     
@@ -283,6 +285,7 @@ extension TrainerEditScreenViewController {
         self.isEdit = false
         self.setHrLineView(isHidden: false, alpha: 1.0)
      //   self.setToggleBtns(isEnabled: false, alpha: 0.9)
+    AppManager.shared.hidePasswordTextField(hide: true, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
         self.type.textColor = .lightGray
         [self.generalTypeBtn,self.personalTypeBtn].forEach{
             $0?.isHidden = true
@@ -307,6 +310,7 @@ extension TrainerEditScreenViewController {
         self.idTextField.layer.opacity = 0.4
         self.addressNonEditLabel.isHidden = true
         self.addressView.isHidden = false
+        AppManager.shared.hidePasswordTextField(hide: false, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
         self.addressView.alpha = 1.0
         self.addressView.text = self.addressNonEditLabel.text
         self.isEdit = true
@@ -349,7 +353,6 @@ extension TrainerEditScreenViewController {
             self.idTextField! : self.idNonEditLabel!,
             self.phoneNoTextField!:self.phoneNonEditLabel!,
             self.emailTextField! : self.emailNonEditLabel!,
-            self.passwordTextField! : self.passwordNonEditLabel!,
             self.genderTextField! : self.genderNonEditLabel!,
             self.salaryTextField! : self.salaryNonEditLabel!,
             self.uploadIDProofTextField! : self.idProofNonEditLabel!,
@@ -541,7 +544,7 @@ extension TrainerEditScreenViewController {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  false)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: true)
             self.setHrLineView(isHidden: false, alpha: 1.0)
-         //   self.setToggleBtns(isEnabled: false, alpha: 0.9)
+            AppManager.shared.hidePasswordTextField(hide: true, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
             self.addressNonEditLabel.isHidden = false
             self.addressView.isHidden = true
             self.addressView.alpha = 0.0
@@ -564,6 +567,7 @@ extension TrainerEditScreenViewController {
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
             self.setHrLineView(isHidden: true, alpha: 0.0)
             self.setToggleBtns(isEnabled: true, alpha: 1.0)
+            AppManager.shared.hidePasswordTextField(hide: false, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
             self.addressNonEditLabel.isHidden = true
             self.addressView.isHidden = false
             self.addressView.alpha = 1.0
@@ -716,7 +720,8 @@ extension TrainerEditScreenViewController {
         self.idNonEditLabel.text = trainerDetails.trainerID
         self.phoneNonEditLabel.text = trainerDetails.phoneNo
         self.emailNonEditLabel.text = trainerDetails.email
-        self.passwordNonEditLabel.text = trainerDetails.password
+        self.actualPassword = trainerDetails.password
+        self.passwordNonEditLabel.text = AppManager.shared.getSecureTextFor(text: trainerDetails.password)
         self.addressNonEditLabel.text = trainerDetails.address
         self.genderNonEditLabel.text = trainerDetails.gender
         self.salaryNonEditLabel.text = trainerDetails.salary

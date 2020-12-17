@@ -79,14 +79,28 @@ extension ListOfEventsViewController {
     }
     
     @objc func deleteVisitor(_ gesture:UIGestureRecognizer){
-        FireStoreManager.shared.deleteEventBy(id: "\(gesture.view?.tag ?? 0)", completion: {
-            err in
-            if err != nil {
-                self.showEventAlert(title: "Error", message: "Error in deleting the event.")
-            } else {
-                self.showEventAlert(title: "Success", message: "Event is deleted successfully.")
-            }
+        let alertController = UIAlertController(title: "Attention", message: "Do you really want to remove this event ?", preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
+            _ in
+            AppManager.shared.closeSwipe(gesture: gesture)
+            SVProgressHUD.show()
+            FireStoreManager.shared.deleteEventBy(id: "\(gesture.view?.tag ?? 0)", completion: {
+                err in
+                SVProgressHUD.dismiss()
+                if err != nil {
+                    self.showEventAlert(title: "Error", message: "Error in deleting the event.")
+                } else {
+                    self.showEventAlert(title: "Success", message: "Event is deleted successfully.")
+                }
+            })
         })
+        let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler: {
+            _ in
+            AppManager.shared.closeSwipe(gesture: gesture)
+        })
+        alertController.addAction(okAlertAction)
+        alertController.addAction(cancelAlertAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     func addEventCustomSwipe(cellView:UIView,cell:EventCellClass) {

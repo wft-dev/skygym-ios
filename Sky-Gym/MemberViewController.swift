@@ -167,10 +167,7 @@ class MemberViewController: BaseViewController {
 }
 
 extension MemberViewController{
-    
-    
 
-    
     func allMemberProfileFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {
         case 1:
@@ -326,7 +323,7 @@ extension MemberViewController{
         FireStoreManager.shared.getMemberByID(id: id, completion: {
             (data,err) in
             if err != nil {
-                self.viewDidLoad()
+                self.showMemberProfileAlert(title: "Retry", message: "Error in getting member's details, please try again.")
             } else {
                 let memberDetail = data?["memberDetail"] as! NSDictionary
                 self.fillMemberProfileDetail(memberDetail: AppManager.shared.getMemberDetailStr(memberDetail: memberDetail ))
@@ -405,8 +402,9 @@ extension MemberViewController{
            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
            let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
                (action) in
-            if title == "Success" {
-                self.viewWillAppear(true)
+            if title == "Success" || title == "Retry" {
+                //self.viewWillAppear(true)
+                self.fetchMemberProfileDetails(id: AppManager.shared.memberID )
             }
            })
            alert.addAction(okAlertAction)

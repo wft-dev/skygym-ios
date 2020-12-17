@@ -128,6 +128,7 @@ struct ListOfTrainers {
     var dateOfJoinging:String
     var salary:String
     var members:String
+    var type:String
 }
 
 struct Memberhisp {
@@ -153,7 +154,6 @@ struct Visitor {
     var gender:String
     var phoneNo:String
 }
-
 
 struct Event {
     var eventID:String

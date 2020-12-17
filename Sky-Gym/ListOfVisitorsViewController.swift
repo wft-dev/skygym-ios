@@ -44,7 +44,6 @@ class ListOfVisitorsViewController: BaseViewController {
     var visitorProfileImage:UIImage? = nil
     let refreshControl = UIRefreshControl()
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setVisitorsNavigationBar()
@@ -104,21 +103,35 @@ extension ListOfVisitorsViewController {
     }
     
     @objc func deleteVisitor(_ gesture:UIGestureRecognizer){
-        FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
-            err in
-            if err != nil {
-                self.showVisitorAlert(title: "Error", message: "Error in deleting visitor.")
-            } else {
-                FireStoreManager.shared.deleteVisitorBy(id:"\(gesture.view?.tag ?? 0)", completion: {
-                    err in
-                    if err != nil {
-                        self.showVisitorAlert(title: "Error", message: "Error in deleting visitor.")
-                    }else {
-                        self.showVisitorAlert(title: "Success", message: "Visitor is deleted successfully.")
-                    }
-                })
-            }
+        let alertController = UIAlertController(title: "Attention", message: "Do you really want to remove this visitor ?", preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "Ok", style: .default, handler: {
+            _ in
+            AppManager.shared.closeSwipe(gesture: gesture)
+            SVProgressHUD.show()
+            FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
+                err in
+                SVProgressHUD.dismiss()
+                if err != nil {
+                    self.showVisitorAlert(title: "Error", message: "Error in deleting visitor.")
+                } else {
+                    FireStoreManager.shared.deleteVisitorBy(id:"\(gesture.view?.tag ?? 0)", completion: {
+                        err in
+                        if err != nil {
+                            self.showVisitorAlert(title: "Error", message: "Error in deleting visitor.")
+                        }else {
+                            self.showVisitorAlert(title: "Success", message: "Visitor is deleted successfully.")
+                        }
+                    })
+                }
+            })
         })
+        let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler: {
+            _ in
+            AppManager.shared.closeSwipe(gesture: gesture)
+        })
+        alertController.addAction(okAlertAction)
+        alertController.addAction(cancelAlertAction)
+        present(alertController, animated: true, completion: nil)
     }
 
     func addVisitorCustomSwipe(cellView:UIView,cell:VisitorTableCell) {
@@ -218,13 +231,15 @@ extension ListOfVisitorsViewController {
         SVProgressHUD.show()
         FireStoreManager.shared.getAllVisitors(result: {
             (visitors,err)in
-            SVProgressHUD.dismiss()
+            
             if err != nil {
-                self.viewWillAppear(true)
+                self.showVisitorAlert(title: "Retry", message: "Some error in fetching visitor list , Please retry again.")
+                
             }else {
                 self.visitorsArray.removeAll()
                 for visitor in visitors!{
-                    self.visitorsArray.append(AppManager.shared.getVisitor(visitorDetail:visitor["visitorDetail"] as! [String:String], id: visitor["id"] as! String))
+                let visitorData = AppManager.shared.getVisitor(visitorDetail:visitor["visitorDetail"] as! [String:String], id: visitor["id"] as! String)
+                    self.visitorsArray.append(visitorData)
                 }
                 self.visitorsTable.reloadData()
             }
@@ -237,14 +252,13 @@ extension ListOfVisitorsViewController {
               (imgUrl,err) in
               SVProgressHUD.dismiss()
               if err != nil {
-              self.viewDidLoad()
+            //  self.viewDidLoad()
               } else {
                   do{
                     let imgData = try Data(contentsOf: imgUrl!)
                     self.visitorProfileImage = UIImage(data: imgData)
                     imgView.image = self.visitorProfileImage
                     imgView.makeRounded()
-                      
                   } catch let error as NSError { print(error) }
               }
           })
@@ -278,9 +292,9 @@ extension ListOfVisitorsViewController {
            let alertController = UIAlertController(title:title, message: message, preferredStyle: .alert)
            let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
                _ in
-               if title == "Success" {
+               if title == "Success" || title == "Retry" {
                 self.fetchVisitors()
-               }
+            }
            })
            alertController.addAction(okAlertAction)
            present(alertController, animated: true, completion: nil)
@@ -345,6 +359,7 @@ extension ListOfVisitorsViewController:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.visitorID = self.visitorsArray[indexPath.section].id
+        print("visitor id : \(AppManager.shared.visitorID)")
         performSegue(withIdentifier: "visitorViewSegue", sender: false)
     }
 }

@@ -73,7 +73,7 @@ class AddMemberViewController: BaseViewController {
     @IBOutlet weak var dueAmountErrorLabel: UILabel!
     @IBOutlet weak var membershipDetailErrorLabel: UILabel!
     @IBOutlet weak var endDateErrorLabel: UILabel!
-    
+    @IBOutlet weak var topConstraintOfMembershipView: NSLayoutConstraint!
     
     let imagePicker = UIImagePickerController()
     var imgUrl:URL? = nil
@@ -101,7 +101,6 @@ class AddMemberViewController: BaseViewController {
         super.viewDidLoad()
         self.setCompleteView()
         
-        
         if self.isRenewMembership == true {
             if self.renewingMembershipID == "" {
                 FireStoreManager.shared.getMemberByID(id: AppManager.shared.memberID, completion: {
@@ -123,7 +122,7 @@ class AddMemberViewController: BaseViewController {
                 FireStoreManager.shared.getMembershipWith(memberID: AppManager.shared.memberID, membershipID: self.renewingMembershipID, result: {
                     (membershipData,err) in
                     if err != nil {
-                        self.viewWillAppear(true)
+                       // self.retryMemberDataAlert()
                     } else{
                         self.setRenewingMembershipData(membership: membershipData!)
                     }
@@ -141,7 +140,7 @@ class AddMemberViewController: BaseViewController {
         self.endDateTextField.alpha = 0.4
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
             if self.isNewMember == false {
-               self.myScrollView.contentSize.height = 800
+               self.myScrollView.contentSize.height = 750
             }
         })
         
@@ -149,9 +148,15 @@ class AddMemberViewController: BaseViewController {
             self.showMembershipScreen()
             self.profileAndMembershipBarView.isUserInteractionEnabled = false
             self.profileAndMembershipBarView.isHidden = true
+            DispatchQueue.main.async {
+                self.topConstraintOfMembershipView.constant = -(self.profileAndMembershipBarView.frame.size.height)
+            }
             self.featchMemberDetail(id: AppManager.shared.memberID)
         }
         else {
+            DispatchQueue.main.async {
+                self.topConstraintOfMembershipView.constant = 0
+            }
             if self.visitorID.count > 1 {
                 self.fetchVisitorDetail(id: self.visitorID)
             } else {
@@ -676,6 +681,7 @@ extension AddMemberViewController{
         self.addressTextView.text = memberDetail.address
         self.phoneNumberTextField.text = memberDetail.phoneNo
         self.dobTextField.text = memberDetail.dob
+        self.updateBtn.setTitle("U P D A T E", for: .normal)
     }
        func retryMemberDataAlert() {
             let retryAlertController = UIAlertController(title: "Error", message: "Error in getting the member Detail.", preferredStyle: .alert)
@@ -695,6 +701,8 @@ extension AddMemberViewController{
             [self.emailTextField,self.phoneNumberTextField,self.dobTextField,self.membershipPlanTextField,self.amountTextField,self.startDateTextField,self.endDateTextField,self.totalAmountTextField,self.discountTextField,self.firstNameTextField,self.lastNameTextField].forEach{
                 $0?.text = ""
                 }
+        
+        self.updateBtn.setTitle("A D D", for: .normal)
     }
     
     func fetchVisitorBy(id:String) {

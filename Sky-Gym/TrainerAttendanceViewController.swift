@@ -29,13 +29,16 @@ class TrainerAttendanceViewController: BaseViewController {
     @IBOutlet weak var attendenceStartDateLabel: UILabel!
     @IBOutlet weak var attendenceEndDateLabel: UILabel!
     @IBOutlet weak var trainerAttendenceHeigthConstriant: NSLayoutConstraint!
-
+    @IBOutlet weak var trainerUserImg: UIImageView!
+    
+    
     var trainerAttendanceArray:[Attendence?] = []
     var trainerName:String = ""
     var trainerAddress:String = ""
     var toolBar = UIToolbar()
     var datePicker  = UIDatePicker()
     var  heightConstraint:CGFloat = 0
+    var trainerImgData:Data? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +50,14 @@ class TrainerAttendanceViewController: BaseViewController {
         self.trainerNameLabel.text = self.trainerName
         self.trainerAddressLabel.text = self.trainerAddress
         self.checkByDateBtn.addTarget(self, action: #selector(trainerAttendenceFilteration), for: .touchUpInside)
+        self.attendenceStartDateLabel.isUserInteractionEnabled = true
+        self.attendenceEndDateLabel.isUserInteractionEnabled = true
+        self.attendenceStartDateLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(previousWeekTrainerAttendence)))
+        self.attendenceEndDateLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(nextWeekTrainerAttendence)))
+        if self.trainerImgData != nil {
+            self.trainerUserImg.image = UIImage(data: self.trainerImgData!)
+            self.trainerUserImg.makeRounded()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -73,43 +84,36 @@ class TrainerAttendanceViewController: BaseViewController {
         dismiss(animated: true, completion: nil)
     }
     
-    
     @IBAction func previousWeekTrainerAttendenceAction(_ sender: Any) {
+        self.previousWeekTrainerAttendence()
+    }
+    
+    @IBAction func nextWeekTrainerAttendenceAction(_ sender: Any) {
+        self.nextWeekTrainerAttendence()
+    }
+}
+
+extension TrainerAttendanceViewController{
+    
+  @objc  func previousWeekTrainerAttendence() {
         let startDate = self.attendenceStartDateLabel.text!
         let endDate = AppManager.shared.getDate(date: startDate)
         let sevenDayPreviousDate = AppManager.shared.getPrevious7DaysDate(startDate: endDate)
-
+        
         self.fetchTrainerAttendenceFrom(startDate: sevenDayPreviousDate, endDate:startDate)
         self.attendenceStartDateLabel.text = sevenDayPreviousDate
         self.attendenceEndDateLabel.text = startDate
     }
     
-    @IBAction func nextWeekTrainerAttendenceAction(_ sender: Any) {
-        
+  @objc  func nextWeekTrainerAttendence () {
         let startDate = self.attendenceEndDateLabel.text!
         let endDate = AppManager.shared.getDate(date: startDate)
         let sevenDayForwardDate = AppManager.shared.getNext7DaysDate(startDate: endDate)
         self.fetchTrainerAttendenceFrom(startDate: startDate, endDate: sevenDayForwardDate)
         self.attendenceStartDateLabel.text = startDate
         self.attendenceEndDateLabel.text = sevenDayForwardDate
-        
     }
-    
-    
-//    @IBAction func previousWeekAttendenceAction(_ sender: Any) {
 
-//    }
-//
-//
-//    @IBAction func forwardWeekAttendenceAction(_ sender: Any) {
-//
-
-  //  }
-    
-    
-}
-
-extension TrainerAttendanceViewController{
     func setTrainerNavigationBar() {
         self.trainerNavigationBar.menuBtn.isHidden = true
         self.trainerNavigationBar.leftArrowBtn.isHidden = false

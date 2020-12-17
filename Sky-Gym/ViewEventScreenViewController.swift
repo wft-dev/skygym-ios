@@ -111,6 +111,7 @@ extension ViewEventScreenViewController {
             self.addressNonEditLabel.alpha = 1.0
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!,errorLabels:self.errorLabelArray!, flag: true)
                 self.eventUpdateBtn.isHidden = true
+            self.eventUpdateBtn.setTitle("U P D A T E", for: .normal)
         }else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!,errorLabels:self.errorLabelArray!, flag: false)
@@ -121,6 +122,7 @@ extension ViewEventScreenViewController {
             self.addressNonEditLabel.alpha = 0.0
             self.eventUpdateBtn.isHidden = false
             self.eventUpdateBtn.alpha = 1.0
+            self.eventUpdateBtn.setTitle("A D D", for: .normal)
         }
         
         self.timePicker.datePickerMode = .time

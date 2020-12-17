@@ -641,6 +641,25 @@ class AppManager: NSObject {
         let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"] as! String, membershipPlan: lastMemberhipData["membershipPlan"] as! String, membershipDetail: lastMemberhipData["membershipDetail"] as! String, amount: lastMemberhipData["amount"] as! String, startDate: lastMemberhipData["startDate"] as! String, endDate: lastMemberhipData["endDate"] as! String, totalAmount: lastMemberhipData["totalAmount"] as! String, discount: lastMemberhipData["discount"] as! String, paymentType:lastMemberhipData["paymentType"] as! String , dueAmount: lastMemberhipData["dueAmount"] as! String,purchaseTime: lastMemberhipData["purchaseTime"] as! String,purchaseDate: lastMemberhipData["purchaseDate"] as! String, membershipDuration: lastMemberhipData["membershipDuration"] as! String)
         return latestMemberhsip
     }
+    
+    func closeSwipe(gesture:UIGestureRecognizer)  {
+        UIView.animate(withDuration: 0.2, animations: {
+            gesture.view?.superview?.superview?.subviews.last!.frame.origin.x =  0
+        })
+    }
+    
+    func getSecureTextFor(text:String) -> String {
+     return String(text.map { _ in return "•" })
+    }
+    
+    
+    func hidePasswordTextField(hide:Bool,passwordTextField:UITextField,passwordLabel:UILabel) {
+        passwordTextField.isHidden = hide
+        passwordTextField.alpha = hide == true ? 0.0 : 1.0
+        passwordLabel.isHidden = !hide
+        passwordLabel.alpha = hide == true ? 1.0 : 0.0
+    }
+    
 }
 
 

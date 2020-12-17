@@ -124,24 +124,36 @@ extension ListOfTrainersViewController {
     }
     
     @objc func deleteTrainer(_ gesture:UIGestureRecognizer){
-        SVProgressHUD.show()
-        FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
-            err in
-            if err != nil {
-                SVProgressHUD.dismiss()
-                self.showAlert(title: "Error", message: "Error in deleting trainer.")
-            } else {
-                FireStoreManager.shared.deleteTrainerBy(id: "\(gesture.view?.tag ?? 0)", completion: {
-                    err in
+        let alertController = UIAlertController(title: "Attention", message: "Do you really want to remove this trainer ?", preferredStyle: .alert)
+        let okActionAlert = UIAlertAction(title: "OK", style: .default, handler: {
+            _ in
+            AppManager.shared.closeSwipe(gesture: gesture)
+            SVProgressHUD.show()
+            FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
+                err in
+                if err != nil {
                     SVProgressHUD.dismiss()
-                    if err != nil {
-                        self.showAlert(title: "Error", message: "Error in deleting trainer.")
-                    } else {
-                        self.showAlert(title: "Success", message: "Trainer is deleted successfully.")
-                    }
-                })
-            }
+                    self.showAlert(title: "Error", message: "Error in deleting trainer.")
+                } else {
+                    FireStoreManager.shared.deleteTrainerBy(id: "\(gesture.view?.tag ?? 0)", completion: {
+                        err in
+                        SVProgressHUD.dismiss()
+                        if err != nil {
+                            self.showAlert(title: "Error", message: "Error in deleting trainer.")
+                        } else {
+                            self.showAlert(title: "Success", message: "Trainer is deleted successfully.")
+                        }
+                    })
+                }
+            })
         })
+        let cancelActionAlert = UIAlertAction(title: "Cancel", style: .default, handler: {
+            _ in
+            AppManager.shared.closeSwipe(gesture: gesture)
+        })
+        alertController.addAction(okActionAlert)
+        alertController.addAction(cancelActionAlert)
+        present(alertController, animated: true, completion: nil)
     }
 
     func addTrainerCustomSwipe(cellView:UIView,cell:ListOfTrainersTableCell,id:String) {
@@ -190,13 +202,13 @@ extension ListOfTrainersViewController {
             (trainerData,err) in
             SVProgressHUD.dismiss()
             if err != nil {
-                print("Error in getting trainer list")
+                self.showAlert(title: "Retry", message: "Error in fetching trainer's list , please try again.")
             } else {
                 self.listOfTrainerArray.removeAll()
                 for singleData in trainerData! {
                     if singleData.count > 0 {
                         let trainerDetail = AppManager.shared.getTrainerDetailS(trainerDetail: singleData["trainerDetail"] as! [String:String])
-                        let trainer = ListOfTrainers(trainerID: trainerDetail.trainerID, trainerName: "\(trainerDetail.firstName) \(trainerDetail.lastName)", trainerPhone: trainerDetail.phoneNo, dateOfJoinging: trainerDetail.dateOfJoining, salary: trainerDetail.salary, members:"10")
+                        let trainer = ListOfTrainers(trainerID: trainerDetail.trainerID, trainerName: "\(trainerDetail.firstName) \(trainerDetail.lastName)", trainerPhone: trainerDetail.phoneNo, dateOfJoinging: trainerDetail.dateOfJoining, salary: trainerDetail.salary, members:"10", type: trainerDetail.type)
                         self.listOfTrainerArray.append(trainer)
                     }
                 }
@@ -209,11 +221,10 @@ extension ListOfTrainersViewController {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAlertAction  = UIAlertAction(title: "OK", style: .default, handler: {
             _ in
-            if title == "Success" {
-                self.viewDidLoad()
+            if title == "Success" || title == "Retry" {
+                self.fetcthAllTrainer()
             }
         })
-        
         alertController.addAction(okAlertAction)
         present(alertController, animated: true , completion: nil)
     }
@@ -224,7 +235,7 @@ extension ListOfTrainersViewController {
             (imgUrl,err) in
             SVProgressHUD.dismiss()
             if err != nil {
-            self.viewDidLoad()
+                
             } else {
                 do{
                   let imgData = try Data(contentsOf: imgUrl!)
@@ -343,6 +354,7 @@ extension ListOfTrainersViewController:UITableViewDataSource{
         cell.trainerNameLabel.text = singleTrainer.trainerName
         cell.trainerPhoneNoLabel.text = singleTrainer.trainerPhone
         cell.dateOfJoiningLabel.text = singleTrainer.dateOfJoinging
+        cell.trainerLabel.text = singleTrainer.type
         cell.salaryLabel.text = singleTrainer.salary
         cell.numberOfMembersLabel.text = singleTrainer.members
         cell.attendenceBtn.tag = Int(singleTrainer.trainerID)!

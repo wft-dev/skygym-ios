@@ -74,16 +74,28 @@ extension ListOfMembershipViewController {
     }
     
     @objc func deleteMembership(_ gesture:UIGestureRecognizer){
-        SVProgressHUD.show()
-        FireStoreManager.shared.deleteMembershipBy(id: "\(gesture.view!.tag)", result: {
-            err in
-            SVProgressHUD.dismiss()
-            if err != nil {
-                self.showMembershipAlert(title: "Error", message: "Error in deleting membership.")
-            } else {
-                self.showMembershipAlert(title: "Success", message: "Membership is deleted .")
-            }
+        let alertController = UIAlertController(title: "Attention", message: "Do you really want to remove this membership ?", preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
+            _ in
+            AppManager.shared.closeSwipe(gesture: gesture)
+            SVProgressHUD.show()
+            FireStoreManager.shared.deleteMembershipBy(id: "\(gesture.view!.tag)", result: {
+                err in
+                SVProgressHUD.dismiss()
+                if err != nil {
+                    self.showMembershipAlert(title: "Error", message: "Error in deleting membership.")
+                } else {
+                    self.showMembershipAlert(title: "Success", message: "Membership is deleted .")
+                }
+            })
         })
+        let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler: {
+            _ in
+            AppManager.shared.closeSwipe(gesture: gesture)
+        })
+        alertController.addAction(okAlertAction)
+        alertController.addAction(cancelAlertAction)
+        present(alertController, animated: true, completion: nil)
     }
 
     func addMembershipCustomSwipe(cellView:UIView,cell:MembershipTableCell) {

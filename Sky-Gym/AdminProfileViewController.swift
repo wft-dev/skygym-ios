@@ -83,6 +83,8 @@ class AdminProfileViewController: UIViewController {
     var textFieldsArray:[UITextField] = []
     var errorLabelArray:[UILabel] = []
     let validation = ValidationManager.shared
+  //  var actualPassword:String = ""
+    var actualPassword:UILabel = UILabel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,6 +105,7 @@ class AdminProfileViewController: UIViewController {
         self.setHrLineView(isHidden: false, alpha: 1.0)
         self.addressTextView.isHidden = true
         self.addressTextView.alpha = 0.0
+        AppManager.shared.hidePasswordTextField(hide: true,passwordTextField:self.adminPasswordTextField,passwordLabel: self.passwordNonEditLabel)
         self.gymAddressNoEditLabel.isHidden = false
         self.gymAddressNoEditLabel.alpha = 1.0
         self.updateBtn.isHidden = true
@@ -152,19 +155,7 @@ class AdminProfileViewController: UIViewController {
 }
 
 extension AdminProfileViewController {
-    
-//    func updateProfileBtnEnabler(textFieldArray:[UITextField]) {
-//        let flag = validation.isAllFieldsRequiredValidated(textFieldArray:textFieldArray)
-//
-//        if flag == true  && validation.isTextViewRequiredValid(textView: self.addressTextView) == true {
-//            self.updateBtn.isEnabled = true
-//            self.updateBtn.alpha = 1.0
-//        } else {
-//            self.updateBtn.isEnabled = false
-//            self.updateBtn.alpha = 0.4
-//        }
-//    }
-    
+
     func setAdminProfileNavigationBar() {
         self.adminProfileNavigationBar.menuBtn.isHidden = false
         self.adminProfileNavigationBar.searchBtn.isHidden = true
@@ -182,6 +173,7 @@ extension AdminProfileViewController {
             self.setHrLineView(isHidden: false, alpha: 1.0)
             self.addressTextView.isHidden = true
             self.addressTextView.alpha = 0.0
+            AppManager.shared.hidePasswordTextField(hide: true,passwordTextField:self.adminPasswordTextField,passwordLabel: self.passwordNonEditLabel)
             self.gymAddressNoEditLabel.isHidden = false
             self.gymAddressNoEditLabel.alpha = 1.0
             self.updateBtn.isHidden = true
@@ -194,11 +186,13 @@ extension AdminProfileViewController {
                 self.gymIDTextField.layer.opacity = 0.4
                 self.addressTextView.isHidden = false
                 self.addressTextView.alpha = 1.0
+            AppManager.shared.hidePasswordTextField(hide: false,passwordTextField:self.adminPasswordTextField,passwordLabel: self.passwordNonEditLabel)
                 self.gymAddressNoEditLabel.isHidden = true
                 self.updateBtn.isHidden = false
                 self.updateBtn.isEnabled = true
                 self.gymIDTextField.isEnabled = false
                 self.adminImg.isUserInteractionEnabled = true
+                self.adminPasswordTextField.text = self.actualPassword.text
         }
          }
 
@@ -209,7 +203,6 @@ extension AdminProfileViewController {
                     self.adminFirstNameTextField! : self.firstNameNonEditLabel!,
                     self.adminLastNameTextField! : self.lastNameNonEditLabel!,
                     self.adminGenderTextField! : self.genderNonEditLabel!,
-                    self.adminPasswordTextField! : self.passwordNonEditLabel!,
                     self.emailTextField! : self.emailNonEditLabel!,
                     self.phoneNoTextField! : self.phoneNoNonEditLabel!,
                     self.dobTextField! : self.dobNonEditLabel!
@@ -336,7 +329,8 @@ extension AdminProfileViewController {
         self.firstNameNonEditLabel.text = adminDetail.firstName
         self.lastNameNonEditLabel.text = adminDetail.lastName
         self.genderNonEditLabel.text = adminDetail.gender
-        self.passwordNonEditLabel.text = adminDetail.password
+        self.actualPassword.text = adminDetail.password
+        self.passwordNonEditLabel.text = AppManager.shared.getSecureTextFor(text: adminDetail.password)
         self.emailNonEditLabel.text = adminDetail.email
         self.phoneNoNonEditLabel.text = adminDetail.phoneNO
         self.dobNonEditLabel.text = adminDetail.dob

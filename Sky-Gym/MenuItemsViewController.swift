@@ -42,7 +42,18 @@ extension MenuItemsViewController {
               view.addSubview(imageView)
               self.view.sendSubviewToBack(imageView)
           }
-  
+    
+    func logOut() {
+        let alertController = UIAlertController(title: "Log out", message: "Are you sure want to logout ?", preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
+            _ in
+            AppManager.shared.performLogout()
+        })
+        let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+        alertController.addAction(okAlertAction)
+        alertController.addAction(cancelAlertAction)
+        present(alertController, animated: true, completion: nil)
+    }
 }
 
 
@@ -100,7 +111,7 @@ extension MenuItemsViewController:UITableViewDelegate {
                 break
                case 7 :
                 self.appDelgate?.swRevealVC.revealToggle(animated: true)
-                AppManager.shared.performLogout()
+                self.logOut()
               default:
                   break
               }

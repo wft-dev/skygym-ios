@@ -51,7 +51,6 @@ class MembershipViewScreenViewController: BaseViewController {
 //    var selectedDate:String = ""
 //    var startDate:Date? = nil
 //    var endDate:Date? = nil
-    var duration:Int = 0
     var selectedIndex:Int = 0
     var selectedOption:String = ""
     var isEdit:Bool = false
@@ -96,6 +95,7 @@ class MembershipViewScreenViewController: BaseViewController {
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: true)
             self.hideMembershipTitleDropDown(hide: true)
              self.doneBtn.isHidden = true
+            self.doneBtn.setTitle("U P D A T E", for: .normal)
         }else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: true)
             self.setHrLineView(isHidden: true, alpha: 0.0)
@@ -106,6 +106,7 @@ class MembershipViewScreenViewController: BaseViewController {
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels:self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: false)
             self.hideMembershipTitleDropDown(hide: false)
              self.doneBtn.isHidden = false
+            self.doneBtn.setTitle("A D D", for: .normal)
         }
     }
     
@@ -177,12 +178,13 @@ extension  MembershipViewScreenViewController {
         
         self.membershipDropDownTitleTextField.didSelect(completion: {
             (selectedText,index,id) in
-            self.selectedOption = selectedText
-            self.duration = id
-            self.selectedIndex = index
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-            self.validation.requiredValidation(dropDown: self.membershipDropDownTitleTextField, errorLabel: self.titleErrorLabel, errorMessage: "Membership Title required.")
-                 })
+            if selectedText.count > 0 {
+                self.selectedOption = selectedText
+                self.selectedIndex = index
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                    self.validation.requiredValidation(dropDown: self.membershipDropDownTitleTextField, errorLabel: self.titleErrorLabel, errorMessage: "Membership Title required.")
+                })
+            }
         })
     }
     
@@ -296,7 +298,7 @@ extension  MembershipViewScreenViewController {
             "title": self.membershipDropDownTitleTextField.text!,
             "detail":self.detailTextView.text!,
             "amount":self.amountTextField.text!,
-            "duration": "\(duration)",
+            "duration": "\(selectedIndex + 1)",
             "selectedIndex" : "\(selectedIndex)"
         ]
         return membership

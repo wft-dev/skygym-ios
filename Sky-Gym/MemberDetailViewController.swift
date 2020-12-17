@@ -24,6 +24,8 @@ class MemberDetailViewController: BaseViewController {
     @IBOutlet weak var paidTextLabel: UILabel?
     @IBOutlet weak var upaidTextLabel: UILabel?
     @IBOutlet weak var memberDetailTable: UITableView!
+    @IBOutlet weak var viewForMemberDetail: UIView!
+    
     var name:String = ""
     var address:String = ""
     
@@ -40,6 +42,8 @@ class MemberDetailViewController: BaseViewController {
         self.memberImg?.makeRounded()
         self.memberImg?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showMemberDetail)))
         self.memberImg?.isUserInteractionEnabled =  true
+        self.viewForMemberDetail.isUserInteractionEnabled = true
+        self.viewForMemberDetail.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showMemberDetail)))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -134,6 +138,7 @@ extension MemberDetailViewController{
             let destinationVC = segue.destination as! MemberAttandanceViewController
             destinationVC.memberName = self.name
             destinationVC.memberAddress = self.address
+            destinationVC.memberUserImgData = self.memberImg?.image?.pngData()
         }
          
         if segue.identifier == "memberProfileSegue" {

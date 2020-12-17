@@ -33,6 +33,8 @@ class MemberAttandanceViewController: BaseViewController {
     @IBOutlet weak var attendenceTableHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mainScrollView: UIScrollView!
     @IBOutlet weak var mainView: UIView!
+    @IBOutlet weak var memberUserImg: UIImageView!
+    
     
     var attandanceArray:[Attendence?] = []
     var memberName:String = ""
@@ -40,6 +42,7 @@ class MemberAttandanceViewController: BaseViewController {
     var toolBar = UIToolbar()
     var datePicker  = UIDatePicker()
     var attendenceTableHeight:CGFloat = 0
+    var memberUserImgData:Data? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,6 +55,16 @@ class MemberAttandanceViewController: BaseViewController {
         self.memberNameLabel.text = self.memberName
         self.memberAddressLabel.text = self.memberAddress
         self.checkByDateBtn.addTarget(self, action: #selector(checkByDateAction), for: .touchUpInside)
+        self.startDateLabel.isUserInteractionEnabled = true
+        self.endDateLabel.isUserInteractionEnabled = true
+        self.startDateLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(previousWeekAttendence)))
+        self.endDateLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(nextWeekAttendence)))
+        
+        if memberUserImgData != nil {
+            self.memberUserImg.image = UIImage(data: self.memberUserImgData!)
+            self.memberUserImg.makeRounded()
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -81,9 +94,29 @@ class MemberAttandanceViewController: BaseViewController {
                 }
         })
     }
-    
    
     @IBAction func previousWeekAttendenceAction(_ sender: Any) {
+        self.previousWeekAttendence()
+    }
+
+    @IBAction func forwardWeekAttendenceAction(_ sender: Any) {
+        self.nextWeekAttendence()
+    }
+}
+
+extension MemberAttandanceViewController {
+    
+
+ @objc  func nextWeekAttendence() {
+        let startDate = self.endDateLabel.text!
+        let endDate = AppManager.shared.getDate(date: startDate)
+        let sevenDayForwardDate = AppManager.shared.getNext7DaysDate(startDate: endDate)
+        self.fetchAttendenceFrom(startDate: startDate, endDate: sevenDayForwardDate)
+        self.startDateLabel.text = startDate
+        self.endDateLabel.text = sevenDayForwardDate
+    }
+    
+  @objc  func previousWeekAttendence() {
         let startDate = self.startDateLabel.text!
         let endDate = AppManager.shared.getDate(date: startDate)
         let sevenDayPreviousDate = AppManager.shared.getPrevious7DaysDate(startDate: endDate)
@@ -92,21 +125,7 @@ class MemberAttandanceViewController: BaseViewController {
         self.startDateLabel.text = sevenDayPreviousDate
         self.endDateLabel.text = startDate
     }
-    
-    
-    @IBAction func forwardWeekAttendenceAction(_ sender: Any) {
-        
-        let startDate = self.endDateLabel.text!
-        let endDate = AppManager.shared.getDate(date: startDate)
-        let sevenDayForwardDate = AppManager.shared.getNext7DaysDate(startDate: endDate)
-        self.fetchAttendenceFrom(startDate: startDate, endDate: sevenDayForwardDate)
-        self.startDateLabel.text = startDate
-        self.endDateLabel.text = sevenDayForwardDate
-    }
-  
-}
 
-extension MemberAttandanceViewController {
     func setMemberAttandanceNavigation()  {
         memberAttandanceNavigationBar.menuBtn.isHidden = true
         memberAttandanceNavigationBar.leftArrowBtn.isHidden = false
