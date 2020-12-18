@@ -161,6 +161,7 @@ extension TrainerAttendanceViewController{
          @objc func onCancelButtonClick() {
              self.toolBar.removeFromSuperview()
              self.datePicker.removeFromSuperview()
+            self.view.endEditing(true)
          }
     
     func fetchTrainerAttendenceFrom(startDate:String,endDate:String) {

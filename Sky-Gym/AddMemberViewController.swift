@@ -106,7 +106,7 @@ class AddMemberViewController: BaseViewController {
                 FireStoreManager.shared.getMemberByID(id: AppManager.shared.memberID, completion: {
                     (memberDetail,err) in
                     if err == nil {
-                        let memberships = memberDetail!["memberships"] as! NSArray
+                        let memberships = memberDetail!["memberships"] as! Array<Dictionary<String,String>>
                         let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: memberships)
                         if currentMembership.count > 0 {
                             self.setRenewingMembershipData(membership: currentMembership.first!)
@@ -127,6 +127,9 @@ class AddMemberViewController: BaseViewController {
                         self.setRenewingMembershipData(membership: membershipData!)
                     }
                 })
+            }
+            DispatchQueue.main.async {
+                self.updateBtn.setTitle("U P D A T E", for: .normal)
             }
         }
     }
@@ -150,12 +153,14 @@ class AddMemberViewController: BaseViewController {
             self.profileAndMembershipBarView.isHidden = true
             DispatchQueue.main.async {
                 self.topConstraintOfMembershipView.constant = -(self.profileAndMembershipBarView.frame.size.height)
+                 self.updateBtn.setTitle("U P D A T E", for: .normal)
             }
             self.featchMemberDetail(id: AppManager.shared.memberID)
         }
         else {
             DispatchQueue.main.async {
                 self.topConstraintOfMembershipView.constant = 0
+                 self.updateBtn.setTitle("A D D", for: .normal)
             }
             if self.visitorID.count > 1 {
                 self.fetchVisitorDetail(id: self.visitorID)
@@ -486,7 +491,7 @@ extension AddMemberViewController{
             "discount":self.discountTextField.text!,
             "paymentType":self.paymentTypeTextField.text!,
             "dueAmount":self.dueAmountTextField.text!,
-            "purchaseTime": "\(AppManager.shared.getTimeFrom(date: Date()))",
+            "purchaseTime": "\(AppManager.shared.getTime(date: Date()))",
             "purchaseDate": AppManager.shared.dateWithMonthName(date: Date()),
             "membershipDuration" : "\(self.membershipDuration)"
         ]]
@@ -661,7 +666,7 @@ extension AddMemberViewController{
             if err != nil {
                 self.retryMemberDataAlert()
             } else {
-                let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! NSDictionary)
+                let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String, String>)
                 self.fillMemberDetail(memberDetail: memberDetail)
             }
         })
@@ -681,7 +686,6 @@ extension AddMemberViewController{
         self.addressTextView.text = memberDetail.address
         self.phoneNumberTextField.text = memberDetail.phoneNo
         self.dobTextField.text = memberDetail.dob
-        self.updateBtn.setTitle("U P D A T E", for: .normal)
     }
        func retryMemberDataAlert() {
             let retryAlertController = UIAlertController(title: "Error", message: "Error in getting the member Detail.", preferredStyle: .alert)
@@ -701,8 +705,6 @@ extension AddMemberViewController{
             [self.emailTextField,self.phoneNumberTextField,self.dobTextField,self.membershipPlanTextField,self.amountTextField,self.startDateTextField,self.endDateTextField,self.totalAmountTextField,self.discountTextField,self.firstNameTextField,self.lastNameTextField].forEach{
                 $0?.text = ""
                 }
-        
-        self.updateBtn.setTitle("A D D", for: .normal)
     }
     
     func fetchVisitorBy(id:String) {
@@ -718,7 +720,6 @@ extension AddMemberViewController{
     }
     
     func fetchVisitorDetail(id:String) {
-       // getVisitorProfileToMemberImage(id: id, imgView: self.memberImg)
       self.fetchVisitorBy(id: id)
     }
 
@@ -797,14 +798,6 @@ extension AddMemberViewController:UITextFieldDelegate{
             self.showMembershipPlan()
             self.view.endEditing(true)
         }
-        
-//        self.allNewMemberFieldsRequiredValidation(textField: textField)
-//        if self.isNewMember == true {
-//            self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
-//        } else {
-//            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
-//        }
-        
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -841,11 +834,9 @@ extension AddMemberViewController:UITextFieldDelegate{
 extension AddMemberViewController:UITextViewDelegate {
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        
         if memberProfileView.isHidden == false {
             self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
         }
-        
         if textView.tag == 2 {
             return false
         }else{
@@ -887,8 +878,6 @@ extension AddMemberViewController:UITableViewDelegate {
             self.membershipPlanTextField.text = membership.title
             self.membershipDetailTextView.text = membership.detail
             self.amountTextField.text = membership.amount
-//            self.startDateTextField.text = membership.startDate
-//            self.endDateTextField.text = membership.endDate
             self.membershipDuration = Int(membership.duration)!
             self.validation.requiredValidation(textField: self.membershipPlanTextField, errorLabel: self.membershipPlanErrorLabel, errorMessage: "Please select a membership plan.")
             self.validation.requiredValidation(textField: self.amountTextField, errorLabel: self.amountErrorLabel, errorMessage: "Amount required.")

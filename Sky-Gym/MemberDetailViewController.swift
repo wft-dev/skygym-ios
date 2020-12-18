@@ -51,16 +51,6 @@ class MemberDetailViewController: BaseViewController {
         SVProgressHUD.show()
         self.showMemberWithID(id:AppManager.shared.memberID)
         self.memberDetailTable.reloadData()
-        FireStoreManager.shared.downloadUserImg(id: AppManager.shared.memberID, result: {
-            (url,err) in
-            SVProgressHUD.dismiss()
-            do {
-                if url != nil {
-                    let imgData = try  Data(contentsOf: url!)
-                    self.memberImg?.image = UIImage(data: imgData)
-                }
-            } catch let err as NSError { print(err) }
-        })
     }
 
     @objc func showMemberDetail(){
@@ -85,8 +75,7 @@ extension MemberDetailViewController{
                 SVProgressHUD.dismiss()
                 self.retryAlert()
             } else {
-                SVProgressHUD.dismiss()
-                let memberships = singleMemberData?["memberships"] as! NSArray
+                let memberships = singleMemberData?["memberships"] as! Array<Dictionary<String,String>>
                 let memberDetail = singleMemberData?["memberDetail"] as! [String:String]
                 self.memberName?.text = String(describing:"\(memberDetail["firstName"] ?? "") \(memberDetail["lastName"] ?? "")")
                 self.name = "\(memberDetail["firstName"] ?? "" ) \(memberDetail["lastName"] ?? "" )"
@@ -114,6 +103,16 @@ extension MemberDetailViewController{
                         self.upaidTextLabel?.alpha = 0.0
                     }
                 }
+                FireStoreManager.shared.downloadUserImg(id: AppManager.shared.memberID, result: {
+                    (url,err) in
+                    SVProgressHUD.dismiss()
+                    do {
+                        if url != nil {
+                            let imgData = try  Data(contentsOf: url!)
+                            self.memberImg?.image = UIImage(data: imgData)
+                        }
+                    } catch let err as NSError { print(err) }
+                })
             }
         })
     }

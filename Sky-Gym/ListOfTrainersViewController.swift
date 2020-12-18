@@ -47,16 +47,12 @@ class ListOfTrainersTableCell: UITableViewCell {
     private func performTrainerAttandance(id:String){
         switch self.imageName {
         case "red":
-//            self.markTrainerAttandance(present: true, memberID: id,checkInTime:AppManager.shared.getTimeFrom(date: Date()),checkOutTime: "-")
             FireStoreManager.shared.addAttendence(trainerORmember: "Trainers", id: id, present: true, checkInA: AppManager.shared.getTimeFrom(date: Date()), checkOutA: "-")
             imageName = "green"
             self.attendenceBtn.setImage(UIImage(named: imageName), for: .normal)
         case "green":
             imageName = "red"
             self.attendenceBtn.setImage(UIImage(named: imageName), for: .normal)
-//            FireStoreManager.shared.uploadCheckOutTime(trainerORmember: "Trainers", id: id, checkOut: AppManager.shared.getTimeFrom(date: Date()), completion: {
-//                _ in
-//            })
             FireStoreManager.shared.updateAttendence(trainerORmember: "Trainers", id: id, checkOutA: AppManager.shared.getTimeFrom(date: Date()), completion: {
                 err in
                 let s = err == nil ? "Successfull" : "false"
@@ -95,6 +91,7 @@ class ListOfTrainersViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         AppManager.shared.trainerID = ""
+        self.fetcthAllTrainer()
        }
     
   @objc func refreshTrainerList()  {
@@ -254,7 +251,6 @@ extension ListOfTrainersViewController {
         self.addClickToDismissSearchBar()
         self.setSearchBar()
         self.customSearchBar.delegate = self
-        self.fetcthAllTrainer()
     }
     
     func setListOfTrainersNavigationSet() {

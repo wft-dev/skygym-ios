@@ -235,9 +235,9 @@ class FireStoreManager: NSObject {
                 result(nil,err)
             }else {
                 for doc in querySnapshot!.documents {
-                    let memberDetail = (doc.data())["memberDetail"] as! [String:String]
-                    let membershipArray = (doc.data())["memberships"] as! NSArray
-                    let latestMembership = AppManager.shared.getLatestMembership(membershipsArray: membershipArray as NSArray)
+                    let memberDetail = (doc.data())["memberDetail"] as! Dictionary<String,String>
+                    let membershipArray = (doc.data())["memberships"] as! Array<Dictionary<String,String>>
+                    let latestMembership = AppManager.shared.getLatestMembership(membershipsArray: membershipArray )
                         let dateComponentDifference = AppManager.shared.getDateDifferenceComponent(startDate: AppManager.shared.getDate(date: latestMembership.endDate), endDate: Date())
                         
                         if dateComponentDifference.year! < 0 || dateComponentDifference.month! < 0 || dateComponentDifference.day! < 0  {
@@ -295,7 +295,7 @@ class FireStoreManager: NSObject {
             }else {
                 for doc in querySnapshot!.documents {
                     let memberDetail = (doc.data())["memberDetail"] as! [String:String]
-                    let membershipArray = (doc.data())["memberships"] as! NSArray
+                    let membershipArray = (doc.data())["memberships"] as! Array<Dictionary<String,String>>
                     let attendence = (doc.data())["attendence"] as! Dictionary<String,Any>
                     let monthArray = (attendence["\(currentYear)"] as! Dictionary<String,Any>)["\(currentMonth)"] as! Array<Dictionary<String,Any>>
                     
@@ -432,7 +432,7 @@ class FireStoreManager: NSObject {
             if err != nil {
                 result(false,err)
             }else {
-                let membershipsArray = ((docSnapshot?.data())! as NSDictionary)["memberships"] as! NSArray
+                let membershipsArray = ((docSnapshot?.data())! as Dictionary<String,Any>)["memberships"] as! Array<Dictionary<String,String>>
                 let currentMemberships = AppManager.shared.getCurrentMembership(membershipArray: membershipsArray)
                 currentMemberships.count > 0 ? result(true,nil) : result(false,nil)
             }
@@ -578,10 +578,10 @@ class FireStoreManager: NSObject {
             (docRef,err) in
             
             if err == nil {
-                var membershipArray = (docRef?.data())?["memberships"] as! Array<NSDictionary>
+                var membershipArray = (docRef?.data())?["memberships"] as! Array<Dictionary<String,String>>
                 for singleMembership in membershipArray {
-                    let startDate = AppManager.shared.getDate(date: (singleMembership )["startDate"] as! String)
-                    let endDate = AppManager.shared.getDate(date: (singleMembership )["endDate"] as! String)
+                    let startDate = AppManager.shared.getDate(date: (singleMembership )["startDate"]!)
+                    let endDate = AppManager.shared.getDate(date: (singleMembership )["endDate"]!)
                     let endDayDiff = Calendar.current.dateComponents([.day], from: Date(), to: endDate).day!
                     let startDayDiff = Calendar.current.dateComponents([.day], from: Date(), to:startDate).day!
                     if endDayDiff >= 0 && startDayDiff <= 0 {
@@ -597,6 +597,30 @@ class FireStoreManager: NSObject {
             }
         })
     }
+    
+    
+    func deleteMembershipWith(membershipID:String,memberID:String,completion:@escaping (Error?) -> Void) {  let ref = fireDB.collection("/Members").document("/\(memberID)")
+        ref.getDocument(completion: {
+            (docSnapshot, err) in
+            
+            if err == nil{
+                var membershipArray = (docSnapshot?.data())?["memberships"] as! Array<Dictionary<String,String>>
+                for singleMembership in membershipArray {
+                    if singleMembership["membershipID"] == membershipID {
+                        membershipArray.remove(at: membershipArray.firstIndex(of: singleMembership)!)
+                        ref.updateData([
+                            "memberships":membershipArray
+                            ], completion: {
+                                err in
+                                completion(err)
+                        })
+                    }
+                }
+            }
+        })
+        
+    }
+    
     
     func addTrainer(email:String,password:String,trainerID:String,trainerDetail:[String:String],trainerPermission:[String:Bool],completion:@escaping (Error?)->Void) {
         let year = Calendar.current.component(.year, from: Date())
@@ -843,6 +867,7 @@ class FireStoreManager: NSObject {
     
     func numberOfPaidMembers(adminID:String,result:@escaping (Int,Error?) -> Void) {
         var count = 0
+        AppManager.shared.expiredMember = 0
         fireDB.collection("/Members").whereField("adminID", isEqualTo: adminID).getDocuments(completion: {
             (querySnapshot,err) in
             if err != nil {
@@ -855,16 +880,16 @@ class FireStoreManager: NSObject {
                         let latestMembership = memberships.lastObject as! [String:String]
                         let dueAmount = Int(latestMembership["dueAmount"]!)
                         let endDate  = AppManager.shared.getDate(date: latestMembership["endDate"]!)
-                        
-                        if dueAmount == 0 {
-                            count += 1
-                        }
                         let dayDiff = Calendar.current.compare(endDate, to: Date(), toGranularity: .day).rawValue
                         let monthDiff = Calendar.current.compare(endDate, to: Date(), toGranularity: .month).rawValue
                         let yearDiff = Calendar.current.compare(endDate
                             , to:Date(), toGranularity: .year).rawValue
                         
-                        if dayDiff < 0 && monthDiff < 0 && yearDiff < 0 {
+                        if dueAmount == 0  && dayDiff >= 0 && monthDiff >= 0 && yearDiff >= 0 {
+                            count += 1
+                        }
+                        
+                        if dayDiff < 0 && monthDiff < 0 && yearDiff <= 0 {
                             AppManager.shared.expiredMember += 1
                         }
                     }

@@ -64,7 +64,8 @@ class MemberAttandanceViewController: BaseViewController {
             self.memberUserImg.image = UIImage(data: self.memberUserImgData!)
             self.memberUserImg.makeRounded()
         }
-        
+       
+        self.backBtn.addTarget(self, action: #selector(backBtnAction), for: .touchUpInside)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -101,6 +102,9 @@ class MemberAttandanceViewController: BaseViewController {
 
     @IBAction func forwardWeekAttendenceAction(_ sender: Any) {
         self.nextWeekAttendence()
+    }
+    @objc  func backBtnAction() {
+        dismiss(animated: true, completion: nil)
     }
 }
 

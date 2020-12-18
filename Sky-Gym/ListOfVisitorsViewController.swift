@@ -59,7 +59,7 @@ class ListOfVisitorsViewController: BaseViewController {
     
     override func viewDidAppear(_ animated: Bool)  {
         super.viewDidAppear(animated)
-       
+        self.fetchVisitors()
     }
     
     @objc func refreshVisitorList(){

@@ -295,29 +295,32 @@ extension AdminProfileViewController {
     func fetchAdminDetailBy(id:String) {
         SVProgressHUD.show()
         
-        if AppManager.shared.isInitialUploaded == true {
-            FireStoreManager.shared.downloadUserImg(id: AppManager.shared.adminID, result: {
-                (url,err) in
-                if err != nil {
-                    self.viewDidLoad()
-                } else{
-                    do {
-                        let imgData = try Data(contentsOf: url!)
-                        self.adminImg.image = UIImage(data: imgData)
-                    } catch let error as NSError {
-                        print(error)
-                    }
-                }
-            })
-        }
+      //  if AppManager.shared.isInitialUploaded == true {
+
+      //  }
         FireStoreManager.shared.getAdminDetailBy(id: AppManager.shared.adminID, result: {
             (data,err) in
-            SVProgressHUD.dismiss()
+           
             if err != nil {
                 print("Error in fetching the admin details.")
             }else{
-                let adminDetail = data?["adminDetail"] as! NSDictionary
-                self.fillAdminDetail(adminDetail: AppManager.shared.getAdminProfile(adminDetails: adminDetail as! [String : String] ))
+                let adminDetail = data?["adminDetail"] as! Dictionary<String,String>
+                self.fillAdminDetail(adminDetail: AppManager.shared.getAdminProfile(adminDetails: adminDetail ))
+                
+                FireStoreManager.shared.downloadUserImg(id: AppManager.shared.adminID, result: {
+                    (url,err) in
+                     SVProgressHUD.dismiss()
+                    if err != nil {
+                       // self.viewDidLoad()
+                    } else{
+                        do {
+                            let imgData = try Data(contentsOf: url!)
+                            self.adminImg.image = UIImage(data: imgData)
+                        } catch let error as NSError {
+                            print(error)
+                        }
+                    }
+                })
             }
         })
     }

@@ -83,7 +83,6 @@ class ListOfMembersTableCell: UITableViewCell {
     private func performAttandance(id:String){
         switch self.imageName{
         case "red":
-         //   print("ATTENDECE IS \(self.attendenceAlreadyMarked)")
             if attendenceAlreadyMarked == false {
             FireStoreManager.shared.addAttendence(trainerORmember: "Members", id: id, present: true, checkInA: AppManager.shared.getTimeFrom(date: Date()), checkOutA: "-")
             }
@@ -135,29 +134,16 @@ class ListOfMembersViewController: BaseViewController {
         super.viewDidLoad()
         self.setCompleteListOfMembersView()
         self.setUpFilterView()
-        switch self.filterationLabel {
-        case "allMemberFilteration":
-            self.showMembers()
-        case "expiredMemberFilteration":
-            self.expiredMemberFilterationAction()
-        case "checkInMemberFilteration":
-            self.checkFilterationAction(checkFor: "checkIn")
-        case "checkOutMemberFilteration":
-            self.checkFilterationAction(checkFor: "checkOut")
-        default:
-            break
-        }
         self.refreshControl.addTarget(self, action: #selector(refreshMembers), for: .valueChanged)
         self.refreshControl.tintColor = .black
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Member List")
         self.listOfMemberTable.refreshControl = self.refreshControl
-
     }
     
-override func viewWillAppear(_ animated: Bool) {
-     super.viewWillAppear(animated)
-
- }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+         self.showMembers()
+    }
     
     @objc func refreshMembers(){
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
@@ -236,7 +222,7 @@ extension ListOfMembersViewController : UITableViewDataSource{
         cell.customCellDelegate = self
         cell.selectionStyle = .none
         self.setCellAttendeneBtn(memberCell: cell, memberID: singleMember.memberID)
-        self.setCellRenewMembershipBtn(memberCell: cell, memberID: singleMember.memberID,dueAmount: singleMember.dueAmount, dateOfExpiry: singleMember.dateOfExp)
+        self.setCellRenewMembershipBtn(memberCell: cell, memberID: singleMember.memberID,dueAmount: singleMember.dueAmount)
         self.addCustomSwipe(cellView: cell.listOfmemberTCView, cell: cell)
         
         return cell
@@ -459,14 +445,16 @@ extension ListOfMembersViewController{
                 for singleData in dataDirctionary! {
                     if singleData.count > 0 {
                         
-                        let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: singleData["memberDetail"] as! NSDictionary)
+                        let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: singleData["memberDetail"] as! Dictionary<String, String>)
+                        let membershipArray = singleData["memberships"] as! Array<Dictionary<String,String>>
                         let currentMembership =
-                            AppManager.shared.getCurrentMembership(membershipArray: singleData["memberships"] as! NSArray)
+                            AppManager.shared.getCurrentMembership(membershipArray:membershipArray )
                         
                         if currentMembership.count > 0 {
                             membership = currentMembership.first
                         }else {
-                        membership = MembershipDetailStructure(membershipID: "__", membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", purchaseTime: "--", purchaseDate: "--", membershipDuration: "--")
+                            membership =  membershipArray.count > 0 ? AppManager.shared.getLatestMembership(membershipsArray:  membershipArray) :
+                                MembershipDetailStructure(membershipID: memberDetail.memberID, membershipPlan: "--", membershipDetail: "--", amount:"0", startDate: "--", endDate: "--", totalAmount: "0", discount: "0", paymentType: "--", dueAmount: "0", purchaseTime: "--", purchaseDate: "--", membershipDuration: "0")
                         }
                         let member = ListOfMemberStr(memberID: memberDetail.memberID, userImg: UIImage(named: "user1")!, userName: "\(memberDetail.firstName) \(memberDetail.lastName)", phoneNumber: memberDetail.phoneNo, dateOfExp:membership!.endDate , dueAmount: membership!.dueAmount, uploadName: memberDetail.uploadIDName)
                             self.listOfMemberArray.append(member)
@@ -637,7 +625,7 @@ extension ListOfMembersViewController{
         })
     }
     
-    func setCellRenewMembershipBtn(memberCell:ListOfMembersTableCell,memberID:String,dueAmount:String,dateOfExpiry:String)  {
+    func setCellRenewMembershipBtn(memberCell:ListOfMembersTableCell,memberID:String,dueAmount:String)  {
         FireStoreManager.shared.isCurrentMembership(memberOrTrainer: .Member, memberID: memberID, result: {
             (flag,err) in
             
@@ -646,7 +634,7 @@ extension ListOfMembersViewController{
                 memberCell.attendImg?.alpha = flag == true ? 1.0 : 0.4
                 memberCell.attendenceLabel.alpha = flag == true ? 1.0 : 0.4
                 memberCell.dueAmount.text =  flag == true ? dueAmount :"0"
-                memberCell.dateOfExpiry.text = flag == true ? dateOfExpiry : "--"
+              //  memberCell.dateOfExpiry.text = flag == true ? dateOfExpiry : "--"
             }
         })
     }

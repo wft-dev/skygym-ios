@@ -27,6 +27,7 @@ class PurchaseViewController: BaseViewController {
     
     var purchaseArray:[PurchaseMembershipPlan] = []
     var todayDate:Date = Date()
+    var memberDetail:MemberDetailStructure? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,15 +59,16 @@ extension PurchaseViewController {
     }
     
     func getMembershipPlans(id:String)  {
+        self.purchaseArray.removeAll()
         FireStoreManager.shared.getMemberByID(id: id, completion: {
             (docSnapshot,err) in
             if err != nil {
                 self.retryMembershipPlansAlert()
             } else {
-                let memberships = docSnapshot?["memberships"] as! NSArray
-               
+                self.memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String,String>)
+                let memberships = docSnapshot?["memberships"] as! Array<Dictionary<String,String>>
                 for membership in memberships {
-                    let singleMembership = self.getPurchaseMemberPlan(membership: membership as! [String:String])
+                    let singleMembership = self.getPurchaseMemberPlan(membership: membership)
                     self.purchaseArray.append(singleMembership)
                 }
                 self.purchaseTable.reloadData()
@@ -74,8 +76,8 @@ extension PurchaseViewController {
         })
     }
     
-    func getPurchaseMemberPlan(membership:[String:String]) -> PurchaseMembershipPlan {
-        let purchasePlan = PurchaseMembershipPlan(membershipPlan: membership["membershipPlan"]!, expireDate: membership["endDate"]!, amount:membership["totalAmount"]! , dueAmount: membership["dueAmount"]!, paidAmount: membership["amount"]!, purchaseDate:membership["purchaseDate"]!, startDate: membership["startDate"]!)
+    func getPurchaseMemberPlan(membership:Dictionary<String,String>) -> PurchaseMembershipPlan {
+        let purchasePlan = PurchaseMembershipPlan(membershipID: membership["membershipID"]!, membershipPlan: membership["membershipPlan"]!, expireDate: membership["endDate"]!, amount:membership["totalAmount"]! , dueAmount: membership["dueAmount"]!, paidAmount: membership["amount"]!, purchaseDate:membership["purchaseDate"]!, startDate: membership["startDate"]!)
         
         return purchasePlan
     }
@@ -89,6 +91,16 @@ extension PurchaseViewController {
            retryAlertController.addAction(retryAlertBtn)
            present(retryAlertController, animated: true, completion: nil)
        }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "membershipDetailSegue" {
+            let destinationVC = segue.destination as! CurrentMembershipDetailViewController
+            destinationVC.memberDetail = self.memberDetail
+            destinationVC.purchasedMembershipID = sender as! String
+        }
+    }
+    
+    
 }
 
 extension PurchaseViewController :UITableViewDataSource {
@@ -97,7 +109,6 @@ extension PurchaseViewController :UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-      //  let cell = tableView.dequeueReusableCell(withIdentifier: "purchaseCell", for: indexPath) as! PuchaseTableViewCell
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "purchaseCell") as! PuchaseTableViewCell
         let singleMembership = self.purchaseArray[indexPath.row]
@@ -122,8 +133,15 @@ extension PurchaseViewController :UITableViewDataSource {
         cell.dueAmountLabel.text = singleMembership.dueAmount
         cell.paidAmountLabel.text = singleMembership.paidAmount
         cell.purchaseDateLabel.text = singleMembership.purchaseDate
-        cell.selectionStyle = .none
         
        return cell
+    }
+}
+
+
+extension PurchaseViewController : UITableViewDelegate{
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+         let singleMembership = self.purchaseArray[indexPath.row]
+        performSegue(withIdentifier: "membershipDetailSegue", sender: singleMembership.membershipID)
     }
 }

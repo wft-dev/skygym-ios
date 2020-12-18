@@ -33,7 +33,6 @@ class ListOfEventsViewController: BaseViewController {
         super.viewDidLoad()
         self.setEventsNavigationBar()
         self.listOfEventsTable.separatorStyle = .none
-        self.fetchEvents()
         self.refreshControl.tintColor = .black
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Events List")
         self.refreshControl.addTarget(self, action: #selector(refreshEventList), for: .valueChanged)
@@ -42,6 +41,7 @@ class ListOfEventsViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+         self.fetchEvents()
     }
     
     @objc func refreshEventList(){

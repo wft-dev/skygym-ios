@@ -76,6 +76,7 @@ struct ListOfMemberStr {
 
 
 struct PurchaseMembershipPlan {
+    var membershipID:String
     var membershipPlan:String
     var expireDate:String
     var amount:String

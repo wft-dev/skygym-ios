@@ -29,7 +29,6 @@ class ListOfMembershipViewController: BaseViewController {
         super.viewDidLoad()
         self.setMembershipNavigation()
         self.membershipTable.separatorStyle = .none
-        self.showAllMemberships()
         self.refreshControl.tintColor = .black
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Membership List")
         self.refreshControl.addTarget(self, action: #selector(refreshMembershipList), for: .valueChanged)
@@ -38,6 +37,7 @@ class ListOfMembershipViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+         self.showAllMemberships()
     }
     
     @objc func refreshMembershipList(){

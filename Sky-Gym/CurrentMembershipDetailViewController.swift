@@ -35,8 +35,11 @@ class CurrentMembershipDetailViewController: BaseViewController {
     @IBOutlet weak var paymentType: UILabel!
     @IBOutlet weak var paymentAmountLabel: UILabel!
     @IBOutlet weak var memberhsipStartDate: UILabel!
+    @IBOutlet weak var deleteMembershipView: UIView!
     
     var currentMembershipID:String = ""
+    var purchasedMembershipID:String = ""
+    var memberDetail:MemberDetailStructure? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,14 +50,20 @@ class CurrentMembershipDetailViewController: BaseViewController {
             $0?.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
             $0?.clipsToBounds = true
         }
-        setMembershipVerticalMenu()
+     setMembershipVerticalMenu()
      addClickToDismiss()
-    setBackAction(toView: self.currentMembershipDetailNavigationBar)
+     setBackAction(toView: self.currentMembershipDetailNavigationBar)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.getCurrentMembershipDetails(id: AppManager.shared.memberID)
+        if purchasedMembershipID.count > 0 {
+//            self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = true
+//            self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 0.0
+            self.getPurchasedMembershipDetail(memberID: memberDetail!.memberID, membershipID: self.purchasedMembershipID)
+        }else{
+            self.getCurrentMembershipDetails(id: AppManager.shared.memberID)
+        }
     }
    
     private func addClickToDismiss() {
@@ -66,7 +75,12 @@ class CurrentMembershipDetailViewController: BaseViewController {
 
     @objc
     private func dismissPresentedView(_ sender: Any?) {
-        self.membershipVerticalMenuView.isHidden = true
+        if self.purchasedMembershipID.count > 0 {
+            self.deleteMembershipView.isHidden = true
+            self.deleteMembershipView.alpha = 0.0
+        }else {
+            self.membershipVerticalMenuView.isHidden = true
+        }
     }
     
     @IBAction func renewCurrentMembershipBtnAction(_ sender: Any) {
@@ -74,14 +88,28 @@ class CurrentMembershipDetailViewController: BaseViewController {
     }
     
     @IBAction func deleteMembershipBtnAction(_ sender: Any) {
-        FireStoreManager.shared.deleteMembership(memberID: AppManager.shared.memberID, completion: {
-            err in
-            if err != nil {
-                self.showAlert(title: "Error", message: "Current membership is not deleted.")
-            } else {
-                self.showAlert(title: "Success", message: "Current membership is deleted.")
-            }
+        let deletingMembershipID = self.purchasedMembershipID.count > 0 ? self.purchasedMembershipID : self.currentMembershipID
+        let deletingMemberID = self.purchasedMembershipID.count > 0 ? memberDetail?.memberID : AppManager.shared.memberID
+        
+        let alertController = UIAlertController(title: "Attention", message: "Do you want to delete the current membership ?", preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
+            _ in
+
+            FireStoreManager.shared.deleteMembershipWith(membershipID: deletingMembershipID, memberID:deletingMemberID!, completion: {
+                err in
+                if err != nil {
+                    self.showAlert(title: "Error", message: "Membership is not deleted.")
+                } else {
+                    self.showAlert(title: "Success", message: "Membership is deleted.")
+                }
+            })
         })
+        
+        let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler:nil)
+        
+        alertController.addAction(okAlertAction)
+        alertController.addAction(cancelAlertAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -119,8 +147,19 @@ extension CurrentMembershipDetailViewController {
     }
     
     @objc func showMembershipOption() {
-        self.membershipVerticalMenuView.isHidden = false
-        self.membershipVerticalMenuView.alpha = 1.0
+//        if purchasedMembershipID.count > 0 {
+//            self.deleteMembershipView.isHidden = false
+//            self.deleteMembershipView.alpha = 1.0
+//        } else {
+//            self.membershipVerticalMenuView.isHidden = false
+//            self.membershipVerticalMenuView.alpha = 1.0
+//        }
+        
+        self.deleteMembershipView.isHidden = self.purchasedMembershipID.count > 0 ? false : true
+        self.deleteMembershipView.alpha = self.purchasedMembershipID.count > 0 ? 1.0 : 0.0
+        self.membershipVerticalMenuView.isHidden = self.purchasedMembershipID.count > 0 ? true : false
+        self.membershipVerticalMenuView.alpha = self.purchasedMembershipID.count > 0 ? 0.0 : 1.0
+
     }
     
     func setMembershipVerticalMenu()  {
@@ -128,9 +167,28 @@ extension CurrentMembershipDetailViewController {
         self.membershipVerticalMenuView.layer.shadowColor =  UIColor.darkGray.cgColor
         self.membershipVerticalMenuView.layer.shadowOpacity = 0.3
         self.membershipVerticalMenuView.layer.shadowOffset = .init(width: 10, height: 10)
-        self.membershipVerticalMenuView.layer.shadowRadius = 50
+        self.deleteMembershipView.layer.shadowRadius = 50
+        
+        self.deleteMembershipView.layer.shadowColor =  UIColor.darkGray.cgColor
+        self.deleteMembershipView.layer.shadowOpacity = 0.3
+        self.deleteMembershipView.layer.shadowOffset = .init(width: 10, height: 10)
+        self.deleteMembershipView.layer.shadowRadius = 50
     }
     
+    func getPurchasedMembershipDetail(memberID:String,membershipID:String) {
+        SVProgressHUD.show()
+        FireStoreManager.shared.getMembershipWith(memberID: memberID, membershipID: membershipID, result: {
+            (membership,err) in
+            if err != nil {
+                SVProgressHUD.dismiss()
+                self.retryCurrentMembershipAlert()
+            }else {
+                SVProgressHUD.dismiss()
+                self.setCurrentMembership(memberDetail: self.memberDetail!, currentMembership: membership!)
+            }
+        })
+    }
+ 
     func getCurrentMembershipDetails(id:String) {
         SVProgressHUD.show()
         FireStoreManager.shared.getMemberByID(id: id, completion: {
@@ -140,12 +198,12 @@ extension CurrentMembershipDetailViewController {
                 self.retryCurrentMembershipAlert()
             } else {
                 SVProgressHUD.dismiss()
-                let memberships = docSnapshot?["memberships"] as! NSArray
-                let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! NSDictionary )
+                let memberships = docSnapshot?["memberships"] as! Array<Dictionary<String,String>>
+                let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String, String>)
                 let membershipArray = AppManager.shared.getCurrentMembership(membershipArray: memberships)
  
                 if membershipArray.count > 0  {
-                    self.setCurrentMembership(memberDetail: memberDetail, currentMembership: membershipArray.first! )
+                    self.setCurrentMembership(memberDetail: memberDetail, currentMembership: membershipArray.first!)
                     [self.memberView,self.membershipDateView,self.DiscountView,self.paymentHistoryView].forEach{
                         $0?.isHidden = false
                         $0?.alpha = 1.0
@@ -160,7 +218,7 @@ extension CurrentMembershipDetailViewController {
                     }
                     self.paidStatusLabel.attributedText = NSAttributedString(string: "No Active Membership", attributes: [ NSAttributedString.Key.foregroundColor: UIColor.red ])
                     if memberships.count > 0 {
-                    let latestMembership = AppManager.shared.getLatestMembership(membershipsArray: docSnapshot?["memberships"] as! NSArray)
+                    let latestMembership = AppManager.shared.getLatestMembership(membershipsArray: docSnapshot?["memberships"] as! Array<Dictionary<String,String>>)
                         let dateComponentDiff = AppManager.shared.getDateDifferenceComponent(startDate: AppManager.shared.getDate(date: latestMembership.endDate), endDate: AppManager.shared.getStandardFormatDate(date: Date()))
                         
                         if dateComponentDiff.year! < 0 || dateComponentDiff.month! < 0 || dateComponentDiff.day! < 0 {

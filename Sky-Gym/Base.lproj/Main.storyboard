@@ -2109,7 +2109,7 @@
                                                         <rect key="frame" x="30" y="867" width="120" height="45"/>
                                                         <color key="backgroundColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="16"/>
-                                                        <textInputTraits key="textInputTraits"/>
+                                                        <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
                                                         <connections>
                                                             <outlet property="delegate" destination="5aj-52-s8i" id="8I6-IR-wvh"/>
                                                         </connections>
@@ -2428,11 +2428,11 @@
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <textField opaque="NO" tag="16" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Total Amount" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="CfU-Qq-u31">
+                                                    <textField opaque="NO" tag="16" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="CfU-Qq-u31">
                                                         <rect key="frame" x="30" y="447" width="125" height="45"/>
                                                         <color key="backgroundColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="16"/>
-                                                        <textInputTraits key="textInputTraits"/>
+                                                        <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                                                         <connections>
                                                             <outlet property="delegate" destination="5aj-52-s8i" id="hlh-f6-QUu"/>
                                                         </connections>
@@ -2456,7 +2456,7 @@
                                                         <rect key="frame" x="165" y="447" width="125" height="45"/>
                                                         <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="calibratedRGB"/>
                                                         <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="16"/>
-                                                        <textInputTraits key="textInputTraits"/>
+                                                        <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                                                         <connections>
                                                             <outlet property="delegate" destination="5aj-52-s8i" id="UMo-Sp-2hw"/>
                                                         </connections>
@@ -2504,7 +2504,7 @@
                                                         <rect key="frame" x="165" y="534.5" width="125" height="45.5"/>
                                                         <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="calibratedRGB"/>
                                                         <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="16"/>
-                                                        <textInputTraits key="textInputTraits"/>
+                                                        <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                                                         <connections>
                                                             <outlet property="delegate" destination="5aj-52-s8i" id="lGI-OA-fXq"/>
                                                         </connections>
@@ -3318,32 +3318,32 @@
                                                 <rect key="frame" x="35" y="665.5" width="250" height="78"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Payment history" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ccd-t5-bzd">
-                                                        <rect key="frame" x="15" y="15" width="155" height="23"/>
+                                                        <rect key="frame" x="15" y="15" width="155" height="24.5"/>
                                                         <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="14"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                         <size key="shadowOffset" width="0.0" height="0.0"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="9 Sep 2020" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dY1-wk-RWv">
-                                                        <rect key="frame" x="15" y="48" width="77" height="20"/>
-                                                        <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="14"/>
+                                                        <rect key="frame" x="15" y="49.5" width="71.5" height="18.5"/>
+                                                        <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="13"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10:13:am" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lq5-xj-53A">
-                                                        <rect key="frame" x="100" y="48" width="58" height="20"/>
-                                                        <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="14"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10:13:am" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lq5-xj-53A">
+                                                        <rect key="frame" x="91.5" y="49.5" width="54" height="18.5"/>
+                                                        <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="13"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="cash" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zH1-z2-4Wy">
-                                                        <rect key="frame" x="166" y="48" width="34.5" height="20"/>
-                                                        <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="14"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="cash" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zH1-z2-4Wy">
+                                                        <rect key="frame" x="150.5" y="49.5" width="32" height="18.5"/>
+                                                        <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="13"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="0" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0oG-Ku-NL2">
-                                                        <rect key="frame" x="208.5" y="48" width="40.5" height="18.5"/>
+                                                        <rect key="frame" x="187.5" y="49.5" width="60.5" height="18.5"/>
                                                         <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="13"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
@@ -3352,16 +3352,19 @@
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
                                                     <constraint firstItem="Lq5-xj-53A" firstAttribute="top" secondItem="Ccd-t5-bzd" secondAttribute="bottom" constant="10" id="3ne-E0-Qmp"/>
-                                                    <constraint firstItem="Lq5-xj-53A" firstAttribute="leading" secondItem="dY1-wk-RWv" secondAttribute="trailing" constant="8" id="8Xn-mA-7lZ"/>
+                                                    <constraint firstAttribute="bottom" secondItem="0oG-Ku-NL2" secondAttribute="bottom" constant="10" id="59o-iI-tsn"/>
+                                                    <constraint firstItem="Lq5-xj-53A" firstAttribute="leading" secondItem="dY1-wk-RWv" secondAttribute="trailing" constant="5" id="8Xn-mA-7lZ"/>
                                                     <constraint firstItem="Ccd-t5-bzd" firstAttribute="top" secondItem="3vq-rk-21M" secondAttribute="top" constant="15" id="8YB-cj-fZt"/>
-                                                    <constraint firstItem="0oG-Ku-NL2" firstAttribute="leading" secondItem="zH1-z2-4Wy" secondAttribute="trailing" constant="8" id="CnB-My-fPz"/>
+                                                    <constraint firstAttribute="bottom" secondItem="Lq5-xj-53A" secondAttribute="bottom" constant="10" id="B9E-Pl-VgG"/>
+                                                    <constraint firstItem="0oG-Ku-NL2" firstAttribute="leading" secondItem="zH1-z2-4Wy" secondAttribute="trailing" constant="5" id="CnB-My-fPz"/>
                                                     <constraint firstItem="zH1-z2-4Wy" firstAttribute="top" secondItem="Ccd-t5-bzd" secondAttribute="bottom" constant="10" id="GyJ-Pj-lzR"/>
-                                                    <constraint firstItem="zH1-z2-4Wy" firstAttribute="leading" secondItem="Lq5-xj-53A" secondAttribute="trailing" constant="8" id="Jfu-Wl-VOp"/>
-                                                    <constraint firstAttribute="trailing" secondItem="0oG-Ku-NL2" secondAttribute="trailing" constant="1" id="Jfu-br-Am8"/>
+                                                    <constraint firstItem="zH1-z2-4Wy" firstAttribute="leading" secondItem="Lq5-xj-53A" secondAttribute="trailing" constant="5" id="Jfu-Wl-VOp"/>
+                                                    <constraint firstAttribute="trailing" secondItem="0oG-Ku-NL2" secondAttribute="trailing" constant="2" id="Jfu-br-Am8"/>
                                                     <constraint firstAttribute="bottom" secondItem="dY1-wk-RWv" secondAttribute="bottom" constant="10" id="WYS-cw-NUC"/>
                                                     <constraint firstItem="dY1-wk-RWv" firstAttribute="leading" secondItem="3vq-rk-21M" secondAttribute="leading" constant="15" id="Xh4-7k-hwO"/>
                                                     <constraint firstItem="dY1-wk-RWv" firstAttribute="top" secondItem="Ccd-t5-bzd" secondAttribute="bottom" constant="10" id="n4u-YM-MgF"/>
                                                     <constraint firstAttribute="trailing" secondItem="Ccd-t5-bzd" secondAttribute="trailing" constant="80" id="nFg-lM-deC"/>
+                                                    <constraint firstAttribute="bottom" secondItem="zH1-z2-4Wy" secondAttribute="bottom" constant="10" id="pnk-Ik-0Qu"/>
                                                     <constraint firstItem="0oG-Ku-NL2" firstAttribute="top" secondItem="Ccd-t5-bzd" secondAttribute="bottom" constant="10" id="su2-m4-oO1"/>
                                                     <constraint firstItem="Ccd-t5-bzd" firstAttribute="leading" secondItem="3vq-rk-21M" secondAttribute="leading" constant="15" id="v9W-Jj-6XW"/>
                                                 </constraints>
@@ -3396,7 +3399,7 @@
                                         </constraints>
                                     </view>
                                     <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aho-A4-gRw">
-                                        <rect key="frame" x="86.5" y="0.0" width="233.5" height="128"/>
+                                        <rect key="frame" x="86.5" y="15" width="233.5" height="128"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bEk-hh-Wks">
                                                 <rect key="frame" x="0.0" y="0.0" width="233.5" height="63.5"/>
@@ -3442,12 +3445,21 @@
                                             <constraint firstItem="fHA-di-TyG" firstAttribute="leading" secondItem="aho-A4-gRw" secondAttribute="leading" id="yKZ-8W-Xko"/>
                                         </constraints>
                                     </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L7O-w1-NqO">
+                                        <rect key="frame" x="86.5" y="79" width="233.5" height="64"/>
+                                        <color key="backgroundColor" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </view>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="K3q-Vi-lhV" firstAttribute="width" secondItem="5u3-Q0-9Hl" secondAttribute="width" id="D79-Bq-weR"/>
                                     <constraint firstItem="K3q-Vi-lhV" firstAttribute="bottom" secondItem="VJa-lQ-YBI" secondAttribute="bottom" id="N84-2p-iJm"/>
                                     <constraint firstItem="VJa-lQ-YBI" firstAttribute="top" secondItem="K3q-Vi-lhV" secondAttribute="top" id="TsR-3d-IvJ"/>
                                     <constraint firstItem="K3q-Vi-lhV" firstAttribute="trailing" secondItem="VJa-lQ-YBI" secondAttribute="trailing" id="dfZ-mP-M81"/>
+                                    <constraint firstItem="L7O-w1-NqO" firstAttribute="bottom" secondItem="aho-A4-gRw" secondAttribute="bottom" id="j36-LH-bux"/>
+                                    <constraint firstItem="L7O-w1-NqO" firstAttribute="width" secondItem="aho-A4-gRw" secondAttribute="width" id="m09-X3-yHL"/>
+                                    <constraint firstItem="L7O-w1-NqO" firstAttribute="leading" secondItem="aho-A4-gRw" secondAttribute="leading" id="oxv-wC-iS2"/>
+                                    <constraint firstItem="L7O-w1-NqO" firstAttribute="height" secondItem="aho-A4-gRw" secondAttribute="height" multiplier="0.5" id="qTZ-uG-pG6"/>
+                                    <constraint firstItem="L7O-w1-NqO" firstAttribute="trailing" secondItem="aho-A4-gRw" secondAttribute="trailing" id="rck-gH-95W"/>
                                     <constraint firstItem="K3q-Vi-lhV" firstAttribute="centerX" secondItem="5u3-Q0-9Hl" secondAttribute="centerX" id="u1t-dg-d23"/>
                                     <constraint firstItem="K3q-Vi-lhV" firstAttribute="leading" secondItem="VJa-lQ-YBI" secondAttribute="leading" id="wVt-4b-F43"/>
                                 </constraints>
@@ -3473,6 +3485,7 @@
                         <outlet property="DiscountView" destination="WNZ-t3-u7O" id="Dy9-T3-xiH"/>
                         <outlet property="amountLabel" destination="Iht-vy-a8Z" id="Zed-4m-YXZ"/>
                         <outlet property="currentMembershipDetailNavigationBar" destination="Jrx-Af-IfD" id="yY9-ft-mC4"/>
+                        <outlet property="deleteMembershipView" destination="L7O-w1-NqO" id="OY5-yK-aq4"/>
                         <outlet property="discountLabel" destination="dzJ-m8-1ns" id="OQf-JZ-dhn"/>
                         <outlet property="dueAmountLabel" destination="qih-77-llw" id="Sqc-9o-0fu"/>
                         <outlet property="memberNameLabel" destination="Vyr-iQ-KOt" id="6Rz-GB-RBn"/>
@@ -3709,11 +3722,12 @@
                     <connections>
                         <outlet property="purchaseNavigationBar" destination="Oce-73-jnl" id="7Al-Vq-aei"/>
                         <outlet property="purchaseTable" destination="mNC-df-Z1H" id="sxx-Df-fN9"/>
+                        <segue destination="VWc-b3-xiL" kind="show" identifier="membershipDetailSegue" id="0wx-uF-HLE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wXw-7I-xwg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3860.625" y="1627.5"/>
+            <point key="canvasLocation" x="4112" y="2446"/>
         </scene>
         <!--Member Attandance View Controller-->
         <scene sceneID="s54-4K-eB7">
@@ -3809,14 +3823,14 @@
                                                     <action selector="forwardWeekAttendenceAction:" destination="h0b-rR-rWn" eventType="touchUpInside" id="Tub-FJ-fS0"/>
                                                 </connections>
                                             </button>
-                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="tE9-s4-JwO">
+                                            <tableView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="tE9-s4-JwO">
                                                 <rect key="frame" x="30" y="249" width="260" height="131"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" id="yvh-1d-zhr"/>
                                                 </constraints>
                                                 <prototypes>
-                                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="attendanceCell" rowHeight="66" id="aas-YY-bBi" customClass="AttandanceTableCell" customModule="Sky_Gym" customModuleProvider="target">
+                                                    <tableViewCell clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="attendanceCell" rowHeight="66" id="aas-YY-bBi" customClass="AttandanceTableCell" customModule="Sky_Gym" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="28" width="260" height="66"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="aas-YY-bBi" id="nAo-A3-1zJ">
@@ -4203,7 +4217,7 @@
                                                 <rect key="frame" x="170" y="300.5" width="120" height="44"/>
                                                 <color key="backgroundColor" red="0.82745098039999998" green="0.82745098039999998" blue="0.82745098039999998" alpha="1" colorSpace="calibratedRGB"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="16"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                                                 <connections>
                                                     <outlet property="delegate" destination="3BK-gg-wQn" id="GKW-w7-BZm"/>
                                                 </connections>
@@ -5552,7 +5566,7 @@
                                                 <rect key="frame" x="170" y="677" width="120" height="43.5"/>
                                                 <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                                                 <connections>
                                                     <outlet property="delegate" destination="Dw6-Ub-esP" id="3Kh-1Q-8qy"/>
                                                 </connections>
@@ -6642,7 +6656,7 @@
                                                     <action selector="nextWeekTrainerAttendenceAction:" destination="sbL-XA-hM8" eventType="touchUpInside" id="YlA-V5-uJI"/>
                                                 </connections>
                                             </button>
-                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="NpK-OR-bEP">
+                                            <tableView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="NpK-OR-bEP">
                                                 <rect key="frame" x="30" y="259" width="260" height="121"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
@@ -7089,7 +7103,7 @@
                                         <rect key="frame" x="30" y="101" width="260" height="32"/>
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                                         <connections>
                                             <outlet property="delegate" destination="ViD-Jn-Hjg" id="AdE-mD-qOk"/>
                                         </connections>
@@ -7154,7 +7168,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b6T-cE-fP9">
-                                        <rect key="frame" x="30" y="321.5" width="260" height="38.5"/>
+                                        <rect key="frame" x="30" y="326" width="260" height="34"/>
                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <fontDescription key="fontDescription" name="Poppins-Bold" family="Poppins" pointSize="18"/>
                                         <state key="normal" title="D O N E ">
@@ -7225,7 +7239,7 @@
                                     <constraint firstAttribute="trailing" secondItem="kNH-59-EaZ" secondAttribute="trailing" constant="30" id="r4z-ER-Cn0"/>
                                     <constraint firstItem="hPt-I9-iHy" firstAttribute="top" secondItem="zdl-AT-6fj" secondAttribute="bottom" constant="2" id="rC4-IB-ui2"/>
                                     <constraint firstItem="3uK-Py-0Nu" firstAttribute="top" secondItem="prZ-oO-96N" secondAttribute="bottom" constant="5" id="tCH-wt-qnV"/>
-                                    <constraint firstItem="b6T-cE-fP9" firstAttribute="height" secondItem="3uK-Py-0Nu" secondAttribute="height" multiplier="1.2" id="tuh-6j-RGX"/>
+                                    <constraint firstItem="b6T-cE-fP9" firstAttribute="height" secondItem="3uK-Py-0Nu" secondAttribute="height" multiplier="1.07" id="tuh-6j-RGX"/>
                                     <constraint firstAttribute="trailing" secondItem="sYd-HR-tX8" secondAttribute="trailing" constant="30" id="u14-r9-q5K"/>
                                     <constraint firstItem="MtF-vw-50s" firstAttribute="top" secondItem="btd-rF-zs1" secondAttribute="bottom" constant="5" id="uDs-UK-SnR"/>
                                     <constraint firstItem="zdl-AT-6fj" firstAttribute="height" secondItem="3uK-Py-0Nu" secondAttribute="height" id="vND-vQ-xuv"/>
@@ -7913,7 +7927,7 @@
                                                 <rect key="frame" x="30" y="570" width="120" height="44"/>
                                                 <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                                                 <connections>
                                                     <outlet property="delegate" destination="sHc-WY-Mi7" id="Vgo-6z-ZO5"/>
                                                 </connections>
@@ -7974,7 +7988,7 @@
                                                 <rect key="frame" x="30" y="655" width="260" height="44"/>
                                                 <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
                                                 <connections>
                                                     <outlet property="delegate" destination="sHc-WY-Mi7" id="jSV-Tk-p0g"/>
                                                 </connections>
@@ -8561,7 +8575,7 @@
                                                 <rect key="frame" x="170" y="509" width="120" height="44"/>
                                                 <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                                                 <connections>
                                                     <outlet property="delegate" destination="rNJ-PH-j7H" id="EcE-xR-CPa"/>
                                                 </connections>
@@ -8665,7 +8679,7 @@
                                                 <rect key="frame" x="30" y="686.5" width="120" height="44"/>
                                                 <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="phonePad"/>
                                                 <connections>
                                                     <outlet property="delegate" destination="rNJ-PH-j7H" id="sf5-rn-nVh"/>
                                                 </connections>
@@ -9427,7 +9441,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tsh-at-3Il">
-                                <rect key="frame" x="30" y="424" width="260" height="36"/>
+                                <rect key="frame" x="30" y="426" width="260" height="34"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" name="Poppins-Bold" family="Poppins" pointSize="18"/>
                                 <state key="normal" title="U P D A T E ">
@@ -9537,7 +9551,7 @@
                             <constraint firstItem="tYq-nd-m9r" firstAttribute="top" secondItem="Dfc-wP-ezK" secondAttribute="bottom" constant="2" id="ubL-LZ-3Ki"/>
                             <constraint firstItem="hwZ-7O-f85" firstAttribute="trailing" secondItem="MBg-Db-4R0" secondAttribute="trailing" constant="30" id="vJe-Fx-4VE"/>
                             <constraint firstItem="hwZ-7O-f85" firstAttribute="trailing" secondItem="Dfc-wP-ezK" secondAttribute="trailing" constant="30" id="vPJ-oC-4Jf"/>
-                            <constraint firstItem="Tsh-at-3Il" firstAttribute="height" secondItem="Yvk-dF-b1s" secondAttribute="height" multiplier="1.18" id="wJq-lS-2iz"/>
+                            <constraint firstItem="Tsh-at-3Il" firstAttribute="height" secondItem="Yvk-dF-b1s" secondAttribute="height" multiplier="1.1" id="wJq-lS-2iz"/>
                             <constraint firstItem="N4p-sx-PsR" firstAttribute="leading" secondItem="hwZ-7O-f85" secondAttribute="leading" constant="30" id="wgE-bo-iwR"/>
                             <constraint firstItem="Yvk-dF-b1s" firstAttribute="top" secondItem="VA1-ga-52Z" secondAttribute="bottom" constant="5" id="y8g-39-HPX"/>
                             <constraint firstItem="bGT-zj-wQj" firstAttribute="top" secondItem="eqg-KS-TMK" secondAttribute="bottom" id="y9e-Cd-PK6"/>
@@ -9587,9 +9601,9 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="P1T-jn-7dm"/>
-        <segue reference="a1y-0k-oIj"/>
-        <segue reference="uuh-BO-wgM"/>
+        <segue reference="4al-IY-hhM"/>
+        <segue reference="0wx-uF-HLE"/>
+        <segue reference="E5i-26-HXg"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="add_Icon" width="225" height="210"/>

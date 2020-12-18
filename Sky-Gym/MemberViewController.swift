@@ -93,6 +93,7 @@ class MemberViewController: BaseViewController {
     var textFieldArray:[UITextField] = []
     let validation = ValidationManager.shared
     var selectedDate:String = ""
+    var actualPassword :String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -200,6 +201,7 @@ extension MemberViewController{
         self.updateBtn.isHidden = true
         AppManager.shared.performEditAction(dataFields: self.getMemberProfileFieldsAndLabelDic(), edit:  false)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
+        AppManager.shared.hidePasswordTextField(hide: true, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
         self.setHrLineView(isHidden: false, alpha: 1.0)
         self.addressNonEditLabel.isHidden = false
         self.addressNonEditLabel.alpha = 1.0
@@ -255,8 +257,6 @@ extension MemberViewController{
     
     @objc func fieldsValidatorAction(_ textField:UITextField) {
         self.allMemberProfileFieldsRequiredValidation(textField: textField)
-//        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField)
-        
     }
     
     @objc func makeEditable() {
@@ -264,6 +264,7 @@ extension MemberViewController{
         self.memberImg.isUserInteractionEnabled = false
         AppManager.shared.performEditAction(dataFields:self.getMemberProfileFieldsAndLabelDic(), edit:  false)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
+        AppManager.shared.hidePasswordTextField(hide: true, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
         self.addressNonEditLabel.isHidden = false
         self.addressTextView.isHidden  = true
         self.addressTextView.alpha = 0.0
@@ -275,6 +276,7 @@ extension MemberViewController{
         self.memberImg.isUserInteractionEnabled = true
         AppManager.shared.performEditAction(dataFields:self.getMemberProfileFieldsAndLabelDic(), edit:  true)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: errorLabelArray, flag: false)
+        AppManager.shared.hidePasswordTextField(hide: false, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
         self.setToggleBtns(isEnabled: true, alpha: 1.0)
         self.memberIDTextField.isEnabled = true
         self.memberIDTextField.layer.opacity = 0.4
@@ -302,7 +304,6 @@ extension MemberViewController{
             self.memberIDTextField! : self.memberIDNonEditLabel!,
             self.dateOfJoiningTextField! : self.dateOfJoiningNonEditLabel!,
             self.genderTextField! : self.genderNonEditLabel!,
-            self.passwordTextField! : self.passwordNonEditLabel!,
             self.trainerNameTextField! : self.trainerNameNonEditLabel!,
             self.uploadIDTextField! : self.uploadIDNonEditLabel!,
             self.emailTextField! : self.emailNonEditLabel!,
@@ -325,7 +326,7 @@ extension MemberViewController{
             if err != nil {
                 self.showMemberProfileAlert(title: "Retry", message: "Error in getting member's details, please try again.")
             } else {
-                let memberDetail = data?["memberDetail"] as! NSDictionary
+                let memberDetail = data?["memberDetail"] as! Dictionary<String,String>
                 self.fillMemberProfileDetail(memberDetail: AppManager.shared.getMemberDetailStr(memberDetail: memberDetail ))
              }
         })
@@ -338,7 +339,8 @@ extension MemberViewController{
         self.memberIDNonEditLabel.text = memberDetail.memberID
         self.dateOfJoiningNonEditLabel.text = memberDetail.dateOfJoining
         self.genderNonEditLabel.text = memberDetail.gender
-        self.passwordNonEditLabel.text = memberDetail.password
+        self.actualPassword = memberDetail.password
+        self.passwordNonEditLabel.text = AppManager.shared.getSecureTextFor(text: memberDetail.password)
         self.trainerNameNonEditLabel.text = memberDetail.trainerName
         self.emailNonEditLabel.text = memberDetail.email
         self.uploadIDNonEditLabel.text = memberDetail.uploadIDName
@@ -403,7 +405,6 @@ extension MemberViewController{
            let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
                (action) in
             if title == "Success" || title == "Retry" {
-                //self.viewWillAppear(true)
                 self.fetchMemberProfileDetails(id: AppManager.shared.memberID )
             }
            })

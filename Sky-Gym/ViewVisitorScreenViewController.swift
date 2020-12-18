@@ -377,7 +377,6 @@ extension ViewVisitorScreenViewController {
         
         FireStoreManager.shared.getVisitorBy(id: id, result: {
             (visitor,err) in
-            SVProgressHUD.dismiss()
             if err != nil {
                 self.showVisitorAlert(title: "Retry", message: "Error in fetching visitor details, Please try again.")
             } else {
@@ -385,10 +384,10 @@ extension ViewVisitorScreenViewController {
                 
                 FireStoreManager.shared.downloadUserImg(id: id, result: {
                     (url,err) in
+                    SVProgressHUD.dismiss()
                     if err != nil {
-                         SVProgressHUD.dismiss()
+                         
                     } else {
-                         SVProgressHUD.dismiss()
                         do {
                             self.userImg.image =  try UIImage(data: Data(contentsOf: url!))
                         } catch let error as NSError {
