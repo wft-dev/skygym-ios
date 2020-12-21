@@ -2849,14 +2849,14 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paid" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ay5-Ug-t60">
                                 <rect key="frame" x="240" y="93.5" width="50" height="18"/>
                                 <color key="backgroundColor" red="0.94901960780000005" green="0.85882352939999995" blue="0.29411764709999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="10"/>
+                                <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="12"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unpaid" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7rC-4J-xGp">
-                                <rect key="frame" x="257" y="93.5" width="33" height="18"/>
+                                <rect key="frame" x="240" y="93.5" width="50" height="18"/>
                                 <color key="backgroundColor" red="0.93725490199999995" green="0.83529411760000005" blue="0.28627450980000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="9"/>
+                                <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="11"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -2961,6 +2961,7 @@
                             <constraint firstItem="jbE-q3-aaM" firstAttribute="top" secondItem="X3U-kF-4oO" secondAttribute="top" id="2Zb-fM-KGK"/>
                             <constraint firstItem="rZY-jA-DLG" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="r23-bu-Rrx" secondAttribute="trailing" constant="117" id="2nT-xS-auq"/>
                             <constraint firstItem="PUM-lV-0Vi" firstAttribute="trailing" secondItem="Ay5-Ug-t60" secondAttribute="trailing" constant="30" id="5g3-zH-LhH"/>
+                            <constraint firstItem="7rC-4J-xGp" firstAttribute="width" secondItem="Ay5-Ug-t60" secondAttribute="width" id="6Tk-uO-Ngc"/>
                             <constraint firstItem="d8n-Yo-1jv" firstAttribute="top" secondItem="jbE-q3-aaM" secondAttribute="bottom" constant="3" id="91z-nF-TaO"/>
                             <constraint firstItem="nvc-6e-Q4R" firstAttribute="centerY" secondItem="rZY-jA-DLG" secondAttribute="centerY" id="Dwb-34-b1H"/>
                             <constraint firstItem="PUM-lV-0Vi" firstAttribute="trailing" secondItem="7rC-4J-xGp" secondAttribute="trailing" constant="30" id="ED3-bZ-V0X"/>
@@ -3399,7 +3400,7 @@
                                         </constraints>
                                     </view>
                                     <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aho-A4-gRw">
-                                        <rect key="frame" x="86.5" y="15" width="233.5" height="128"/>
+                                        <rect key="frame" x="86.5" y="0.0" width="233.5" height="128"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bEk-hh-Wks">
                                                 <rect key="frame" x="0.0" y="0.0" width="233.5" height="63.5"/>
@@ -3445,9 +3446,27 @@
                                             <constraint firstItem="fHA-di-TyG" firstAttribute="leading" secondItem="aho-A4-gRw" secondAttribute="leading" id="yKZ-8W-Xko"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L7O-w1-NqO">
-                                        <rect key="frame" x="86.5" y="79" width="233.5" height="64"/>
-                                        <color key="backgroundColor" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L7O-w1-NqO">
+                                        <rect key="frame" x="86.5" y="38.5" width="233.5" height="89.5"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mWA-fh-2pP">
+                                                <rect key="frame" x="0.0" y="0.0" width="233.5" height="89.5"/>
+                                                <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
+                                                <state key="normal" title="Delete Membership">
+                                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="deletePreviousMembershipBtnAction:" destination="VWc-b3-xiL" eventType="touchUpInside" id="fLO-pw-01Z"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="bottom" secondItem="mWA-fh-2pP" secondAttribute="bottom" id="7gq-mB-mq4"/>
+                                            <constraint firstAttribute="trailing" secondItem="mWA-fh-2pP" secondAttribute="trailing" id="ITQ-rk-il0"/>
+                                            <constraint firstItem="mWA-fh-2pP" firstAttribute="leading" secondItem="L7O-w1-NqO" secondAttribute="leading" id="a82-rp-p4n"/>
+                                            <constraint firstItem="mWA-fh-2pP" firstAttribute="top" secondItem="L7O-w1-NqO" secondAttribute="top" id="dWa-4R-sQ8"/>
+                                        </constraints>
                                     </view>
                                 </subviews>
                                 <constraints>
@@ -3458,7 +3477,7 @@
                                     <constraint firstItem="L7O-w1-NqO" firstAttribute="bottom" secondItem="aho-A4-gRw" secondAttribute="bottom" id="j36-LH-bux"/>
                                     <constraint firstItem="L7O-w1-NqO" firstAttribute="width" secondItem="aho-A4-gRw" secondAttribute="width" id="m09-X3-yHL"/>
                                     <constraint firstItem="L7O-w1-NqO" firstAttribute="leading" secondItem="aho-A4-gRw" secondAttribute="leading" id="oxv-wC-iS2"/>
-                                    <constraint firstItem="L7O-w1-NqO" firstAttribute="height" secondItem="aho-A4-gRw" secondAttribute="height" multiplier="0.5" id="qTZ-uG-pG6"/>
+                                    <constraint firstItem="L7O-w1-NqO" firstAttribute="height" secondItem="aho-A4-gRw" secondAttribute="height" multiplier="0.7" id="qTZ-uG-pG6"/>
                                     <constraint firstItem="L7O-w1-NqO" firstAttribute="trailing" secondItem="aho-A4-gRw" secondAttribute="trailing" id="rck-gH-95W"/>
                                     <constraint firstItem="K3q-Vi-lhV" firstAttribute="centerX" secondItem="5u3-Q0-9Hl" secondAttribute="centerX" id="u1t-dg-d23"/>
                                     <constraint firstItem="K3q-Vi-lhV" firstAttribute="leading" secondItem="VJa-lQ-YBI" secondAttribute="leading" id="wVt-4b-F43"/>
@@ -3529,7 +3548,7 @@
                                     <constraint firstAttribute="height" constant="60" id="Q7v-t2-SnZ"/>
                                 </constraints>
                             </view>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="270" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="mNC-df-Z1H">
+                            <tableView hidden="YES" clipsSubviews="YES" alpha="0.0" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="270" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="mNC-df-Z1H">
                                 <rect key="frame" x="0.0" y="60" width="320" height="420"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <prototypes>
@@ -3705,21 +3724,32 @@
                                     <outlet property="delegate" destination="0H2-RA-Mqi" id="3Jd-FJ-rql"/>
                                 </connections>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Purchase History" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Jm-T8-YbY">
+                                <rect key="frame" x="30" y="200" width="260" height="80"/>
+                                <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="20"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="mNC-df-Z1H" firstAttribute="top" secondItem="Oce-73-jnl" secondAttribute="bottom" id="1Cy-Pl-VUY"/>
                             <constraint firstItem="1mI-Xi-ca4" firstAttribute="trailing" secondItem="Oce-73-jnl" secondAttribute="trailing" id="2EX-k3-RHm"/>
                             <constraint firstItem="Oce-73-jnl" firstAttribute="top" secondItem="1mI-Xi-ca4" secondAttribute="top" id="3Tb-sS-CCo"/>
+                            <constraint firstItem="5Jm-T8-YbY" firstAttribute="top" secondItem="1mI-Xi-ca4" secondAttribute="top" constant="200" id="8t0-B9-rLQ"/>
+                            <constraint firstItem="5Jm-T8-YbY" firstAttribute="leading" secondItem="1mI-Xi-ca4" secondAttribute="leading" constant="30" id="8uf-ON-chJ"/>
                             <constraint firstItem="Oce-73-jnl" firstAttribute="leading" secondItem="1mI-Xi-ca4" secondAttribute="leading" id="AoT-h1-P47"/>
+                            <constraint firstItem="1mI-Xi-ca4" firstAttribute="trailing" secondItem="5Jm-T8-YbY" secondAttribute="trailing" constant="30" id="QBE-02-5OG"/>
                             <constraint firstItem="1mI-Xi-ca4" firstAttribute="trailing" secondItem="mNC-df-Z1H" secondAttribute="trailing" id="deR-Hu-0tv"/>
                             <constraint firstItem="mNC-df-Z1H" firstAttribute="leading" secondItem="1mI-Xi-ca4" secondAttribute="leading" id="htu-Kp-p9J"/>
                             <constraint firstItem="1mI-Xi-ca4" firstAttribute="bottom" secondItem="mNC-df-Z1H" secondAttribute="bottom" id="nTZ-2r-lpR"/>
+                            <constraint firstItem="1mI-Xi-ca4" firstAttribute="bottom" secondItem="5Jm-T8-YbY" secondAttribute="bottom" constant="200" id="vAv-dx-ejz"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="1mI-Xi-ca4"/>
                     </view>
                     <navigationItem key="navigationItem" id="jqK-po-WiC"/>
                     <connections>
+                        <outlet property="noPurchaseHistoryLabel" destination="5Jm-T8-YbY" id="0fk-d7-Hs8"/>
                         <outlet property="purchaseNavigationBar" destination="Oce-73-jnl" id="7Al-Vq-aei"/>
                         <outlet property="purchaseTable" destination="mNC-df-Z1H" id="sxx-Df-fN9"/>
                         <segue destination="VWc-b3-xiL" kind="show" identifier="membershipDetailSegue" id="0wx-uF-HLE"/>
@@ -3727,7 +3757,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wXw-7I-xwg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4112" y="2446"/>
+            <point key="canvasLocation" x="3932" y="1628"/>
         </scene>
         <!--Member Attandance View Controller-->
         <scene sceneID="s54-4K-eB7">
@@ -3823,7 +3853,7 @@
                                                     <action selector="forwardWeekAttendenceAction:" destination="h0b-rR-rWn" eventType="touchUpInside" id="Tub-FJ-fS0"/>
                                                 </connections>
                                             </button>
-                                            <tableView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="tE9-s4-JwO">
+                                            <tableView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="tE9-s4-JwO">
                                                 <rect key="frame" x="30" y="249" width="260" height="131"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
@@ -3949,7 +3979,7 @@
                                                     <outlet property="delegate" destination="h0b-rR-rWn" id="SO5-pm-rWZ"/>
                                                 </connections>
                                             </tableView>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8m4-hk-oYd">
+                                            <button hidden="YES" opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8m4-hk-oYd">
                                                 <rect key="frame" x="35" y="410" width="250" height="50"/>
                                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
@@ -3960,6 +3990,12 @@
                                                     <color key="titleColor" red="0.96470588239999999" green="0.96470588239999999" blue="0.96470588239999999" alpha="1" colorSpace="calibratedRGB"/>
                                                 </state>
                                             </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Attendence History" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Guw-PM-BUi">
+                                                <rect key="frame" x="30" y="314" width="260" height="28"/>
+                                                <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="20"/>
+                                                <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <constraints>
@@ -3971,14 +4007,18 @@
                                             <constraint firstAttribute="trailing" secondItem="xlb-mm-FlN" secondAttribute="trailing" constant="20" id="8sb-J8-GF2"/>
                                             <constraint firstItem="tE9-s4-JwO" firstAttribute="top" secondItem="r1F-B3-lem" secondAttribute="bottom" constant="15" id="Cot-LN-aEJ"/>
                                             <constraint firstAttribute="trailing" secondItem="I9L-8c-BKX" secondAttribute="trailing" constant="40" id="DNy-Rv-7Ra"/>
+                                            <constraint firstItem="Guw-PM-BUi" firstAttribute="leading" secondItem="tJn-h2-JDb" secondAttribute="leading" constant="30" id="EzG-jR-HVb"/>
                                             <constraint firstItem="xlb-mm-FlN" firstAttribute="top" secondItem="YxC-dT-7bD" secondAttribute="top" id="FEi-U1-c1U"/>
                                             <constraint firstItem="r1F-B3-lem" firstAttribute="top" secondItem="I9L-8c-BKX" secondAttribute="bottom" constant="15" id="FrF-b8-Blq"/>
                                             <constraint firstItem="Tcg-9E-7WV" firstAttribute="leading" secondItem="tJn-h2-JDb" secondAttribute="leading" constant="45" id="Fv7-HK-aav"/>
+                                            <constraint firstItem="Guw-PM-BUi" firstAttribute="top" secondItem="r1F-B3-lem" secondAttribute="bottom" constant="80" id="GIE-9u-38V"/>
                                             <constraint firstItem="KgU-ry-s6C" firstAttribute="top" secondItem="I9L-8c-BKX" secondAttribute="bottom" constant="15" id="GaK-lW-K6B"/>
                                             <constraint firstItem="tE9-s4-JwO" firstAttribute="top" secondItem="sUs-0b-l7c" secondAttribute="bottom" constant="20" id="HaV-hm-D4V"/>
                                             <constraint firstItem="tE9-s4-JwO" firstAttribute="top" secondItem="Tcg-9E-7WV" secondAttribute="bottom" constant="20" id="IAs-OZ-JTi"/>
                                             <constraint firstItem="8m4-hk-oYd" firstAttribute="top" secondItem="tE9-s4-JwO" secondAttribute="bottom" constant="30" id="J94-JN-Jan"/>
                                             <constraint firstItem="YxC-dT-7bD" firstAttribute="leading" secondItem="tJn-h2-JDb" secondAttribute="leading" constant="60" id="JRq-3o-2EQ"/>
+                                            <constraint firstAttribute="trailing" secondItem="Guw-PM-BUi" secondAttribute="trailing" constant="30" id="Mnf-jZ-Oyn"/>
+                                            <constraint firstItem="Guw-PM-BUi" firstAttribute="centerX" secondItem="tJn-h2-JDb" secondAttribute="centerX" id="Mvu-wv-0oj"/>
                                             <constraint firstAttribute="trailing" secondItem="sUs-0b-l7c" secondAttribute="trailing" constant="45" id="PVY-4p-N0Q"/>
                                             <constraint firstItem="KgU-ry-s6C" firstAttribute="centerY" secondItem="r1F-B3-lem" secondAttribute="centerY" id="Pw2-Ia-7Mg"/>
                                             <constraint firstItem="YxC-dT-7bD" firstAttribute="top" secondItem="zKz-NP-JW4" secondAttribute="bottom" constant="10" id="QIH-I8-pb8"/>
@@ -4036,6 +4076,7 @@
                         <outlet property="memberAttandanceTable" destination="tE9-s4-JwO" id="b5R-DH-X8U"/>
                         <outlet property="memberNameLabel" destination="xlb-mm-FlN" id="ukU-VX-LfP"/>
                         <outlet property="memberUserImg" destination="YxC-dT-7bD" id="jmj-xZ-tsa"/>
+                        <outlet property="noAttendenceHistoryLabel" destination="Guw-PM-BUi" id="5x2-qc-8Vs"/>
                         <outlet property="startDateLabel" destination="r1F-B3-lem" id="qbm-d2-g99"/>
                     </connections>
                 </viewController>
@@ -6656,7 +6697,7 @@
                                                     <action selector="nextWeekTrainerAttendenceAction:" destination="sbL-XA-hM8" eventType="touchUpInside" id="YlA-V5-uJI"/>
                                                 </connections>
                                             </button>
-                                            <tableView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="NpK-OR-bEP">
+                                            <tableView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="NpK-OR-bEP">
                                                 <rect key="frame" x="30" y="259" width="260" height="121"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
@@ -6782,7 +6823,7 @@
                                                     <outlet property="dataSource" destination="sbL-XA-hM8" id="c2f-ev-xGZ"/>
                                                 </connections>
                                             </tableView>
-                                            <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ap1-5r-f40">
+                                            <button hidden="YES" opaque="NO" clipsSubviews="YES" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ap1-5r-f40">
                                                 <rect key="frame" x="35" y="410" width="250" height="50"/>
                                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
@@ -6796,12 +6837,20 @@
                                                     <action selector="backBtnAction:" destination="sbL-XA-hM8" eventType="touchUpInside" id="hYc-NX-Qpx"/>
                                                 </connections>
                                             </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Attendence History" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pYI-uL-RGO">
+                                                <rect key="frame" x="30" y="294" width="260" height="28"/>
+                                                <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="20"/>
+                                                <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <constraints>
+                                            <constraint firstItem="pYI-uL-RGO" firstAttribute="leading" secondItem="tIV-0Z-3M1" secondAttribute="leading" constant="30" id="0Pa-NQ-0bA"/>
                                             <constraint firstItem="2h1-gO-tbU" firstAttribute="top" secondItem="fxA-lI-mtA" secondAttribute="bottom" constant="15" id="0dv-xh-IGt"/>
                                             <constraint firstItem="NpK-OR-bEP" firstAttribute="top" secondItem="e5s-GY-Bg5" secondAttribute="bottom" constant="20" id="1ac-Sg-RhI"/>
                                             <constraint firstItem="NpK-OR-bEP" firstAttribute="top" secondItem="WFX-ne-HDE" secondAttribute="bottom" constant="20" id="39i-g6-gjK"/>
+                                            <constraint firstAttribute="trailing" secondItem="pYI-uL-RGO" secondAttribute="trailing" constant="30" id="6VF-mD-NJd"/>
                                             <constraint firstItem="2h1-gO-tbU" firstAttribute="leading" secondItem="AZr-wq-ohK" secondAttribute="trailing" constant="20" id="8eE-cY-37f"/>
                                             <constraint firstItem="erH-xl-j8A" firstAttribute="top" secondItem="HTH-tP-7Cn" secondAttribute="bottom" id="9jt-l1-FQ1"/>
                                             <constraint firstItem="e5s-GY-Bg5" firstAttribute="leading" secondItem="tIV-0Z-3M1" secondAttribute="leading" constant="30" id="CGE-qu-xxo"/>
@@ -6832,6 +6881,7 @@
                                             <constraint firstItem="NpK-OR-bEP" firstAttribute="top" secondItem="2h1-gO-tbU" secondAttribute="bottom" constant="15" id="tPT-KM-fsm"/>
                                             <constraint firstAttribute="trailing" secondItem="NpK-OR-bEP" secondAttribute="trailing" constant="30" id="tlK-xj-UQX"/>
                                             <constraint firstItem="WFX-ne-HDE" firstAttribute="leading" secondItem="2h1-gO-tbU" secondAttribute="trailing" constant="10" id="wUJ-7b-nFw"/>
+                                            <constraint firstItem="pYI-uL-RGO" firstAttribute="top" secondItem="AZr-wq-ohK" secondAttribute="bottom" constant="50" id="wzm-Xk-INf"/>
                                             <constraint firstItem="NpK-OR-bEP" firstAttribute="top" secondItem="AZr-wq-ohK" secondAttribute="bottom" constant="15" id="xqB-r4-KPk"/>
                                             <constraint firstItem="erH-xl-j8A" firstAttribute="leading" secondItem="bPp-97-Myt" secondAttribute="trailing" constant="15" id="yxs-2h-j77"/>
                                         </constraints>
@@ -6864,6 +6914,7 @@
                         <outlet property="attendenceStartDateLabel" destination="AZr-wq-ohK" id="YaG-Lu-qGu"/>
                         <outlet property="backBtn" destination="ap1-5r-f40" id="pmH-7A-9CS"/>
                         <outlet property="checkByDateBtn" destination="fxA-lI-mtA" id="NVc-RS-M4D"/>
+                        <outlet property="noTrainerAttendenceHistoryLabel" destination="pYI-uL-RGO" id="XMk-ko-qh1"/>
                         <outlet property="trainerAddressLabel" destination="erH-xl-j8A" id="KxL-4o-aci"/>
                         <outlet property="trainerAttendanceTable" destination="NpK-OR-bEP" id="9KT-1E-yx1"/>
                         <outlet property="trainerAttendenceHeigthConstriant" destination="tm0-DJ-Hmp" id="YOV-od-NQi"/>
@@ -9603,7 +9654,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="4al-IY-hhM"/>
         <segue reference="0wx-uF-HLE"/>
-        <segue reference="E5i-26-HXg"/>
+        <segue reference="uuh-BO-wgM"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="add_Icon" width="225" height="210"/>

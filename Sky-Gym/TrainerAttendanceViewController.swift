@@ -30,7 +30,7 @@ class TrainerAttendanceViewController: BaseViewController {
     @IBOutlet weak var attendenceEndDateLabel: UILabel!
     @IBOutlet weak var trainerAttendenceHeigthConstriant: NSLayoutConstraint!
     @IBOutlet weak var trainerUserImg: UIImageView!
-    
+    @IBOutlet weak var noTrainerAttendenceHistoryLabel: UILabel!
     
     var trainerAttendanceArray:[Attendence?] = []
     var trainerName:String = ""
@@ -68,14 +68,31 @@ class TrainerAttendanceViewController: BaseViewController {
 
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Trainers", id: AppManager.shared.trainerID, startDate: "\(dateFormatter.string(from: Date()))", endDate: "\(AppManager.shared.getNext7DaysDate(startDate: Date()))", s: {
             (array,_) in
-            self.attendenceStartDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.first!.date)))
-            self.attendenceEndDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.last!.date)))
-            self.trainerAttendanceArray.removeAll()
-            self.trainerAttendanceArray = array
-            self.heightConstraint = CGFloat(self.trainerAttendanceArray.count * 66)
-            DispatchQueue.main.async {
-            self.trainerAttendenceHeigthConstriant.constant = self.heightConstraint
-            self.trainerAttendanceTable.reloadData()
+            
+            if array.count > 0 {
+                self.trainerAttendanceTable.isHidden = false
+                self.trainerAttendanceTable.alpha = 1.0
+                self.noTrainerAttendenceHistoryLabel.isHidden = true
+                self.noTrainerAttendenceHistoryLabel.alpha = 0.0
+                self.backBtn.isHidden = false
+                self.backBtn.alpha = 1.0
+                
+                self.attendenceStartDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.first!.date)))
+                self.attendenceEndDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.last!.date)))
+                self.trainerAttendanceArray.removeAll()
+                self.trainerAttendanceArray = array
+                self.heightConstraint = CGFloat(self.trainerAttendanceArray.count * 66)
+                DispatchQueue.main.async {
+                self.trainerAttendenceHeigthConstriant.constant = self.heightConstraint
+                self.trainerAttendanceTable.reloadData()
+                }
+            } else{
+                self.trainerAttendanceTable.isHidden = true
+                self.trainerAttendanceTable.alpha = 0.0
+                self.noTrainerAttendenceHistoryLabel.isHidden = false
+                self.noTrainerAttendenceHistoryLabel.alpha = 1.0
+                self.backBtn.isHidden = true
+                self.backBtn.alpha = 0.0
             }
         })
     }
@@ -95,23 +112,21 @@ class TrainerAttendanceViewController: BaseViewController {
 
 extension TrainerAttendanceViewController{
     
-  @objc  func previousWeekTrainerAttendence() {
-        let startDate = self.attendenceStartDateLabel.text!
-        let endDate = AppManager.shared.getDate(date: startDate)
-        let sevenDayPreviousDate = AppManager.shared.getPrevious7DaysDate(startDate: endDate)
+    @objc  func previousWeekTrainerAttendence() {
+        let previousStartDate = AppManager.shared.getPreviousDayDate(startDate: AppManager.shared.getDate(date: self.attendenceStartDateLabel.text!))
+        let previousEndDate = AppManager.shared.getPreviousDayDate(startDate: AppManager.shared.getDate(date: self.attendenceEndDateLabel.text!))
         
-        self.fetchTrainerAttendenceFrom(startDate: sevenDayPreviousDate, endDate:startDate)
-        self.attendenceStartDateLabel.text = sevenDayPreviousDate
-        self.attendenceEndDateLabel.text = startDate
+        self.fetchTrainerAttendenceFrom(startDate: previousStartDate, endDate:previousEndDate)
+        self.attendenceStartDateLabel.text = previousStartDate
+        self.attendenceEndDateLabel.text = previousEndDate
     }
     
-  @objc  func nextWeekTrainerAttendence () {
-        let startDate = self.attendenceEndDateLabel.text!
-        let endDate = AppManager.shared.getDate(date: startDate)
-        let sevenDayForwardDate = AppManager.shared.getNext7DaysDate(startDate: endDate)
-        self.fetchTrainerAttendenceFrom(startDate: startDate, endDate: sevenDayForwardDate)
-        self.attendenceStartDateLabel.text = startDate
-        self.attendenceEndDateLabel.text = sevenDayForwardDate
+    @objc  func nextWeekTrainerAttendence () {
+        let nextStartDateStr = AppManager.shared.getNextDayDate(startDate: AppManager.shared.getDate(date: self.attendenceStartDateLabel.text!))
+        let nextEndDateStr = AppManager.shared.getNextDayDate(startDate: AppManager.shared.getDate(date: self.attendenceEndDateLabel.text!))
+        self.fetchTrainerAttendenceFrom(startDate: nextStartDateStr, endDate: nextEndDateStr)
+        self.attendenceStartDateLabel.text = nextStartDateStr
+        self.attendenceEndDateLabel.text = nextEndDateStr
     }
 
     func setTrainerNavigationBar() {
@@ -169,12 +184,30 @@ extension TrainerAttendanceViewController{
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Trainers", id: AppManager.shared.trainerID, startDate:startDate, endDate:endDate, s: {
             (attendenceArray,_) in
             self.trainerAttendanceArray.removeAll()
-            self.trainerAttendanceArray = attendenceArray
-            self.heightConstraint = CGFloat(self.trainerAttendanceArray.count * 66)
-            DispatchQueue.main.async {
+            
+            if attendenceArray.count > 0 {
+                self.trainerAttendanceTable.isHidden = false
+                self.trainerAttendanceTable.alpha = 1.0
+                self.noTrainerAttendenceHistoryLabel.isHidden = true
+                self.noTrainerAttendenceHistoryLabel.alpha = 0.0
+                self.backBtn.isHidden = false
+                self.backBtn.alpha = 1.0
+                
+                self.trainerAttendanceArray = attendenceArray
+                self.heightConstraint = CGFloat(self.trainerAttendanceArray.count * 66)
+                DispatchQueue.main.async {
+                    SVProgressHUD.dismiss()
+                self.trainerAttendenceHeigthConstriant.constant = self.heightConstraint
+                self.trainerAttendanceTable.reloadData()
+                }
+            }else {
                 SVProgressHUD.dismiss()
-            self.trainerAttendenceHeigthConstriant.constant = self.heightConstraint
-            self.trainerAttendanceTable.reloadData()
+                self.trainerAttendanceTable.isHidden = true
+                self.trainerAttendanceTable.alpha = 0.0
+                self.noTrainerAttendenceHistoryLabel.isHidden = false
+                self.noTrainerAttendenceHistoryLabel.alpha = 1.0
+                self.backBtn.isHidden = true
+                self.backBtn.alpha = 0.0
             }
         })
     }

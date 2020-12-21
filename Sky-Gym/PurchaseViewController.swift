@@ -24,6 +24,7 @@ class PurchaseViewController: BaseViewController {
 
     @IBOutlet weak var purchaseTable: UITableView!
     @IBOutlet weak var purchaseNavigationBar: CustomNavigationBar!
+    @IBOutlet weak var noPurchaseHistoryLabel: UILabel!
     
     var purchaseArray:[PurchaseMembershipPlan] = []
     var todayDate:Date = Date()
@@ -67,11 +68,22 @@ extension PurchaseViewController {
             } else {
                 self.memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String,String>)
                 let memberships = docSnapshot?["memberships"] as! Array<Dictionary<String,String>>
-                for membership in memberships {
-                    let singleMembership = self.getPurchaseMemberPlan(membership: membership)
-                    self.purchaseArray.append(singleMembership)
+                if memberships.count > 0 {
+                    self.noPurchaseHistoryLabel.isHidden = true
+                    self.noPurchaseHistoryLabel.alpha = 0.0
+                    self.purchaseTable.isHidden = false
+                    self.purchaseTable.alpha = 1.0
+                    for membership in memberships {
+                        let singleMembership = self.getPurchaseMemberPlan(membership: membership)
+                        self.purchaseArray.append(singleMembership)
+                    }
+                    self.purchaseTable.reloadData()
+                }else {
+                    self.noPurchaseHistoryLabel.isHidden = false
+                    self.noPurchaseHistoryLabel.alpha = 1.0
+                    self.purchaseTable.isHidden = true
+                    self.purchaseTable.alpha = 0.0
                 }
-                self.purchaseTable.reloadData()
             }
         })
     }
@@ -99,7 +111,6 @@ extension PurchaseViewController {
             destinationVC.purchasedMembershipID = sender as! String
         }
     }
-    
     
 }
 

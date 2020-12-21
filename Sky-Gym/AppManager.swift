@@ -179,7 +179,7 @@ class AppManager: NSObject {
       
     func getLatestMembership(membershipsArray:Array<Dictionary<String,String>>) -> MembershipDetailStructure{
         let lastMemberhipData = membershipsArray.last!
-        let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"]!, membershipPlan: lastMemberhipData["membershipPlan"]!, membershipDetail: lastMemberhipData["membershipDetail"]!, amount: lastMemberhipData["amount"]!, startDate: lastMemberhipData["startDate"]!, endDate: lastMemberhipData["endDate"]!, totalAmount: lastMemberhipData["totalAmount"]!, discount: lastMemberhipData["discount"]!, paymentType:lastMemberhipData["paymentType"]!, dueAmount: lastMemberhipData["dueAmount"]!,purchaseTime: lastMemberhipData["purchaseTime"]!,purchaseDate: lastMemberhipData["purchaseDate"]!, membershipDuration: lastMemberhipData["membershipDuration"]!)
+        let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"]!, membershipPlan: lastMemberhipData["membershipPlan"]!, membershipDetail: lastMemberhipData["membershipDetail"]!, amount: lastMemberhipData["amount"]!, startDate: lastMemberhipData["startDate"]!, endDate: lastMemberhipData["endDate"]!, totalAmount: lastMemberhipData["totalAmount"]!, paidAmount: lastMemberhipData["paidAmount"]!, discount: lastMemberhipData["discount"]!, paymentType:lastMemberhipData["paymentType"]!, dueAmount: lastMemberhipData["dueAmount"]!,purchaseTime: lastMemberhipData["purchaseTime"]!,purchaseDate: lastMemberhipData["purchaseDate"]!, membershipDuration: lastMemberhipData["membershipDuration"]!)
         return latestMemberhsip
     }
     
@@ -193,7 +193,7 @@ class AppManager: NSObject {
             
             if endDayDiff >= 0 && startDayDiff <= 0 {
                 let currentMembershipData = singleMembership 
-                let  currentMembership = MembershipDetailStructure(membershipID: currentMembershipData["membershipID"]!, membershipPlan: currentMembershipData["membershipPlan"]!, membershipDetail: currentMembershipData["membershipDetail"]!, amount: currentMembershipData["amount"]!, startDate: currentMembershipData["startDate"]!, endDate: currentMembershipData["endDate"]!, totalAmount: currentMembershipData["totalAmount"]!, discount: currentMembershipData["discount"]!, paymentType:currentMembershipData["paymentType"]!, dueAmount: currentMembershipData["dueAmount"]!,purchaseTime: currentMembershipData["purchaseTime"]!, purchaseDate: currentMembershipData["purchaseDate"]!, membershipDuration: currentMembershipData["membershipDuration"]!)
+                let  currentMembership = MembershipDetailStructure(membershipID: currentMembershipData["membershipID"]!, membershipPlan: currentMembershipData["membershipPlan"]!, membershipDetail: currentMembershipData["membershipDetail"]!, amount: currentMembershipData["amount"]!, startDate: currentMembershipData["startDate"]!, endDate: currentMembershipData["endDate"]!, totalAmount: currentMembershipData["totalAmount"]!, paidAmount: currentMembershipData["paidAmount"]!, discount: currentMembershipData["discount"]!, paymentType:currentMembershipData["paymentType"]!, dueAmount: currentMembershipData["dueAmount"]!,purchaseTime: currentMembershipData["purchaseTime"]!, purchaseDate: currentMembershipData["purchaseDate"]!, membershipDuration: currentMembershipData["membershipDuration"]!)
                 currentMembershipDataArray.append(currentMembership)
             }
         }
@@ -226,7 +226,6 @@ class AppManager: NSObject {
         let attendence = Attendence(date: key, present: value["present"] as! Bool, checkIn: value["checkIn"] as! String, checkOut:value["checkOut"] as! String)
         return attendence
     }
-    
   
     func getTrainerDetailS(trainerDetail:[String:String]) -> TrainerDataStructure {
         let trainer = TrainerDataStructure(firstName:trainerDetail["firstName"]!, lastName:  trainerDetail["lastName"]!, trainerID:trainerDetail["trainerID"]!, phoneNo:   trainerDetail["phoneNo"]!, email:trainerDetail["email"]!,password: trainerDetail["password"]!, address:trainerDetail["address"]!, gender:trainerDetail["gender"]!, salary:trainerDetail["salary"]!, uploadID: trainerDetail["uploadIDName"]!, shiftDays:trainerDetail["shiftDays"]!, shiftTimings: trainerDetail["shiftTimings"]!, type:trainerDetail["type"]!, dob:trainerDetail["dob"]!, dateOfJoining: trainerDetail["dateOfJoining"]!)
@@ -313,7 +312,24 @@ class AppManager: NSObject {
         let  endDate = dateFormatter.string(from: next7DaysDate)
         return endDate
     }
-
+    
+    
+    func getPreviousDayDate(startDate:Date) -> String {
+        let previousDayDate = Calendar.current.date(byAdding: .day, value: -1, to: startDate)!
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat =  "dd MMM yyyy"
+        let  endDate = dateFormatter.string(from: previousDayDate)
+        return endDate
+    }
+    
+    func getNextDayDate(startDate:Date) -> String {
+        let nextDayDate = Calendar.current.date(byAdding: .day, value: 1, to: startDate)!
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat =  "dd MMM yyyy"
+        let  endDate = dateFormatter.string(from: nextDayDate)
+        return endDate
+    }
+    
     
     func changeDateFormatToStandard(dateStr:String) -> String {
         let df = DateFormatter()
@@ -404,7 +420,18 @@ class AppManager: NSObject {
         let monthTerminator = lastDay(ofMonth: startDateMonth, year: year)
         let terminator = Calendar.current.component(.day, from: endDate)
         let endDateMonth = Calendar.current.component(.month, from: endDate)
-        let startMonthArray = (attendence["\(year)"] as! Dictionary<String,Any>)["\(startDateMonth)"] as! Array<Dictionary<String,Any>>
+        guard  let startMonthArray:Array<Dictionary<String,Any>> = (attendence["\(year)"] as? Dictionary<String,Any>)?["\(startDateMonth)"] as? Array<Dictionary<String,Any>> else {
+           // return []
+            guard let _:Array<Dictionary<String,Any>> = (attendence["\(year)"] as? Dictionary<String,Any>)?["\(endDateMonth)"] as? Array<Dictionary<String,Any>> else {
+                return []
+            }
+            let df = DateFormatter()
+            df.dateFormat = "dd-MM-yyyy"
+            let endDateStr = "1/\(endDateMonth)/\(year)"
+            attendenceArray = sameMonthSameYearAttendenceFetching(attendence: attendence, year: "\(year)", month: "\(endDateMonth)", startDate: endDateStr, endDate: "\(terminator)/\(endDateMonth)/\(year)")
+            return attendenceArray
+        }
+        
         guard let endMonthArray:Array<Dictionary<String,Any>> = (attendence["\(year)"] as? Dictionary<String,Any>)?["\(endDateMonth)"] as? Array<Dictionary<String,Any>> else {
             let df = DateFormatter()
             df.dateFormat = "dd-MM-yyyy"
@@ -494,27 +521,6 @@ class AppManager: NSObject {
 
         return attendenceArray
     }
-
-//    func getCompleteMonthAttendenceStructure() -> [String:Any] {
-//        var completeMonthAttendenceArray = [NSDictionary]()
-//        let currentYear = Calendar.current.component(.year, from: Date())
-//        let currentMonth = Calendar.current.component(.month, from: Date())
-//        var counter:Int = 1
-//        let lastDate = lastDay(ofMonth: currentMonth, year: currentYear)
-//        var dates = "\(counter)/\(currentMonth)/\(currentYear)"
-//        let status:[String:Any] = [
-//            "checkIn" : "",
-//            "checkOut": "",
-//            "present" : false
-//        ]
-//        while counter <= lastDate {
-//            completeMonthAttendenceArray.append(["\(dates)":status])
-//            counter += 1
-//            dates = "\(counter)/\(currentMonth)/\(currentYear)"
-//        }
-//        let attendence = ["\(currentYear)":["\(currentMonth)":completeMonthAttendenceArray]]
-//        return attendence
-//    }
 
     func getMonthAttendenceStructure(year:Int,month:Int,checkIn:String,checkOut:String,present:Bool) -> Array<Dictionary<String,Any>>{
         var counter = 1
@@ -620,7 +626,7 @@ class AppManager: NSObject {
     }
     
     func getCompleteMembershipDetail(membershipDetail:[String:String]) -> MembershipDetailStructure {
-        let m = MembershipDetailStructure(membershipID: membershipDetail["membershipID"]!, membershipPlan:  membershipDetail["membershipPlan"]!, membershipDetail:  membershipDetail["membershipDetail"]!, amount:  membershipDetail["amount"]!, startDate:  membershipDetail["startDate"]!, endDate:  membershipDetail["endDate"]!, totalAmount:  membershipDetail["totalAmount"]!, discount:  membershipDetail["discount"]!, paymentType:  membershipDetail["paymentType"]!, dueAmount:  membershipDetail["dueAmount"]!, purchaseTime:  membershipDetail["purchaseTime"]!, purchaseDate:  membershipDetail["purchaseDate"]!, membershipDuration: membershipDetail["membershipDuration"]!)
+        let m = MembershipDetailStructure(membershipID: membershipDetail["membershipID"]!, membershipPlan:  membershipDetail["membershipPlan"]!, membershipDetail:  membershipDetail["membershipDetail"]!, amount:  membershipDetail["amount"]!, startDate:  membershipDetail["startDate"]!, endDate:  membershipDetail["endDate"]!, totalAmount:  membershipDetail["totalAmount"]!, paidAmount: membershipDetail["paidAmount"]!, discount:  membershipDetail["discount"]!, paymentType:  membershipDetail["paymentType"]!, dueAmount:  membershipDetail["dueAmount"]!, purchaseTime:  membershipDetail["purchaseTime"]!, purchaseDate:  membershipDetail["purchaseDate"]!, membershipDuration: membershipDetail["membershipDuration"]!)
         return m
     }
     
@@ -643,8 +649,9 @@ class AppManager: NSObject {
     }
     
     func getPreviousMembership(membershipArray:Array<Dictionary<String,String>>) -> MembershipDetailStructure {
+        
         let lastMemberhipData = membershipArray.last!
-        let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"]!, membershipPlan: lastMemberhipData["membershipPlan"]!, membershipDetail: lastMemberhipData["membershipDetail"]!, amount: lastMemberhipData["amount"]!, startDate: lastMemberhipData["startDate"]!, endDate: lastMemberhipData["endDate"]!, totalAmount: lastMemberhipData["totalAmount"]!, discount: lastMemberhipData["discount"]!, paymentType:lastMemberhipData["paymentType"]! , dueAmount: lastMemberhipData["dueAmount"]!,purchaseTime: lastMemberhipData["purchaseTime"]!,purchaseDate: lastMemberhipData["purchaseDate"]!, membershipDuration: lastMemberhipData["membershipDuration"]!)
+        let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"]!, membershipPlan: lastMemberhipData["membershipPlan"]!, membershipDetail: lastMemberhipData["membershipDetail"]!, amount: lastMemberhipData["amount"]!, startDate: lastMemberhipData["startDate"]!, endDate: lastMemberhipData["endDate"]!, totalAmount: lastMemberhipData["totalAmount"]!, paidAmount: lastMemberhipData["paidAmount"]!, discount: lastMemberhipData["discount"]!, paymentType:lastMemberhipData["paymentType"]! , dueAmount: lastMemberhipData["dueAmount"]!,purchaseTime: lastMemberhipData["purchaseTime"]!,purchaseDate: lastMemberhipData["purchaseDate"]!, membershipDuration: lastMemberhipData["membershipDuration"]!)
         return latestMemberhsip
     }
     
@@ -658,14 +665,12 @@ class AppManager: NSObject {
      return String(text.map { _ in return "•" })
     }
     
-    
     func hidePasswordTextField(hide:Bool,passwordTextField:UITextField,passwordLabel:UILabel) {
         passwordTextField.isHidden = hide
         passwordTextField.alpha = hide == true ? 0.0 : 1.0
         passwordLabel.isHidden = !hide
         passwordLabel.alpha = hide == true ? 1.0 : 0.0
     }
-    
 }
 
 

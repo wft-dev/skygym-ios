@@ -96,6 +96,7 @@ class AddMemberViewController: BaseViewController {
     var completeMemberProfileFieldArray :[UITextField] = []
     var membershipFieldArray:[UITextField] = []
     var textFieldArray:[UITextField] = []
+    var previousDiscount:Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -242,8 +243,9 @@ class AddMemberViewController: BaseViewController {
         self.membershipPlanTextField.text = membership.membershipPlan
         self.membershipDetailTextView.text = membership.membershipDetail
         self.amountTextField.text = membership.amount
-        self.totalAmountTextField.text = membership.totalAmount
+        self.totalAmountTextField.text = membership.paidAmount
         self.dueAmountTextField.text = membership.dueAmount
+        self.previousDiscount = Int(membership.discount)!
         self.discountTextField.text = membership.discount
         self.startDateTextField.text = membership.startDate
         self.endDateTextField.text = membership.endDate
@@ -487,15 +489,32 @@ extension AddMemberViewController{
             "amount": self.amountTextField.text!,
             "startDate":self.startDateTextField.text!,
             "endDate":self.endDateTextField.text!,
-            "totalAmount":self.totalAmountTextField.text!,
-            "discount":self.discountTextField.text!,
+            "totalAmount":"\(self.getTotalAmount())",
+            "paidAmount" : self.totalAmountTextField.text!,
+            "discount":"\(self.getTotalDiscount())",
             "paymentType":self.paymentTypeTextField.text!,
             "dueAmount":self.dueAmountTextField.text!,
             "purchaseTime": "\(AppManager.shared.getTime(date: Date()))",
             "purchaseDate": AppManager.shared.dateWithMonthName(date: Date()),
-            "membershipDuration" : "\(self.membershipDuration)"
+            "membershipDuration" : "\(self.getMembershipDuration())"
         ]]
         return membership
+    }
+    
+    func getMembershipDuration() -> String {
+        return self.isRenewMembership == true ? self.renewingMembershipDuration : "\(self.membershipDuration)"
+    }
+    
+    func getTotalAmount() -> Int {
+        let membershipAmount =  Int(self.amountTextField.text!)!
+        let dueAmount = Int(self.dueAmountTextField.text!)!
+        //let discount = self.
+        
+        return membershipAmount - (dueAmount + self.getTotalDiscount())
+    }
+    
+    func getTotalDiscount() -> Int {
+        return (self.previousDiscount + Int(self.discountTextField.text!)!)
     }
     
     func successAlert(message:String)  {

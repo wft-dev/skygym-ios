@@ -56,6 +56,7 @@ struct MembershipDetailStructure {
       var startDate:String
       var endDate:String
       var totalAmount:String
+      var paidAmount:String
       var discount:String
       var paymentType:String
       var dueAmount:String

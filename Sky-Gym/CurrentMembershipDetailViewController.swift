@@ -112,6 +112,31 @@ class CurrentMembershipDetailViewController: BaseViewController {
         present(alertController, animated: true, completion: nil)
     }
     
+    
+    @IBAction func deletePreviousMembershipBtnAction(_ sender: Any) {
+        let deletingMembershipID = self.purchasedMembershipID.count > 0 ? self.purchasedMembershipID : self.currentMembershipID
+        let deletingMemberID = self.purchasedMembershipID.count > 0 ? memberDetail?.memberID : AppManager.shared.memberID
+        let alertController = UIAlertController(title: "Attention", message: "Do you want to delete the current membership ?", preferredStyle: .alert)
+        
+        let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
+            _ in
+            
+            FireStoreManager.shared.deleteMembershipWith(membershipID: deletingMembershipID, memberID:deletingMemberID!, completion: {
+                err in
+                if err != nil {
+                    self.showAlert(title: "Error", message: "Membership is not deleted.")
+                } else {
+                    self.showAlert(title: "Success", message: "Membership is deleted.")
+                }
+            })
+        })
+        
+        let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler:nil)
+        alertController.addAction(okAlertAction)
+        alertController.addAction(cancelAlertAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "renewMembershipSegue" {
             let destination = segue.destination as! AddMemberViewController
@@ -159,7 +184,6 @@ extension CurrentMembershipDetailViewController {
         self.deleteMembershipView.alpha = self.purchasedMembershipID.count > 0 ? 1.0 : 0.0
         self.membershipVerticalMenuView.isHidden = self.purchasedMembershipID.count > 0 ? true : false
         self.membershipVerticalMenuView.alpha = self.purchasedMembershipID.count > 0 ? 0.0 : 1.0
-
     }
     
     func setMembershipVerticalMenu()  {
@@ -170,8 +194,8 @@ extension CurrentMembershipDetailViewController {
         self.deleteMembershipView.layer.shadowRadius = 50
         
         self.deleteMembershipView.layer.shadowColor =  UIColor.darkGray.cgColor
-        self.deleteMembershipView.layer.shadowOpacity = 0.3
-        self.deleteMembershipView.layer.shadowOffset = .init(width: 10, height: 10)
+        self.deleteMembershipView.layer.shadowOpacity = 0.4
+        self.deleteMembershipView.layer.shadowOffset = .init(width: 15, height: 15)
         self.deleteMembershipView.layer.shadowRadius = 50
     }
     
@@ -263,7 +287,7 @@ extension CurrentMembershipDetailViewController {
         self.membershipPaymentDateLabel.text = currentMembership.purchaseDate
         self.paymentTimeLabel.text = currentMembership.purchaseTime
         self.paymentType.text = currentMembership.paymentType
-        self.paymentAmountLabel.text = currentMembership.amount
+        self.paymentAmountLabel.text = currentMembership.paidAmount
     }
     
     func retryCurrentMembershipAlert() {
@@ -275,5 +299,4 @@ extension CurrentMembershipDetailViewController {
          retryAlertController.addAction(retryAlertBtn)
          present(retryAlertController, animated: true, completion: nil)
      }
-   
 }

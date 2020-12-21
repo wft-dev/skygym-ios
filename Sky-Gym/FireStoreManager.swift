@@ -426,15 +426,19 @@ class FireStoreManager: NSObject {
         })
     }
     
-    func isCurrentMembership(memberOrTrainer:Role,memberID:String,result:@escaping (Bool?,Error?) -> Void) {
+    func isCurrentMembership(memberOrTrainer:Role,memberID:String,result:@escaping (Bool?,Bool?,Error?) -> Void) {
         fireDB.collection("\(AppManager.shared.getRole(role: memberOrTrainer))").document("\(memberID)").getDocument(completion: {
             (docSnapshot,err) in
             if err != nil {
-                result(false,err)
+                result(false,false,err)
             }else {
                 let membershipsArray = ((docSnapshot?.data())! as Dictionary<String,Any>)["memberships"] as! Array<Dictionary<String,String>>
-                let currentMemberships = AppManager.shared.getCurrentMembership(membershipArray: membershipsArray)
-                currentMemberships.count > 0 ? result(true,nil) : result(false,nil)
+                if membershipsArray.count > 0 {
+                    let currentMemberships = AppManager.shared.getCurrentMembership(membershipArray: membershipsArray)
+                    currentMemberships.count > 0 ? result(true,true,nil) : result(false,true,nil)
+                }else {
+                    result(false,false,nil)
+                }
             }
         })
     }
@@ -880,18 +884,20 @@ class FireStoreManager: NSObject {
                         let latestMembership = memberships.lastObject as! [String:String]
                         let dueAmount = Int(latestMembership["dueAmount"]!)
                         let endDate  = AppManager.shared.getDate(date: latestMembership["endDate"]!)
-                        let dayDiff = Calendar.current.compare(endDate, to: Date(), toGranularity: .day).rawValue
-                        let monthDiff = Calendar.current.compare(endDate, to: Date(), toGranularity: .month).rawValue
-                        let yearDiff = Calendar.current.compare(endDate
-                            , to:Date(), toGranularity: .year).rawValue
+                        let today = AppManager.shared.getStandardFormatDate(date: Date())
+                        let diff = Calendar.current.dateComponents([.month,.year,.day], from: today, to: endDate)
+                        print("day: \(diff.day!) , month:\(diff.month!)  Year: \(diff.year!)")
                         
-                        if dueAmount == 0  && dayDiff >= 0 && monthDiff >= 0 && yearDiff >= 0 {
+                        
+                        if dueAmount == 0  && diff.day! >= 0 && diff.month! >= 0 && diff.year! >= 0 {
                             count += 1
                         }
                         
-                        if dayDiff < 0 && monthDiff < 0 && yearDiff <= 0 {
+                        if diff.day! <= 0 && diff.month! <= 0 && diff.year! <= 0 {
                             AppManager.shared.expiredMember += 1
                         }
+                    } else {
+                        AppManager.shared.expiredMember += 1 
                     }
                 }
                 result(count,nil)

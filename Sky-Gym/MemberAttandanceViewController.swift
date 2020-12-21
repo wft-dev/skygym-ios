@@ -34,7 +34,7 @@ class MemberAttandanceViewController: BaseViewController {
     @IBOutlet weak var mainScrollView: UIScrollView!
     @IBOutlet weak var mainView: UIView!
     @IBOutlet weak var memberUserImg: UIImageView!
-    
+    @IBOutlet weak var noAttendenceHistoryLabel: UILabel!
     
     var attandanceArray:[Attendence?] = []
     var memberName:String = ""
@@ -59,12 +59,10 @@ class MemberAttandanceViewController: BaseViewController {
         self.endDateLabel.isUserInteractionEnabled = true
         self.startDateLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(previousWeekAttendence)))
         self.endDateLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(nextWeekAttendence)))
-        
         if memberUserImgData != nil {
             self.memberUserImg.image = UIImage(data: self.memberUserImgData!)
             self.memberUserImg.makeRounded()
         }
-       
         self.backBtn.addTarget(self, action: #selector(backBtnAction), for: .touchUpInside)
     }
     
@@ -78,11 +76,22 @@ class MemberAttandanceViewController: BaseViewController {
         SVProgressHUD.show()
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Members", id: AppManager.shared.memberID, startDate: "\(dateFormatter.string(from: Date()))", endDate: "\(AppManager.shared.getNext7DaysDate(startDate: Date()))"
             , s: {
-               ( array,flag)  in
+               (array,flag)  in
                 SVProgressHUD.dismiss()
                 if array.count < 1 {
-                    print("ATTENDENCE NOT FOUND.")
+                    self.memberAttandanceTable.isHidden = true
+                    self.memberAttandanceTable.alpha = 0.0
+                    self.noAttendenceHistoryLabel.isHidden = false
+                    self.noAttendenceHistoryLabel.alpha = 1.0
+                    self.backBtn.isHidden = true
+                    self.backBtn.alpha = 0.0
                 } else {
+                    self.memberAttandanceTable.isHidden = false
+                    self.memberAttandanceTable.alpha = 1.0
+                    self.noAttendenceHistoryLabel.isHidden = true
+                    self.noAttendenceHistoryLabel.alpha = 0.0
+                    self.backBtn.isHidden = false
+                    self.backBtn.alpha = 1.0
                     self.attandanceArray = array
                     self.attendenceTableHeight = CGFloat((self.attandanceArray.count * 66))
                     self.startDateLabel.text = AppManager.shared.dateWithMonthNameWithNoDash(date: AppManager.shared.getDate(date: (array.first?.date)!))
@@ -109,25 +118,22 @@ class MemberAttandanceViewController: BaseViewController {
 }
 
 extension MemberAttandanceViewController {
-    
 
  @objc  func nextWeekAttendence() {
-        let startDate = self.endDateLabel.text!
-        let endDate = AppManager.shared.getDate(date: startDate)
-        let sevenDayForwardDate = AppManager.shared.getNext7DaysDate(startDate: endDate)
-        self.fetchAttendenceFrom(startDate: startDate, endDate: sevenDayForwardDate)
-        self.startDateLabel.text = startDate
-        self.endDateLabel.text = sevenDayForwardDate
+    let nextStartDateStr = AppManager.shared.getNextDayDate(startDate: AppManager.shared.getDate(date: self.startDateLabel.text!))
+    let nextEndDateStr = AppManager.shared.getNextDayDate(startDate: AppManager.shared.getDate(date: self.endDateLabel.text!))
+        self.fetchAttendenceFrom(startDate: nextStartDateStr, endDate: nextEndDateStr)
+        self.startDateLabel.text = nextStartDateStr
+        self.endDateLabel.text = nextEndDateStr
     }
     
   @objc  func previousWeekAttendence() {
-        let startDate = self.startDateLabel.text!
-        let endDate = AppManager.shared.getDate(date: startDate)
-        let sevenDayPreviousDate = AppManager.shared.getPrevious7DaysDate(startDate: endDate)
+    let previousStartDate = AppManager.shared.getPreviousDayDate(startDate: AppManager.shared.getDate(date: self.startDateLabel.text!))
+    let previousEndDate = AppManager.shared.getPreviousDayDate(startDate: AppManager.shared.getDate(date: self.endDateLabel.text!))
         
-        self.fetchAttendenceFrom(startDate: sevenDayPreviousDate, endDate:startDate)
-        self.startDateLabel.text = sevenDayPreviousDate
-        self.endDateLabel.text = startDate
+        self.fetchAttendenceFrom(startDate: previousStartDate, endDate:previousEndDate)
+        self.startDateLabel.text = previousStartDate
+        self.endDateLabel.text = previousEndDate
     }
 
     func setMemberAttandanceNavigation()  {
@@ -182,14 +188,31 @@ extension MemberAttandanceViewController {
         SVProgressHUD.show()
         FireStoreManager.shared.getAttendenceFrom(trainerORmember: "Members", id: AppManager.shared.memberID, startDate:startDate, endDate:endDate, s: {
             (attendenceArray,_)  in
+            
             self.attandanceArray.removeAll()
-            self.attandanceArray = attendenceArray
-            self.attendenceTableHeight = CGFloat((self.attandanceArray.count * 66))
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
-                 SVProgressHUD.dismiss()
-                self.attendenceTableHeightConstraint.constant = self.attendenceTableHeight
-                self.memberAttandanceTable.reloadData()
-            })
+            if attendenceArray.count > 0 {
+                self.attandanceArray = attendenceArray
+                self.attendenceTableHeight = CGFloat((self.attandanceArray.count * 66))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+                     SVProgressHUD.dismiss()
+                    self.attendenceTableHeightConstraint.constant = self.attendenceTableHeight
+                    self.memberAttandanceTable.reloadData()
+                })
+                self.memberAttandanceTable.isHidden = false
+                self.memberAttandanceTable.alpha = 1.0
+                self.noAttendenceHistoryLabel.isHidden = true
+                self.noAttendenceHistoryLabel.alpha = 0.0
+                self.backBtn.isHidden = false
+                self.backBtn.alpha = 1.0
+            } else {
+                SVProgressHUD.dismiss()
+                self.memberAttandanceTable.isHidden = true
+                self.memberAttandanceTable.alpha = 0.0
+                self.noAttendenceHistoryLabel.isHidden = false
+                self.noAttendenceHistoryLabel.alpha = 1.0
+                self.backBtn.isHidden = true
+                self.backBtn.alpha = 0.0
+            }
         })
     }
 }

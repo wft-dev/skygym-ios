@@ -129,7 +129,6 @@ class ListOfMembersViewController: BaseViewController {
     var filterationLabel:String = "allMemberFilteration"
     let refreshControl = UIRefreshControl()
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCompleteListOfMembersView()
@@ -193,7 +192,6 @@ class ListOfMembersViewController: BaseViewController {
         self.grayView.backgroundColor = UIColor.darkGray
         self.addBtn.isHidden = true
         AppManager.shared.setStatusBarBackgroundColor(color: .gray, alpha: 0.4)
-        
     }
 }
 
@@ -454,7 +452,7 @@ extension ListOfMembersViewController{
                             membership = currentMembership.first
                         }else {
                             membership =  membershipArray.count > 0 ? AppManager.shared.getLatestMembership(membershipsArray:  membershipArray) :
-                                MembershipDetailStructure(membershipID: memberDetail.memberID, membershipPlan: "--", membershipDetail: "--", amount:"0", startDate: "--", endDate: "--", totalAmount: "0", discount: "0", paymentType: "--", dueAmount: "0", purchaseTime: "--", purchaseDate: "--", membershipDuration: "0")
+                                MembershipDetailStructure(membershipID: memberDetail.memberID, membershipPlan: "--", membershipDetail: "--", amount:"0", startDate: "--", endDate: "--", totalAmount: "0", paidAmount: "0", discount: "0", paymentType: "--", dueAmount: "0", purchaseTime: "--", purchaseDate: "--", membershipDuration: "0")
                         }
                         let member = ListOfMemberStr(memberID: memberDetail.memberID, userImg: UIImage(named: "user1")!, userName: "\(memberDetail.firstName) \(memberDetail.lastName)", phoneNumber: memberDetail.phoneNo, dateOfExp:membership!.endDate , dueAmount: membership!.dueAmount, uploadName: memberDetail.uploadIDName)
                             self.listOfMemberArray.append(member)
@@ -627,7 +625,7 @@ extension ListOfMembersViewController{
     
     func setCellRenewMembershipBtn(memberCell:ListOfMembersTableCell,memberID:String,dueAmount:String)  {
         FireStoreManager.shared.isCurrentMembership(memberOrTrainer: .Member, memberID: memberID, result: {
-            (flag,err) in
+            (flag,membershipExists,err) in
             
             if err == nil {
                 memberCell.attendImg?.isUserInteractionEnabled = flag!
@@ -635,6 +633,9 @@ extension ListOfMembersViewController{
                 memberCell.attendenceLabel.alpha = flag == true ? 1.0 : 0.4
                 memberCell.dueAmount.text =  flag == true ? dueAmount :"0"
               //  memberCell.dateOfExpiry.text = flag == true ? dateOfExpiry : "--"
+                memberCell.renewImg?.isUserInteractionEnabled = membershipExists!
+                memberCell.renewImg?.alpha = membershipExists == true ? 1.0 : 0.4
+                memberCell.renewPackageLabel.alpha = membershipExists == true ? 1.0 : 0.4
             }
         })
     }
