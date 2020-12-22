@@ -97,6 +97,7 @@ class AddMemberViewController: BaseViewController {
     var membershipFieldArray:[UITextField] = []
     var textFieldArray:[UITextField] = []
     var previousDiscount:Int = 0
+    var previousDueAmount:Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -244,9 +245,10 @@ class AddMemberViewController: BaseViewController {
         self.membershipDetailTextView.text = membership.membershipDetail
         self.amountTextField.text = membership.amount
         self.totalAmountTextField.text = membership.paidAmount
-        self.dueAmountTextField.text = membership.dueAmount
+        self.previousDueAmount = Int(membership.dueAmount)!
+        self.dueAmountTextField.text =  membership.dueAmount
         self.previousDiscount = Int(membership.discount)!
-        self.discountTextField.text = membership.discount
+        self.discountTextField.text = "\(self.getDiscountPercentage(totalAmount: Int(membership.amount)!, discount: Int(membership.discount)!))"
         self.startDateTextField.text = membership.startDate
         self.endDateTextField.text = membership.endDate
         self.paymentTypeTextField.text = membership.paymentType
@@ -321,7 +323,7 @@ extension AddMemberViewController{
                 validation.requiredValidation(textField: textField, errorLabel: self.endDateErrorLabel, errorMessage: "End date require." )
             
         case 16:
-            validation.requiredValidation(textField: textField, errorLabel: self.totalAmountErrorLabel, errorMessage: "Enter total amount." )
+            validation.requiredValidation(textField: textField, errorLabel: self.totalAmountErrorLabel, errorMessage: "Enter Paying amount." )
             
         case 17:
             validation.requiredValidation(textField: textField, errorLabel: self.discountErrorLabel, errorMessage: "Enter discount amount or 0." )
@@ -502,19 +504,31 @@ extension AddMemberViewController{
     }
     
     func getMembershipDuration() -> String {
-        return self.isRenewMembership == true ? self.renewingMembershipDuration : "\(self.membershipDuration)"
+        
+        print("isRenewMembership : \(self.isRenewMembership)")
+        print("renewingMembershipDuration : \(self.renewingMembershipDuration)")
+        print("membershipDuration : \(self.membershipDuration)")
+        
+        
+        let s = self.isRenewMembership == true ? self.renewingMembershipDuration : "\(self.membershipDuration)"
+        print("Membership duration is : \(s)")
+        return s
     }
     
     func getTotalAmount() -> Int {
         let membershipAmount =  Int(self.amountTextField.text!)!
-        let dueAmount = Int(self.dueAmountTextField.text!)!
-        //let discount = self.
-        
+        let dueAmount = self.getDueAmount()
         return membershipAmount - (dueAmount + self.getTotalDiscount())
     }
     
     func getTotalDiscount() -> Int {
-        return (self.previousDiscount + Int(self.discountTextField.text!)!)
+        let currentDiscount = self.getDiscountAmount()
+        if self.previousDiscount == currentDiscount {
+            return previousDiscount
+        }else {
+            self.previousDiscount = currentDiscount
+            return self.previousDiscount
+        }
     }
     
     func successAlert(message:String)  {
@@ -738,6 +752,36 @@ extension AddMemberViewController{
         })
     }
     
+    func getDueAmount() -> Int {
+        let currentPaidAmount = Int(self.totalAmountTextField.text!) ?? 0
+        let discount = self.getDiscountAmount()
+        let membershipAmount = Int(self.amountTextField.text!)!
+        
+        if discount > 0 && discount == self.previousDiscount && self.previousDueAmount > 0 {
+             return self.previousDueAmount - currentPaidAmount
+        }else {
+            if self.previousDueAmount == 0 {
+                return membershipAmount - (currentPaidAmount + discount)
+            }else {
+                return self.previousDueAmount - (currentPaidAmount + discount)
+            }
+        }
+    }
+    
+    func getDiscountPercentage(totalAmount:Int,discount:Int) -> Int {
+        let percentage = (discount * 100)/totalAmount
+        print("Percentage discount : \(percentage)")
+        return percentage
+    }
+    
+    func getDiscountAmount() -> Int {
+        let membershipAmount = Double(self.amountTextField.text!)!
+        let discountInPercentage = Double(self.discountTextField.text!)!
+        let d = (discountInPercentage/100.0)
+        let s = (membershipAmount * d )
+        return Int(s)
+    }
+    
     func fetchVisitorDetail(id:String) {
       self.fetchVisitorBy(id: id)
     }
@@ -798,7 +842,7 @@ extension AddMemberViewController:UITextFieldDelegate{
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        if textField.tag == 4 || textField.tag == 11 || textField.tag == 14{
+        if textField.tag == 4 || textField.tag == 11 || textField.tag == 14 {
             textField.inputAccessoryView = self.toolBar
             textField.inputView = datePicker
             if textField.text!.count > 0  {
@@ -834,13 +878,54 @@ extension AddMemberViewController:UITextFieldDelegate{
                                 let endDate = AppManager.shared.getMembershipEndDate(startDate:self.selectedDate!, duration: self.membershipDuration)
                                 let endDateFormatted = AppManager.shared.dateWithMonthName(date: endDate)
                                 self.endDateTextField.text =  endDateFormatted
-                
                                 self.validation.requiredValidation(textField: self.endDateTextField, errorLabel: self.endDateErrorLabel, errorMessage: "End Date require.")
-                
+
                               default:
                                   break
                               }
         }
+        
+        if textField.tag == 16 {
+        //    let dueAmount = Int(self.dueAmountTextField.text!)!
+         //   print("PREVIOUS AMOUNT IS : \(self.previousDueAmount)")
+            let referenceAmount = self.previousDueAmount > 0  ? self.previousDueAmount : Int(self.amountTextField.text!)!
+            var referenceText = self.previousDueAmount > 0 ? "Amount is greater than due amount." :  "Amount is greater than membership amount."
+            let calculatedTotalAmount = self.getTotalAmount()
+            let amountInTotalTextField = Int(self.totalAmountTextField.text!) ?? 0
+            
+            if amountInTotalTextField <= referenceAmount && amountInTotalTextField <= calculatedTotalAmount  {
+                self.dueAmountTextField.text = "\(self.getDueAmount())"
+               self.totalAmountErrorLabel.text = ""
+               textField.borderStyle = .none
+               textField.layer.borderColor = UIColor.clear.cgColor
+               textField.layer.borderWidth = 0.0
+               self.updateBtn.isEnabled = true
+               self.updateBtn.alpha = 1.0
+            } else {
+                DispatchQueue.main.async {
+                    referenceText = amountInTotalTextField >= calculatedTotalAmount ? "Amount is larger than actual payable amount." : referenceText
+                    self.totalAmountErrorLabel.text = "\(referenceText)"
+                    self.dueAmountTextField.text = "\(self.previousDueAmount)"
+                    textField.layer.borderColor = UIColor.red.cgColor
+                    textField.layer.borderWidth = 1.0
+                    self.updateBtn.isEnabled = false
+                    self.updateBtn.alpha = 0.4
+                }
+            }
+        }
+        
+        if textField.tag == 17 {
+            let discoutAmount = self.getDiscountAmount()
+//            print("Previous discount amount : \(self.previousDiscount)")
+//            print("Current discount amount : \(discoutAmount)")
+//            print("previous due amount : \(self.previousDueAmount) ")
+            if self.previousDiscount != discoutAmount || self.previousDueAmount == 0 {
+                let membershipAmount = Int(self.amountTextField.text!)!
+                self.totalAmountTextField.text = "\(membershipAmount - discoutAmount)"
+                self.dueAmountTextField.text = "0"
+            }
+        }
+        
         self.allNewMemberFieldsRequiredValidation(textField: textField)
         if self.isNewMember == true {
             self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
