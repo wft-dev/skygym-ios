@@ -76,7 +76,9 @@ class MemberViewController: BaseViewController {
     @IBOutlet weak var addressErrorLabel: UILabel!
     @IBOutlet weak var phoneNumberErrorLabel: UILabel!
     @IBOutlet weak var dobErrorLabel: UILabel!
-
+    @IBOutlet weak var generalTypeLabel: UILabel!
+    @IBOutlet weak var personalTypeLabel: UILabel!
+    
     var isEdit:Bool = false
     var firstName:String = ""
     var lastName:String = ""
@@ -94,6 +96,8 @@ class MemberViewController: BaseViewController {
     let validation = ValidationManager.shared
     var selectedDate:String = ""
     var actualPassword :String = ""
+    var isImagePickerSelected:Bool = false
+    var trainerType:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -101,6 +105,11 @@ class MemberViewController: BaseViewController {
         self.defaultLabelArray = [self.memberID,self.dateOfJoining,self.gender,self.password,self.trainerName,self.uploadID,self.email,self.address,self.phoneNo,self.dob]
         self.errorLabelArray = [self.memberIDErrorLabel,self.dateOfJoiningErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.addressErrorLabel,self.trainerNameErrorLabel,self.uploadIDErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel]
         self.textFieldArray = [self.memberIDTextField,self.dateOfJoiningTextField,self.genderTextField,self.trainerNameTextField,self.uploadIDTextField,self.phoneNoTextField,self.dobTextField]
+        
+
+        self.personalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeAction(_:))))
+        self.generalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeAction(_:))))
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -110,8 +119,8 @@ class MemberViewController: BaseViewController {
         self.memberImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openUserProfilePicker)))
         self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
         self.imgPicker.delegate = self
-        self.updateBtn.isEnabled = false
-        self.updateBtn.alpha = 0.6
+//        self.updateBtn.isEnabled = false
+//        self.updateBtn.alpha = 0.6
         self.setMemberProfileCompleteView()
     }
     
@@ -165,6 +174,8 @@ class MemberViewController: BaseViewController {
             self.generalToggleBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         }
     }
+    
+    
 }
 
 extension MemberViewController{
@@ -198,19 +209,22 @@ extension MemberViewController{
         self.memberNavigationBar()
         setTextFields()
         self.updateBtn.layer.cornerRadius = 15.0
-        self.updateBtn.isHidden = true
-        AppManager.shared.performEditAction(dataFields: self.getMemberProfileFieldsAndLabelDic(), edit:  false)
-        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
-        AppManager.shared.hidePasswordTextField(hide: true, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
-        self.setHrLineView(isHidden: false, alpha: 1.0)
-        self.addressNonEditLabel.isHidden = false
-        self.addressNonEditLabel.alpha = 1.0
-        self.addressTextView.isHidden  = true
-        self.addressTextView.alpha = 0.0
-        self.setToggleBtns(isEnabled: false, alpha: 0.9)
-        self.addUploadTextFieldRightView()
-        self.memberImg.isUserInteractionEnabled = false
+        self.updateBtn.isHidden = !self.isImagePickerSelected
         
+        AppManager.shared.performEditAction(dataFields: self.getMemberProfileFieldsAndLabelDic(), edit: self.isImagePickerSelected )
+        AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: !self.isImagePickerSelected)
+        AppManager.shared.hidePasswordTextField(hide: !self.isImagePickerSelected, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
+        
+        self.setHrLineView(isHidden: self.isImagePickerSelected, alpha: 1.0)
+        self.addressNonEditLabel.isHidden = self.isImagePickerSelected
+        self.addressNonEditLabel.alpha =  self.isImagePickerSelected == false ? 1.0 : 0.0
+        self.addressTextView.isHidden  = !self.isImagePickerSelected
+        self.addressTextView.alpha = self.isImagePickerSelected == false ? 0.0 : 1.0
+        self.trainerTypeLabel.textColor =  self.isImagePickerSelected == false ? .lightGray : .black
+        self.setToggleBtns(isEnabled: self.isImagePickerSelected, alpha: self.isImagePickerSelected == false ?  0.9 : 1.0)
+        self.addUploadTextFieldRightView()
+        self.memberImg.isUserInteractionEnabled = self.isImagePickerSelected
+
         self.datePicker.datePickerMode = .date
         toolBar.barStyle = .default
         let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
@@ -254,7 +268,6 @@ extension MemberViewController{
         self.addressTextView.layer.cornerRadius = 7.0
     }
     
-    
     @objc func fieldsValidatorAction(_ textField:UITextField) {
         self.allMemberProfileFieldsRequiredValidation(textField: textField)
     }
@@ -266,22 +279,32 @@ extension MemberViewController{
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
         AppManager.shared.hidePasswordTextField(hide: true, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
         self.addressNonEditLabel.isHidden = false
+        self.addressNonEditLabel.alpha = 1.0
         self.addressTextView.isHidden  = true
         self.addressTextView.alpha = 0.0
+        self.trainerTypeLabel.textColor = .lightGray
         self.isEdit = false
         self.setHrLineView(isHidden: false, alpha: 1.0)
         self.setToggleBtns(isEnabled: false, alpha: 0.9)
+        self.generalTypeLabel.isUserInteractionEnabled = false
+        self.personalTypeLabel.isUserInteractionEnabled = false
         self.updateBtn.isHidden = true
+        self.setMemberProfileTrainerType(type: self.trainerType)
        } else{
         self.memberImg.isUserInteractionEnabled = true
         AppManager.shared.performEditAction(dataFields:self.getMemberProfileFieldsAndLabelDic(), edit:  true)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: errorLabelArray, flag: false)
         AppManager.shared.hidePasswordTextField(hide: false, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
         self.setToggleBtns(isEnabled: true, alpha: 1.0)
-        self.memberIDTextField.isEnabled = true
+        DispatchQueue.main.async {
+            self.generalTypeLabel.isUserInteractionEnabled = true
+            self.personalTypeLabel.isUserInteractionEnabled = true
+        }
         self.memberIDTextField.layer.opacity = 0.4
+        self.trainerTypeLabel.textColor = .black
         self.isEdit = true
         self.addressNonEditLabel.isHidden = true
+        self.addressNonEditLabel.alpha = 0.0
         self.addressTextView.isHidden  = false
         self.addressTextView.alpha = 1.0
         self.setHrLineView(isHidden: true, alpha: 0.0)
@@ -347,7 +370,8 @@ extension MemberViewController{
         self.addressNonEditLabel.text = memberDetail.address
         self.phoneNoNonEditScreenLabel.text = memberDetail.phoneNo
         self.dobNonEditScreenLabel.text = memberDetail.dob
-        self.setMemberProfileTrainerType(type: memberDetail.type)
+        self.trainerType = memberDetail.type
+        self.setMemberProfileTrainerType(type: self.trainerType)
 
         self.memberIDTextField.text! = memberDetail.memberID
         self.dateOfJoiningTextField.text! = memberDetail.dateOfJoining
@@ -359,6 +383,11 @@ extension MemberViewController{
         self.phoneNoTextField.text! = memberDetail.phoneNo
         self.dobTextField.text! = memberDetail.dob
      }
+    
+    @objc func trainerTypeAction(_ gesture:UITapGestureRecognizer){
+        let selectedLabel = gesture.view as! UILabel
+       self.setMemberProfileTrainerType(type: selectedLabel.text!)
+    }
     
     func setMemberProfileTrainerType(type:String) {
         if type == "General"{
@@ -444,6 +473,7 @@ extension MemberViewController{
 
 extension MemberViewController : UIImagePickerControllerDelegate,UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        self.isImagePickerSelected = true
         
         if self.isUserProfileSelected == true{
             if let selectedImg:UIImage = info[.editedImage] as? UIImage {
@@ -463,6 +493,7 @@ extension MemberViewController : UIImagePickerControllerDelegate,UINavigationCon
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         self.isUploadIdSelected = false
+        self.isImagePickerSelected = true
         dismiss(animated: true, completion: nil)
     }
 }

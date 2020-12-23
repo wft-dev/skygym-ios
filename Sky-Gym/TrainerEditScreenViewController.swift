@@ -146,6 +146,7 @@ class TrainerEditScreenViewController: BaseViewController {
     var eventPermission:Bool = false
     var actualPassword:String = ""
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setTrainerEditView()
@@ -154,6 +155,8 @@ class TrainerEditScreenViewController: BaseViewController {
         self.idTextField.text = "\(Int.random(in: 1..<100000))" 
         self.idTextField.isEnabled = false
         self.idTextField.layer.opacity = 0.4
+        self.generalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeSelection(_:))))
+        self.personalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeSelection(_:))))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -302,6 +305,9 @@ extension TrainerEditScreenViewController {
         self.setPermissionLabel(isHidden: true)
         self.updateBtn.isHidden = true
         self.userImg.isUserInteractionEnabled = false
+        self.generalTypeLabel.isUserInteractionEnabled = false
+        self.personalTypeLabel.isUserInteractionEnabled = false
+        self.setNonEditTrainerType(hide: false)
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
@@ -336,6 +342,9 @@ extension TrainerEditScreenViewController {
         self.setTrainerPermission(memberPermissionBtn: self.memberPermissionToggleBtn, visitorPermissionBtn: self.visitorPermissionToggleBtn, eventPermissionBtn: self.eventPermissionToggleBtn, memberPermission: self.memberPermission, visitorPermission: self.visitorPermission, eventPermission: self.eventPermission)
         self.updateBtn.isHidden = false
         self.userImg.isUserInteractionEnabled = true
+        self.generalTypeLabel.isUserInteractionEnabled = true
+        self.personalTypeLabel.isUserInteractionEnabled = true
+        self.setNonEditTrainerType(hide: true)
     }
     }
 
@@ -530,13 +539,20 @@ extension TrainerEditScreenViewController {
         toolBar.items = [cancelToolBarItem,space,okToolBarItem]
         toolBar.sizeToFit()
         
-        self.forNonEditLabelArray = [self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.idForNonEditLabel,self.phoneNoForNonEditLabel,self.emailForNonEditLabel,self.passwordForNonEditLabel,self.addressForNonEditLabel,self.genderForNonEditLabel,self.salaryForNonEditLabel,self.idProofForNonEditLabel,self.shiftDaysForNonEditLabel,self.shiftTimingForNonEditLabel,self.dobForNonEditLabel,self.dateOfJoinForNonEditLabel,self.typeForNonEditLabel,self.generalTypeForNonEditLabel,self.personalTypeForNonEditLabel]
+        self.forNonEditLabelArray = [
+            self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.idForNonEditLabel,self.phoneNoForNonEditLabel,self.emailForNonEditLabel,self.passwordForNonEditLabel,self.addressForNonEditLabel,self.genderForNonEditLabel,self.salaryForNonEditLabel,self.idProofForNonEditLabel,self.shiftDaysForNonEditLabel,self.shiftTimingForNonEditLabel,self.dobForNonEditLabel,self.dateOfJoinForNonEditLabel,self.typeForNonEditLabel
+        ]
         
-        self.defaultArray = [self.firstName,self.lastName,self.id,self.phoneNo,self.email,self.password,self.address,self.gender,self.salary,self.shiftDays,self.idProof,self.shiftTimings,self.dob,self.dateOfJoin,self.generalTypeLabel,self.type,self.personalTypeLabel]
+        self.defaultArray = [
+            self.firstName,self.lastName,self.id,self.phoneNo,self.email,self.password,self.address,self.gender,self.salary,self.shiftDays,self.idProof,self.shiftTimings,self.dob,self.dateOfJoin,self.generalTypeLabel,self.type,self.personalTypeLabel
+        ]
         
-        self.errorLabelArray = [self.firstNameErrorLabel,self.lastNameErrorLabel,self.idErrorLabel,self.phoneNumberErrorLabel,self.emailErrorLabel,self.passwordErrorLabel,self.addressErrorLabel,self.genderErrorLabel,self.salaryErrorLabel,self.uploadIDErrorLabel,self.shiftDaysErrorLabel,self.shiftTimingErrorLabel,self.dobErrorLabel,self.dateOfJoinErrorLabel]
+        self.errorLabelArray = [
+            self.firstNameErrorLabel,self.lastNameErrorLabel,self.idErrorLabel,self.phoneNumberErrorLabel,self.emailErrorLabel,self.passwordErrorLabel,self.addressErrorLabel,self.genderErrorLabel,self.salaryErrorLabel,self.uploadIDErrorLabel,self.shiftDaysErrorLabel,self.shiftTimingErrorLabel,self.dobErrorLabel,self.dateOfJoinErrorLabel
+        ]
         
-        self.textFieldArray = [ self.firstNameTextField,self.secondNameTextField,self.idTextField,self.phoneNoTextField,self.genderTextField,self.salaryTextField,self.uploadIDProofTextField,self.shiftDaysTextField,self.shiftTimingsTextField,self.dobTextField,self.dateOfJoinTextField,self.emailTextField,self.passwordTextField ]
+        self.textFieldArray = [ self.firstNameTextField,self.secondNameTextField,self.idTextField,self.phoneNoTextField,self.genderTextField,self.salaryTextField,self.uploadIDProofTextField,self.shiftDaysTextField,self.shiftTimingsTextField,self.dobTextField,self.dateOfJoinTextField,self.emailTextField,self.passwordTextField
+        ]
         
         userImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showUserImgPicker)))
         userImg.makeRounded()
@@ -562,6 +578,9 @@ extension TrainerEditScreenViewController {
             self.setPermissionLabel(isHidden: true)
             self.updateBtn.isHidden = true
             self.userImg.isUserInteractionEnabled = false
+            self.setNonEditTrainerType(hide: false)
+            self.generalTypeLabel.isUserInteractionEnabled = false
+            self.personalTypeForNonEditLabel.isUserInteractionEnabled = false
         } else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
@@ -585,6 +604,9 @@ extension TrainerEditScreenViewController {
             self.setPermissionLabel(isHidden: false)
             self.updateBtn.isHidden = false
             self.userImg.isUserInteractionEnabled = true
+            self.setNonEditTrainerType(hide: true)
+            self.generalTypeLabel.isUserInteractionEnabled = true
+            self.personalTypeLabel.isUserInteractionEnabled = true
         }
     }
     
@@ -765,15 +787,30 @@ extension TrainerEditScreenViewController {
         self.addressView.text = ""
     }
     
+    @objc func trainerTypeSelection(_ gesture:UITapGestureRecognizer) {
+        let selectedLabel = gesture.view as! UILabel
+        self.setTrainerType(type: selectedLabel.text!, generalBtn: self.generalTypeBtn, personalBtn: self.personalTypeBtn)
+    }
+    
     func setTrainerType(type:String,generalBtn:UIButton,personalBtn:UIButton) {
-        if type == "General"{
+        switch type {
+        case "General":
             generalBtn.setImage(UIImage(named: "selelecte"), for: .normal)
             personalBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
-        }
-        if type == "Personal"{
+        case "Personal":
             personalBtn.setImage(UIImage(named: "selelecte"), for: .normal)
             generalBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
+        default:
+            break
         }
+    }
+    
+    
+    func setNonEditTrainerType(hide:Bool) {
+        self.generalTypeForNonEditLabel.isHidden = hide
+        self.generalTypeForNonEditLabel.alpha = hide ? 0.0 : 1.0
+        self.personalTypeForNonEditLabel.isHidden = hide
+        self.personalTypeForNonEditLabel.alpha = hide ? 0.0 : 1.0
     }
     
     func setTrainerPermission(memberPermissionBtn:UIButton,visitorPermissionBtn:UIButton,eventPermissionBtn:UIButton,memberPermission:Bool,visitorPermission:Bool,eventPermission:Bool) {

@@ -74,7 +74,9 @@ class AddMemberViewController: BaseViewController {
     @IBOutlet weak var membershipDetailErrorLabel: UILabel!
     @IBOutlet weak var endDateErrorLabel: UILabel!
     @IBOutlet weak var topConstraintOfMembershipView: NSLayoutConstraint!
-    
+    @IBOutlet weak var generalTypeLabel: UILabel!
+    @IBOutlet weak var personalTypeLabel: UILabel!
+
     let imagePicker = UIImagePickerController()
     var imgUrl:URL? = nil
     var isNewMember:Bool = false
@@ -98,6 +100,7 @@ class AddMemberViewController: BaseViewController {
     var textFieldArray:[UITextField] = []
     var previousDiscount:Int = 0
     var previousDueAmount:Int = 0
+    var selectedTrainerType:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -150,6 +153,7 @@ class AddMemberViewController: BaseViewController {
         })
         
         if self.isNewMember == false {
+            addClickToDismissMembershipList()
             self.showMembershipScreen()
             self.profileAndMembershipBarView.isUserInteractionEnabled = false
             self.profileAndMembershipBarView.isHidden = true
@@ -504,19 +508,28 @@ extension AddMemberViewController{
     }
     
     func getMembershipDuration() -> String {
-        
-        print("isRenewMembership : \(self.isRenewMembership)")
-        print("renewingMembershipDuration : \(self.renewingMembershipDuration)")
-        print("membershipDuration : \(self.membershipDuration)")
-        
-        
         let s = self.isRenewMembership == true ? self.renewingMembershipDuration : "\(self.membershipDuration)"
-        print("Membership duration is : \(s)")
         return s
     }
     
+    private func addClickToDismissMembershipList() {
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissMembershipList(_:)))
+        tapRecognizer.cancelsTouchesInView = false
+        self.view.isUserInteractionEnabled = true
+        self.view.addGestureRecognizer(tapRecognizer)
+    }
+    
+    @objc func dismissMembershipList(_ gesture : UITapGestureRecognizer) {
+        self.showMembershipPlan()
+    }
+    
+    @objc func trainerTypeSelection(_ gesture:UITapGestureRecognizer) {
+        let selectedLabel = gesture.view as! UILabel
+        self.setMembershipType(type: selectedLabel.text!)
+    }
+    
     func getTotalAmount() -> Int {
-        let membershipAmount =  Int(self.amountTextField.text!)!
+        let membershipAmount =  Int(self.amountTextField.text!) ?? 0
         let dueAmount = self.getDueAmount()
         return membershipAmount - (dueAmount + self.getTotalDiscount())
     }
@@ -681,6 +694,12 @@ extension AddMemberViewController{
         ]
         
         self.textFieldArray = Array(Set(self.membershipFieldArray + self.membershipFieldArray ))
+        
+        self.generalTypeLabel.isUserInteractionEnabled = true
+        self.personalTypeLabel.isUserInteractionEnabled = true
+        self.generalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeSelection(_:))))
+        self.personalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeSelection(_:))))
+        
         self.datePicker.datePickerMode = .date
         self.datePicker.date = Date()
         toolBar.barStyle = .default
@@ -712,7 +731,8 @@ extension AddMemberViewController{
         self.dateOfJoiningTextField.text = memberDetail.dateOfJoining
         self.genderTextField.text = memberDetail.gender
         self.passwordTextField.text = memberDetail.password
-        self.setMembershipType(type: memberDetail.type)
+        self.selectedTrainerType = memberDetail.type
+        self.setMembershipType(type: self.selectedTrainerType)
         self.trainerNameTextField.text = memberDetail.trainerName
         self.uploadIDTextField.text = memberDetail.uploadIDName
         self.emailTextField.text = memberDetail.email
@@ -740,6 +760,7 @@ extension AddMemberViewController{
                 }
     }
     
+    
     func fetchVisitorBy(id:String) {
         FireStoreManager.shared.getVisitorBy(id: id, result: {
             (visitor,err ) in
@@ -755,7 +776,7 @@ extension AddMemberViewController{
     func getDueAmount() -> Int {
         let currentPaidAmount = Int(self.totalAmountTextField.text!) ?? 0
         let discount = self.getDiscountAmount()
-        let membershipAmount = Int(self.amountTextField.text!)!
+        let membershipAmount = Int(self.amountTextField.text!) ?? 0
         
         if discount > 0 && discount == self.previousDiscount && self.previousDueAmount > 0 {
              return self.previousDueAmount - currentPaidAmount
@@ -770,13 +791,13 @@ extension AddMemberViewController{
     
     func getDiscountPercentage(totalAmount:Int,discount:Int) -> Int {
         let percentage = (discount * 100)/totalAmount
-        print("Percentage discount : \(percentage)")
+      //  print("Percentage discount : \(percentage)")
         return percentage
     }
     
     func getDiscountAmount() -> Int {
-        let membershipAmount = Double(self.amountTextField.text!)!
-        let discountInPercentage = Double(self.discountTextField.text!)!
+        let membershipAmount = Double(self.amountTextField.text!) ?? 0
+        let discountInPercentage = Double(self.discountTextField.text!) ?? 0
         let d = (discountInPercentage/100.0)
         let s = (membershipAmount * d )
         return Int(s)
@@ -888,7 +909,7 @@ extension AddMemberViewController:UITextFieldDelegate{
         if textField.tag == 16 {
         //    let dueAmount = Int(self.dueAmountTextField.text!)!
          //   print("PREVIOUS AMOUNT IS : \(self.previousDueAmount)")
-            let referenceAmount = self.previousDueAmount > 0  ? self.previousDueAmount : Int(self.amountTextField.text!)!
+            let referenceAmount = self.previousDueAmount > 0  ? self.previousDueAmount : Int(self.amountTextField.text!) ?? 0
             var referenceText = self.previousDueAmount > 0 ? "Amount is greater than due amount." :  "Amount is greater than membership amount."
             let calculatedTotalAmount = self.getTotalAmount()
             let amountInTotalTextField = Int(self.totalAmountTextField.text!) ?? 0
@@ -920,7 +941,7 @@ extension AddMemberViewController:UITextFieldDelegate{
 //            print("Current discount amount : \(discoutAmount)")
 //            print("previous due amount : \(self.previousDueAmount) ")
             if self.previousDiscount != discoutAmount || self.previousDueAmount == 0 {
-                let membershipAmount = Int(self.amountTextField.text!)!
+                let membershipAmount = Int(self.amountTextField.text!) ?? 0
                 self.totalAmountTextField.text = "\(membershipAmount - discoutAmount)"
                 self.dueAmountTextField.text = "0"
             }

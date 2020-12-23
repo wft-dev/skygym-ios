@@ -886,7 +886,7 @@ class FireStoreManager: NSObject {
                         let endDate  = AppManager.shared.getDate(date: latestMembership["endDate"]!)
                         let today = AppManager.shared.getStandardFormatDate(date: Date())
                         let diff = Calendar.current.dateComponents([.month,.year,.day], from: today, to: endDate)
-                        print("day: \(diff.day!) , month:\(diff.month!)  Year: \(diff.year!)")
+                      //  print("day: \(diff.day!) , month:\(diff.month!)  Year: \(diff.year!)")
                         
                         
                         if dueAmount == 0  && diff.day! >= 0 && diff.month! >= 0 && diff.year! >= 0 {

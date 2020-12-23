@@ -2746,6 +2746,7 @@
                         <outlet property="firstNameTextField" destination="6D6-jl-rU8" id="r5x-tT-f5j"/>
                         <outlet property="genderErrorLabel" destination="chj-V0-PMQ" id="6yf-uS-9y6"/>
                         <outlet property="genderTextField" destination="zeW-Xd-3y5" id="k2I-oI-D15"/>
+                        <outlet property="generalTypeLabel" destination="O6E-f1-9sH" id="erN-3B-nrG"/>
                         <outlet property="generalTypeOptionBtn" destination="j5M-WD-lqi" id="QtG-Cp-IUv"/>
                         <outlet property="lastNameErrorLabel" destination="vb3-We-23D" id="jbp-3h-3tY"/>
                         <outlet property="lastNameTextField" destination="TYk-nr-MdC" id="u47-hh-hQu"/>
@@ -2768,6 +2769,7 @@
                         <outlet property="passwordTextField" destination="AP4-h9-4Li" id="fLZ-Ra-UAO"/>
                         <outlet property="paymentErrorLabel" destination="DRk-ZO-8cr" id="Nab-6U-0f0"/>
                         <outlet property="paymentTypeTextField" destination="Y6o-hX-1wt" id="uT3-5s-MIS"/>
+                        <outlet property="personalTypeLabel" destination="pqR-Fx-s9c" id="OLm-mx-aF5"/>
                         <outlet property="personalTypeOptionBtn" destination="8PF-J0-vJw" id="cVO-Nh-0IH"/>
                         <outlet property="phoneNumberErrorLabel" destination="lcy-xe-7Sw" id="Wm6-WC-n0h"/>
                         <outlet property="phoneNumberTextField" destination="Nbe-r3-00I" id="rxY-Cf-4ki"/>
@@ -3400,7 +3402,7 @@
                                         </constraints>
                                     </view>
                                     <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aho-A4-gRw">
-                                        <rect key="frame" x="86.5" y="228" width="233.5" height="128"/>
+                                        <rect key="frame" x="86.5" y="0.0" width="233.5" height="128"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bEk-hh-Wks">
                                                 <rect key="frame" x="0.0" y="0.0" width="233.5" height="63.5"/>
@@ -3447,7 +3449,7 @@
                                         </constraints>
                                     </view>
                                     <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L7O-w1-NqO">
-                                        <rect key="frame" x="86.5" y="266.5" width="233.5" height="89.5"/>
+                                        <rect key="frame" x="86.5" y="38.5" width="233.5" height="89.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mWA-fh-2pP">
                                                 <rect key="frame" x="0.0" y="0.0" width="233.5" height="89.5"/>
@@ -4863,6 +4865,7 @@
                         <outlet property="genderNonEditLabel" destination="1jE-vf-Pzy" id="QrW-Du-K3B"/>
                         <outlet property="genderTextField" destination="ZYq-uJ-6wM" id="AGY-j2-etH"/>
                         <outlet property="generalToggleBtn" destination="u16-D7-aJX" id="wJQ-oM-p7n"/>
+                        <outlet property="generalTypeLabel" destination="AkX-d0-q4k" id="tie-Kk-kTL"/>
                         <outlet property="memberFullNameLabel" destination="Ytx-Wu-0wZ" id="Jm6-lC-lbH"/>
                         <outlet property="memberID" destination="jPp-O5-RIL" id="SHo-nN-IaW"/>
                         <outlet property="memberIDErrorLabel" destination="txp-UB-snO" id="IC9-Sd-Djw"/>
@@ -4879,6 +4882,7 @@
                         <outlet property="passwordNonEditLabel" destination="WRs-bL-gXl" id="GsN-PK-Yfy"/>
                         <outlet property="passwordTextField" destination="hoD-5G-bZH" id="P6r-Sq-Pro"/>
                         <outlet property="personalToggleBtn" destination="Qag-5Y-EHI" id="g2W-6g-gzG"/>
+                        <outlet property="personalTypeLabel" destination="BiJ-Qx-kyZ" id="qNy-V1-AgN"/>
                         <outlet property="phoneNo" destination="qm3-mN-shE" id="KIc-Qe-sbd"/>
                         <outlet property="phoneNoForNonEditLabel" destination="MHS-BE-TBG" id="qVc-Nb-SS0"/>
                         <outlet property="phoneNoHrLineView" destination="BZX-nd-c37" id="btL-Ur-1R5"/>
@@ -5781,7 +5785,7 @@
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="General" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gQN-HN-p9U">
                                                 <rect key="frame" x="53" y="931.5" width="56" height="20"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="14"/>
-                                                <nil key="textColor"/>
+                                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="929-zd-4sL">
@@ -5794,7 +5798,7 @@
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Personal" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Wt-zK-lLP">
                                                 <rect key="frame" x="162" y="931.5" width="61.5" height="20"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="14"/>
-                                                <nil key="textColor"/>
+                                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button hidden="YES" opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MBd-XC-KAi">
@@ -9126,7 +9130,7 @@
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="27 Aug 2020" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hFG-0w-1cY">
-                                                            <rect key="frame" x="174.5" y="12" width="75.5" height="20"/>
+                                                            <rect key="frame" x="174.5" y="12" width="75.5" height="23"/>
                                                             <color key="backgroundColor" red="0.93725490199999995" green="0.83529411760000005" blue="0.28627450980000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="11"/>
                                                             <nil key="textColor"/>
@@ -9192,8 +9196,8 @@
                                                         <constraint firstItem="JDt-4W-NS3" firstAttribute="top" secondItem="C3Q-dg-8YX" secondAttribute="bottom" id="iUd-kk-ODx"/>
                                                         <constraint firstItem="hFG-0w-1cY" firstAttribute="top" secondItem="bln-F2-U7E" secondAttribute="top" constant="12" id="ieU-Sb-Rb7"/>
                                                         <constraint firstItem="lrH-wU-yIa" firstAttribute="leading" secondItem="Xh5-FC-sh1" secondAttribute="leading" id="nT7-Fh-SZb"/>
+                                                        <constraint firstItem="hFG-0w-1cY" firstAttribute="height" secondItem="bln-F2-U7E" secondAttribute="height" multiplier="0.21" id="sQl-ux-3x4"/>
                                                         <constraint firstItem="L95-Zc-20Q" firstAttribute="top" secondItem="lPW-5s-PXk" secondAttribute="bottom" id="tn2-Jw-rPf"/>
-                                                        <constraint firstItem="hFG-0w-1cY" firstAttribute="height" secondItem="lPW-5s-PXk" secondAttribute="height" multiplier="0.99" id="xT0-4J-Jke"/>
                                                         <constraint firstItem="C3Q-dg-8YX" firstAttribute="centerY" secondItem="Xh5-FC-sh1" secondAttribute="centerY" id="xTC-Cj-zVK"/>
                                                         <constraint firstAttribute="bottom" secondItem="lrH-wU-yIa" secondAttribute="bottom" constant="8" id="ybC-Lc-uMF"/>
                                                         <constraint firstAttribute="trailing" secondItem="JDt-4W-NS3" secondAttribute="trailing" constant="50" id="yeb-De-9Cg"/>
@@ -9652,8 +9656,8 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
+        <segue reference="a1y-0k-oIj"/>
         <segue reference="P1T-jn-7dm"/>
-        <segue reference="4al-IY-hhM"/>
         <segue reference="0wx-uF-HLE"/>
         <segue reference="E5i-26-HXg"/>
     </inferredMetricsTieBreakers>
