@@ -123,6 +123,20 @@ class AppManager: NSObject {
           }
       }
 
+    var loggedInRule:LoggedInRole? {
+        get {
+            guard let role = UserDefaults.standard.value(forKey: "loggedInRule") as? String else {
+                return nil
+            }
+            return LoggedInRole(rawValue: role)
+        }
+        
+        set(role) {
+            UserDefaults.standard.set(role?.rawValue, forKey: "loggedInRule")
+        }
+    }
+    
+
     func setStatusBarBackgroundColor(color: UIColor,alpha:CGFloat) {
         guard let statusBar = UIApplication.shared.value(forKeyPath: "statusBarWindow.statusBar") as? UIView else { return }
         statusBar.backgroundColor = color
@@ -155,8 +169,8 @@ class AppManager: NSObject {
     
     func performLogout()  {
         SVProgressHUD.show()
+         AppManager.shared.isLoggedIn = false
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
-            AppManager.shared.isLoggedIn = false
             AppManager.shared.appDelegate.setRoot()
             SVProgressHUD.dismiss()
         })
@@ -671,6 +685,7 @@ class AppManager: NSObject {
         passwordLabel.isHidden = !hide
         passwordLabel.alpha = hide == true ? 1.0 : 0.0
     }
+   
 }
 
 

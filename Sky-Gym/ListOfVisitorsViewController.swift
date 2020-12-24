@@ -232,6 +232,7 @@ extension ListOfVisitorsViewController {
         FireStoreManager.shared.getAllVisitors(result: {
             (visitors,err)in
             
+            SVProgressHUD.dismiss()
             if err != nil {
                 self.showVisitorAlert(title: "Retry", message: "Some error in fetching visitor list , Please retry again.")
                 

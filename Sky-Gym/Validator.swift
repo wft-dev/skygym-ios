@@ -180,6 +180,37 @@ class ValidationManager: NSObject {
             updateBtn.alpha = 0.4
         }
     }
+    
+   
+    func loginBtnValidator(loginBtn:UIButton,textFieldArray:[UITextField],phoneNumberTextField:UITextField?,email:String?,password:String?) {
+        var flag:Bool = false
+        
+        if email != nil && password == nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) == true ? true : false
+        }
+            
+        else if password != nil && email == nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isPasswordValid(password: password!) == true ? true : false
+        }
+            
+        else if email != nil && password != nil {
+            flag = isAllFieldsRequiredValidated(textFieldArray: textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) && isPasswordValid(password: password!) == true ? true : false
+        }
+            
+        else {
+            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField)
+        }
+
+        if flag == true {
+            loginBtn.isEnabled = true
+            loginBtn.alpha = 1.0
+        } else {
+            loginBtn.isEnabled = false
+            loginBtn.alpha = 0.4
+        }
+    }
+    
+    
 
     func isMemberProfileValidated(textFieldArray:[UITextField],textView:UITextView,phoneNumberTextField:UITextField?,email:String?,password:String?) -> Bool {
         var flag:Bool = false

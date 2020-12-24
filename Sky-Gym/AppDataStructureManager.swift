@@ -17,6 +17,12 @@ enum Role:String {
     case Visitor
 }
 
+enum LoggedInRole:String {
+    case Admin
+    case Member
+    case Trainer
+}
+
 
 struct AdminProfile {
     var gymName:String

@@ -24,11 +24,25 @@ class AdminDashboardViewController: BaseViewController {
     let lightGrayColor = UIColor(red: 238/255, green: 238/255, blue: 238/255, alpha: 1.0)
     override func viewDidLoad() {
         super.viewDidLoad()
+        SVProgressHUD.show()
         self.paidMemberView.paidUserLabel.text = "Paid member"
         self.expiredMemberView.paidUserLabel.text = "Expired member"
-        self.trainerDetailView.paidUserLabel.text = "Trainers"
+        print("LOGED IN ROLE IS \(AppManager.shared.loggedInRule?.rawValue)")
+        if  AppManager.shared.loggedInRule == LoggedInRole.Trainer {
+            self.trainerDetailView.isHidden = true
+            self.trainerDetailView.alpha = 0.0
+            self.trainerDetailView.paidUserLabel.text = ""
+        }else {
+            self.trainerDetailView.isHidden = false
+            self.trainerDetailView.alpha = 1.0
+            self.trainerDetailView.paidUserLabel.text = "Trainers"
+        }
         cutomMenuView.searchBtn.isHidden = true
         cutomMenuView.navigationTitleLabel.text = "Dashboard"
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+            self.setDashboardValues()
+            SVProgressHUD.dismiss()
+        })
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -37,7 +51,7 @@ class AdminDashboardViewController: BaseViewController {
         self.totalMemberView.layer.cornerRadius = 15.0
         self.totalMemberView.layer.borderColor = self.lightGrayColor.cgColor
         adjustFonts()
-        self.setDashboardValues()
+        
     }
     
     func adjustFonts()  {
@@ -55,39 +69,55 @@ class AdminDashboardViewController: BaseViewController {
     }
     
     func setDashboardValues()  {
-        SVProgressHUD.show()
-        self.view.isUserInteractionEnabled = false
-        FireStoreManager.shared.getTotalOf(role: .Trainer, adminID: AppManager.shared.adminID, result: {
-            (trainerCount,_)  in
-            self.trainerDetailView.numberOfPaidUserLabel.text = "\(trainerCount)"
-            
-            FireStoreManager.shared.getTotalOf(role: .Member, adminID: AppManager.shared.adminID, result: {
-                (memberCount,_) in
-                self.numberOfMembersLabel.text = "\(memberCount)"
-                
-                FireStoreManager.shared.getTotalOf(role: .Visitor, adminID: AppManager.shared.adminID, result: {
-                    (visitorCount,_) in
-                    SVProgressHUD.dismiss()
-                    self.numberOfVisitorsLabel.text = "\(visitorCount)"
-                    
-                    FireStoreManager.shared.numberOfPaidMembers(adminID: AppManager.shared.adminID, result: {
-                        (paidMemberCount,err) in
-                        
-                        if err != nil {
-                            print("Errror")
-                        } else{
-                            self.paidMemberView.numberOfPaidUserLabel.text = "\(paidMemberCount)"
-                            self.expiredMemberView.numberOfPaidUserLabel.text = "\(AppManager.shared.expiredMember)"
-                            self.view.isUserInteractionEnabled = true
-                        }
-                    })
-                    
-                })
-                
-            })
-        })
+        self.getTotalNumberOf(role: .Member)
+        self.getTotalNumberOf(role: .Visitor)
+        if AppManager.shared.loggedInRule ==  LoggedInRole.Admin  {
+            self.getTotalNumberOf(role: .Trainer)
+        }
+        self.getNumberOfPaidMembers()
     }
     
+    
+    func getTotalNumberOf(role:Role){
+        var v = 0
+        DispatchQueue.global(qos: .background).async {
+            let result = FireStoreManager.shared.getTotalOf(role: role)
+            
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(count):
+                    v = count
+                case .failure(_):
+                    v = 0
+                }
+                switch role {
+                case .Member:
+                    self.numberOfMembersLabel.text = "\(v)"
+                case .Trainer:
+                    self.trainerDetailView.numberOfPaidUserLabel.text = "\(v)"
+                case .Visitor:
+                    self.numberOfVisitorsLabel.text = "\(v)"
+                default:
+                    break
+                }
+            }
+        }
+    }
+    
+    func getNumberOfPaidMembers() {
+        DispatchQueue.global(qos: .background).async {
+            let result = FireStoreManager.shared.numberOfPaidMembers()
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(count):
+                    self.paidMemberView.numberOfPaidUserLabel.text = "\(count)"
+                case .failure(_):
+                    self.paidMemberView.numberOfPaidUserLabel.text = "0"
+                }
+                self.expiredMemberView.numberOfPaidUserLabel.text = "\(AppManager.shared.expiredMember)"
+            }
+        }
+    }
 }
 
 extension UIImageView {

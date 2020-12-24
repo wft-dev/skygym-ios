@@ -7,10 +7,10 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class MemberAndTrainerLoginViewController: UIViewController {
-    
-    
+
     @IBOutlet weak var gymIDTextField: UITextField?
     @IBOutlet weak var emailTextField: UITextField?
     @IBOutlet weak var passwordTextField: UITextField?
@@ -19,20 +19,29 @@ class MemberAndTrainerLoginViewController: UIViewController {
     @IBOutlet weak var passwordErrorText: UILabel?
     @IBOutlet weak var loginBtn: UIButton?
     
+    let validator = ValidationManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        gymIDTextField?.text = "1221"
+        emailTextField?.text = "visitor2@gmail.com"
+        passwordTextField?.text = "visitor@012340"
+        
         self.assignbackground()
+        loginBtn?.isEnabled = false
+        loginBtn?.alpha = 0.4
         [gymIDTextField,emailTextField,passwordTextField].forEach{
                    $0?.layer.cornerRadius = 15.0
                    $0?.borderStyle = .none
                    $0?.clipsToBounds = true
-                  // $0?.addTarget(self, action: #selector(errorChecker(_:)), for: .editingChanged)
+                   $0?.addTarget(self, action: #selector(fieldErrorChecker(_:)), for: .editingChanged)
                    $0?.addPaddingToTextField()
                }
         loginBtn?.layer.cornerRadius = 15.0
         loginBtn?.clipsToBounds = true
         
+        self.loginBtn?.addTarget(self, action: #selector(loginAction), for: .touchUpInside)
+
     }
 }
 
@@ -48,4 +57,65 @@ extension MemberAndTrainerLoginViewController {
               view.addSubview(imageView)
               self.view.sendSubviewToBack(imageView)
           }
+    
+    
+    @objc func fieldErrorChecker(_ textField:UITextField) {
+        switch textField.tag {
+        case 1:
+            validator.requiredValidation(textField: textField, errorLabel: self.gymIDErrroText!, errorMessage: "Gym ID required.")
+        case 2:
+            validator.emailValidation(textField: textField, errorLabel: self.emailErrorText!, errorMessage: "Invalid email address.")
+        case 3:
+            validator.passwordValidation(textField: textField, errorLabel: self.passwordErrorText!, errorMessage: "Password must be greater than 8 characters.")
+        default:
+            break
+        }
+        self.validator.loginBtnValidator(loginBtn: self.loginBtn!, textFieldArray: [self.gymIDTextField!], phoneNumberTextField: nil, email: self.emailTextField?.text!, password: self.passwordTextField?.text!)
+    }
+    
+    @objc  func loginAction()  {
+        SVProgressHUD.show()
+        let email = self.emailTextField?.text!
+        let gymID = self.gymIDTextField?.text!
+        let password = self.passwordTextField?.text!
+        
+        DispatchQueue.global(qos: .background).async {
+            let flag =  FireStoreManager.shared.isMember(email: email!, gymID: gymID!)
+            DispatchQueue.main.async {
+                SVProgressHUD.dismiss()
+                switch flag {
+                case  let .success(sagar):
+                    self.memberOrTrainerLoginAction(role: sagar ? .Member : .Trainer, email: email!, gymID: gymID!, password: password!)
+                case let .failure(err):
+                    print("Error in login : \(err)")
+                }
+            }
+        }
+    }
+    
+    private func memberOrTrainerLoginAction(role:Role,email:String,gymID:String,password:String) {
+        let colletionString = AppManager.shared.getRole(role: role)
+        FireStoreManager.shared.trainerOrMemberLogin(collectionPath: colletionString, gymID: gymID, email: email, password: password, result: {
+            (loggedIn,err) in
+            
+            if err != nil {
+                print("Error in loggin")
+            }else {
+                if loggedIn == true {
+                    AppManager.shared.performLogin()
+                }else{
+                    print("Error in loggin in data not found.")
+                }
+            }
+        })
+    }
+ 
+}
+
+
+extension MemberAndTrainerLoginViewController : UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.fieldErrorChecker(textField)
+        self.validator.loginBtnValidator(loginBtn: self.loginBtn!, textFieldArray: [self.gymIDTextField!], phoneNumberTextField: nil, email: self.emailTextField?.text!, password: self.passwordTextField?.text!)
+    }
 }

@@ -40,6 +40,7 @@ class FireStoreManager: NSObject {
                         let adminData = querySnapshot?.documents.first?.data()
                         AppManager.shared.adminID = adminData?["adminID"] as! String
                         AppManager.shared.gymID = (adminData?["adminDetail"] as! [String:String])["gymID"]!
+                        AppManager.shared.loggedInRule = LoggedInRole.Admin
                         result(true,nil)
                     }
                 } else {
@@ -49,6 +50,67 @@ class FireStoreManager: NSObject {
         })
     }
     
+    func trainerOrMemberLogin(collectionPath:String,gymID:String,email:String,password:String,result:@escaping (Bool,Error?) -> Void) {
+        self.fireDB.collection(collectionPath)
+        .whereField("email", isEqualTo: email)
+        .whereField("gymID", isEqualTo: gymID)
+        .whereField("password", isEqualTo: password)
+        .getDocuments(completion: {
+            (querySnapshot,err) in
+            
+            if (querySnapshot?.documents.count)! > 0 {
+                if (querySnapshot?.documents.count)! > 1 {
+                    result(false,nil)
+                }
+                else{
+                    let data = querySnapshot?.documents.first?.data()
+                  
+                    AppManager.shared.gymID = data?["gymID"] as! String
+                    if collectionPath == "Members" {
+                          AppManager.shared.adminID = ""
+                        AppManager.shared.memberID = querySnapshot?.documents.first?.documentID as! String
+                        AppManager.shared.trainerID = ""
+                        AppManager.shared.loggedInRule = LoggedInRole.Member
+                    }else {
+                        AppManager.shared.trainerID = querySnapshot?.documents.first?.documentID as! String
+                        AppManager.shared.memberID = ""
+                        AppManager.shared.adminID = ""
+                        AppManager.shared.loggedInRule = LoggedInRole.Trainer
+                    }
+                    result(true,nil)
+                }
+            } else {
+                result(false,nil)
+            }
+        })
+    }
+    
+    
+    func isMember(email:String,gymID:String) -> Result<Bool,Error> {
+        var result:Result<Bool,Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        self.fireDB.collection("Members")
+            .whereField("email", isEqualTo: email)
+            .whereField("gymID", isEqualTo: gymID)
+            .getDocuments(completion: {
+                (querySnapshot,err) in
+                
+                if err != nil {
+                    result = .failure(err!)
+                }
+                else {
+                if (querySnapshot?.documents.count)! == 1 {
+                    result = .success(true)
+                    } else {
+                         result = .success(false)
+                    }
+                     semaphores.signal()
+                }
+            })
+      _ = semaphores.wait(wallTimeout: .distantFuture)
+        return result
+    }
+
     func register(id:String,adminDetail:[String:Any],result:@escaping (Error?) ->Void) {
         
         self.fireDB.collection("Admin").document("/\(id)").setData([
@@ -854,28 +916,36 @@ class FireStoreManager: NSObject {
         })
     }
         
-    func getTotalOf(role:Role,adminID:String,result:@escaping (Int,Error?)->Void) {
+    func getTotalOf(role:Role) -> Result<Int,Error> {
+        var result:Result<Int,Error>!
         var count:Int = 0
+        let semaphore = DispatchSemaphore(value: 0)
         let role = AppManager.shared.getRole(role: role)
-        fireDB.collection("/\(role)").whereField("adminID", isEqualTo: adminID).getDocuments(completion: {
+        fireDB.collection("/\(role)").getDocuments(completion: {
             (querySnapshot,err) in
             
             if err != nil {
-              result(0,err)
+                result = .failure(err!)
             } else {
                 count = querySnapshot!.documents.count
             }
-            result(count,nil)
+            result = .success(count)
+            semaphore.signal()
         })
+        
+        _ = semaphore.wait(wallTimeout: .distantFuture)
+        return result
     }
     
-    func numberOfPaidMembers(adminID:String,result:@escaping (Int,Error?) -> Void) {
+    func numberOfPaidMembers() -> Result<Int,Error> {
+        var result:Result<Int,Error>!
+        let semaphore = DispatchSemaphore(value: 0)
         var count = 0
         AppManager.shared.expiredMember = 0
-        fireDB.collection("/Members").whereField("adminID", isEqualTo: adminID).getDocuments(completion: {
+        fireDB.collection("/Members").getDocuments(completion: {
             (querySnapshot,err) in
             if err != nil {
-                result(0,err)
+                result = .failure(err!)
             } else {
                 for doc in querySnapshot!.documents{
                     let singleData = doc.data()
@@ -886,9 +956,7 @@ class FireStoreManager: NSObject {
                         let endDate  = AppManager.shared.getDate(date: latestMembership["endDate"]!)
                         let today = AppManager.shared.getStandardFormatDate(date: Date())
                         let diff = Calendar.current.dateComponents([.month,.year,.day], from: today, to: endDate)
-                      //  print("day: \(diff.day!) , month:\(diff.month!)  Year: \(diff.year!)")
-                        
-                        
+                     
                         if dueAmount == 0  && diff.day! >= 0 && diff.month! >= 0 && diff.year! >= 0 {
                             count += 1
                         }
@@ -900,9 +968,12 @@ class FireStoreManager: NSObject {
                         AppManager.shared.expiredMember += 1 
                     }
                 }
-                result(count,nil)
+                result = .success(count)
+                semaphore.signal()
             }
         })
+        _ = semaphore.wait(wallTimeout: .distantFuture)
+        return result
     }
     
     // NEW ATTENDENCE FUNCTIONS
@@ -957,21 +1028,21 @@ class FireStoreManager: NSObject {
         })
     }
     
-    func addFirstAttendence() {
-        let ref = fireDB.collection("/Members").document("9001")
-        let attendenceDir = AppManager.shared.getMonthAttendenceStructure(year:2020,month:12,checkIn: "3:30 PM", checkOut: "4:30 PM", present: true)
- 
-        ref.setData([
-            "attendence" :attendenceDir
-        ], completion: {
-            err in
-            if err != nil {
-                print("Faliure")
-            }else {
-                print("success")
-            }
-        })
-    }
+//    func addFirstAttendence() {
+//        let ref = fireDB.collection("/Members").document("9001")
+//        let attendenceDir = AppManager.shared.getMonthAttendenceStructure(year:2020,month:12,checkIn: "3:30 PM", checkOut: "4:30 PM", present: true)
+//
+//        ref.setData([
+//            "attendence" :attendenceDir
+//        ], completion: {
+//            err in
+//            if err != nil {
+//                print("Faliure")
+//            }else {
+//                print("success")
+//            }
+//        })
+//    }
 
     func updateAttendence(trainerORmember:String,id:String,checkOutA:String ,completion:@escaping (Error?)->Void)  {
         let currentYear = Calendar.current.component(.year, from: Date())
@@ -1042,44 +1113,47 @@ class FireStoreManager: NSObject {
     }
     
 
-    func addNewMonth(month:Int) {
-        let ref = fireDB.collection("/Members").document("97528")
+//    func addNewMonth(month:Int) {
+//        let ref = fireDB.collection("/Members").document("97528")
+//
+//        ref.getDocument(completion: {
+//            (docSnapshot,err) in
+//
+//            if err != nil {
+//                print("Errror in fetching the member attandance.")
+//            } else {
+//                var attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
+//                self.addMonth(attendenceDir: attandanceDic , trainerORmember: "Members", id: "97528", year: 2021, month: month, day: 1, present: true, checkIn: "1:00 AM", checkOut: "1:30 AM", handler:{
+//                    err in
+//                    if err != nil {
+//                        print("Error in adding new month.")
+//                    }else {
+//                        print("Success in adding new month.")
+//                    }
+//                })
+//            }
+//        })
+//    }
 
-        ref.getDocument(completion: {
-            (docSnapshot,err) in
-
-            if err != nil {
-                print("Errror in fetching the member attandance.")
-            } else {
-                var attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
-                self.addMonth(attendenceDir: attandanceDic , trainerORmember: "Members", id: "97528", year: 2021, month: month, day: 1, present: true, checkIn: "1:00 AM", checkOut: "1:30 AM", handler:{
-                    err in
-                    if err != nil {
-                        print("Error in adding new month.")
-                    }else {
-                        print("Success in adding new month.")
-                    }
-                })
-            }
-        })
-    }
-
-    func addNewYear(year:Int,month:Int) {
-         let ref = fireDB.collection("/Members").document("97528")
-
-        ref.getDocument(completion: {
-            (docSnapshot,err) in
-            if err != nil {
-                print("Errror in fetching the member attandance.")
-            } else {
-                let attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
-                self.addYear(attendenceDir: attandanceDic, trainerORmember: "Members", id: "97528", year: year, month: month, day: 1, present: true, checkIn: "checkInNew", checkOut: "checkOutNew", handler: {
-                    err in
-                    err != nil ? print("Error in adding new year.") : print("Success in adding new year.")
-                })
-            }
-        })
-    }
+    
+//    func addNewYear(year:Int,month:Int) {
+//         let ref = fireDB.collection("/Members").document("97528")
+//
+//        ref.getDocument(completion: {
+//            (docSnapshot,err) in
+//            if err != nil {
+//                print("Errror in fetching the member attandance.")
+//            } else {
+//                let attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
+//                self.addYear(attendenceDir: attandanceDic, trainerORmember: "Members", id: "97528", year: year, month: month, day: 1, present: true, checkIn: "checkInNew", checkOut: "checkOutNew", handler: {
+//                    err in
+//                    err != nil ? print("Error in adding new year.") : print("Success in adding new year.")
+//                })
+//            }
+//        })
+//    }
+    
+    
 }
     
 

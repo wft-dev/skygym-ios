@@ -16,7 +16,7 @@ import IQKeyboardManagerSwift
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     let swRevealVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "swRevealVC") as! SWRevealViewController
-    let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginVC") as! ViewController
+
     var window: UIWindow?
 
    // @available(iOS 13.0, *)
@@ -29,6 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func setRoot() {
+       let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginVC") as! ViewController
         let dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
         let menuItemVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "menuItemVC") as! MenuItemsViewController
         self.swRevealVC.frontViewController =  dashboardVC
@@ -40,10 +41,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController = loginVC
         }
         window?.makeKeyAndVisible()
-        
     }
-
-
+    
     // MARK: UISceneSession Lifecycle
 
     @available(iOS 13.0, *)

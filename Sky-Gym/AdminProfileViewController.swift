@@ -114,7 +114,10 @@ class AdminProfileViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.fetchAdminDetailBy(id: AppManager.shared.adminID)
+        if AppManager.shared.adminID != "" {
+             self.fetchAdminDetailBy(id: AppManager.shared.adminID)
+        }
+      
     }
  
     @IBAction func updateBtnAction(_ sender: Any) {
