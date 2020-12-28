@@ -126,23 +126,23 @@ extension ListOfTrainersViewController {
             _ in
             AppManager.shared.closeSwipe(gesture: gesture)
             SVProgressHUD.show()
-            FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
-                err in
-                if err != nil {
-                    SVProgressHUD.dismiss()
-                    self.showAlert(title: "Error", message: "Error in deleting trainer.")
-                } else {
-                    FireStoreManager.shared.deleteTrainerBy(id: "\(gesture.view?.tag ?? 0)", completion: {
-                        err in
-                        SVProgressHUD.dismiss()
-                        if err != nil {
-                            self.showAlert(title: "Error", message: "Error in deleting trainer.")
-                        } else {
-                            self.showAlert(title: "Success", message: "Trainer is deleted successfully.")
-                        }
-                    })
-                }
-            })
+//            FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
+//                err in
+//                if err != nil {
+//                    SVProgressHUD.dismiss()
+//                    self.showAlert(title: "Error", message: "Error in deleting trainer.")
+//                } else {
+//                    FireStoreManager.shared.deleteTrainerBy(id: "\(gesture.view?.tag ?? 0)", completion: {
+//                        err in
+//                        SVProgressHUD.dismiss()
+//                        if err != nil {
+//                            self.showAlert(title: "Error", message: "Error in deleting trainer.")
+//                        } else {
+//                            self.showAlert(title: "Success", message: "Trainer is deleted successfully.")
+//                        }
+//                    })
+//                }
+//            })
         })
         let cancelActionAlert = UIAlertAction(title: "Cancel", style: .default, handler: {
             _ in

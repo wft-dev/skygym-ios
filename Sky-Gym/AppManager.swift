@@ -685,6 +685,12 @@ class AppManager: NSObject {
         passwordLabel.isHidden = !hide
         passwordLabel.alpha = hide == true ? 1.0 : 0.0
     }
+    
+    func getGymDetail(data:Dictionary<String,String>) -> GymDetail {
+        let gymDetail = GymDetail(gymName: data["gymName"]!, gymID: data["gymID"]!, gymOpeningTime:  data["gymOpeningTime"]!, gymClosingTime: data["gymClosingTime"]!,gymDays: data["gymDays"]!, gymAddress: data["gymAddress"]!, gymOwnerName: data["firstName"]!, gymOwnerPhoneNumber: data["mobileNo"]!, gymOwnerAddress: data["gymAddress"]!)
+        
+        return gymDetail
+    }
    
 }
 

@@ -551,22 +551,39 @@ extension AddMemberViewController{
             
             if self.visitorID != "" {
                 SVProgressHUD.show()
-                FireStoreManager.shared.deleteImgBy(id: self.visitorID, result: {
-                    err in
-                    SVProgressHUD.dismiss()
-                    if err != nil {
-                        
-                    } else {
-                        FireStoreManager.shared.deleteVisitorBy(id: self.visitorID, completion: {
-                            err in
-                            if err != nil {
-                                
-                            }else {
-                                self.dismiss(animated: true, completion: nil)
+//                FireStoreManager.shared.deleteImgBy(id: self.visitorID, result: {
+//                    err in
+//                    SVProgressHUD.dismiss()
+//                    if err != nil {
+//
+//                    } else {
+
+//                    }
+//                })
+                
+                
+                DispatchQueue.global(qos: .background).async {
+                    let result = FireStoreManager.shared.deleteImgBy(id: self.visitorID)
+                    
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .failure(_) :
+                            self.errorAlert(message: "Error in deleting member.")
+                        case  let .success(flag) :
+                            if flag == true {
+                                FireStoreManager.shared.deleteVisitorBy(id: self.visitorID, completion: {
+                                    err in
+                                    if err != nil {
+                                    self.errorAlert(message: "Error in deleting member.")
+                                    }else {
+                                        self.dismiss(animated: true, completion: nil)
+                                    }
+                                })
                             }
-                        })
+                        }
                     }
-                })
+                }
+    
             } else {
                 SVProgressHUD.dismiss()
                 self.dismiss(animated: true, completion: nil)

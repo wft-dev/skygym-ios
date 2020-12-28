@@ -130,6 +130,10 @@ extension MenuItemsViewController {
             let listOfMembershipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfMembershipVC, animated: true)
             break
+        case 5 :
+            let trainerProfileVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "trainerProfileVC") as! TrainerProfileViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(trainerProfileVC, animated: true)
+            break
         case 6:
             let listOfVisitorVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "visitorVC") as! ListOfVisitorsViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfVisitorVC, animated: true)

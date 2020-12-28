@@ -24,10 +24,11 @@ class AdminDashboardViewController: BaseViewController {
     let lightGrayColor = UIColor(red: 238/255, green: 238/255, blue: 238/255, alpha: 1.0)
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.assignbackground()
         SVProgressHUD.show()
         self.paidMemberView.paidUserLabel.text = "Paid member"
         self.expiredMemberView.paidUserLabel.text = "Expired member"
-        print("LOGED IN ROLE IS \(AppManager.shared.loggedInRule?.rawValue)")
+       // print("LOGED IN ROLE IS \(AppManager.shared.loggedInRule?.rawValue)")
         if  AppManager.shared.loggedInRule == LoggedInRole.Trainer {
             self.trainerDetailView.isHidden = true
             self.trainerDetailView.alpha = 0.0

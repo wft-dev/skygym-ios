@@ -23,6 +23,17 @@ enum LoggedInRole:String {
     case Trainer
 }
 
+struct  GymDetail {
+    var gymName:String
+    var gymID:String
+    var gymOpeningTime:String
+    var gymClosingTime:String
+    var gymDays:String
+    var gymAddress:String
+    var gymOwnerName:String
+    var gymOwnerPhoneNumber:String
+    var gymOwnerAddress:String
+}
 
 struct AdminProfile {
     var gymName:String

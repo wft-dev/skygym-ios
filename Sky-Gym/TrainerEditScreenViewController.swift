@@ -266,9 +266,17 @@ extension TrainerEditScreenViewController {
 
     func setTrainerEditScreenNavigationBar()  {
         let navigationBar  = self.trainerEditScreenNavigationBar
-        navigationBar?.menuBtn.isHidden = true
-        navigationBar?.leftArrowBtn.isHidden = false
-        navigationBar?.leftArrowBtn.alpha = 1.0
+        if AppManager.shared.loggedInRule == LoggedInRole.Admin{
+            navigationBar?.menuBtn.isHidden = true
+            navigationBar?.leftArrowBtn.isHidden = false
+            navigationBar?.leftArrowBtn.alpha = 1.0
+        }else {
+            navigationBar?.menuBtn.isHidden = false
+            navigationBar?.menuBtn.alpha = 1.0
+            navigationBar?.leftArrowBtn.isHidden = true
+            navigationBar?.leftArrowBtn.alpha = 0.0
+        }
+
         navigationBar?.navigationTitleLabel.text = "Trainer"
         navigationBar?.searchBtn.isHidden = true
         if self.isNewTrainer == false{

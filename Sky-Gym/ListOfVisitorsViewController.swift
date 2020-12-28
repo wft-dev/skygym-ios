@@ -108,22 +108,22 @@ extension ListOfVisitorsViewController {
             _ in
             AppManager.shared.closeSwipe(gesture: gesture)
             SVProgressHUD.show()
-            FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
-                err in
-                SVProgressHUD.dismiss()
-                if err != nil {
-                    self.showVisitorAlert(title: "Error", message: "Error in deleting visitor.")
-                } else {
-                    FireStoreManager.shared.deleteVisitorBy(id:"\(gesture.view?.tag ?? 0)", completion: {
-                        err in
-                        if err != nil {
-                            self.showVisitorAlert(title: "Error", message: "Error in deleting visitor.")
-                        }else {
-                            self.showVisitorAlert(title: "Success", message: "Visitor is deleted successfully.")
-                        }
-                    })
-                }
-            })
+//            FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
+//                err in
+//                SVProgressHUD.dismiss()
+//                if err != nil {
+//                    self.showVisitorAlert(title: "Error", message: "Error in deleting visitor.")
+//                } else {
+//                    FireStoreManager.shared.deleteVisitorBy(id:"\(gesture.view?.tag ?? 0)", completion: {
+//                        err in
+//                        if err != nil {
+//                            self.showVisitorAlert(title: "Error", message: "Error in deleting visitor.")
+//                        }else {
+//                            self.showVisitorAlert(title: "Success", message: "Visitor is deleted successfully.")
+//                        }
+//                    })
+//                }
+//            })
         })
         let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler: {
             _ in

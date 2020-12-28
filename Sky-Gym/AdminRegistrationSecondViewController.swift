@@ -50,7 +50,7 @@ class AdminRegistrationSecondViewController: UIViewController {
     
     @IBAction func doneBtnAction(_ sender: Any) {
         SVProgressHUD.show()
-        FireStoreManager.shared.register(id: UUID().uuidString, adminDetail:self.getAdminData() as! [String:String], result: {
+        FireStoreManager.shared.register(id: UUID().uuidString, gymID: AppManager.shared.gymID, adminDetail:self.getAdminData() as! [String:String], result: {
             err in
             SVProgressHUD.dismiss()
             if err != nil {

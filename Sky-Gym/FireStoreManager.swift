@@ -19,7 +19,32 @@ class FireStoreManager: NSObject {
     private override init() {}
     let fireDB = Firestore.firestore()
     let fireStorageRef = Storage.storage().reference()
-
+    
+    
+    
+    func getGymInfo(gymID:String) -> Result<GymDetail,Error> {
+        var result:Result<GymDetail,Error>!
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        self.fireDB.collection("Admin")
+        .whereField("gymID", isEqualTo: gymID)
+        .getDocuments(completion: {
+            (querySnapshot,err) in
+            if err != nil {
+                result = .failure(err!)
+            } else {
+                let detailData = querySnapshot?.documents.first?.data() as! Dictionary<String,Any>
+                let adminDetail = detailData["adminDetail"] as! Dictionary<String,String>
+                let gymDetail = AppManager.shared.getGymDetail(data: adminDetail)
+                result = .success(gymDetail)
+                semaphore.signal()
+            }
+        })
+        let _ = semaphore.wait(wallTimeout: .distantFuture)
+        return result
+    }
+    
+    
     //FOR ADMIN LOGIN
     func isAdminLogin(email:String,password:String,result:@escaping (Bool,Error?)->Void) {
             
@@ -111,9 +136,10 @@ class FireStoreManager: NSObject {
         return result
     }
 
-    func register(id:String,adminDetail:[String:Any],result:@escaping (Error?) ->Void) {
+    func register(id:String,gymID:String,adminDetail:[String:Any],result:@escaping (Error?) ->Void) {
         
         self.fireDB.collection("Admin").document("/\(id)").setData([
+            "gymID":gymID,
             "adminID": id ,
             "email" : adminDetail["email"] as! String,
             "password" : adminDetail["password"] as! String,
@@ -144,7 +170,7 @@ class FireStoreManager: NSObject {
     }
 
     func uploadImg(url:URL,membeID:String,imageName:String,completion:@escaping (Error?) -> Void) {
-        let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(membeID)/\(imageName)")
+        let imgRef = fireStorageRef.child("Images/\(membeID)/\(imageName)")
         
         imgRef.putFile(from: url, metadata: nil, completion: {
             (metaData,err) in
@@ -153,7 +179,7 @@ class FireStoreManager: NSObject {
     }
 
     func uploadImgForTrainer(url:URL,trainerid:String,imageName:String,completion:@escaping (Error?) -> Void) {
-        let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(trainerid)/\(imageName)")
+        let imgRef = fireStorageRef.child("Images/\(trainerid)/\(imageName)")
         
         imgRef.putFile(from: url, metadata: nil, completion: {
             (metaData,err) in
@@ -162,7 +188,7 @@ class FireStoreManager: NSObject {
     }
     
     func uploadUserImg(imgData:Data,id:String,completion:@escaping (Error?) -> Void){
-        let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(id)/userProfile.png")
+        let imgRef = fireStorageRef.child("Images/\(id)/userProfile.png")
         
         imgRef.putData(imgData, metadata: nil, completion: {
             (metadata,err) in
@@ -170,22 +196,47 @@ class FireStoreManager: NSObject {
         })
     }
     
-    func deleteImgBy(id:String,result:@escaping (Error?)->Void) {
-        let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(id)")
+//    func deleteImgBy(id:String,result:@escaping (Error?)->Void) {
+//        let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(id)")
+//
+//        imgRef.listAll(completion: {
+//            (data,err) in
+//            for singleItem in data.items{
+//                singleItem.delete(completion: {
+//                    error in
+//                    result(error)
+//                })
+//            }
+//        })
+//    }
+    
+    func deleteImgBy(id:String) -> Result<Bool,Error> {
+        var result:Result<Bool,Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        let imgRef = fireStorageRef.child("Images/\(id)")
         
         imgRef.listAll(completion: {
             (data,err) in
             for singleItem in data.items{
                 singleItem.delete(completion: {
                     error in
-                    result(error)
+                    if error != nil {
+                        result = .failure(error!)
+                        result = .success(false)
+                    }else {
+                        result = .success(true)
+                    }
+                    semaphores.signal()
                 })
             }
         })
+        
+        let _ = semaphores.wait(wallTimeout: .distantFuture)
+        return result
     }
-    
+
     func downloadUserImg(id:String,result:@escaping (URL?,Error?) -> Void) {
-    let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(id)/userProfile.png")
+    let imgRef = fireStorageRef.child("Images/\(id)/userProfile.png")
 
         imgRef.downloadURL(completion: {
             (imgUrl,err) in
@@ -194,7 +245,8 @@ class FireStoreManager: NSObject {
     }
     
     func downloadImgWithName(imageName:String,id:String,result:@escaping (URL?,Error?) -> Void) {
-       let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(id)/\(imageName)")
+      // let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(id)/\(imageName)")
+    let imgRef = fireStorageRef.child("Images/\(id)/\(imageName)")
 
            imgRef.downloadURL(completion: {
                (imgUrl,err) in
@@ -240,7 +292,8 @@ class FireStoreManager: NSObject {
     
     func getAllMembers(completion:@escaping ([[String:Any]]?,Error?)->Void) {
         var dataDirctionary:[[String:Any]] = [[:]]
-        fireDB.collection("/Members").whereField("adminID", isEqualTo: AppManager.shared.adminID)  .getDocuments(completion: {
+        // .whereField("adminID", isEqualTo: AppManager.shared.adminID) 
+        fireDB.collection("/Members").getDocuments(completion: {
             (querySnapshot,err) in
             
             if err != nil {
