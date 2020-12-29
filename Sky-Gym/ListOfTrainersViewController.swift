@@ -158,6 +158,11 @@ extension ListOfTrainersViewController {
         let rightSwipGesture = UISwipeGestureRecognizer(target: self, action: #selector(trainerRightSwipeAction(_:)))
         leftSwipeGesture.direction = .left
         rightSwipGesture.direction = .right
+        let _ = cell.contentView.subviews.map({
+             if  $0.tag  == 11 {
+                 $0.removeFromSuperview()
+             }
+         })
         let deleteView = UIView(frame: CGRect(x: 0, y: 0, width: cellView.frame.width, height: cellView.frame.height))
         let trashImgView = UIImageView(image: UIImage(named: "delete"))
         trashImgView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)

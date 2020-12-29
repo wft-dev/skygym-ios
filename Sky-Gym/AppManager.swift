@@ -265,7 +265,9 @@ class AppManager: NSObject {
     }
     
     func getAdminProfile(adminDetails:[String:String]) -> AdminProfile {
-        let adminProfile = AdminProfile(gymName: adminDetails["gymName"]!, gymID: adminDetails["gymID"]!, gymAddress: adminDetails["gymAddress"]!, firstName: adminDetails["firstName"]!, lastName: adminDetails["lastName"]!, gender: adminDetails["gender"]!, password: adminDetails["password"]!, email: adminDetails["email"]!, phoneNO: adminDetails["mobileNo"]!, dob: adminDetails["dob"]!)
+        let adminProfile = AdminProfile(gymName: adminDetails["gymName"]!, gymID: adminDetails["gymID"]!, gymAddress: adminDetails["gymAddress"]!, firstName: adminDetails["firstName"]!, lastName: adminDetails["lastName"]!, gender: adminDetails["gender"]!, password: adminDetails["password"]!, email: adminDetails["email"]!, phoneNO: adminDetails["mobileNo"]!, dob: adminDetails["dob"]!,
+            gymOpenningTime: adminDetails["gymOpenningTime"]!,gymClosingTime: adminDetails["gymClosingTime"]!,
+            gymDays: adminDetails["gymDays"]!)
         
         return adminProfile
     }

@@ -221,14 +221,11 @@ extension ListOfMembersViewController : UITableViewDataSource{
         cell.dateOfExpiry.text = singleMember.dateOfExp
         cell.dueAmount.text = singleMember.dueAmount
         cell.btnsStackView.tag =  Int(singleMember.memberID)!
-        print("\(cell.btnsStackView.tag)")
+       // print("\(cell.btnsStackView.tag)")
         cell.customCellDelegate = self
         cell.selectionStyle = .none
         self.setCellAttendeneBtn(memberCell: cell, memberID: singleMember.memberID)
         self.setCellRenewMembershipBtn(memberCell: cell, memberID: singleMember.memberID,dueAmount: singleMember.dueAmount)
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
-//
-//        })
         self.addCustomSwipe(cellView: cell.listOfmemberTCView, cell: cell)
         
         
@@ -268,40 +265,30 @@ extension ListOfMembersViewController{
             AppManager.shared.closeSwipe(gesture: gesture)
             SVProgressHUD.show()
             let id = "\(gesture.view?.tag ?? 0 )"
-            print("view is : \(gesture.view)")
-            print("ID BEFORE DELETING : \(gesture.view?.tag)")
-            DispatchQueue.global(qos: .default).async {
+            DispatchQueue.global(qos: .background).async {
                 print("ID is : \(id)")
                 let result = FireStoreManager.shared.deleteImgBy(id:id )
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
-                    switch result {
-                    case  .failure(_):
-                        self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
-                    case let .success(flag) :
-                        if flag == true {
-                            FireStoreManager.shared.deleteMemberBy(id:id, completion: {
-                                err in
-                                SVProgressHUD.dismiss()
-                                if err != nil {
-                                    self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
-                                } else {
-                                    self.alertBox(title: "Success", message: "Member is deleted successfully.")
-                                }
-                            })
-                        }
+                switch result {
+                case  .failure(_):
+                    self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
+                case let .success(flag) :
+                    if flag == true {
+                        FireStoreManager.shared.deleteMemberBy(id:id, completion: {
+                            err in
+                            SVProgressHUD.dismiss()
+                            if err != nil {
+                                self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
+                            } else {
+                                self.alertBox(title: "Success", message: "Member is deleted successfully.")
+                            }
+                        })
                     }
-                })
-                
-            }
+                }
+        }
         })
         let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler: {
             _ in
-           // print("view is : \(gesture.view?.superview?.subviews.last)")
-            print("View is \(gesture.view)")
-            print("super view is : \(gesture.view?.superview)")
-            print("ID BEFORE DELETING : \(gesture.view?.superview?.subviews.last?.tag)")
-            print("GESTURE ID : \(gesture.view?.tag)")
             AppManager.shared.closeSwipe(gesture: gesture)
         })
 
@@ -315,11 +302,16 @@ extension ListOfMembersViewController{
         let rightSwipGesture = UISwipeGestureRecognizer(target: self, action: #selector(rightSwipeAction(_:)))
         leftSwipeGesture.direction = .left
         rightSwipGesture.direction = .right
-        let deleteView = UIView(frame: CGRect(x: 0, y: 0, width: cellView.frame.width, height: cellView.frame.height))
+       let _ = cell.contentView.subviews.map({
+            if  $0.tag  == 11 {
+                $0.removeFromSuperview()
+            }
+        })
+         let deleteView = UIView()
+        deleteView.frame = CGRect(x: 0, y: 0, width: cellView.frame.width, height: cellView.frame.height)
         let trashImgView = UIImageView(image: UIImage(named: "delete"))
         trashImgView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
         trashImgView.isUserInteractionEnabled = true
-        print("STACK VIEW ID IS : \(cell.btnsStackView.tag)")
         trashImgView.tag = cell.btnsStackView.tag
         deleteView.backgroundColor = .red
         cell.contentView.addSubview(deleteView)
@@ -341,7 +333,7 @@ extension ListOfMembersViewController{
         cellView.addGestureRecognizer(leftSwipeGesture)
         cellView.addGestureRecognizer(rightSwipGesture)
         cellView.isUserInteractionEnabled = true
-        cellView.tag = 11
+        deleteView.tag = 11
         cell.contentView.backgroundColor = .white
         cell.layer.cornerRadius = 20
         cellView.layer.cornerRadius = 20

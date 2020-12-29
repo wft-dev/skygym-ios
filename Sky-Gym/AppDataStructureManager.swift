@@ -46,6 +46,9 @@ struct AdminProfile {
     var email:String
     var phoneNO :String
     var dob:String
+    var gymOpenningTime:String
+    var gymClosingTime:String
+    var gymDays:String
 }
 
 //MEMBER STRUCTURE

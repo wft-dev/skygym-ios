@@ -9,6 +9,11 @@
 import UIKit
 import SVProgressHUD
 
+class WeekDayTableCell: UITableViewCell {
+    @IBOutlet weak var checkBtn: UIButton!
+    @IBOutlet weak var weekDayLabel: UILabel!
+}
+
 class AdminProfileViewController: UIViewController {
     
     @IBOutlet weak var adminProfileNavigationBar: CustomNavigationBar!
@@ -72,19 +77,43 @@ class AdminProfileViewController: UIViewController {
     @IBOutlet weak var phoneNumberErrorLabel: UILabel!
     @IBOutlet weak var dobErrorLabel: UILabel!
     
+    @IBOutlet weak var openningTimeLabel: UILabel!
+    @IBOutlet weak var openningTimeTextField: UITextField!
+    @IBOutlet weak var openningTimeErrorLabel: UILabel!
+    @IBOutlet weak var closingTimeLabel: UILabel!
+    @IBOutlet weak var closingTimeTextField: UITextField!
+    @IBOutlet weak var closingTimeErrorLabel: UILabel!
+    @IBOutlet weak var gymDaysLabel: UILabel!
+    @IBOutlet weak var gymDaysTextField: UITextField!
+    @IBOutlet weak var gymDaysErrorLabel: UILabel!
+    @IBOutlet weak var openningTimeForNonEditLabel: UILabel!
+    @IBOutlet weak var openningTimeNonEditLabel: UILabel!
+    @IBOutlet weak var closingTimeForNonEditLabel: UILabel!
+    @IBOutlet weak var closingTimeNonEditLabel: UILabel!
+    @IBOutlet weak var gymTimeHrLineView: UIView!
+    @IBOutlet weak var gymDaysForNonEditLabel: UILabel!
+    @IBOutlet weak var gymDaysNonEditLabel: UILabel!
+    @IBOutlet weak var gymDaysHrLineView: UIView!
+    @IBOutlet weak var weekDaysListView: UIView!
+    @IBOutlet weak var weekDaysListTable: UITableView!
+    
     var imagePicker = UIImagePickerController()
     var isProfileImgSelected:Bool = false
     var isEdit:Bool = false
     var datePicker = UIDatePicker()
+    var timePicker = UIDatePicker()
     let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
     var selectedDate:String = ""
+    var selectedTime:String = ""
     var forNonEditLabelArray:[UILabel] = []
     var defaultLabelArray:[UILabel] = []
     var textFieldsArray:[UITextField] = []
     var errorLabelArray:[UILabel] = []
     let validation = ValidationManager.shared
-  //  var actualPassword:String = ""
     var actualPassword:UILabel = UILabel()
+    var duplicateError:String = ""
+    var weekdayArray:[String] = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+    var imageName = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,12 +121,17 @@ class AdminProfileViewController: UIViewController {
         self.setTextFields()
         self.adminImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPicker)))
         self.imagePicker.delegate = self
-        self.forNonEditLabelArray = [self.gymNameForNonEditLabel,self.gymIDForNonEditLabel,self.gymAddressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel]
-        self.defaultLabelArray = [self.gymName,self.gymID,self.gymAddress,self.firstName,self.lastName,self.email,self.gender,self.password,self.phoneNo,self.dob]
+        self.weekDaysListView.isHidden = true
+        self.weekDaysListTable.delegate = self
+        self.weekDaysListTable.dataSource = self
+        self.imageName  = "unchecked-checkbox"
+        self.forNonEditLabelArray = [self.gymNameForNonEditLabel,self.gymIDForNonEditLabel,self.gymAddressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.openningTimeForNonEditLabel,self.closingTimeForNonEditLabel,self.gymDaysForNonEditLabel]
         
-        self.textFieldsArray = [self.gymNameTextField,self.gymIDTextField,self.adminFirstNameTextField,self.adminLastNameTextField,self.adminGenderTextField,self.phoneNoTextField,self.dobTextField]
+        self.defaultLabelArray = [self.gymName,self.gymID,self.gymAddress,self.firstName,self.lastName,self.email,self.gender,self.password,self.phoneNo,self.dob,self.openningTimeLabel,self.closingTimeLabel,self.gymDaysLabel]
         
-        self.errorLabelArray = [self.gymNameErrorLabel,self.gymIDErrorLabel,self.addressErrorLabel,self.firstNameErrorLabel,self.secondNameErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel]
+        self.textFieldsArray = [self.gymNameTextField,self.gymIDTextField,self.adminFirstNameTextField,self.adminLastNameTextField,self.adminGenderTextField,self.phoneNoTextField,self.dobTextField,self.openningTimeTextField,self.closingTimeTextField,self.gymDaysTextField]
+        
+        self.errorLabelArray = [self.gymNameErrorLabel,self.gymIDErrorLabel,self.addressErrorLabel,self.firstNameErrorLabel,self.secondNameErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel,self.openningTimeErrorLabel,self.closingTimeErrorLabel,self.gymDaysErrorLabel]
         
         self.adminImg.makeRounded()
         AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
@@ -110,14 +144,16 @@ class AdminProfileViewController: UIViewController {
         self.gymAddressNoEditLabel.alpha = 1.0
         self.updateBtn.isHidden = true
         self.adminImg.isUserInteractionEnabled = false
+        self.gymDaysTextField.isUserInteractionEnabled = true
+       // self.gymDaysTextField.isen = false
+        self.gymDaysTextField.addTarget(self, action: #selector(showWeekDays), for: .editingDidBegin)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if AppManager.shared.adminID != "" {
+        if AppManager.shared.loggedInRule == LoggedInRole.Admin {
              self.fetchAdminDetailBy(id: AppManager.shared.adminID)
         }
-      
     }
  
     @IBAction func updateBtnAction(_ sender: Any) {
@@ -168,6 +204,11 @@ extension AdminProfileViewController {
         self.adminProfileNavigationBar.editBtn.addTarget(self, action: #selector(editAdmin), for: .touchUpInside)
     }
     
+    @objc func showWeekDays() {
+        self.view.endEditing(true)
+        self.weekDaysListView.isHidden = !self.weekDaysListView.isHidden
+    }
+    
     @objc func editAdmin() {
         if self.isEdit == true {
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
@@ -208,26 +249,34 @@ extension AdminProfileViewController {
                     self.adminGenderTextField! : self.genderNonEditLabel!,
                     self.emailTextField! : self.emailNonEditLabel!,
                     self.phoneNoTextField! : self.phoneNoNonEditLabel!,
-                    self.dobTextField! : self.dobNonEditLabel!
+                    self.dobTextField! : self.dobNonEditLabel!,
+                    self.openningTimeTextField! : self.openningTimeNonEditLabel!,
+                    self.closingTimeTextField! : self.closingTimeNonEditLabel!,
+                    self.gymDaysTextField! : self.gymDaysNonEditLabel!
             ]
                 return dir
             }
-
               func setHrLineView(isHidden:Bool,alpha:CGFloat) {
-                [self.gymNameHrLineView,self.gymAddressHrLineView,self.firstNameHrLineView,self.phoneNoHrLineView,self.emailHrLineView,self.genderHrLineView].forEach{
+                [self.gymNameHrLineView,self.gymAddressHrLineView,self.firstNameHrLineView,self.phoneNoHrLineView,self.emailHrLineView,self.genderHrLineView,self.gymTimeHrLineView,self.gymDaysHrLineView].forEach{
                       $0?.isHidden = isHidden
                       $0?.alpha = alpha
                   }
               }
     
     func setTextFields() {
-        [self.gymNameTextField,self.gymIDTextField,self.adminFirstNameTextField,self.adminLastNameTextField,self.adminGenderTextField,self.dobTextField,self.phoneNoTextField,self.adminPasswordTextField,self.emailTextField].forEach{
+        [self.gymNameTextField,self.gymIDTextField,self.adminFirstNameTextField,self.adminLastNameTextField,self.adminGenderTextField,self.dobTextField,self.phoneNoTextField,self.adminPasswordTextField,self.emailTextField,self.gymDaysTextField,self.openningTimeTextField,self.closingTimeTextField].forEach{
             self.addPaddingToTextField(textField: $0!)
             $0?.layer.cornerRadius = 7.0
             $0?.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
             $0?.clipsToBounds = true
-            $0?.addTarget(self, action: #selector(checkProfileValidation(_:)), for: .editingChanged)
+            //print("text field tag : \()")
+            if $0?.tag != 12 {
+                $0?.addTarget(self, action: #selector(checkProfileValidation(_:)), for: .editingChanged)
+            }
         }
+        self.weekDaysListView.layer.cornerRadius = 12.0
+        self.weekDaysListView.layer.borderColor = UIColor.gray.cgColor
+        self.weekDaysListView.layer.borderWidth = 0.7
         
         self.updateBtn.layer.cornerRadius = 12.0
         self.updateBtn.layer.borderColor = UIColor.black.cgColor
@@ -238,8 +287,8 @@ extension AdminProfileViewController {
         self.addressTextView.layer.cornerRadius = 7.0
         self.addressTextView.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
         self.addressTextView.clipsToBounds = true
-        
         self.datePicker.datePickerMode = .date
+        self.timePicker.datePickerMode = .time
         toolBar.barStyle = .default
         let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
@@ -254,7 +303,9 @@ extension AdminProfileViewController {
       
     @objc func doneTextField()  {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat =  "dd-MMM-YYYY"
+        dateFormatter.dateFormat = "h:mm a"
+        self.selectedTime = dateFormatter.string(from: timePicker.date)
+        dateFormatter.dateFormat =  "dd-MMM-yyyy"
         selectedDate = dateFormatter.string(from: datePicker.date)
         self.view.endEditing(true)
     }
@@ -283,6 +334,12 @@ extension AdminProfileViewController {
             validation.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
         case 9:
             validation.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required." )
+        case 10:
+            validation.requiredValidation(textField: textField, errorLabel: self.openningTimeErrorLabel, errorMessage: "Gym open time required.")
+        case 11:
+            validation.requiredValidation(textField: textField, errorLabel: self.closingTimeErrorLabel, errorMessage: self.duplicateError.count > 1 ? duplicateError : "Gym close time required.")
+        case 12:
+            validation.requiredValidation(textField: textField, errorLabel: self.gymDaysErrorLabel, errorMessage:  "Gym days required.")
         default:
             break
         }
@@ -298,9 +355,6 @@ extension AdminProfileViewController {
     func fetchAdminDetailBy(id:String) {
         SVProgressHUD.show()
         
-      //  if AppManager.shared.isInitialUploaded == true {
-
-      //  }
         FireStoreManager.shared.getAdminDetailBy(id: AppManager.shared.adminID, result: {
             (data,err) in
            
@@ -340,6 +394,9 @@ extension AdminProfileViewController {
         self.emailNonEditLabel.text = adminDetail.email
         self.phoneNoNonEditLabel.text = adminDetail.phoneNO
         self.dobNonEditLabel.text = adminDetail.dob
+        self.openningTimeNonEditLabel.text = adminDetail.gymOpenningTime
+        self.closingTimeNonEditLabel.text = adminDetail.gymClosingTime
+        self.gymDaysNonEditLabel.text = adminDetail.gymDays
         
         self.gymNameTextField.text = adminDetail.gymName
         self.gymIDTextField.text = adminDetail.gymID
@@ -351,10 +408,13 @@ extension AdminProfileViewController {
         self.emailTextField.text = adminDetail.email
         self.phoneNoTextField.text = adminDetail.phoneNO
         self.dobTextField.text = adminDetail.dob
+        self.openningTimeTextField.text = adminDetail.gymOpenningTime
+        self.closingTimeTextField.text = adminDetail.gymClosingTime
+        self.gymDaysTextField.text = adminDetail.gymDays
     }
     
-    func getAdminDetailForUpdate() -> [String:Any] {
-        let admin:[String:Any] = [
+    func getAdminDetailForUpdate() -> Dictionary<String,Any> {
+        let admin:Dictionary<String,Any> = [
             "dob":self.dobTextField.text!,
             "email":self.emailTextField.text!,
             "firstName":self.adminFirstNameTextField.text!,
@@ -364,7 +424,10 @@ extension AdminProfileViewController {
             "gymID":self.gymIDTextField.text!,
             "gymName":self.gymNameTextField.text!,
             "mobileNo":self.phoneNoTextField.text!,
-            "password":self.adminPasswordTextField.text!
+            "password":self.adminPasswordTextField.text!,
+            "gymOpenningTime" : self.openningTimeTextField.text!,
+            "gymClosingTime" : self.closingTimeTextField.text!,
+            "gymDays":self.gymDaysTextField.text!
         ]
         return admin
     }
@@ -407,8 +470,7 @@ extension AdminProfileViewController : UIImagePickerControllerDelegate, UINaviga
 
 extension AdminProfileViewController : UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 9 {
-            return false
+        if textField.tag == 9 || textField.tag == 10  || textField.tag == 11  || textField.tag == 12 {            return false
         }else{
             return true
         }
@@ -426,16 +488,84 @@ extension AdminProfileViewController : UITextFieldDelegate{
             }
         }
         
-        self.allProfileFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.adminPasswordTextField.text!)
+        if textField.tag == 10 || textField.tag == 11 {
+            textField.inputView = self.timePicker
+            textField.inputAccessoryView = self.toolBar
+            if textField.text!.count > 0 {
+                let df = DateFormatter()
+                df.dateFormat = "hh:mm a"
+                self.timePicker.date = df.date(from: textField.text!)!
+            }
+        }
     }
-    
+
     func textFieldDidEndEditing(_ textField: UITextField) {
         if textField.tag == 9 && self.selectedDate != "" {
             textField.text = self.selectedDate
             self.selectedDate = ""
         }
+        
+        if  textField.tag == 10{
+            if  self.selectedTime.count > 1 {
+                textField.text = self.selectedTime
+                self.selectedTime = ""
+            }
+        }
+        
+        if textField.tag == 11 && self.selectedTime.count > 1 {
+            if validation.isDuplicate(text1: self.openningTimeTextField.text!, text2: self.selectedTime) == false{
+                self.closingTimeTextField.text = self.selectedTime
+                self.selectedTime = ""
+            } else {
+                self.closingTimeTextField.text = ""
+                duplicateError = "Start time and end time can not be same."
+                 self.selectedTime = ""
+            }
+        }
+        
         self.allProfileFieldsRequiredValidation(textField: textField)
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.adminPasswordTextField.text!)
     }
+    }
+    
+
+extension AdminProfileViewController:UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+       return  self.weekdayArray.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "weekDaysCell", for: indexPath) as! WeekDayTableCell
+        
+        cell.weekDayLabel.text = self.weekdayArray[indexPath.row]
+        cell.checkBtn.setImage(UIImage(named: self.imageName), for: .normal)
+       // cell.addGest
+     //   cell.selectionStyle = .none
+     
+        return cell
+    }
+    
+    
 }
+
+extension AdminProfileViewController : UITableViewDelegate{
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+         let cell = tableView.dequeueReusableCell(withIdentifier: "weekDaysCell", for: indexPath) as! WeekDayTableCell
+            if self.imageName == "unchecked-checkbox"{
+                self.imageName = "checked-checkbox"
+                 cell.checkBtn.setImage(UIImage(named: self.imageName), for: .normal)
+            }
+           
+        
+    
+    }
+    
+//
+//    func tableView(_ tableView: UITableView, didBeginMultipleSelectionInteractionAt indexPath: IndexPath) {
+//    let cell = tableView.dequeueReusableCell(withIdentifier: "weekDaysCell", for: indexPath) as! WeekDayTableCell
+//
+//        cell.checkBtn.setImage(UIImage(named: "checked-checkbox"), for: .selected)
+//    }
+}
+
