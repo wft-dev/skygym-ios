@@ -49,6 +49,7 @@ struct AdminProfile {
     var gymOpenningTime:String
     var gymClosingTime:String
     var gymDays:String
+    var gymDyasArrayIndexs:[Int]
 }
 
 //MEMBER STRUCTURE

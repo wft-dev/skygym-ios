@@ -264,10 +264,8 @@ class AppManager: NSObject {
         return visitor
     }
     
-    func getAdminProfile(adminDetails:[String:String]) -> AdminProfile {
-        let adminProfile = AdminProfile(gymName: adminDetails["gymName"]!, gymID: adminDetails["gymID"]!, gymAddress: adminDetails["gymAddress"]!, firstName: adminDetails["firstName"]!, lastName: adminDetails["lastName"]!, gender: adminDetails["gender"]!, password: adminDetails["password"]!, email: adminDetails["email"]!, phoneNO: adminDetails["mobileNo"]!, dob: adminDetails["dob"]!,
-            gymOpenningTime: adminDetails["gymOpenningTime"]!,gymClosingTime: adminDetails["gymClosingTime"]!,
-            gymDays: adminDetails["gymDays"]!)
+    func getAdminProfile(adminDetails:[String:Any]) -> AdminProfile {
+        let adminProfile = AdminProfile(gymName: adminDetails["gymName"] as! String, gymID: adminDetails["gymID"] as! String, gymAddress: adminDetails["gymAddress"] as! String, firstName: adminDetails["firstName"] as! String, lastName: adminDetails["lastName"] as! String, gender: adminDetails["gender"] as! String, password: adminDetails["password"] as! String, email: adminDetails["email"] as! String, phoneNO: adminDetails["mobileNo"] as! String, dob: adminDetails["dob"] as! String,gymOpenningTime: adminDetails["gymOpenningTime"] as! String,gymClosingTime: adminDetails["gymClosingTime"] as! String,gymDays: adminDetails["gymDays"] as! String, gymDyasArrayIndexs: adminDetails["gymDaysArrayIndexs"] as! [Int])
         
         return adminProfile
     }
@@ -688,8 +686,14 @@ class AppManager: NSObject {
         passwordLabel.alpha = hide == true ? 1.0 : 0.0
     }
     
-    func getGymDetail(data:Dictionary<String,String>) -> GymDetail {
-        let gymDetail = GymDetail(gymName: data["gymName"]!, gymID: data["gymID"]!, gymOpeningTime:  data["gymOpeningTime"]!, gymClosingTime: data["gymClosingTime"]!,gymDays: data["gymDays"]!, gymAddress: data["gymAddress"]!, gymOwnerName: data["firstName"]!, gymOwnerPhoneNumber: data["mobileNo"]!, gymOwnerAddress: data["gymAddress"]!)
+    func getGymDetail(data:Dictionary<String,Any>) -> GymDetail {
+        
+        let gymInfo:[Int] = data["gymDaysArrayIndexs"] as! [Int]
+        
+//        let gymDetail = GymDetail(gymName: data["gymName"] as! String, gymID: data["gymID"] as! String, gymOpeningTime:  data["gymOpeningTime"] as! String, gymClosingTime: data["gymClosingTime"] as! String,gymDays:"\(gymInfo.count)" , gymAddress: data["gymAddress"] as! String, gymOwnerName: data["firstName"] as! String, gymOwnerPhoneNumber: data["mobileNo"] as! String, gymOwnerAddress: data["gymAddress"] as! String)
+        
+        
+        let gymDetail = GymDetail(gymName: data["gymName"] as! String, gymID: data["gymID"] as! String, gymOpeningTime:  data["gymOpenningTime"] as! String, gymClosingTime: data["gymClosingTime"] as! String,gymDays:"\(gymInfo.count)" , gymAddress: data["gymAddress"] as! String, gymOwnerName: data["firstName"] as! String, gymOwnerPhoneNumber: data["mobileNo"] as! String, gymOwnerAddress: data["gymAddress"] as! String)
         
         return gymDetail
     }

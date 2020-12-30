@@ -33,8 +33,8 @@ class FireStoreManager: NSObject {
             if err != nil {
                 result = .failure(err!)
             } else {
-                let detailData = querySnapshot?.documents.first?.data() as! Dictionary<String,Any>
-                let adminDetail = detailData["adminDetail"] as! Dictionary<String,String>
+                let detailData = querySnapshot?.documents.first?.data()
+                let adminDetail = detailData!["adminDetail"] as! Dictionary<String,Any>
                 let gymDetail = AppManager.shared.getGymDetail(data: adminDetail)
                 result = .success(gymDetail)
                 semaphore.signal()
@@ -64,7 +64,7 @@ class FireStoreManager: NSObject {
                     else{
                         let adminData = querySnapshot?.documents.first?.data()
                         AppManager.shared.adminID = adminData?["adminID"] as! String
-                        AppManager.shared.gymID = (adminData?["adminDetail"] as! [String:String])["gymID"]!
+                        AppManager.shared.gymID = (adminData?["gymID"] as! String)
                         AppManager.shared.loggedInRule = LoggedInRole.Admin
                         result(true,nil)
                     }
@@ -195,21 +195,7 @@ class FireStoreManager: NSObject {
             completion(err)
         })
     }
-    
-//    func deleteImgBy(id:String,result:@escaping (Error?)->Void) {
-//        let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(id)")
-//
-//        imgRef.listAll(completion: {
-//            (data,err) in
-//            for singleItem in data.items{
-//                singleItem.delete(completion: {
-//                    error in
-//                    result(error)
-//                })
-//            }
-//        })
-//    }
-    
+
     func deleteImgBy(id:String) -> Result<Bool,Error> {
         var result:Result<Bool,Error>!
         let semaphores = DispatchSemaphore(value: 0)
@@ -364,38 +350,6 @@ class FireStoreManager: NSObject {
             result(memberArray,nil)
         })
     }
-//
-//    func checkInFilterAction(result:@escaping ([ListOfMemberStr]?,Error?) -> Void) {
-//        var checkInArray:[ListOfMemberStr] = []
-//        let currentYear = Calendar.current.component(.year, from: Date())
-//        let currentMonth = Calendar.current.component(.month, from: Date())
-//        let day = Calendar.current.component(.day, from: Date())
-//        let todayDate = "\(day)/\(currentMonth)/\(currentYear)"
-//        fireDB.collection("/Members").getDocuments(completion: {
-//            (querySnapshot,err) in
-//            if err != nil {
-//                result(nil,err)
-//            }else {
-//                for doc in querySnapshot!.documents {
-//                    let memberDetail = (doc.data())["memberDetail"] as! [String:String]
-//                    let membershipArray = (doc.data())["memberships"] as! NSArray
-//                    let attendence = (doc.data())["attendence"] as! [String:Any]
-//                    let day = ((attendence["\(currentYear)"] as! NSDictionary)["\(currentMonth)"] as! NSDictionary)["\(todayDate)"] as! NSDictionary
-//                    let checkIn = day["checkIn"] as! String
-//                    let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: membershipArray)
-//
-//                    if checkIn != "" {
-//                        let member = ListOfMemberStr(memberID: memberDetail["memberID"]!, userImg: UIImage(named: "user1")!, userName: "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)", phoneNumber: memberDetail["phoneNo"]!, dateOfExp: currentMembership.last!.endDate, dueAmount:currentMembership.last!.dueAmount, uploadName: memberDetail["uploadIDName"]!)
-//                        checkInArray.append(member)
-//                    } else {
-//                        print("COMES OUT OF CHECK IN FILTER : \(memberDetail["firstName"]!)")
-//                    }
-//
-//                }
-//                result(checkInArray,nil)
-//            }
-//        })
-//    }
 
     func checkFilterAction(checkFor:String,result:@escaping ([ListOfMemberStr]?,Error?) -> Void) {
         var checkArray:[ListOfMemberStr] = []
@@ -409,7 +363,7 @@ class FireStoreManager: NSObject {
                 result(nil,err)
             }else {
                 for doc in querySnapshot!.documents {
-                    let memberDetail = (doc.data())["memberDetail"] as! [String:String]
+                    let memberDetail = (doc.data())["memberDetail"] as! Dictionary<String,String>
                     let membershipArray = (doc.data())["memberships"] as! Array<Dictionary<String,String>>
                     let attendence = (doc.data())["attendence"] as! Dictionary<String,Any>
                     let monthArray = (attendence["\(currentYear)"] as! Dictionary<String,Any>)["\(currentMonth)"] as! Array<Dictionary<String,Any>>

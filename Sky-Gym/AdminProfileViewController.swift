@@ -114,6 +114,7 @@ class AdminProfileViewController: UIViewController {
     var duplicateError:String = ""
     var weekdayArray:[String] = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
     var imageName = ""
+    var selectedWeekdaysArray:[Int] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -125,6 +126,8 @@ class AdminProfileViewController: UIViewController {
         self.weekDaysListTable.delegate = self
         self.weekDaysListTable.dataSource = self
         self.imageName  = "unchecked-checkbox"
+        self.weekDaysListTable.allowsMultipleSelection = true
+        self.weekDaysListTable.isMultipleTouchEnabled = true
         self.forNonEditLabelArray = [self.gymNameForNonEditLabel,self.gymIDForNonEditLabel,self.gymAddressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.openningTimeForNonEditLabel,self.closingTimeForNonEditLabel,self.gymDaysForNonEditLabel]
         
         self.defaultLabelArray = [self.gymName,self.gymID,self.gymAddress,self.firstName,self.lastName,self.email,self.gender,self.password,self.phoneNo,self.dob,self.openningTimeLabel,self.closingTimeLabel,self.gymDaysLabel]
@@ -145,14 +148,16 @@ class AdminProfileViewController: UIViewController {
         self.updateBtn.isHidden = true
         self.adminImg.isUserInteractionEnabled = false
         self.gymDaysTextField.isUserInteractionEnabled = true
-       // self.gymDaysTextField.isen = false
         self.gymDaysTextField.addTarget(self, action: #selector(showWeekDays), for: .editingDidBegin)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if AppManager.shared.loggedInRule == LoggedInRole.Admin {
-             self.fetchAdminDetailBy(id: AppManager.shared.adminID)
+        DispatchQueue.main.async {
+            if AppManager.shared.loggedInRule == LoggedInRole.Admin {
+                self.fetchAdminDetailBy(id: AppManager.shared.adminID)
+                
+            }
         }
     }
  
@@ -204,9 +209,34 @@ extension AdminProfileViewController {
         self.adminProfileNavigationBar.editBtn.addTarget(self, action: #selector(editAdmin), for: .touchUpInside)
     }
     
+    func getSelectedWeekdays(selectedArray:[Int]) -> [String] {
+        var array:[String] = []
+        if self.selectedWeekdaysArray.count > 0 {
+            for i in selectedArray {
+                array.append(self.weekdayArray[i])
+            }
+        }
+        return array
+    }
+    
     @objc func showWeekDays() {
         self.view.endEditing(true)
         self.weekDaysListView.isHidden = !self.weekDaysListView.isHidden
+        self.weekDaysListView.alpha = self.weekDaysListView.isHidden == true ? 0.0 : 1.0
+        
+        if self.weekDaysListView.isHidden == true {
+            let selectedWeekdayArray = self.getSelectedWeekdays(selectedArray: self.selectedWeekdaysArray.sorted())
+            var str:String = ""
+            for weekday in  selectedWeekdayArray {
+                if selectedWeekdayArray.last != weekday  {
+                     str += "\(weekday), "
+                } else {
+                    str += weekday
+                }
+            }
+            self.gymDaysTextField.text = str
+        }
+        
     }
     
     @objc func editAdmin() {
@@ -361,7 +391,7 @@ extension AdminProfileViewController {
             if err != nil {
                 print("Error in fetching the admin details.")
             }else{
-                let adminDetail = data?["adminDetail"] as! Dictionary<String,String>
+                let adminDetail = data?["adminDetail"] as! Dictionary<String,Any>
                 self.fillAdminDetail(adminDetail: AppManager.shared.getAdminProfile(adminDetails: adminDetail ))
                 
                 FireStoreManager.shared.downloadUserImg(id: AppManager.shared.adminID, result: {
@@ -411,6 +441,8 @@ extension AdminProfileViewController {
         self.openningTimeTextField.text = adminDetail.gymOpenningTime
         self.closingTimeTextField.text = adminDetail.gymClosingTime
         self.gymDaysTextField.text = adminDetail.gymDays
+        self.selectedWeekdaysArray = adminDetail.gymDyasArrayIndexs
+        self.weekDaysListTable.reloadData()
     }
     
     func getAdminDetailForUpdate() -> Dictionary<String,Any> {
@@ -427,7 +459,8 @@ extension AdminProfileViewController {
             "password":self.adminPasswordTextField.text!,
             "gymOpenningTime" : self.openningTimeTextField.text!,
             "gymClosingTime" : self.closingTimeTextField.text!,
-            "gymDays":self.gymDaysTextField.text!
+            "gymDays":self.gymDaysTextField.text!,
+            "gymDaysArrayIndexs":self.selectedWeekdaysArray
         ]
         return admin
     }
@@ -536,36 +569,29 @@ extension AdminProfileViewController:UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "weekDaysCell", for: indexPath) as! WeekDayTableCell
-        
         cell.weekDayLabel.text = self.weekdayArray[indexPath.row]
+        self.selectedWeekdaysArray = self.selectedWeekdaysArray.sorted()
+        if self.selectedWeekdaysArray.contains(indexPath.row){
+            self.imageName = "checked-checkbox"
+        }else {
+            self.imageName = "unchecked-checkbox"
+        }
         cell.checkBtn.setImage(UIImage(named: self.imageName), for: .normal)
-       // cell.addGest
-     //   cell.selectionStyle = .none
-     
         return cell
     }
-    
-    
 }
 
 extension AdminProfileViewController : UITableViewDelegate{
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-         let cell = tableView.dequeueReusableCell(withIdentifier: "weekDaysCell", for: indexPath) as! WeekDayTableCell
-            if self.imageName == "unchecked-checkbox"{
-                self.imageName = "checked-checkbox"
-                 cell.checkBtn.setImage(UIImage(named: self.imageName), for: .normal)
-            }
-           
         
-    
+        if self.selectedWeekdaysArray.contains(indexPath.row){
+            self.selectedWeekdaysArray.remove(at: self.selectedWeekdaysArray.firstIndex(of: indexPath.row)!)
+        }else{
+            self.selectedWeekdaysArray.append(indexPath.row)
+        }
+
+        self.weekDaysListTable.reloadData()
     }
-    
-//
-//    func tableView(_ tableView: UITableView, didBeginMultipleSelectionInteractionAt indexPath: IndexPath) {
-//    let cell = tableView.dequeueReusableCell(withIdentifier: "weekDaysCell", for: indexPath) as! WeekDayTableCell
-//
-//        cell.checkBtn.setImage(UIImage(named: "checked-checkbox"), for: .selected)
-//    }
 }
 
