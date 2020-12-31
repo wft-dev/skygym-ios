@@ -31,7 +31,6 @@ class TrainerProfileViewController: BaseViewController {
     @IBOutlet weak var phoneNoNonEditLabel: UILabel!
     @IBOutlet weak var dobNonEditLabel: UILabel!
     @IBOutlet weak var phoneNoHrLineView: UIView!
-    
     @IBOutlet weak var firstNameLabel: UILabel!
     @IBOutlet weak var lastNameLabel: UILabel!
     @IBOutlet weak var genderLabel: UILabel!
@@ -39,11 +38,24 @@ class TrainerProfileViewController: BaseViewController {
     @IBOutlet weak var emailLabel: UILabel!
     @IBOutlet weak var phoneNoLabel: UILabel!
     @IBOutlet weak var dobLabel: UILabel!
+    @IBOutlet weak var firstNameErrorLabel: UILabel!
+    @IBOutlet weak var lastNameErrorLabel: UILabel!
+    @IBOutlet weak var genderErrorLabel: UILabel!
+    @IBOutlet weak var passwordErrorLabel: UILabel!
+    @IBOutlet weak var emailErrorLabel: UILabel!
+    @IBOutlet weak var phoneNoErrorLabel: UILabel!
+    @IBOutlet weak var dobErrorLabel: UILabel!
+    @IBOutlet weak var genderForNonEditLabel: UILabel!
+    @IBOutlet weak var passwordForNonEditLabel: UILabel!
+    @IBOutlet weak var emailForNonEditLabel: UILabel!
+    @IBOutlet weak var phoneNoForNonEditLabel: UILabel!
+    @IBOutlet weak var dobForNonEditLabel: UILabel!
     
     var editMode:Bool = false
     var textFieldArray:[UITextField] = []
     var nonEditLabelArray:[UILabel] = []
     var defaultLabelArray:[UILabel] = []
+    var forNonEditLabelArray:[UILabel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,7 +68,8 @@ class TrainerProfileViewController: BaseViewController {
         self.trainerProfileCustomNavigationView.editBtn.addTarget(self, action: #selector(makeProfileEditable), for: .touchUpInside)
         self.textFieldArray = [self.trainerFirstNameTextField,self.trainerLastNameTextField,self.genderTextField,self.passwordTextField,self.emailTextField,self.phoneNoTextField,self.dobTextField]
         self.nonEditLabelArray = [self.trainerFirstNameNonEditLabel,self.trainerLastNameNonEditLabel,self.genderNonEditLabel,self.passwordNonEditLabel,self.emailNonEditLabel,self.phoneNoNonEditLabel,self.dobNonEditLabel]
-        self.defaultLabelArray = [self.firstNameLabel,self.lastNameLabel,self.genderLabel,self.passwordLabel,self.emailLabel,self.dobLabel,self.phoneNoLabel]
+        self.defaultLabelArray = [self.genderLabel,self.passwordLabel,self.emailLabel,self.dobLabel,self.phoneNoLabel]
+        self.forNonEditLabelArray = [self.genderForNonEditLabel,self.passwordForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
         
         self.textFieldArray.forEach{
             self.addPaddingToTextField(textField: $0)
@@ -66,7 +79,17 @@ class TrainerProfileViewController: BaseViewController {
          //   $0?.addTarget(self, action: #selector(errorValidator(_:)), for: .editingChanged)
         }
         self.updateBtn.layer.cornerRadius = 15.0
+        self.updateBtn.addTarget(self, action: #selector(updateTrainerInfo), for: .touchUpInside)
         self.fetchTrainerProfile(id: AppManager.shared.trainerID)
+        
+        AppManager.shared.performEditAction(dataFields: self.dataFieldsDir(), edit: false)
+        self.hideHrLine(hide: false)
+        self.labelColor(color: .lightGray)
+        self.hideNonEditLabel(hide: false)
+        self.hideDefaultLabel(hide: true)
+        self.hideForNonEditLabel(hide: false)
+        self.updateBtn.isHidden = true
+        self.updateBtn.alpha =  0.0
     }
     
     func addPaddingToTextField(textField:UITextField) {
@@ -75,6 +98,24 @@ class TrainerProfileViewController: BaseViewController {
         textField.leftViewMode = .always
         textField.backgroundColor = UIColor.white
         textField.textColor = UIColor.black
+    }
+    
+    @objc func updateTrainerInfo(){
+        SVProgressHUD.show()
+        let trainerInfo = self.getTrainerInfo()
+        DispatchQueue.global(qos: .background).async {
+            SVProgressHUD.dismiss()
+            let result = FireStoreManager.shared.updateTrainerDetailBy(id: AppManager.shared.trainerID, trainerInfo: trainerInfo)
+            
+            switch result{
+            case .failure(_) :
+                print("Errror")
+                self.showAlert(title: "Error", message: "Error in updating the trainer detail.")
+            case let .success(flag) :
+                print("SUCCESS IS :\(flag)")
+                self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+            }
+        }
     }
     
     func fetchTrainerProfile(id:String) {
@@ -90,12 +131,26 @@ class TrainerProfileViewController: BaseViewController {
     }
     
     @objc func makeProfileEditable(){
-        if self.editMode == true {
-          //  AppManager.shared.performEditAction(dataFields: <#T##[UITextField : UILabel]#>, edit: <#T##Bool#>)
-        }
+        self.editMode = !self.editMode
+        AppManager.shared.performEditAction(dataFields: self.dataFieldsDir(), edit: self.editMode)
+        self.hideHrLine(hide: self.editMode)
+        self.labelColor(color: self.editMode ? .black : .lightGray)
+        self.hideNonEditLabel(hide: self.editMode)
+        self.hideDefaultLabel(hide: !self.editMode)
+        self.hideForNonEditLabel(hide: self.editMode)
+        self.updateBtn.isHidden = !self.editMode
+        self.updateBtn.alpha = self.editMode == false ? 0.0 : 1.0
     }
     
     func setTrainerDetail(trainerDetail:TrainerDataStructure) {
+        self.trainerFirstNameNonEditLabel.text = trainerDetail.firstName
+        self.trainerLastNameNonEditLabel.text = trainerDetail.lastName
+        self.genderNonEditLabel.text = trainerDetail.gender
+        self.passwordNonEditLabel.text = AppManager.shared.getSecureTextFor(text: trainerDetail.password)
+        self.emailNonEditLabel.text = trainerDetail.email
+        self.phoneNoNonEditLabel.text = trainerDetail.phoneNo
+        self.dobNonEditLabel.text = trainerDetail.dob
+        
         self.trainerFirstNameTextField.text = trainerDetail.firstName
         self.trainerLastNameTextField.text = trainerDetail.lastName
         self.genderTextField.text = trainerDetail.gender
@@ -116,6 +171,63 @@ class TrainerProfileViewController: BaseViewController {
             self.phoneNoTextField! : self.phoneNoNonEditLabel!
         ]
         return dir
+    }
+    
+    func hideHrLine(hide:Bool)  {
+        [self.firstNameHrLineView,self.genderHrLineView,self.emailHrLineView,self.phoneNoHrLineView].forEach{
+            $0?.isHidden = hide
+            $0?.alpha = hide ? 0.0 : 1.0
+        }
+    }
+    
+    func labelColor(color:UIColor) {
+        [self.firstNameLabel,self.lastNameLabel].forEach{
+            $0.textColor = color
+        }
+    }
+    
+    func hideNonEditLabel(hide:Bool)  {
+        self.nonEditLabelArray.forEach{
+            $0.isHidden = hide
+            $0.alpha = hide ? 0.0 : 1.0
+        }
+    }
+    
+    func hideForNonEditLabel(hide:Bool) {
+        self.forNonEditLabelArray.forEach{
+            $0.isHidden = hide
+            $0.alpha = hide ? 0.0 : 1.0
+        }
+    }
+    
+    func hideDefaultLabel(hide : Bool)  {
+        self.defaultLabelArray.forEach{
+            $0.isHidden = hide
+            $0.alpha = hide ? 0.0 : 1.0
+        }
+    }
+    
+    func getTrainerInfo() -> Dictionary<String,String> {
+        let info = [
+            "firstName" : self.trainerFirstNameTextField.text!,
+            "lastName" : self.trainerLastNameTextField.text!,
+            "gender" : self.genderTextField.text!,
+            "password" : self.passwordTextField.text!,
+            "email" : self.emailTextField.text!,
+            "phoneNo" : self.phoneNoTextField.text!,
+            "dob" : self.dobTextField.text!
+         ]
+        return info
+    }
+    
+    func showAlert(title:String,message:String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
+            _ in
+            self.fetchTrainerProfile(id: AppManager.shared.trainerID)
+        })
+        alertController.addAction(okAlertAction)
+        present(alertController, animated: true, completion: nil)
     }
     
 }

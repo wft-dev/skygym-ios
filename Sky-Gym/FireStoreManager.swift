@@ -745,6 +745,48 @@ class FireStoreManager: NSObject {
         })
     }
     
+    
+    func  updateTrainerDetailBy(id:String,trainerInfo:Dictionary<String,String>) -> Result<Bool,Error> {
+        var result:Result<Bool,Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        let trainerRef = fireDB.collection("/Trainers").document("/\(id)")
+        
+        trainerRef.getDocument(completion: {
+            (DocumentSnapshot,err) in
+            
+            if err == nil {
+                let trainerData = DocumentSnapshot?.data()
+                var trainerDetail = trainerData!["trainerDetail"] as! Dictionary<String,String>
+                
+                trainerDetail.updateValue(trainerInfo["firstName"]!, forKey: "firstName")
+                trainerDetail.updateValue(trainerInfo["lastName"]!, forKey: "lastName")
+                trainerDetail.updateValue(trainerInfo["email"]!, forKey: "email")
+                trainerDetail.updateValue(trainerInfo["password"]!, forKey: "password")
+                trainerDetail.updateValue(trainerInfo["gender"]!, forKey: "gender")
+                trainerDetail.updateValue(trainerInfo["phoneNo"]!, forKey: "phoneNo")
+                trainerDetail.updateValue(trainerInfo["dob"]!, forKey: "dob")
+
+                trainerRef.updateData([
+                    "trainerDetail":trainerDetail,
+                    "email" : trainerInfo["email"]!,
+                    "password" : trainerInfo["password"]!
+                ], completion: {
+                    (err) in
+
+                    if err != nil {
+                        result = .success(false)
+                    }else {
+                        result = .success(true)
+                    }
+                    semaphores.signal()
+                })
+            }
+         })
+
+        let _ = semaphores.wait(wallTimeout: .distantFuture)
+        return result
+    }
+    
     func deleteTrainerBy(id:String,completion:@escaping (Error?)->Void) {
            let ref = fireDB.collection("/Trainers").document("/\(id)")
            ref.delete(completion: {

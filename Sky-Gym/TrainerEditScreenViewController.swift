@@ -813,7 +813,6 @@ extension TrainerEditScreenViewController {
         }
     }
     
-    
     func setNonEditTrainerType(hide:Bool) {
         self.generalTypeForNonEditLabel.isHidden = hide
         self.generalTypeForNonEditLabel.alpha = hide ? 0.0 : 1.0

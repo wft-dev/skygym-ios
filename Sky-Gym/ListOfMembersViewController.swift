@@ -142,10 +142,7 @@ class ListOfMembersViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.viewDidLoad()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5 , execute: {
-   self.showMembers()
-        })
-          
+        self.showMembers()
     }
     
     @objc func refreshMembers(){
