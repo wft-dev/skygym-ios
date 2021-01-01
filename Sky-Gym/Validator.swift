@@ -153,7 +153,7 @@ class ValidationManager: NSObject {
         return text1 == text2 ? true : false
     }
     
-    func updateBtnValidator(updateBtn:UIButton,textFieldArray:[UITextField],textView:UITextView,phoneNumberTextField:UITextField?,email:String?,password:String?) {
+    func updateBtnValidator(updateBtn:UIButton,textFieldArray:[UITextField],textView:UITextView?,phoneNumberTextField:UITextField?,email:String?,password:String?) {
         var flag:Bool = false
         
         if email != nil && password == nil {
@@ -171,14 +171,26 @@ class ValidationManager: NSObject {
         else {
             flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField)
         }
-
-        if flag == true  && isTextViewRequiredValid(textView: textView) == true {
-            updateBtn.isEnabled = true
-            updateBtn.alpha = 1.0
-        } else {
-            updateBtn.isEnabled = false
-            updateBtn.alpha = 0.4
+        
+        if textView == nil {
+            if flag == true {
+                updateBtn.isEnabled = true
+                updateBtn.alpha = 1.0
+            } else {
+                updateBtn.isEnabled = false
+                updateBtn.alpha = 0.4
+            }
+        }else {
+            if flag == true  && isTextViewRequiredValid(textView: textView!) == true {
+                updateBtn.isEnabled = true
+                updateBtn.alpha = 1.0
+            } else {
+                updateBtn.isEnabled = false
+                updateBtn.alpha = 0.4
+            }
         }
+
+
     }
     
    
@@ -209,8 +221,6 @@ class ValidationManager: NSObject {
             loginBtn.alpha = 0.4
         }
     }
-    
-    
 
     func isMemberProfileValidated(textFieldArray:[UITextField],textView:UITextView,phoneNumberTextField:UITextField?,email:String?,password:String?) -> Bool {
         var flag:Bool = false

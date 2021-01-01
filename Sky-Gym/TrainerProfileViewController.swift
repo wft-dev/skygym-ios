@@ -50,12 +50,21 @@ class TrainerProfileViewController: BaseViewController {
     @IBOutlet weak var emailForNonEditLabel: UILabel!
     @IBOutlet weak var phoneNoForNonEditLabel: UILabel!
     @IBOutlet weak var dobForNonEditLabel: UILabel!
+    @IBOutlet weak var trainerProfileImg: UIImageView!
     
     var editMode:Bool = false
     var textFieldArray:[UITextField] = []
     var nonEditLabelArray:[UILabel] = []
     var defaultLabelArray:[UILabel] = []
     var forNonEditLabelArray:[UILabel] = []
+    var errorLabelsArray:[UILabel] = []
+    let imagePicker = UIImagePickerController()
+    var isUserProfileUpdated:Bool = false
+    let validator = ValidationManager.shared
+    var datePicker = UIDatePicker()
+    let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+    var selectedDate:String = ""
+    var actuallPassword:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,13 +79,15 @@ class TrainerProfileViewController: BaseViewController {
         self.nonEditLabelArray = [self.trainerFirstNameNonEditLabel,self.trainerLastNameNonEditLabel,self.genderNonEditLabel,self.passwordNonEditLabel,self.emailNonEditLabel,self.phoneNoNonEditLabel,self.dobNonEditLabel]
         self.defaultLabelArray = [self.genderLabel,self.passwordLabel,self.emailLabel,self.dobLabel,self.phoneNoLabel]
         self.forNonEditLabelArray = [self.genderForNonEditLabel,self.passwordForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
+        self.errorLabelsArray =
+            [self.firstNameErrorLabel,self.lastNameErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.emailErrorLabel,self.phoneNoErrorLabel,self.dobErrorLabel]
         
         self.textFieldArray.forEach{
             self.addPaddingToTextField(textField: $0)
             $0.layer.cornerRadius = 7.0
             $0.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
             $0.clipsToBounds = true
-         //   $0?.addTarget(self, action: #selector(errorValidator(_:)), for: .editingChanged)
+            $0.addTarget(self, action: #selector(errorValidator(_:)), for: .editingChanged)
         }
         self.updateBtn.layer.cornerRadius = 15.0
         self.updateBtn.addTarget(self, action: #selector(updateTrainerInfo), for: .touchUpInside)
@@ -90,6 +101,17 @@ class TrainerProfileViewController: BaseViewController {
         self.hideForNonEditLabel(hide: false)
         self.updateBtn.isHidden = true
         self.updateBtn.alpha =  0.0
+        self.trainerProfileImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openImagePicker)))
+        self.imagePicker.delegate = self
+        self.trainerProfileImg.makeRounded()
+        
+        self.datePicker.datePickerMode = .date
+        toolBar.barStyle = .default
+        let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
+        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar.sizeToFit()
     }
     
     func addPaddingToTextField(textField:UITextField) {
@@ -100,21 +122,77 @@ class TrainerProfileViewController: BaseViewController {
         textField.textColor = UIColor.black
     }
     
+    @objc func cancelTextField()  {
+           self.view.endEditing(true)
+       }
+    
+    @objc func doneTextField()  {
+           let dateFormatter = DateFormatter()
+           dateFormatter.dateFormat =  "dd-MMM-YYYY"
+         selectedDate = dateFormatter.string(from: datePicker.date)
+        self.view.endEditing(true)
+     }
+
+    @objc func openImagePicker() {
+        self.isUserProfileUpdated = true
+        imagePicker.allowsEditing = true
+        imagePicker.sourceType = .photoLibrary
+        imagePicker.modalPresentationStyle = .fullScreen
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
     @objc func updateTrainerInfo(){
         SVProgressHUD.show()
         let trainerInfo = self.getTrainerInfo()
+        let trainerImgData = self.trainerProfileImg.image?.pngData()
         DispatchQueue.global(qos: .background).async {
-            SVProgressHUD.dismiss()
             let result = FireStoreManager.shared.updateTrainerDetailBy(id: AppManager.shared.trainerID, trainerInfo: trainerInfo)
             
             switch result{
             case .failure(_) :
+                 SVProgressHUD.dismiss()
                 print("Errror")
                 self.showAlert(title: "Error", message: "Error in updating the trainer detail.")
-            case let .success(flag) :
-                print("SUCCESS IS :\(flag)")
-                self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+            case .success(_) :
+                if self.isUserProfileUpdated == true {
+                    FireStoreManager.shared.uploadUserImg(imgData: (trainerImgData)!, id: AppManager.shared.trainerID, completion: {
+                        (err) in
+                        SVProgressHUD.dismiss()
+                        if err == nil {
+                            self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+                        }
+                    })
+                } else {
+                     SVProgressHUD.dismiss()
+                    self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+                }
             }
+        }
+    }
+    
+    @objc func errorValidator(_ textField:UITextField) {
+        self.allTrainerFieldValidation(textField: textField)
+        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+    }
+    
+    func allTrainerFieldValidation(textField:UITextField) {
+        switch textField.tag {
+        case 1:
+            validator.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First name required.")
+        case 2 :
+            validator.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last name required.")
+        case 3 :
+            validator.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Trainer's gender required.")
+        case 4 :
+            validator.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 characters.")
+        case 5:
+            validator.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid Email.")
+        case 6 :
+            validator.phoneNumberValidation(textField: textField, errorLabel: self.phoneNoErrorLabel, errorMessage: "Phone Number must be 10 digits only.")
+        case 7:
+            validator.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required.")
+        default:
+            break
         }
     }
     
@@ -123,9 +201,21 @@ class TrainerProfileViewController: BaseViewController {
         FireStoreManager.shared.getTrainerBy(id: id, completion: {
             (trainerData,err) in
             if err == nil {
-                SVProgressHUD.dismiss()
+                
                 let trainerDetail = trainerData!["trainerDetail"] as! Dictionary<String,String>
-                 self.setTrainerDetail(trainerDetail: AppManager.shared.getTrainerDetailS(trainerDetail: trainerDetail))
+                self.setTrainerDetail(trainerDetail: AppManager.shared.getTrainerDetailS(trainerDetail: trainerDetail))
+                
+                FireStoreManager.shared.downloadUserImg(id: AppManager.shared.trainerID, result: {
+                    (imgUrl,err) in
+                    SVProgressHUD.dismiss()
+                    if err == nil {
+                        do {
+                            let imgData =  try Data(contentsOf: imgUrl!)
+                            self.trainerProfileImg.image = UIImage(data: imgData)
+                        } catch _ as NSError {
+                        }
+                    }
+                })
             }
         })
     }
@@ -138,14 +228,17 @@ class TrainerProfileViewController: BaseViewController {
         self.hideNonEditLabel(hide: self.editMode)
         self.hideDefaultLabel(hide: !self.editMode)
         self.hideForNonEditLabel(hide: self.editMode)
+        self.hideErrorLabels(hide: !self.editMode)
         self.updateBtn.isHidden = !self.editMode
         self.updateBtn.alpha = self.editMode == false ? 0.0 : 1.0
+        self.trainerProfileImg.isUserInteractionEnabled = self.editMode
     }
     
     func setTrainerDetail(trainerDetail:TrainerDataStructure) {
         self.trainerFirstNameNonEditLabel.text = trainerDetail.firstName
         self.trainerLastNameNonEditLabel.text = trainerDetail.lastName
         self.genderNonEditLabel.text = trainerDetail.gender
+        self.actuallPassword = trainerDetail.password
         self.passwordNonEditLabel.text = AppManager.shared.getSecureTextFor(text: trainerDetail.password)
         self.emailNonEditLabel.text = trainerDetail.email
         self.phoneNoNonEditLabel.text = trainerDetail.phoneNo
@@ -154,7 +247,7 @@ class TrainerProfileViewController: BaseViewController {
         self.trainerFirstNameTextField.text = trainerDetail.firstName
         self.trainerLastNameTextField.text = trainerDetail.lastName
         self.genderTextField.text = trainerDetail.gender
-        self.passwordTextField.text = trainerDetail.password
+        self.passwordTextField.text = self.actuallPassword
         self.emailTextField.text = trainerDetail.email
         self.phoneNoTextField.text = trainerDetail.phoneNo
         self.dobTextField.text = trainerDetail.dob
@@ -207,6 +300,13 @@ class TrainerProfileViewController: BaseViewController {
         }
     }
     
+    func hideErrorLabels(hide:Bool)  {
+        self.errorLabelsArray.forEach{
+            $0.isHidden = hide
+            $0.alpha = hide ? 0.0 : 1.0
+        }
+    }
+    
     func getTrainerInfo() -> Dictionary<String,String> {
         let info = [
             "firstName" : self.trainerFirstNameTextField.text!,
@@ -228,6 +328,55 @@ class TrainerProfileViewController: BaseViewController {
         })
         alertController.addAction(okAlertAction)
         present(alertController, animated: true, completion: nil)
+    }
+}
+
+extension TrainerProfileViewController:UIImagePickerControllerDelegate,UINavigationControllerDelegate{
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let img = info[.editedImage] as? UIImage {
+            self.trainerProfileImg.image = img
+            dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        self.isUserProfileUpdated = false
+        dismiss(animated: true, completion: nil)
+    }
+}
+
+extension TrainerProfileViewController:UITextFieldDelegate {
+
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.tag == 7 {
+            textField.inputView = self.datePicker
+            textField.inputAccessoryView = self.toolBar
+            if textField.text!.count > 0  {
+                let df = DateFormatter()
+                df.dateFormat = "dd-MM-yyyy"
+                self.datePicker.date = df.date(from: textField.text!)!
+            }
+        }
+        
+        self.allTrainerFieldValidation(textField: textField)
+        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if textField.tag == 7 {
+            return false
+        }else {
+          return  true
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if  textField.tag == 7  && self.selectedDate != "" {
+            textField.text = self.selectedDate
+            self.selectedDate = ""
+        }
+        self.allTrainerFieldValidation(textField: textField)
+        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
     
 }

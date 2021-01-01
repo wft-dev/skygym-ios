@@ -195,6 +195,7 @@ class FireStoreManager: NSObject {
             completion(err)
         })
     }
+    
 
     func deleteImgBy(id:String) -> Result<Bool,Error> {
         var result:Result<Bool,Error>!
@@ -746,6 +747,28 @@ class FireStoreManager: NSObject {
     }
     
     
+    func getTrainerPermission(id:String) -> Result<TrainerPermissionStructure,Error> {
+        let trainerRef = fireDB.collection("/Trainers").document("/\(id)")
+        var result:Result<TrainerPermissionStructure,Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        
+        trainerRef.getDocument(completion: {
+            (docSnapshot,err) in
+            if err != nil {
+                result = .failure(err!)
+            }else {
+                let trainerData = docSnapshot?.data()
+                let trainerPermission = trainerData!["trainerPermission"] as! Dictionary<String,Bool>
+                result = .success(AppManager.shared.getTrainerPermissionS(trainerPermission: trainerPermission))
+                semaphores.signal()
+            }
+        })
+        
+        let _ = semaphores.wait(wallTimeout: .distantFuture)
+        return result
+    }
+    
+    
     func  updateTrainerDetailBy(id:String,trainerInfo:Dictionary<String,String>) -> Result<Bool,Error> {
         var result:Result<Bool,Error>!
         let semaphores = DispatchSemaphore(value: 0)
@@ -757,7 +780,6 @@ class FireStoreManager: NSObject {
             if err == nil {
                 let trainerData = DocumentSnapshot?.data()
                 var trainerDetail = trainerData!["trainerDetail"] as! Dictionary<String,String>
-                
                 trainerDetail.updateValue(trainerInfo["firstName"]!, forKey: "firstName")
                 trainerDetail.updateValue(trainerInfo["lastName"]!, forKey: "lastName")
                 trainerDetail.updateValue(trainerInfo["email"]!, forKey: "email")
@@ -765,7 +787,6 @@ class FireStoreManager: NSObject {
                 trainerDetail.updateValue(trainerInfo["gender"]!, forKey: "gender")
                 trainerDetail.updateValue(trainerInfo["phoneNo"]!, forKey: "phoneNo")
                 trainerDetail.updateValue(trainerInfo["dob"]!, forKey: "dob")
-
                 trainerRef.updateData([
                     "trainerDetail":trainerDetail,
                     "email" : trainerInfo["email"]!,

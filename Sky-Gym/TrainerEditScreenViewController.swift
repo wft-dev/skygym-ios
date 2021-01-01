@@ -766,7 +766,7 @@ extension TrainerEditScreenViewController {
         self.idTextField.text = trainerDetails.trainerID
         self.phoneNoTextField.text = trainerDetails.phoneNo
         self.emailTextField.text = trainerDetails.email
-        self.passwordTextField.text = trainerDetails.password
+        self.passwordTextField.text = self.actualPassword   //trainerDetails.password
         self.addressView.text = trainerDetails.address
         self.genderTextField.text = trainerDetails.gender
         self.salaryTextField.text = trainerDetails.salary

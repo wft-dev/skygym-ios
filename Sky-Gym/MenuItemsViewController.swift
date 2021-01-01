@@ -18,7 +18,10 @@ class MyMenuItemTableCell: UITableViewCell {
 class MenuItemsViewController: UIViewController {
     @IBOutlet weak var menuItemTable: UITableView!
     var menuItemArray:[String] = []
-     var appDelgate:AppDelegate? = nil
+    var appDelgate:AppDelegate? = nil
+    var trainerMemberPermission:Bool = false
+    var trainerEventPermission:Bool = false
+    var trainerVisitorPermission:Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +30,21 @@ class MenuItemsViewController: UIViewController {
         self.menuItemTable.separatorStyle = .none
         appDelgate = UIApplication.shared.delegate as? AppDelegate
         self.menuItemArray = self.fillMenuArray(role: AppManager.shared.loggedInRule!)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        DispatchQueue.global(qos: .background).async {
+            let result = FireStoreManager.shared.getTrainerPermission(id: AppManager.shared.trainerID)
+            switch result {
+            case .failure(_):
+                print("Error")
+            case let .success(trainerPermission) :
+                self.trainerMemberPermission = trainerPermission.canAddMember
+                self.trainerEventPermission = trainerPermission.canAddEvent
+                self.trainerVisitorPermission = trainerPermission.canAddVisitor
+            }
+        }
     }
 }
 
@@ -62,6 +80,13 @@ extension MenuItemsViewController {
             array = ["Dashboard","Member","Trainer","Membership Plan","Visitors","Profile","Events","Logout"]
         case .Trainer :
             array = ["Dashboard","Gym Info","Home", "Member","Membership Plan","Profile","Visitors","Events","Logout"]
+         if self.trainerVisitorPermission == false && self.trainerMemberPermission == true  {
+            array.remove(at: 6)
+            }
+            if self.trainerVisitorPermission == true && self.trainerMemberPermission == false {
+                array.remove(at: 3)
+            }
+            
         case .Member :
             array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events","Logout"]
         }
@@ -70,6 +95,7 @@ extension MenuItemsViewController {
     }
     
     func menuItemMappingForAdmin(index:Int) {
+        
         switch (index) {
         case 0:
             let dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
@@ -122,11 +148,11 @@ extension MenuItemsViewController {
             let trainerEditVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "trainerEditVC") as! TrainerEditScreenViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(trainerEditVC, animated: true)
             break
-        case 3:
+        case (self.trainerVisitorPermission == false && self.trainerMemberPermission == true ? 11 : 3) :
             let listOfMemberVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "listOfMemberVC") as! ListOfMembersViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfMemberVC, animated: true)
             break
-        case 4:
+        case 4 :
             let listOfMembershipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfMembershipVC, animated: true)
             break
@@ -151,7 +177,6 @@ extension MenuItemsViewController {
     }
     
 }
-
 
 extension MenuItemsViewController : UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
