@@ -25,6 +25,7 @@ class ListOfEventsViewController: BaseViewController {
     @IBOutlet weak var listOfEventsTable: UITableView!
     @IBOutlet weak var searchView: UIView!
     @IBOutlet weak var customSearchBar: UISearchBar!
+    @IBOutlet weak var addEventBtn: UIButton!
     var eventsArray:[Event] = []
     var filteredEventArray:[Event] = []
     let refreshControl = UIRefreshControl()
@@ -42,6 +43,7 @@ class ListOfEventsViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
          self.fetchEvents()
+        self.setTrainerLayout()
     }
     
     @objc func refreshEventList(){
@@ -65,6 +67,15 @@ class ListOfEventsViewController: BaseViewController {
 }
 
 extension ListOfEventsViewController {
+    
+    func setTrainerLayout() {
+        AppManager.shared.trainerEventPermission == true  ? hideEventBtn(hide: false) : hideEventBtn(hide: true)
+    }
+    
+    func  hideEventBtn(hide:Bool)  {
+        self.addEventBtn.isHidden = hide
+        self.addEventBtn.alpha = hide ? 0.0 : 1.0
+    }
 
     @objc func eventLeftSwipeAction(_ gesture:UIGestureRecognizer){
         UIView.animate(withDuration: 0.4, animations: {
@@ -78,7 +89,7 @@ extension ListOfEventsViewController {
         })
     }
     
-    @objc func deleteVisitor(_ gesture:UIGestureRecognizer){
+    @objc func deleteEvent(_ gesture:UIGestureRecognizer){
         let alertController = UIAlertController(title: "Attention", message: "Do you really want to remove this event ?", preferredStyle: .alert)
         let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
             _ in
@@ -130,13 +141,13 @@ extension ListOfEventsViewController {
         trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/4)).isActive = true
         trashImgView.heightAnchor.constraint(equalToConstant: 25).isActive = true
         trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        trashImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(deleteVisitor(_:))))
+        trashImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(deleteEvent(_:))))
         
         deleteView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 0).isActive = true
         deleteView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: 0).isActive = true
         deleteView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 0).isActive = true
         deleteView.bottomAnchor.constraint(greaterThanOrEqualTo: cell.contentView.bottomAnchor, constant: 0).isActive = true
-        
+        deleteView.tag = 11
         cellView.addGestureRecognizer(leftSwipeGesture)
         cellView.addGestureRecognizer(rightSwipGesture)
         cellView.isUserInteractionEnabled = true
@@ -180,8 +191,8 @@ extension ListOfEventsViewController {
                 for sinleDoc in data!{
                     let eventDetail = sinleDoc["eventDetail"] as! [String : Any]
                     let id = sinleDoc["id"] as! String
-                    let adminID = sinleDoc["adminID"] as! String
-                    self.eventsArray.append(AppManager.shared.getEvent(id: id, adminID: adminID, eventDetail: eventDetail))
+                    let parentID = sinleDoc["parentID"] as! String
+                    self.eventsArray.append(AppManager.shared.getEvent(id: id, adminID: parentID, eventDetail: eventDetail))
                 }
                 self.listOfEventsTable.reloadData()
             }
@@ -264,7 +275,9 @@ extension ListOfEventsViewController:UITableViewDataSource{
         cell.eventDateLabel.layer.cornerRadius = 7.0
         cell.selectionStyle = .none
         cell.eventCellView.tag = Int(singleEvent.eventID)!
-        self.addEventCustomSwipe(cellView: cell.eventCellView, cell: cell)
+        if AppManager.shared.trainerEventPermission == true {
+            self.addEventCustomSwipe(cellView: cell.eventCellView, cell: cell)
+        }
         return cell
     }
 }

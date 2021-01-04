@@ -25,11 +25,10 @@ class AdminDashboardViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.assignbackground()
-        SVProgressHUD.show()
         self.paidMemberView.paidUserLabel.text = "Paid member"
         self.expiredMemberView.paidUserLabel.text = "Expired member"
        // print("LOGED IN ROLE IS \(AppManager.shared.loggedInRule?.rawValue)")
-        if  AppManager.shared.loggedInRule == LoggedInRole.Trainer {
+        if  AppManager.shared.loggedInRole == LoggedInRole.Trainer {
             self.trainerDetailView.isHidden = true
             self.trainerDetailView.alpha = 0.0
             self.trainerDetailView.paidUserLabel.text = ""
@@ -42,7 +41,6 @@ class AdminDashboardViewController: BaseViewController {
         cutomMenuView.navigationTitleLabel.text = "Dashboard"
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
             self.setDashboardValues()
-            SVProgressHUD.dismiss()
         })
     }
     
@@ -52,7 +50,17 @@ class AdminDashboardViewController: BaseViewController {
         self.totalMemberView.layer.cornerRadius = 15.0
         self.totalMemberView.layer.borderColor = self.lightGrayColor.cgColor
         adjustFonts()
-        
+        DispatchQueue.global(qos: .utility).async {
+            let result = FireStoreManager.shared.getTrainerPermission(id: AppManager.shared.trainerID)
+            switch result {
+            case .failure(_):
+                print("Error")
+            case let .success(trainerPermission) :
+                AppManager.shared.trainerMemberPermission = trainerPermission.canAddMember
+                AppManager.shared.trainerEventPermission = trainerPermission.canAddEvent
+                AppManager.shared.trainerVisitorPermission = trainerPermission.canAddVisitor
+            }
+        }
     }
     
     func adjustFonts()  {
@@ -70,12 +78,14 @@ class AdminDashboardViewController: BaseViewController {
     }
     
     func setDashboardValues()  {
+        SVProgressHUD.show()
         self.getTotalNumberOf(role: .Member)
         self.getTotalNumberOf(role: .Visitor)
-        if AppManager.shared.loggedInRule ==  LoggedInRole.Admin  {
+        if AppManager.shared.loggedInRole ==  LoggedInRole.Admin  {
             self.getTotalNumberOf(role: .Trainer)
         }
         self.getNumberOfPaidMembers()
+        SVProgressHUD.dismiss()
     }
     
     

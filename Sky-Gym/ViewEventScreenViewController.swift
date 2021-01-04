@@ -100,7 +100,6 @@ extension ViewEventScreenViewController {
         
         self.textFieldsArray = [self.eventNameTextField,self.eventDateTextField,self.eventStartTimeTextField,self.eventEndTimeTextField]
         
-        
         if self.isNewEvent == false {
             self.fetchEventBy(id: AppManager.shared.eventID)
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  false)
@@ -162,7 +161,7 @@ extension ViewEventScreenViewController {
             break
         }
     }
-
+    
     func setViewEventNavigationBar() {
         self.viewEventNavigationBar.menuBtn.isHidden = true
         self.viewEventNavigationBar.leftArrowBtn.isHidden = false
@@ -170,7 +169,23 @@ extension ViewEventScreenViewController {
         self.viewEventNavigationBar.navigationTitleLabel.text = "Events"
         self.viewEventNavigationBar.searchBtn.isHidden = true
         
-        if self.isNewEvent == false {
+        switch AppManager.shared.loggedInRole {
+        case .Trainer:
+           let flag = AppManager.shared.trainerEventPermission == false || self.isNewEvent == true ? true : false
+           self.hideEditBtn(hide: flag)
+            break
+        case .Admin :
+            self.hideEditBtn(hide: self.isNewEvent)
+        default:
+            break
+        }
+    }
+    
+    func hideEditBtn(hide:Bool) {
+        if hide == true {
+            self.viewEventNavigationBar.editBtn.isHidden = true
+            self.viewEventNavigationBar.editBtn.alpha = 0.0
+        }else {
             self.viewEventNavigationBar.editBtn.isHidden = false
             self.viewEventNavigationBar.editBtn.alpha = 1.0
             self.viewEventNavigationBar.editBtn.addTarget(self, action: #selector(editEvent), for: .touchUpInside)

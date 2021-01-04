@@ -154,7 +154,7 @@ class AdminProfileViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         DispatchQueue.main.async {
-            if AppManager.shared.loggedInRule == LoggedInRole.Admin {
+            if AppManager.shared.loggedInRole == LoggedInRole.Admin {
                 self.fetchAdminDetailBy(id: AppManager.shared.adminID)
                 
             }

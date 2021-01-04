@@ -224,8 +224,7 @@ extension ListOfMembersViewController : UITableViewDataSource{
         self.setCellAttendeneBtn(memberCell: cell, memberID: singleMember.memberID)
         self.setCellRenewMembershipBtn(memberCell: cell, memberID: singleMember.memberID,dueAmount: singleMember.dueAmount)
         self.addCustomSwipe(cellView: cell.listOfmemberTCView, cell: cell)
-        
-        
+
         return cell
     }
 
@@ -254,8 +253,6 @@ extension ListOfMembersViewController : UITableViewDelegate{
 extension ListOfMembersViewController{
     
     @objc func deleteMember(_ gesture:UIGestureRecognizer) {
-        
-        
         let alertController = UIAlertController(title: "Attention", message: "Do you want to remove this member.", preferredStyle: .alert)
         let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
             _ in
@@ -263,7 +260,6 @@ extension ListOfMembersViewController{
             SVProgressHUD.show()
             let id = "\(gesture.view?.tag ?? 0 )"
             DispatchQueue.global(qos: .background).async {
-                print("ID is : \(id)")
                 let result = FireStoreManager.shared.deleteImgBy(id:id )
                 
                 switch result {

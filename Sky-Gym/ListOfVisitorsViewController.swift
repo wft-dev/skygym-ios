@@ -23,7 +23,6 @@ class VisitorTableCell: UITableViewCell {
     @IBOutlet weak var visitorProfileImg: UIImageView!
     var delegate:CustomCellSegue? = nil
     
-
     override func awakeFromNib() {
         memberBtn.addTarget(self, action: #selector(becomeMember), for: .touchUpInside)
     }
@@ -93,7 +92,6 @@ extension ListOfVisitorsViewController {
         UIView.animate(withDuration: 0.4, animations: {
             gesture.view?.frame.origin.x = -((gesture.view?.frame.width)!/2)
         })
-
     }
     
     @objc func visitorRightSwipeAction(_ gesture:UIGestureRecognizer){
@@ -106,24 +104,31 @@ extension ListOfVisitorsViewController {
         let alertController = UIAlertController(title: "Attention", message: "Do you really want to remove this visitor ?", preferredStyle: .alert)
         let okAlertAction = UIAlertAction(title: "Ok", style: .default, handler: {
             _ in
+            let id = "\(gesture.view!.tag)"
             AppManager.shared.closeSwipe(gesture: gesture)
             SVProgressHUD.show()
-//            FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
-//                err in
-//                SVProgressHUD.dismiss()
-//                if err != nil {
-//                    self.showVisitorAlert(title: "Error", message: "Error in deleting visitor.")
-//                } else {
-//                    FireStoreManager.shared.deleteVisitorBy(id:"\(gesture.view?.tag ?? 0)", completion: {
-//                        err in
-//                        if err != nil {
-//                            self.showVisitorAlert(title: "Error", message: "Error in deleting visitor.")
-//                        }else {
-//                            self.showVisitorAlert(title: "Success", message: "Visitor is deleted successfully.")
-//                        }
-//                    })
-//                }
-//            })
+            DispatchQueue.global(qos: .utility).async {
+                let result = FireStoreManager.shared.deleteImgBy(id: id)
+                
+                switch result {
+                case .failure(_):
+                    self.showVisitorAlert(title: "Error", message: "Error in deleting visitor,Try again.")
+                    break
+                case let .success(flag):
+                    if flag == true {
+                        FireStoreManager.shared.deleteVisitorBy(id: id, completion: {
+                            err in
+                            SVProgressHUD.dismiss()
+                            if err != nil {
+                                self.showVisitorAlert(title: "Error", message: "Error in deleting visitor,Try again.")
+                            } else {
+                                self.showVisitorAlert(title: "Success", message: "Visitor is deleted successfully.")
+                            }
+                        })
+                    }
+                }
+                
+            }
         })
         let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler: {
             _ in
@@ -158,6 +163,7 @@ extension ListOfVisitorsViewController {
         trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
         trashImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(deleteVisitor(_:))))
         
+        deleteView.tag = 11
         deleteView.heightAnchor.constraint(equalToConstant: cell.frame.height).isActive = true
         deleteView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
         deleteView.translatesAutoresizingMaskIntoConstraints = true
@@ -330,15 +336,9 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
         cell.numberOfvisits.text = "visitor: \(singleVisitor.noOfVisit)"
         cell.dateOfJoinLabel.text = singleVisitor.dateOfJoin
         cell.dateOfVisitLabel.text = singleVisitor.dateOfVisit
+        cell.trainerNameLabel.text = singleVisitor.trainerName
+        cell.trainerTypeLabel.text = singleVisitor.trainerType
         self.getVisitorProfileImage(id: singleVisitor.id, imgView: cell.visitorProfileImg)
-        if AppManager.shared.adminID == "" {
-            cell.trainerNameLabel.text = AppManager.shared.trainerID.count > 0 ? "\(AppManager.shared.trainerName)" : "  --"
-            cell.trainerTypeLabel.text = AppManager.shared.trainerID.count > 0 ? "\(AppManager.shared.trainerType)" : "  --"
-        } else {
-            cell.trainerNameLabel.text = "  --"
-            cell.trainerTypeLabel.text = "  --"
-        }
-        
         cell.delegate = self
         self.adjustFontSizeForVisitorLabel(label: cell.dateOfJoinLabel)
         self.adjustFontSizeForVisitorLabel(label: cell.dateOfVisitLabel)
@@ -394,7 +394,6 @@ extension ListOfVisitorsViewController:CustomCellSegue{
     func showMessage(vc: MFMessageComposeViewController) {
         print("")
     }
-    
     
     func applySegue(id: String) {
         self.performSegue(withIdentifier: "visitorMemberSegue", sender: id)

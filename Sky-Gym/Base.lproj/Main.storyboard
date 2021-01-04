@@ -10358,6 +10358,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="fg2-nt-AdZ"/>
                     <connections>
+                        <outlet property="addEventBtn" destination="2eh-DJ-Phj" id="VQH-Vk-hep"/>
                         <outlet property="customSearchBar" destination="ISR-hi-fhl" id="lFX-8k-NkH"/>
                         <outlet property="eventsNavigationBar" destination="xaP-O2-8Jo" id="Oqr-vU-lVt"/>
                         <outlet property="listOfEventsTable" destination="m03-Vk-jWM" id="pFh-3u-gUl"/>

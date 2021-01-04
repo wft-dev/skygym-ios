@@ -85,12 +85,22 @@ extension MemberAndTrainerLoginViewController {
                 SVProgressHUD.dismiss()
                 switch flag {
                 case  let .success(sagar):
+                    print("isMember : \(sagar)")
                     self.memberOrTrainerLoginAction(role: sagar ? .Member : .Trainer, email: email!, gymID: gymID!, password: password!)
-                case let .failure(err):
-                    print("Error in login : \(err)")
+                case  .failure(_):
+                    self.alerMessage(title: "Error", Message: "Username or Password is incorrect.")
                 }
             }
         }
+    }
+    
+    
+    func alerMessage(title:String,Message:String) {
+        let alertController = UIAlertController(title: title, message: Message, preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        
+        alertController.addAction(okAlertAction)
+        present(alertController, animated: true, completion: nil)
     }
     
     private func memberOrTrainerLoginAction(role:Role,email:String,gymID:String,password:String) {
@@ -104,7 +114,7 @@ extension MemberAndTrainerLoginViewController {
                 if loggedIn == true {
                     AppManager.shared.performLogin()
                 }else{
-                    print("Error in loggin in data not found.")
+                    self.alerMessage(title: "Error", Message: "Username or Password is incorrect.")
                 }
             }
         })

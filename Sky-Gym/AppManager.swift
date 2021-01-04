@@ -123,19 +123,45 @@ class AppManager: NSObject {
           }
       }
 
-    var loggedInRule:LoggedInRole? {
+    var loggedInRole:LoggedInRole? {
         get {
-            guard let role = UserDefaults.standard.value(forKey: "loggedInRule") as? String else {
+            guard let role = UserDefaults.standard.value(forKey: "loggedInRole") as? String else {
                 return nil
             }
             return LoggedInRole(rawValue: role)
         }
         
         set(role) {
-            UserDefaults.standard.set(role?.rawValue, forKey: "loggedInRule")
+            UserDefaults.standard.set(role?.rawValue, forKey: "loggedInRole")
         }
     }
     
+    var trainerVisitorPermission:Bool {
+        get{
+            UserDefaults.standard.bool(forKey: "trainerVisitorPermission")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "trainerVisitorPermission")
+        }
+    }
+   
+    var trainerMemberPermission:Bool {
+        get{
+            UserDefaults.standard.bool(forKey: "trainerMemberPermission")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "trainerMemberPermission")
+        }
+    }
+
+    var trainerEventPermission:Bool {
+        get{
+            UserDefaults.standard.bool(forKey: "trainerEventPermission")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "trainerEventPermission")
+        }
+    }
 
     func setStatusBarBackgroundColor(color: UIColor,alpha:CGFloat) {
         guard let statusBar = UIApplication.shared.value(forKeyPath: "statusBarWindow.statusBar") as? UIView else { return }
@@ -177,9 +203,9 @@ class AppManager: NSObject {
     }
     
     func performLogin() {
-                SVProgressHUD.show()
+    SVProgressHUD.show()
+         AppManager.shared.isLoggedIn = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
-            AppManager.shared.isLoggedIn = true
             AppManager.shared.appDelegate.setRoot()
             SVProgressHUD.dismiss()
         })
@@ -260,7 +286,7 @@ class AppManager: NSObject {
     }
     
     func getVisitor(visitorDetail:[String:String],id:String) -> Visitor {
-        let visitor = Visitor(id: id, firstName: visitorDetail["firstName"]!, lastName: visitorDetail["lastName"]!, email: visitorDetail["email"]!, address: visitorDetail["address"]!, dateOfJoin: visitorDetail["dateOfJoin"]!, dateOfVisit: visitorDetail["dateOfVisit"]!, noOfVisit: visitorDetail["noOfVisit"]!, gender: visitorDetail["gender"]!, phoneNo: visitorDetail["phoneNo"]!)
+        let visitor = Visitor(id: id, firstName: visitorDetail["firstName"]!, lastName: visitorDetail["lastName"]!, email: visitorDetail["email"]!, address: visitorDetail["address"]!, dateOfJoin: visitorDetail["dateOfJoin"]!, dateOfVisit: visitorDetail["dateOfVisit"]!, noOfVisit: visitorDetail["noOfVisit"]!, gender: visitorDetail["gender"]!, phoneNo: visitorDetail["phoneNo"]!,trainerName: visitorDetail["trainerName"]!,trainerType: visitorDetail["trainerType"]!)
         return visitor
     }
     
@@ -644,18 +670,7 @@ class AppManager: NSObject {
         return m
     }
     
-    func getArrayOfOneDayAttendence(trainerORmember:String,id:String,attendence:Dictionary<String,Any>,forDate:Date) -> Array<Dictionary<String,Any>>? {
-        let year = Calendar.current.component(.year, from: forDate)
-        let month = Calendar.current.component(.month, from: forDate)
-        let day = Calendar.current.component(.day, from: forDate)
-        let currentYear = attendence["\(year)"] as! Dictionary<String,Any>
-        
-        if let monthArray:Array<Dictionary<String,Any>> = currentYear["\(month)"] as? Array<Dictionary<String,Any>>{
-            let matchingDateDir = (monthArray[day-1])["\(day)/\(month)/\(year)"] as! Array<Dictionary<String,Any>>
-           return matchingDateDir
-        }
-    return nil
-    }
+
     
     func getDateDifferenceComponent(startDate:Date, endDate:Date) -> DateComponents {
         let diff = Calendar.current.dateComponents([.year,.month,.day], from: endDate, to: startDate)

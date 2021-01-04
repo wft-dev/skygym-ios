@@ -65,7 +65,7 @@ class FireStoreManager: NSObject {
                         let adminData = querySnapshot?.documents.first?.data()
                         AppManager.shared.adminID = adminData?["adminID"] as! String
                         AppManager.shared.gymID = (adminData?["gymID"] as! String)
-                        AppManager.shared.loggedInRule = LoggedInRole.Admin
+                        AppManager.shared.loggedInRole = LoggedInRole.Admin
                         result(true,nil)
                     }
                 } else {
@@ -95,12 +95,17 @@ class FireStoreManager: NSObject {
                           AppManager.shared.adminID = ""
                         AppManager.shared.memberID = querySnapshot?.documents.first?.documentID as! String
                         AppManager.shared.trainerID = ""
-                        AppManager.shared.loggedInRule = LoggedInRole.Member
+                        AppManager.shared.loggedInRole = LoggedInRole.Member
+                        AppManager.shared.trainerName = ""
+                        AppManager.shared.trainerType = ""
                     }else {
+                        let trainerDetail = data?["trainerDetail"] as! Dictionary<String,String>
                         AppManager.shared.trainerID = querySnapshot?.documents.first?.documentID as! String
                         AppManager.shared.memberID = ""
                         AppManager.shared.adminID = ""
-                        AppManager.shared.loggedInRule = LoggedInRole.Trainer
+                        AppManager.shared.loggedInRole = LoggedInRole.Trainer
+                        AppManager.shared.trainerName = trainerDetail["firstName"]!
+                        AppManager.shared.trainerType = trainerDetail["type"]!
                     }
                     result(true,nil)
                 }
@@ -244,9 +249,10 @@ class FireStoreManager: NSObject {
     func addMember(email:String,password:String,memberDetail:[String:String],memberships:[[String:String]],memberID:String,handler:@escaping (Error?) -> Void ) {
      //   let attendence = AppManager.shared.getCompleteMonthAttendenceStructure()
         let attendence = AppManager.shared.getCompleteInitialStructure(year: 2020, month: 12,checkIn: "", checkOut: "", present: false)
+        let parentID = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerID : AppManager.shared.adminID
         self.fireDB.collection("/Members").document("/\(memberID)").setData(
             [
-                "adminID":AppManager.shared.adminID,
+                "parentID":parentID,
                 "gymID":AppManager.shared.gymID,
                 "email": email,
                 "password":password,
@@ -475,9 +481,9 @@ class FireStoreManager: NSObject {
                 result(false,err)
             }else {
                 let attendenceDictionary = ((docSnapshot?.data())! as Dictionary<String,Any>)["attendence"] as! Dictionary<String,Any>
-                let matchingDateArray = AppManager.shared.getArrayOfOneDayAttendence(trainerORmember: role, id: memberID, attendence: attendenceDictionary, forDate: Date())
+                let matchingDateArray = self.getArrayOfOneDayAttendence(trainerORmember: role, id: memberID, attendence: attendenceDictionary, forDate: Date())
                 
-                if matchingDateArray!.count > 0  {
+                if matchingDateArray?.count ?? 0 > 0  {
                     if let singleMatchingDate = matchingDateArray?.last {
                         let present = singleMatchingDate["present"] as! Bool
                         let checkIn = singleMatchingDate["checkIn"] as! String
@@ -494,6 +500,23 @@ class FireStoreManager: NSObject {
                 }
             }
         })
+    }
+    
+    
+   private func getArrayOfOneDayAttendence(trainerORmember:String,id:String,attendence:Dictionary<String,Any>,forDate:Date) -> Array<Dictionary<String,Any>>? {
+        let year = Calendar.current.component(.year, from: forDate)
+        let month = Calendar.current.component(.month, from: forDate)
+        let day = Calendar.current.component(.day, from: forDate)
+    guard let currentYear = attendence["\(year)"] as? Dictionary<String,Any> else {
+        self.addYear(attendenceDir: attendence, trainerORmember: trainerORmember, id: id, year: year, month: month, day: day, present: false, checkIn: "", checkOut: "", handler: {_ in })
+        return nil
+    }
+    if let monthArray:Array<Dictionary<String,Any>> = currentYear["\(month)"] as? Array<Dictionary<String,Any>>{
+            let matchingDateDir = (monthArray[day-1])["\(day)/\(month)/\(year)"] as! Array<Dictionary<String,Any>>
+           return matchingDateDir
+        }
+    self.addMonth(attendenceDir: attendence, trainerORmember: trainerORmember, id: id, year: year, month: month, day: day, present: false, checkIn: "", checkOut: "", handler: { _ in  })
+    return nil
     }
     
     func isCurrentMembership(memberOrTrainer:Role,memberID:String,result:@escaping (Bool?,Bool?,Error?) -> Void) {
@@ -700,8 +723,9 @@ class FireStoreManager: NSObject {
         let year = Calendar.current.component(.year, from: Date())
         let month = Calendar.current.component(.month, from: Date())
         let attendence = AppManager.shared.getCompleteInitialStructure(year: year, month: month, checkIn: "", checkOut: "", present: false)
+        let parentID = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerID : AppManager.shared.adminID
         fireDB.collection("/Trainers").document("\(trainerID)").setData([
-            "adminID":AppManager.shared.adminID,
+            "parentID": parentID,
             "gymID":AppManager.shared.gymID,
             "email":email,
             "password":password,
@@ -716,7 +740,7 @@ class FireStoreManager: NSObject {
     
     func getAllTrainers(completion:@escaping ([[String:Any]]?,Error?)->Void) {
          var dataDirctionary:[[String:Any]] = [[:]]
-        fireDB.collection("/Trainers").whereField("adminID", isEqualTo: AppManager.shared.adminID) .getDocuments(completion: {
+        fireDB.collection("/Trainers").getDocuments(completion: {
             (querSnapshot,err) in
             if err != nil {
                 completion(nil,err)
@@ -817,9 +841,10 @@ class FireStoreManager: NSObject {
        }
     
     func addMembership(id:String,membershipDetail:[String:String],completion:@escaping (Error?)->Void)  {
+    let parentID = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerID : AppManager.shared.adminID
         fireDB.collection("/Memberships").document("/\(id)").setData([
             "id":id,
-            "adminID":AppManager.shared.adminID,
+            "adminID":parentID,
             "membershipDetail":membershipDetail
         ], completion: {
             err in
@@ -850,11 +875,8 @@ class FireStoreManager: NSObject {
                 result(nil,err)
             }else {
                 let membershipDetail = ((membershipData?.data())! as NSDictionary)["membershipDetail"] as! [String:String]
-                
                 let membership = AppManager.shared.getMembership(membership: membershipDetail, membershipID: ((membershipData?.data())! as NSDictionary)["id"] as! String)
-                
                 result(membership,nil)
-                
             }
         })
     }
@@ -895,9 +917,10 @@ class FireStoreManager: NSObject {
     }
 
     func addVisitor(id:String,visitorDetail:[String:String],completion:@escaping (Error?)->Void) {
+        let parentID = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerID : AppManager.shared.adminID
         fireDB.collection("/Visitors").document("/\(id)").setData([
             "id":id,
-            "adminID":AppManager.shared.adminID,
+            "parentID":parentID,
             "visitorDetail":visitorDetail
             ], completion: {
                 err in
@@ -907,7 +930,7 @@ class FireStoreManager: NSObject {
     
     func getAllVisitors(result:@escaping ([[String:Any]]?,Error?)->Void) {
          var visitorArray:[[String:Any]] = []
-        fireDB.collection("/Visitors").whereField("adminID", isEqualTo: AppManager.shared.adminID)  .getDocuments(completion: {
+        fireDB.collection("/Visitors").getDocuments(completion: {
             (querySnapshot,err) in
             if err != nil {
                 result(nil,err)
@@ -941,9 +964,10 @@ class FireStoreManager: NSObject {
         }
      
     func addEvent(id:String,eventDetail:[String:Any],completion:@escaping (Error?)->Void) {
+        let parentID = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerID : AppManager.shared.adminID
         fireDB.collection("/Events").document("/\(id)").setData([
             "id":id,
-            "adminID":AppManager.shared.adminID,
+            "parentID":parentID,
             "eventDetail":eventDetail
         ], completion: {
             (err) in
@@ -953,7 +977,7 @@ class FireStoreManager: NSObject {
    
     func getAllEvents(result:@escaping ([[String:Any]]?,Error?)->Void) {
         var eventArray:[[String:Any]] = []
-        fireDB.collection("/Events").whereField("adminID", isEqualTo: AppManager.shared.adminID)  .getDocuments(completion: {
+        fireDB.collection("/Events").getDocuments(completion: {
             (querySnapshot,err)in
             if err != nil {
                 result(nil,err)
@@ -969,7 +993,6 @@ class FireStoreManager: NSObject {
     func getEventBy(id:String,result:@escaping ([String:Any]?,Error?) -> Void) {
         fireDB.collection("/Events").document("/\(id)").getDocument(completion: {
             (docSnapshot,err) in
-            
             if err != nil {
                 result(nil,err)
             }else {
@@ -1060,10 +1083,10 @@ class FireStoreManager: NSObject {
                 print("Error")
             }else {
                var attandanceDic = ((docSnapshot?.data())! as Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
-                var currentYear = attandanceDic["\(year)"] as! Dictionary<String, Any>
-                var currentMonth = currentYear["\(month)"] as! Array<Any>
-                let firstElement = currentMonth[index] as! Dictionary<String,Any>
-                var currentDay = firstElement["\(currentDate)"] as! Array<Dictionary<String,Any>>
+                var currentYear = attandanceDic["\(year)"] as? Dictionary<String, Any>
+                var currentMonth = currentYear?["\(month)"] as? Array<Any>
+                let firstElement = currentMonth?[index] as? Dictionary<String,Any>
+                var currentDay = firstElement?["\(currentDate)"] as! Array<Dictionary<String,Any>>
                 let firstAttendence = (currentDay[0])["present"] as! Bool
                 let newAttendence = [
                     "checkIn":"\(checkInA)",
@@ -1077,9 +1100,9 @@ class FireStoreManager: NSObject {
                 }else {
                      currentDay.append(newAttendence)
                 }
-                currentMonth.remove(at: index)
-                currentMonth.insert(["\(currentDate)":currentDay], at: index)
-                currentYear.updateValue(currentMonth, forKey: "\(month)")
+                currentMonth?.remove(at: index)
+                currentMonth?.insert(["\(currentDate)":currentDay], at: index)
+                currentYear?.updateValue(currentMonth, forKey: "\(month)")
                 attandanceDic.updateValue(currentYear, forKey: "\(year)")
                 
                 ref.updateData([

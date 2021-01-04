@@ -266,7 +266,7 @@ extension TrainerEditScreenViewController {
 
     func setTrainerEditScreenNavigationBar()  {
         let navigationBar  = self.trainerEditScreenNavigationBar
-        if AppManager.shared.loggedInRule == LoggedInRole.Admin{
+        if AppManager.shared.loggedInRole == LoggedInRole.Admin{
             navigationBar?.menuBtn.isHidden = true
             navigationBar?.leftArrowBtn.isHidden = false
             navigationBar?.leftArrowBtn.alpha = 1.0
