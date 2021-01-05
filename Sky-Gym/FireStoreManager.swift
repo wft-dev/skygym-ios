@@ -20,8 +20,6 @@ class FireStoreManager: NSObject {
     let fireDB = Firestore.firestore()
     let fireStorageRef = Storage.storage().reference()
     
-    
-    
     func getGymInfo(gymID:String) -> Result<GymDetail,Error> {
         var result:Result<GymDetail,Error>!
         let semaphore = DispatchSemaphore(value: 0)
@@ -92,7 +90,7 @@ class FireStoreManager: NSObject {
                   
                     AppManager.shared.gymID = data?["gymID"] as! String
                     if collectionPath == "Members" {
-                          AppManager.shared.adminID = ""
+                        AppManager.shared.adminID = ""
                         AppManager.shared.memberID = querySnapshot?.documents.first?.documentID as! String
                         AppManager.shared.trainerID = ""
                         AppManager.shared.loggedInRole = LoggedInRole.Member
@@ -114,7 +112,6 @@ class FireStoreManager: NSObject {
             }
         })
     }
-    
     
     func isMember(email:String,gymID:String) -> Result<Bool,Error> {
         var result:Result<Bool,Error>!
@@ -235,6 +232,10 @@ class FireStoreManager: NSObject {
             result(imgUrl,err)
         })
     }
+    
+    
+    
+    
     
     func downloadImgWithName(imageName:String,id:String,result:@escaping (URL?,Error?) -> Void) {
       // let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(id)/\(imageName)")
@@ -508,7 +509,7 @@ class FireStoreManager: NSObject {
         let month = Calendar.current.component(.month, from: forDate)
         let day = Calendar.current.component(.day, from: forDate)
     guard let currentYear = attendence["\(year)"] as? Dictionary<String,Any> else {
-        self.addYear(attendenceDir: attendence, trainerORmember: trainerORmember, id: id, year: year, month: month, day: day, present: false, checkIn: "", checkOut: "", handler: {_ in })
+        self.addYear(attendenceDir: attendence, trainerORmember: trainerORmember, id: id, year: year, month: month, day: day, present: false, checkIn: "", checkOut: "", handler: { _ in })
         return nil
     }
     if let monthArray:Array<Dictionary<String,Any>> = currentYear["\(month)"] as? Array<Dictionary<String,Any>>{
@@ -762,14 +763,12 @@ class FireStoreManager: NSObject {
             if err != nil {
                 completion(nil,err)
             } else {
-                
                 let data = docSnapshot?.data()
                 AppManager.shared.trainerID =  (data?["trainerDetail"] as! [String:String])["trainerID"]!
                 completion(data,nil)
             }
         })
     }
-    
     
     func getTrainerPermission(id:String) -> Result<TrainerPermissionStructure,Error> {
         let trainerRef = fireDB.collection("/Trainers").document("/\(id)")
@@ -844,7 +843,7 @@ class FireStoreManager: NSObject {
     let parentID = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerID : AppManager.shared.adminID
         fireDB.collection("/Memberships").document("/\(id)").setData([
             "id":id,
-            "adminID":parentID,
+            "parentID":parentID,
             "membershipDetail":membershipDetail
         ], completion: {
             err in
@@ -854,7 +853,7 @@ class FireStoreManager: NSObject {
 
     func getAllMembership(result:@escaping ([[String:Any]]?,Error?)->Void) {
         var membershipArray:[[String:Any]] = []
-        fireDB.collection("/Memberships").whereField("adminID", isEqualTo: AppManager.shared.adminID)   .getDocuments(completion: {
+        fireDB.collection("/Memberships").getDocuments(completion: {
             (querySnapshot,err) in
             
             if err != nil {
@@ -1042,9 +1041,9 @@ class FireStoreManager: NSObject {
             } else {
                 for doc in querySnapshot!.documents{
                     let singleData = doc.data()
-                    let memberships = singleData["memberships"] as! NSArray
-                    if memberships.count > 0 {
-                        let latestMembership = memberships.lastObject as! [String:String]
+                    let memberships = singleData["memberships"] as? NSArray
+                    if memberships?.count ?? 0 > 0 {
+                        let latestMembership = memberships?.lastObject as! [String:String]
                         let dueAmount = Int(latestMembership["dueAmount"]!)
                         let endDate  = AppManager.shared.getDate(date: latestMembership["endDate"]!)
                         let today = AppManager.shared.getStandardFormatDate(date: Date())

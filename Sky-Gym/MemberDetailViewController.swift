@@ -60,9 +60,18 @@ class MemberDetailViewController: BaseViewController {
 
 extension MemberDetailViewController{
     func setMemberDetailNavigationBar()  {
-        self.memberDetailsNavigationBar.menuBtn.isHidden = true
-        self.memberDetailsNavigationBar.leftArrowBtn.isHidden = false
-        self.memberDetailsNavigationBar.leftArrowBtn.alpha = 1.0
+        if  AppManager.shared.loggedInRole == LoggedInRole.Member {
+            self.memberDetailsNavigationBar.menuBtn.isHidden = false
+            self.memberDetailsNavigationBar.menuBtn.alpha = 1.0
+            self.memberDetailsNavigationBar.leftArrowBtn.isHidden = true
+            self.memberDetailsNavigationBar.leftArrowBtn.alpha = 0.0
+        }else {
+            self.memberDetailsNavigationBar.menuBtn.isHidden = true
+            self.memberDetailsNavigationBar.menuBtn.alpha = 0.0
+            self.memberDetailsNavigationBar.leftArrowBtn.isHidden = false
+            self.memberDetailsNavigationBar.leftArrowBtn.alpha = 1.0
+        }
+
         self.memberDetailsNavigationBar.navigationTitleLabel.text = "Member detail"
         self.memberDetailsNavigationBar.searchBtn.isHidden = true
     }

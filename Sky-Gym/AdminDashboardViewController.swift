@@ -27,7 +27,7 @@ class AdminDashboardViewController: BaseViewController {
         self.assignbackground()
         self.paidMemberView.paidUserLabel.text = "Paid member"
         self.expiredMemberView.paidUserLabel.text = "Expired member"
-       // print("LOGED IN ROLE IS \(AppManager.shared.loggedInRule?.rawValue)")
+     //   print("LOGED IN ROLE IS \(AppManager.shared.loggedInRole?.rawValue)")
         if  AppManager.shared.loggedInRole == LoggedInRole.Trainer {
             self.trainerDetailView.isHidden = true
             self.trainerDetailView.alpha = 0.0
@@ -50,15 +50,18 @@ class AdminDashboardViewController: BaseViewController {
         self.totalMemberView.layer.cornerRadius = 15.0
         self.totalMemberView.layer.borderColor = self.lightGrayColor.cgColor
         adjustFonts()
-        DispatchQueue.global(qos: .utility).async {
-            let result = FireStoreManager.shared.getTrainerPermission(id: AppManager.shared.trainerID)
-            switch result {
-            case .failure(_):
-                print("Error")
-            case let .success(trainerPermission) :
-                AppManager.shared.trainerMemberPermission = trainerPermission.canAddMember
-                AppManager.shared.trainerEventPermission = trainerPermission.canAddEvent
-                AppManager.shared.trainerVisitorPermission = trainerPermission.canAddVisitor
+         
+        if AppManager.shared.loggedInRole == LoggedInRole.Trainer {
+            DispatchQueue.global(qos: .utility).async {
+                let result = FireStoreManager.shared.getTrainerPermission(id: AppManager.shared.trainerID)
+                switch result {
+                case .failure(_):
+                    print("Error")
+                case let .success(trainerPermission) :
+                    AppManager.shared.trainerMemberPermission = trainerPermission.canAddMember
+                    AppManager.shared.trainerEventPermission = trainerPermission.canAddEvent
+                    AppManager.shared.trainerVisitorPermission = trainerPermission.canAddVisitor
+                }
             }
         }
     }

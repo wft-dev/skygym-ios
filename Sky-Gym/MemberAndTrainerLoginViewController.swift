@@ -41,7 +41,6 @@ class MemberAndTrainerLoginViewController: UIViewController {
         loginBtn?.clipsToBounds = true
         
         self.loginBtn?.addTarget(self, action: #selector(loginAction), for: .touchUpInside)
-
     }
 }
 
@@ -57,7 +56,6 @@ extension MemberAndTrainerLoginViewController {
               view.addSubview(imageView)
               self.view.sendSubviewToBack(imageView)
           }
-    
     
     @objc func fieldErrorChecker(_ textField:UITextField) {
         switch textField.tag {
@@ -85,15 +83,13 @@ extension MemberAndTrainerLoginViewController {
                 SVProgressHUD.dismiss()
                 switch flag {
                 case  let .success(sagar):
-                    print("isMember : \(sagar)")
-                    self.memberOrTrainerLoginAction(role: sagar ? .Member : .Trainer, email: email!, gymID: gymID!, password: password!)
+                    self.memberOrTrainerLoginAction(role: sagar == true ? .Member : .Trainer, email: email!, gymID: gymID!, password: password!)
                 case  .failure(_):
                     self.alerMessage(title: "Error", Message: "Username or Password is incorrect.")
                 }
             }
         }
     }
-    
     
     func alerMessage(title:String,Message:String) {
         let alertController = UIAlertController(title: title, message: Message, preferredStyle: .alert)
@@ -121,7 +117,6 @@ extension MemberAndTrainerLoginViewController {
     }
  
 }
-
 
 extension MemberAndTrainerLoginViewController : UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {

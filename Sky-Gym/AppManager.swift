@@ -582,7 +582,6 @@ class AppManager: NSObject {
         return monthArray
     }
     
-    
     func getCompleteInitialStructure(year:Int,month:Int,checkIn:String,checkOut:String,present:Bool)  -> Dictionary<String,Any> {
         var completeMonthAttendenceArray: Dictionary<String,Any> = [:]
         var monthArray:Array<Dictionary<String,Any>> = []
@@ -704,10 +703,6 @@ class AppManager: NSObject {
     func getGymDetail(data:Dictionary<String,Any>) -> GymDetail {
         
         let gymInfo:[Int] = data["gymDaysArrayIndexs"] as! [Int]
-        
-//        let gymDetail = GymDetail(gymName: data["gymName"] as! String, gymID: data["gymID"] as! String, gymOpeningTime:  data["gymOpeningTime"] as! String, gymClosingTime: data["gymClosingTime"] as! String,gymDays:"\(gymInfo.count)" , gymAddress: data["gymAddress"] as! String, gymOwnerName: data["firstName"] as! String, gymOwnerPhoneNumber: data["mobileNo"] as! String, gymOwnerAddress: data["gymAddress"] as! String)
-        
-        
         let gymDetail = GymDetail(gymName: data["gymName"] as! String, gymID: data["gymID"] as! String, gymOpeningTime:  data["gymOpenningTime"] as! String, gymClosingTime: data["gymClosingTime"] as! String,gymDays:"\(gymInfo.count)" , gymAddress: data["gymAddress"] as! String, gymOwnerName: data["firstName"] as! String, gymOwnerPhoneNumber: data["mobileNo"] as! String, gymOwnerAddress: data["gymAddress"] as! String)
         
         return gymDetail

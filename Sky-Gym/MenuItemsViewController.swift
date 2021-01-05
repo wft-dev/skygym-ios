@@ -29,7 +29,6 @@ class MenuItemsViewController: UIViewController {
         self.menuItemTable.tableFooterView = UIView(frame: .zero)
         self.menuItemTable.separatorStyle = .none
         appDelgate = UIApplication.shared.delegate as? AppDelegate
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -73,17 +72,13 @@ extension MenuItemsViewController {
             array = ["Dashboard","Gym Info","Home", "Member","Membership Plan","Profile","Visitors","Events","Logout"]
             if AppManager.shared.trainerVisitorPermission == false  {
             array.remove(at: 6)
-            print("Array for trainer when visitor is false is : \(array)")
             }
             if  AppManager.shared.trainerMemberPermission == false {
                 array.remove(at: 3)
-                print("Array for trainer when visitor is true  is : \(array)")
             }
-            
         case .Member :
             array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events","Logout"]
         }
-        
         return array
     }
     
@@ -126,7 +121,6 @@ extension MenuItemsViewController {
         }
     }
     
-    
     func menuItemMappingForTrainer(index:Int) {
         let memberIndex = AppManager.shared.trainerMemberPermission ? 3 : 11
         let visitorIndex = AppManager.shared.trainerVisitorPermission ? 6 : 12
@@ -166,10 +160,47 @@ extension MenuItemsViewController {
         case   memberIndex == 3 && visitorIndex == 6  ? 8 : visitorIndex == 6 || memberIndex == 3 ? 7 : 6 :
             self.appDelgate?.swRevealVC.revealToggle(animated: true)
             self.logOut()
+            break
         default:
             break
         }
     }
+    
+    func menuItemMappingForMember(index:Int) {
+        switch(index) {
+        case 0 :
+            let memberDetailVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberDetailVC") as! MemberDetailViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(memberDetailVC, animated: true)
+            break
+        case 1 :
+            let gymInfoVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "gymInfoVC") as! GymInfoViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(gymInfoVC, animated: true)
+            break
+        case 2:
+            let membershipPlanVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(membershipPlanVC, animated: true)
+            break
+        case 3:
+            let memberLoginProfile = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberLoginProfileVC") as! MemberLoginProfileViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(memberLoginProfile, animated: true)
+            break
+        case 4:
+            let memberLoginTrainerProfile = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberLoginTrainerProfileVC") as! MemberLoginTrainerProfileViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(memberLoginTrainerProfile, animated: true)
+            break
+        case 5 :
+            let eventsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "eventsVC") as! ListOfEventsViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(eventsVC, animated: true)
+            break
+        case 6:
+            self.appDelgate?.swRevealVC.revealToggle(animated: true)
+            self.logOut()
+        break
+        default:
+            break
+        }
+    }
+    
 }
 
 extension MenuItemsViewController : UITableViewDataSource{
@@ -198,8 +229,13 @@ extension MenuItemsViewController:UITableViewDelegate {
         switch AppManager.shared.loggedInRole {
         case .Admin:
             self.menuItemMappingForAdmin(index: indexPath.row)
+            break
         case .Trainer :
             self.menuItemMappingForTrainer(index: indexPath.row)
+            break
+        case .Member :
+            self.menuItemMappingForMember(index: indexPath.row)
+            break
         default:
             break
         }

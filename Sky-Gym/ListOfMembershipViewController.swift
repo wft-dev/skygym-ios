@@ -14,8 +14,6 @@ class MembershipTableCell: UITableViewCell {
     @IBOutlet weak var membershipPriceLabel: UILabel!
     @IBOutlet weak var membershipTitleLabel: UILabel!
     @IBOutlet weak var membershipDetailLabel: UILabel!
-//    @IBOutlet weak var membershipStartDate: UILabel!
-//    @IBOutlet weak var membershipEndDate: UILabel!
     }
 
 class ListOfMembershipViewController: BaseViewController {
@@ -103,6 +101,11 @@ extension ListOfMembershipViewController {
         let rightSwipGesture = UISwipeGestureRecognizer(target: self, action: #selector(membershipRightSwipeAction(_:)))
         leftSwipeGesture.direction = .left
         rightSwipGesture.direction = .right
+        let _ = cell.contentView.subviews.map({
+             if  $0.tag  == 11 {
+                 $0.removeFromSuperview()
+             }
+         })
         let deleteView = UIView(frame: CGRect(x: 0, y: 0, width: cellView.frame.width, height: cellView.frame.height))
         let trashImgView = UIImageView(image: UIImage(named: "delete"))
         trashImgView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
@@ -124,7 +127,7 @@ extension ListOfMembershipViewController {
         deleteView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: 0).isActive = true
         deleteView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 0).isActive = true
         deleteView.bottomAnchor.constraint(greaterThanOrEqualTo: cell.contentView.bottomAnchor, constant: 0).isActive = true
-
+        deleteView.tag = 11 
         cellView.addGestureRecognizer(leftSwipeGesture)
         cellView.addGestureRecognizer(rightSwipGesture)
         cellView.isUserInteractionEnabled = true
@@ -143,7 +146,6 @@ extension ListOfMembershipViewController {
     
     func showAllMemberships() {
         SVProgressHUD.show()
-        
         FireStoreManager.shared.getAllMembership(result: {
             (data,err)in
             SVProgressHUD.dismiss()
@@ -192,8 +194,6 @@ extension ListOfMembershipViewController:UITableViewDataSource {
         cell.membershipTitleLabel.text = singleMembership.title
         cell.membershipDetailLabel.text = singleMembership.detail
         cell.membershipPriceLabel.text = singleMembership.amount
-//        cell.membershipStartDate.text = singleMembership.startDate
-//        cell.membershipEndDate.text = singleMembership.endDate
         cell.selectionStyle = .none
         cell.membershipCellView.tag = Int(singleMembership.membershipID)!
         self.addMembershipCustomSwipe(cellView: cell.membershipCellView, cell: cell)

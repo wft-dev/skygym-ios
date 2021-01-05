@@ -146,7 +146,6 @@ class TrainerEditScreenViewController: BaseViewController {
     var eventPermission:Bool = false
     var actualPassword:String = ""
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setTrainerEditView()
@@ -266,6 +265,9 @@ extension TrainerEditScreenViewController {
 
     func setTrainerEditScreenNavigationBar()  {
         let navigationBar  = self.trainerEditScreenNavigationBar
+        navigationBar?.navigationTitleLabel.text = "Trainer"
+        navigationBar?.searchBtn.isHidden = true
+        
         if AppManager.shared.loggedInRole == LoggedInRole.Admin{
             navigationBar?.menuBtn.isHidden = true
             navigationBar?.leftArrowBtn.isHidden = false
@@ -276,13 +278,19 @@ extension TrainerEditScreenViewController {
             navigationBar?.leftArrowBtn.isHidden = true
             navigationBar?.leftArrowBtn.alpha = 0.0
         }
-
-        navigationBar?.navigationTitleLabel.text = "Trainer"
-        navigationBar?.searchBtn.isHidden = true
-        if self.isNewTrainer == false{
+        
+        switch AppManager.shared.loggedInRole {
+        case .Trainer:
+           navigationBar?.editBtn.isHidden = true
+           navigationBar?.editBtn.alpha = 0.0
+            break
+        case .Admin :
             navigationBar?.editBtn.isHidden = false
             navigationBar?.editBtn.alpha = 1.0
             navigationBar?.editBtn.addTarget(self, action: #selector(makeEditable), for: .touchUpInside)
+            break
+        default:
+            break
         }
     }
 
@@ -295,7 +303,7 @@ extension TrainerEditScreenViewController {
         self.addressView.alpha = 0.0
         self.isEdit = false
         self.setHrLineView(isHidden: false, alpha: 1.0)
-     //   self.setToggleBtns(isEnabled: false, alpha: 0.9)
+        self.setToggleBtns(isEnabled: false, alpha: 0.9)
     AppManager.shared.hidePasswordTextField(hide: true, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
         self.type.textColor = .lightGray
         [self.generalTypeBtn,self.personalTypeBtn].forEach{
@@ -319,8 +327,7 @@ extension TrainerEditScreenViewController {
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
-     //   self.setToggleBtns(isEnabled: true, alpha: 1.0)
-     //   self.idTextField.isEnabled = true
+        self.setToggleBtns(isEnabled: true, alpha: 1.0)
         self.idTextField.layer.opacity = 0.4
         self.addressNonEditLabel.isHidden = true
         self.addressView.isHidden = false
