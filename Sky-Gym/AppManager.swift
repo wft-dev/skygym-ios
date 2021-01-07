@@ -136,6 +136,31 @@ class AppManager: NSObject {
         }
     }
     
+    var LoggedInAs:LoggedInRole? {
+        get {
+            var logginRole:LoggedInRole? = nil
+            guard let data =  UserDefaults.standard.data(forKey: "LoggedInAs") else {
+                return nil
+            }
+            do {
+            let role:LoggedInRole = try JSONDecoder().decode(LoggedInRole.self, from: data)
+            logginRole = role
+            } catch _ as NSError {
+                print("Error in getting value")
+                return nil
+            }
+            return logginRole
+        }
+        set {
+            do {
+                let endcoder = JSONEncoder()
+                let roleData = try endcoder.encode(newValue)
+                UserDefaults.standard.set(roleData, forKey: "LoggedInAs")
+                UserDefaults.standard.synchronize()
+            } catch _ as NSError {  print("Error in setting value") }
+        }
+    }
+    
     var trainerVisitorPermission:Bool {
         get{
             UserDefaults.standard.bool(forKey: "trainerVisitorPermission")
@@ -369,7 +394,6 @@ class AppManager: NSObject {
         let  endDate = dateFormatter.string(from: nextDayDate)
         return endDate
     }
-    
     
     func changeDateFormatToStandard(dateStr:String) -> String {
         let df = DateFormatter()

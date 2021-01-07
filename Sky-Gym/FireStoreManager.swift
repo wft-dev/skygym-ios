@@ -64,6 +64,7 @@ class FireStoreManager: NSObject {
                         AppManager.shared.adminID = adminData?["adminID"] as! String
                         AppManager.shared.gymID = (adminData?["gymID"] as! String)
                         AppManager.shared.loggedInRole = LoggedInRole.Admin
+                        AppManager.shared.LoggedInAs = .Admin
                         result(true,nil)
                     }
                 } else {
@@ -94,6 +95,7 @@ class FireStoreManager: NSObject {
                         AppManager.shared.memberID = querySnapshot?.documents.first?.documentID as! String
                         AppManager.shared.trainerID = ""
                         AppManager.shared.loggedInRole = LoggedInRole.Member
+                        AppManager.shared.LoggedInAs = LoggedInRole.Member
                         AppManager.shared.trainerName = ""
                         AppManager.shared.trainerType = ""
                     }else {
@@ -102,6 +104,7 @@ class FireStoreManager: NSObject {
                         AppManager.shared.memberID = ""
                         AppManager.shared.adminID = ""
                         AppManager.shared.loggedInRole = LoggedInRole.Trainer
+                        AppManager.shared.LoggedInAs = LoggedInRole.Trainer
                         AppManager.shared.trainerName = trainerDetail["firstName"]!
                         AppManager.shared.trainerType = trainerDetail["type"]!
                     }

@@ -17,7 +17,7 @@ enum Role:String {
     case Visitor
 }
 
-enum LoggedInRole:String {
+enum LoggedInRole:String,Codable {
     case Admin
     case Member
     case Trainer

@@ -14,9 +14,13 @@ class MemberLoginTrainerProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        self.setMemberLoginTrainerProfileCustomNavigationbar()
     }
 
+    func setMemberLoginTrainerProfileCustomNavigationbar()  {
+        self.memberLoginTrainerProfileCustomNavigationbarView.navigationTitleLabel.text = "Trainer"
+        self.memberLoginTrainerProfileCustomNavigationbarView.searchBtn.isHidden = true
+        self.memberLoginTrainerProfileCustomNavigationbarView.searchBtn.alpha = 0.0
+    }
 
 }

@@ -161,7 +161,19 @@ extension  MembershipViewScreenViewController {
         self.viewMembershipNavigationBar.leftArrowBtn.alpha = 1.0
         self.viewMembershipNavigationBar.searchBtn.isHidden = true
         self.viewMembershipNavigationBar.navigationTitleLabel.text = "Membership"
-        if self.isNewMemberhsip == false {
+        
+        if AppManager.shared.loggedInRole == LoggedInRole.Member {
+            self.hideMemberhsipEditBtn(hide: true)
+        }else{
+            self.hideMemberhsipEditBtn(hide: self.isNewMemberhsip)
+        }
+    }
+    
+    func hideMemberhsipEditBtn(hide:Bool) {
+        if hide == true {
+            self.viewMembershipNavigationBar.editBtn.isHidden = true
+            self.viewMembershipNavigationBar.editBtn.alpha = 0.0
+        }else {
             self.viewMembershipNavigationBar.editBtn.isHidden = false
             self.viewMembershipNavigationBar.editBtn.alpha = 1.0
             self.viewMembershipNavigationBar.editBtn.addTarget(self, action: #selector(editMembership), for: .touchUpInside)

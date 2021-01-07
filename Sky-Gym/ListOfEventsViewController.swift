@@ -69,7 +69,14 @@ class ListOfEventsViewController: BaseViewController {
 extension ListOfEventsViewController {
     
     func setTrainerLayout() {
-        AppManager.shared.trainerEventPermission == true  ? hideEventBtn(hide: false) : hideEventBtn(hide: true)
+        switch AppManager.shared.loggedInRole {
+        case .Member:
+            self.hideEventBtn(hide: true)
+            break
+        default:
+            AppManager.shared.trainerEventPermission == true  ? hideEventBtn(hide: false) : hideEventBtn(hide: true)
+            break
+        }
     }
     
     func  hideEventBtn(hide:Bool)  {
@@ -275,7 +282,8 @@ extension ListOfEventsViewController:UITableViewDataSource{
         cell.eventDateLabel.layer.cornerRadius = 7.0
         cell.selectionStyle = .none
         cell.eventCellView.tag = Int(singleEvent.eventID)!
-        if AppManager.shared.trainerEventPermission == true {
+        if AppManager.shared.trainerEventPermission == true &&
+           AppManager.shared.loggedInRole != LoggedInRole.Member{
             self.addEventCustomSwipe(cellView: cell.eventCellView, cell: cell)
         }
         return cell

@@ -20,12 +20,14 @@ class ListOfMembershipViewController: BaseViewController {
     
     @IBOutlet weak var membershipNavigationBar: CustomNavigationBar!
     @IBOutlet weak var membershipTable: UITableView!
+    @IBOutlet weak var membershipAddBtn: UIButton!
     let refreshControl = UIRefreshControl()
     var membershipDetailArray:[Memberhisp] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setMembershipNavigation()
+        self.setMembershipViewForMember()
         self.membershipTable.separatorStyle = .none
         self.refreshControl.tintColor = .black
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Membership List")
@@ -58,6 +60,13 @@ class ListOfMembershipViewController: BaseViewController {
 }
 
 extension ListOfMembershipViewController {
+    
+    func setMembershipViewForMember() {
+        if AppManager.shared.loggedInRole == LoggedInRole.Member {
+            self.membershipAddBtn.isHidden = true
+            self.membershipAddBtn.alpha = 0.0
+        }
+    }
 
     @objc func membershipLeftSwipeAction(_ gesture:UIGestureRecognizer){
         UIView.animate(withDuration: 0.4, animations: {
@@ -196,8 +205,13 @@ extension ListOfMembershipViewController:UITableViewDataSource {
         cell.membershipPriceLabel.text = singleMembership.amount
         cell.selectionStyle = .none
         cell.membershipCellView.tag = Int(singleMembership.membershipID)!
-        self.addMembershipCustomSwipe(cellView: cell.membershipCellView, cell: cell)
-            
+        
+      //  print("LOGGED IN ROLE IS : \(AppManager.shared.LoggedInAs)")
+        
+        if AppManager.shared.loggedInRole != LoggedInRole.Member {
+            self.addMembershipCustomSwipe(cellView: cell.membershipCellView, cell: cell)
+        }
+        
         return cell
     }
     }
