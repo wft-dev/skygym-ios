@@ -236,10 +236,6 @@ class FireStoreManager: NSObject {
         })
     }
     
-    
-    
-    
-    
     func downloadImgWithName(imageName:String,id:String,result:@escaping (URL?,Error?) -> Void) {
       // let imgRef = fireStorageRef.child("/Admin:\(AppManager.shared.adminID)/images/\(id)/\(imageName)")
     let imgRef = fireStorageRef.child("Images/\(id)/\(imageName)")
@@ -418,6 +414,46 @@ class FireStoreManager: NSObject {
                 (err) in
                 handler(err)
         })
+    }
+    
+    func updateMemberProfileDetail(id:String,memberDetail:Dictionary<String,String>) -> Result<Bool,Error> {
+        var result:Result<Bool,Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        let memberRef = self.fireDB.collection("Members").document("/\(id)")
+        
+        memberRef.getDocument(completion: {
+            (docSnapshot,err) in
+            
+            if err == nil {
+                let memberData = docSnapshot?.data()
+                var memberDetailData = memberData?["memberDetail"] as! Dictionary<String,String>
+                memberDetailData.updateValue(memberDetail["firstName"]!, forKey: "firstName")
+                memberDetailData.updateValue(memberDetail["lastName"]!, forKey: "lastName")
+                memberDetailData.updateValue(memberDetail["email"]!, forKey: "email")
+                memberDetailData.updateValue(memberDetail["password"]!, forKey: "password")
+                memberDetailData.updateValue(memberDetail["gender"]!, forKey: "gender")
+                memberDetailData.updateValue(memberDetail["phoneNo"]!, forKey: "phoneNo")
+                memberDetailData.updateValue(memberDetail["dob"]!, forKey: "dob")
+                
+                memberRef.updateData([
+                    "memberDetail" : memberDetailData,
+                    "email" : memberDetail["email"]!,
+                    "password" : memberDetail["password"]!
+                    ], completion: {
+                        (err) in
+                        if err != nil {
+                            result = .failure(err!)
+                            result = .success(false)
+                        }else {
+                            result = .success(true)
+                        }
+                        semaphores.signal()
+                })
+            }
+        })
+        
+        let _ = semaphores.wait(wallTimeout: .distantFuture)
+        return result
     }
     
     func getAttandance(trainerORmember:String,id:String,year:String,month:String,result:@escaping ([Attendence])->Void) {
@@ -771,6 +807,29 @@ class FireStoreManager: NSObject {
                 completion(data,nil)
             }
         })
+    }
+    
+    func getTrainerDetailBy(id:String) -> Result<TrainerDataStructure?,Error> {
+        var result:Result<TrainerDataStructure?,Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        let trainerRef = fireDB.collection("Trainers").document("/\(id)")
+        
+        trainerRef.getDocument(completion: {
+            (docSnapshot,err) in
+            if err != nil{
+                result = .failure(err!)
+                result = .success(nil)
+            } else {
+                let data = docSnapshot?.data()
+                let trainerDetail = data?["trainerDetail"] as! Dictionary<String,String>
+                let trainerDetailStr = AppManager.shared.getTrainerDetailS(trainerDetail: trainerDetail)
+                result = .success(trainerDetailStr)
+            }
+            semaphores.signal()
+        })
+
+        let _ = semaphores.wait(wallTimeout: .distantFuture)
+         return result
     }
     
     func getTrainerPermission(id:String) -> Result<TrainerPermissionStructure,Error> {

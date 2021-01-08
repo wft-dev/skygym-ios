@@ -96,6 +96,15 @@ class AppManager: NSObject {
         }
     }
 
+    var parentID:String {
+        get {
+            UserDefaults.standard.string(forKey: "parentID")!
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "parentID")
+        }
+    }
+    
     var isLoggedIn:Bool {
         get{
             UserDefaults.standard.bool(forKey: "isLoggedIn")

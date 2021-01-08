@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class MemberLoginProfileViewController: UIViewController {
     
@@ -43,7 +44,6 @@ class MemberLoginProfileViewController: UIViewController {
     @IBOutlet weak var dobNonEditLabel: UILabel!
     @IBOutlet weak var phoneNoHrLineView: UIView!
     
-    
     @IBOutlet weak var firstNameLabel: UILabel!
     @IBOutlet weak var lastNameLabel: UILabel!
     @IBOutlet weak var genderLabel: UILabel!
@@ -58,6 +58,12 @@ class MemberLoginProfileViewController: UIViewController {
     var defaultLabelArray:[UILabel] = []
     let validator = ValidationManager.shared
     var isEditable:Bool = false
+    var isUserProfileUpdated = false
+    var actualPasswordLabel:UILabel = UILabel()
+    var selectedDate:String = ""
+    let imagePicker = UIImagePickerController()
+    var datePicker = UIDatePicker()
+    let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,6 +74,7 @@ class MemberLoginProfileViewController: UIViewController {
         
         self.setMemberLoginProfileCustomNavigationbar()
         self.setMemberProfileTextFields()
+        self.imagePicker.delegate = self
         
         AppManager.shared.performEditAction(dataFields: self.getDataDir(), edit: false)
         self.setMemberHrLineView(hide: false)
@@ -75,11 +82,50 @@ class MemberLoginProfileViewController: UIViewController {
         self.labelColor(color: .lightGray)
         self.updateBtn.isHidden = true
         self.updateBtn.alpha = 0.0
-        
-        
-        
+        self.updateBtn.addTarget(self, action: #selector(updateMemberInfo), for: .touchUpInside)
+        self.memberProfileImg.isUserInteractionEnabled = false
+        self.memberProfileImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openImgPicker)))
+        self.fetchMemberDetailBy(id: AppManager.shared.memberID)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    @objc func openImgPicker() {
+        self.imagePicker.sourceType = .photoLibrary
+        self.imagePicker.modalPresentationStyle = .fullScreen
+        self.imagePicker.allowsEditing = true
+        self.isUserProfileUpdated = true
+        self.present(self.imagePicker, animated: true, completion: nil)
+    }
+    
+    @objc func updateMemberInfo(){
+        let memberDetail = self.getMemberDetailData()
+        let memberImgData = self.memberProfileImg.image?.pngData()
+        SVProgressHUD.show()
+        DispatchQueue.global(qos: .background).async {
+            let result = FireStoreManager.shared.updateMemberProfileDetail(id: AppManager.shared.memberID, memberDetail: memberDetail)
+            
+            switch result {
+            case .failure(_):
+                self.showAlert(title: "Error", message: "Error in updating member details.")
+            case let .success(flag) :
+                if flag == true {
+                    FireStoreManager.shared.uploadUserImg(imgData: (memberImgData)!, id: AppManager.shared.memberID, completion: {
+                        (err) in
+                        SVProgressHUD.dismiss()
+                        if err == nil {
+                            self.showAlert(title: "Success", message: "Member detail is updated successfully.")
+                        }
+                    })
+                }else {
+                    self.showAlert(title: "Error", message: "Error in updating member details.")
+                }
+            }
+        }
+    }
+
     func setMemberLoginProfileCustomNavigationbar() {
         self.memberLoginProfileCustomNavigationbarView.navigationTitleLabel.text = "Profile"
         self.memberLoginProfileCustomNavigationbarView.searchBtn.isHidden = true
@@ -93,10 +139,12 @@ class MemberLoginProfileViewController: UIViewController {
         self.isEditable = !self.isEditable
         AppManager.shared.performEditAction(dataFields: self.getDataDir(), edit: self.isEditable)
         self.setMemberHrLineView(hide: self.isEditable)
-        self.hideErrorLabels(hide: self.isEditable)
+        self.hideErrorLabels(hide: !self.isEditable)
         self.labelColor(color: self.isEditable ? .black : .lightGray)
         self.updateBtn.isHidden = !self.isEditable
-        self.updateBtn.alpha = self.isEditable == true ?  1.0 : 0.0   
+        self.updateBtn.alpha = self.isEditable == true ?  1.0 : 0.0
+        self.memberProfileImg.isUserInteractionEnabled = self.isEditable
+        self.passwordNonEditLabel.isHidden = self.isEditable
     }
     
     func getDataDir() -> [UITextField:UILabel] {
@@ -106,11 +154,25 @@ class MemberLoginProfileViewController: UIViewController {
             self.genderTextField! : self.genderNonEditLabel!,
             self.phoneNumberTextField! : self.phoneNoNonEditLabel!,
             self.emailTextField! : self.emailNonEditLabel!,
-            self.passwordTextField! : self.passwordNonEditLabel!,
+            self.passwordTextField! : self.actualPasswordLabel,
             self.dobTextField! : self.dobNonEditLabel!
         ]
         return dir
     }
+    
+    func getMemberDetailData() -> Dictionary<String,String> {
+        let dir = [
+            "firstName" : self.firstNameTextField.text!,
+            "lastName" : self.lastNameTextField.text!,
+            "gender" : self.genderTextField.text!,
+            "password" : self.passwordTextField.text!,
+            "email"  : self.emailTextField.text!,
+            "phoneNo" : self.phoneNumberTextField.text!,
+            "dob" : self.dobTextField.text!
+        ]
+        return dir
+    }
+    
     func setMemberHrLineView(hide:Bool) {
         self.hrLineViewArray.forEach{
             $0.isHidden = hide
@@ -143,6 +205,25 @@ class MemberLoginProfileViewController: UIViewController {
         self.updateBtn.layer.borderColor = UIColor.black.cgColor
         self.updateBtn.layer.borderWidth = 0.7
         self.updateBtn.clipsToBounds = true
+        
+        self.datePicker.datePickerMode = .date
+        toolBar.barStyle = .default
+        let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
+        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar.sizeToFit()
+    }
+    
+    @objc func cancelTextField()  {
+           self.view.endEditing(true)
+       }
+    
+    @objc func doneTextField()  {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat =  "dd-MMM-YYYY"
+        selectedDate = dateFormatter.string(from: datePicker.date)
+        self.view.endEditing(true)
     }
     
     func addPaddingToTextField(textField:UITextField) {
@@ -181,6 +262,116 @@ class MemberLoginProfileViewController: UIViewController {
         default:
             break
         }
+        
+        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
 
+    
+    func fetchMemberDetailBy(id:String) {
+        SVProgressHUD.show()
+        FireStoreManager.shared.getMemberByID(id: id, completion: {
+            (memberData, err) in
+            
+            if err != nil {
+                SVProgressHUD.dismiss()
+                self.showAlert(title: "Error", message: "Member details are not fetched, please try again.")
+            } else {
+                let memberDetailData = memberData?["memberDetail"] as! Dictionary<String,String>
+                let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: memberDetailData)
+                self.setMemberDetail(memberDetail: memberDetail)
+                
+                FireStoreManager.shared.downloadUserImg(id: AppManager.shared.memberID, result: {
+                    (imgUrl,err) in
+                    if err == nil {
+                        do {
+                            let imgData = try Data(contentsOf: imgUrl!)
+                            let img =  UIImage(data:imgData )
+                            self.memberProfileImg.image = img
+                            self.memberProfileImg.makeRounded()
+                            SVProgressHUD.dismiss()
+                        } catch let error as NSError {
+                            }
+                    }
+                })
+             }
+        })
+    }
+    
+    func showAlert(title:String,message:String) {
+        let alertController = UIAlertController(title:title, message: message, preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: title, style: .default, handler: {
+        _ in
+            if title == "Success" {
+                self.fetchMemberDetailBy(id: AppManager.shared.memberID)
+            }
+        })
+        
+        alertController.addAction(okAlertAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func setMemberDetail(memberDetail:MemberDetailStructure) {
+        self.firstNameNonEditLabel.text = memberDetail.firstName
+        self.lastNameNonEditLabel.text = memberDetail.lastName
+        self.genderNonEditLabel.text = memberDetail.gender
+        self.actualPasswordLabel.text = memberDetail.password
+        self.passwordNonEditLabel.text = AppManager.shared.getSecureTextFor(text: memberDetail.password)
+        self.emailNonEditLabel.text = memberDetail.email
+        self.phoneNoNonEditLabel.text = memberDetail.phoneNo
+        self.dobNonEditLabel.text = memberDetail.dob
+
+        self.firstNameTextField.text = memberDetail.firstName
+        self.lastNameTextField.text = memberDetail.lastName
+        self.genderTextField.text = memberDetail.gender
+        self.passwordTextField.text = self.actualPasswordLabel.text
+        self.emailTextField.text = memberDetail.email
+        self.phoneNumberTextField.text = memberDetail.phoneNo
+        self.dobTextField.text = memberDetail.dob
+    }
+}
+
+extension MemberLoginProfileViewController:UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.tag == 7 {
+            textField.inputView = self.datePicker
+            textField.inputAccessoryView = self.toolBar
+            
+            if textField.text != "" {
+                let df = DateFormatter()
+                df.dateFormat = "dd-MM-yyyy"
+                self.datePicker.date = df.date(from: textField.text!)!
+            }
+        }
+    }
+        
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        return textField.tag == 7 ? false : true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if  textField.tag == 7  && self.selectedDate != "" {
+            textField.text = self.selectedDate
+            self.selectedDate = ""
+        }
+        self.allMemberFieldValidation(textField: textField)
+        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+    }
+}
+
+extension MemberLoginProfileViewController : UIImagePickerControllerDelegate,UINavigationControllerDelegate{
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let img = info[.editedImage] as? UIImage else {
+            dismiss(animated: true, completion: nil)
+            return
+        }
+        self.memberProfileImg.image = img
+        self.memberProfileImg.makeRounded()
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        self.isUserProfileUpdated = false
+        self.dismiss(animated: true, completion: nil)
+    }
 }
