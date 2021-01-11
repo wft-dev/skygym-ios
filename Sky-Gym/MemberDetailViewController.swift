@@ -15,7 +15,7 @@ class MemberDetailTableViewCell: UITableViewCell {
 }
 
 class MemberDetailViewController: BaseViewController {
-    var memberDetailOptionArrary = ["Add new Membership","Current membership details","Purchase","Attendence",""]
+    
     @IBOutlet weak var memberImg: UIImageView?
     @IBOutlet weak var memberName: UILabel?
     @IBOutlet weak var memberPhoneNumber: UILabel?
@@ -28,9 +28,16 @@ class MemberDetailViewController: BaseViewController {
     
     var name:String = ""
     var address:String = ""
+    var memberDetailOptionArrary:[String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if AppManager.shared.loggedInRole == LoggedInRole.Member {
+        memberDetailOptionArrary = ["Current membership details","Purchase","Attendence",""]
+        }else {
+          memberDetailOptionArrary = ["Add new Membership","Current membership details","Purchase","Attendence",""]
+        }
         self.setMemberDetailNavigationBar()
         [self.paidTextLabel,self.upaidTextLabel].forEach{
             $0?.layer.cornerRadius = 7.0
@@ -175,13 +182,13 @@ extension MemberDetailViewController:UITableViewDataSource{
 extension MemberDetailViewController:UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
-        case 0:
+        case AppManager.shared.loggedInRole == LoggedInRole.Member ? 11 : 0 :
             performSegue(withIdentifier: "addNewMembershipSegue", sender: false)
-        case 1:
+        case AppManager.shared.loggedInRole == LoggedInRole.Member ? 0 : 1 :
             performSegue(withIdentifier: "currentMembershipDetailSegue", sender: nil)
-        case 2:
+        case AppManager.shared.loggedInRole == LoggedInRole.Member ? 1 : 2 :
             performSegue(withIdentifier: "purchaseDetailSegue", sender: nil)
-        case 3 :
+        case AppManager.shared.loggedInRole == LoggedInRole.Member ? 2 : 3  :
             performSegue(withIdentifier: "attendanceDetailSegue", sender: nil)
         default:
             break

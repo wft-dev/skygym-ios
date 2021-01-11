@@ -27,7 +27,6 @@ class AdminDashboardViewController: BaseViewController {
         self.assignbackground()
         self.paidMemberView.paidUserLabel.text = "Paid member"
         self.expiredMemberView.paidUserLabel.text = "Expired member"
-     //   print("LOGED IN ROLE IS \(AppManager.shared.loggedInRole?.rawValue)")
         if  AppManager.shared.loggedInRole == LoggedInRole.Trainer {
             self.trainerDetailView.isHidden = true
             self.trainerDetailView.alpha = 0.0
@@ -42,6 +41,7 @@ class AdminDashboardViewController: BaseViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
             self.setDashboardValues()
         })
+    
     }
     
     override func viewWillAppear(_ animated: Bool) {

@@ -29,8 +29,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func setRoot() {
+        var dashboardVC:UIViewController? = nil
        let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginVC") as! ViewController
-        let dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
+        if AppManager.shared.loggedInRole == LoggedInRole.Member {
+        dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberDetailVC") as! MemberDetailViewController
+        }else {
+         dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
+        }
         let menuItemVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "menuItemVC") as! MenuItemsViewController
         self.swRevealVC.frontViewController =  dashboardVC
         self.swRevealVC.rearViewController = menuItemVC

@@ -13,6 +13,10 @@ class MemberhsipPlanTableCell: UITableViewCell {
     @IBOutlet weak var membershipPlanLabel: UILabel!
 }
 
+class TrainerListTableCell: UITableViewCell {
+    @IBOutlet weak var trainerName: UILabel!
+}
+
 class AddMemberViewController: BaseViewController {
     
     @IBOutlet weak var myScrollView: UIScrollView!
@@ -76,7 +80,10 @@ class AddMemberViewController: BaseViewController {
     @IBOutlet weak var topConstraintOfMembershipView: NSLayoutConstraint!
     @IBOutlet weak var generalTypeLabel: UILabel!
     @IBOutlet weak var personalTypeLabel: UILabel!
+    @IBOutlet weak var trainerListView: UIView!
+    @IBOutlet weak var trainerListTable: UITableView!
 
+    
     let imagePicker = UIImagePickerController()
     var imgUrl:URL? = nil
     var isNewMember:Bool = false
@@ -101,6 +108,8 @@ class AddMemberViewController: BaseViewController {
     var previousDiscount:Int = 0
     var previousDueAmount:Int = 0
     var selectedTrainerType:String = ""
+    var listOfTrainers:[TrainerDataStructure] = []
+    var trainerID:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -127,7 +136,7 @@ class AddMemberViewController: BaseViewController {
                 FireStoreManager.shared.getMembershipWith(memberID: AppManager.shared.memberID, membershipID: self.renewingMembershipID, result: {
                     (membershipData,err) in
                     if err != nil {
-                       // self.retryMemberDataAlert()
+                       
                     } else{
                         self.setRenewingMembershipData(membership: membershipData!)
                     }
@@ -137,6 +146,14 @@ class AddMemberViewController: BaseViewController {
                 self.updateBtn.setTitle("U P D A T E", for: .normal)
             }
         }
+        self.trainerListView.layer.cornerRadius = 12.0
+        self.trainerListView.layer.borderWidth = 1.0
+        self.trainerListView.layer.borderColor = UIColor.black.cgColor
+        self.trainerListView.isHidden = true
+        self.trainerListView.alpha = 0.0
+        self.trainerNameTextField.isUserInteractionEnabled = true
+        self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
+        self.fetchTrainersByCategory(category: .general)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -175,6 +192,12 @@ class AddMemberViewController: BaseViewController {
             }
         }
     }
+    
+    @objc func showTrainerList() {
+        self.view.endEditing(true)
+        self.trainerListView.isHidden = !self.trainerListView.isHidden
+        self.trainerListView.alpha = self.trainerListView.isHidden == true ? 0.0 : 1.0
+    }
 
     @IBAction func profileBtnAction(_ sender: Any) {
         self.showProfileScreen()
@@ -193,6 +216,7 @@ class AddMemberViewController: BaseViewController {
             self.generalTypeOptionBtn.setImage(UIImage(named: "selelecte"), for: .normal)
             self.personalTypeOptionBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         }
+        self.fetchTrainersByCategory(category: .general)
     }
     
     @IBAction func perosnalTypeOptionBtnAction(_ sender: Any) {
@@ -200,6 +224,7 @@ class AddMemberViewController: BaseViewController {
             self.generalTypeOptionBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
             self.personalTypeOptionBtn.setImage(UIImage(named: "selelecte"), for: .normal)
         }
+        self.fetchTrainersByCategory(category: .personal)
     }
     
     @IBAction func updateBtnAction(_ sender: Any) {
@@ -268,6 +293,24 @@ class AddMemberViewController: BaseViewController {
 }
 
 extension AddMemberViewController{
+    
+    func fetchTrainersByCategory(category:TrainerType) {
+        DispatchQueue.global(qos: .background).async {
+            let result = FireStoreManager.shared.getTrainerByCategory(category: category)
+            
+            DispatchQueue.main.async {
+                switch result {
+                    
+                case  let .success(trainerList):
+                    self.listOfTrainers = trainerList
+                    self.trainerListTable.reloadData()
+                case .failure(_):
+                    self.listOfTrainers = []
+                }
+            }
+        }
+       
+    }
     
     func memberValidation() {
         for textField in self.completeMemberProfileFieldArray {
@@ -482,7 +525,8 @@ extension AddMemberViewController{
             "email":self.emailTextField.text!,
             "address":self.addressTextView.text!,
             "phoneNo" : self.phoneNumberTextField.text!,
-            "dob":self.dobTextField.text!
+            "dob":self.dobTextField.text!,
+            "trainerID": self.trainerID
         ]
         return memberDetail
     }
@@ -551,17 +595,6 @@ extension AddMemberViewController{
             
             if self.visitorID != "" {
                 SVProgressHUD.show()
-//                FireStoreManager.shared.deleteImgBy(id: self.visitorID, result: {
-//                    err in
-//                    SVProgressHUD.dismiss()
-//                    if err != nil {
-//
-//                    } else {
-
-//                    }
-//                })
-                
-                
                 DispatchQueue.global(qos: .background).async {
                     let result = FireStoreManager.shared.deleteImgBy(id: self.visitorID)
                     
@@ -777,7 +810,6 @@ extension AddMemberViewController{
                 }
     }
     
-    
     func fetchVisitorBy(id:String) {
         FireStoreManager.shared.getVisitorBy(id: id, result: {
             (visitor,err ) in
@@ -808,7 +840,6 @@ extension AddMemberViewController{
     
     func getDiscountPercentage(totalAmount:Int,discount:Int) -> Int {
         let percentage = (discount * 100)/totalAmount
-      //  print("Percentage discount : \(percentage)")
         return percentage
     }
     
@@ -825,13 +856,13 @@ extension AddMemberViewController{
     }
 
     func fillVisitorDetail(visitor:Visitor) {
-          self.firstNameTextField.text = visitor.firstName
-              self.lastNameTextField.text = visitor.lastName
-              self.dateOfJoiningTextField.text = visitor.dateOfJoin
-              self.genderTextField.text = visitor.gender
-              self.emailTextField.text = visitor.email
-              self.addressTextView.text = visitor.address
-              self.phoneNumberTextField.text = visitor.phoneNo
+        self.firstNameTextField.text = visitor.firstName
+        self.lastNameTextField.text = visitor.lastName
+        self.dateOfJoiningTextField.text = visitor.dateOfJoin
+        self.genderTextField.text = visitor.gender
+        self.emailTextField.text = visitor.email
+        self.addressTextView.text = visitor.address
+        self.phoneNumberTextField.text = visitor.phoneNo
     }
     
     func fetchAllMemberships() {
@@ -872,7 +903,7 @@ extension AddMemberViewController: UIImagePickerControllerDelegate,UINavigationC
 
 extension AddMemberViewController:UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 4 || textField.tag == 11 || textField.tag == 12  || textField.tag == 13  ||   textField.tag == 14 || textField.tag == 8 {
+        if textField.tag == 4 || textField.tag == 11 || textField.tag == 12  || textField.tag == 13  ||   textField.tag == 14 || textField.tag == 8 || textField.tag == 7  {
             return false
         } else {
             return true
@@ -924,8 +955,6 @@ extension AddMemberViewController:UITextFieldDelegate{
         }
         
         if textField.tag == 16 {
-        //    let dueAmount = Int(self.dueAmountTextField.text!)!
-         //   print("PREVIOUS AMOUNT IS : \(self.previousDueAmount)")
             let referenceAmount = self.previousDueAmount > 0  ? self.previousDueAmount : Int(self.amountTextField.text!) ?? 0
             var referenceText = self.previousDueAmount > 0 ? "Amount is greater than due amount." :  "Amount is greater than membership amount."
             let calculatedTotalAmount = self.getTotalAmount()
@@ -954,9 +983,6 @@ extension AddMemberViewController:UITextFieldDelegate{
         
         if textField.tag == 17 {
             let discoutAmount = self.getDiscountAmount()
-//            print("Previous discount amount : \(self.previousDiscount)")
-//            print("Current discount amount : \(discoutAmount)")
-//            print("previous due amount : \(self.previousDueAmount) ")
             if self.previousDiscount != discoutAmount || self.previousDueAmount == 0 {
                 let membershipAmount = Int(self.amountTextField.text!) ?? 0
                 self.totalAmountTextField.text = "\(membershipAmount - discoutAmount)"
@@ -994,39 +1020,61 @@ extension AddMemberViewController:UITextViewDelegate {
             self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
         }
     }
+ 
 }
 
 extension AddMemberViewController:UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.memberhsipPlanArray.count
+        if tableView.tag == 1111 {
+            return self.listOfTrainers.count
+        }else {
+             return self.memberhsipPlanArray.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "membershipPlanCell", for: indexPath) as! MemberhsipPlanTableCell
-        let membership = self.memberhsipPlanArray[indexPath.row]
-        cell.membershipPlanLabel.text = membership.title
-        return cell
+        
+        if tableView.tag == 1111 {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "trainerListCell", for: indexPath) as! TrainerListTableCell
+            let singleTrainer = self.listOfTrainers[indexPath.row]
+            cell.trainerName.text = "\(singleTrainer.firstName) \(singleTrainer.lastName)"
+            
+            return cell
+        }else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "membershipPlanCell", for: indexPath) as! MemberhsipPlanTableCell
+            let membership = self.memberhsipPlanArray[indexPath.row]
+            cell.membershipPlanLabel.text = membership.title
+            return cell
+        }
     }
 }
 
 extension AddMemberViewController:UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        SVProgressHUD.show()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
-            SVProgressHUD.dismiss()
-            let membership = self.memberhsipPlanArray[indexPath.row]
-            self.membershipID = membership.membershipID
-            self.membershipPlanTextField.text = membership.title
-            self.membershipDetailTextView.text = membership.detail
-            self.amountTextField.text = membership.amount
-            self.membershipDuration = Int(membership.duration)!
-            self.validation.requiredValidation(textField: self.membershipPlanTextField, errorLabel: self.membershipPlanErrorLabel, errorMessage: "Please select a membership plan.")
-            self.validation.requiredValidation(textField: self.amountTextField, errorLabel: self.amountErrorLabel, errorMessage: "Amount required.")
-            self.validation.requiredValidation(textView: self.membershipDetailTextView, errorLabel: self.membershipDetailErrorLabel, errorMessage: "Membership Detail Required.")
-
-        })
-        self.membershipPlanView.isHidden = true
+        
+        if tableView.tag == 1111 {
+            let singleTrainer = self.listOfTrainers[indexPath.row]
+            self.trainerNameTextField.text = "\(singleTrainer.firstName) \(singleTrainer.lastName)"
+            self.trainerID = singleTrainer.trainerID
+            self.trainerListView.isHidden = true
+            self.allNewMemberFieldsRequiredValidation(textField: self.trainerNameTextField)
+        }else {
+            SVProgressHUD.show()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+                SVProgressHUD.dismiss()
+                let membership = self.memberhsipPlanArray[indexPath.row]
+                self.membershipID = membership.membershipID
+                self.membershipPlanTextField.text = membership.title
+                self.membershipDetailTextView.text = membership.detail
+                self.amountTextField.text = membership.amount
+                self.membershipDuration = Int(membership.duration)!
+                self.validation.requiredValidation(textField: self.membershipPlanTextField, errorLabel: self.membershipPlanErrorLabel, errorMessage: "Please select a membership plan.")
+                self.validation.requiredValidation(textField: self.amountTextField, errorLabel: self.amountErrorLabel, errorMessage: "Amount required.")
+                self.validation.requiredValidation(textView: self.membershipDetailTextView, errorLabel: self.membershipDetailErrorLabel, errorMessage: "Membership Detail Required.")
+            })
+            self.membershipPlanView.isHidden = true
+        }
     }
 }
 

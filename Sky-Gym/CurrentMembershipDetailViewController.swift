@@ -43,7 +43,6 @@ class CurrentMembershipDetailViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setCurrentMembershipDetailNavigationBar()
         [self.paidStatusView,self.memberView,self.membershipDateView,self.DiscountView,self.paymentHistoryView].forEach{
             $0?.layer.cornerRadius = 12.0
             $0?.layer.borderWidth = 1.0
@@ -53,13 +52,12 @@ class CurrentMembershipDetailViewController: BaseViewController {
      setMembershipVerticalMenu()
      addClickToDismiss()
      setBackAction(toView: self.currentMembershipDetailNavigationBar)
+     self.setCurrentMembershipDetailNavigationBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if purchasedMembershipID.count > 0 {
-//            self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = true
-//            self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 0.0
             self.getPurchasedMembershipDetail(memberID: memberDetail!.memberID, membershipID: self.purchasedMembershipID)
         }else{
             self.getCurrentMembershipDetails(id: AppManager.shared.memberID)
@@ -166,20 +164,18 @@ extension CurrentMembershipDetailViewController {
         self.currentMembershipDetailNavigationBar.leftArrowBtn.isHidden = false
         self.currentMembershipDetailNavigationBar.leftArrowBtn.alpha = 1.0
         self.currentMembershipDetailNavigationBar.searchBtn.isHidden = true
-        self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = false
-        self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 1.0
-        self.currentMembershipDetailNavigationBar.verticalMenuBtn.addTarget(self, action: #selector(showMembershipOption), for: .touchUpInside)
+        
+        if AppManager.shared.loggedInRole == LoggedInRole.Member {
+            self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = true
+            self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 0.0
+        }else {
+            self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = false
+            self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 1.0
+            self.currentMembershipDetailNavigationBar.verticalMenuBtn.addTarget(self, action: #selector(showMembershipOption), for: .touchUpInside)
+        }
     }
     
     @objc func showMembershipOption() {
-//        if purchasedMembershipID.count > 0 {
-//            self.deleteMembershipView.isHidden = false
-//            self.deleteMembershipView.alpha = 1.0
-//        } else {
-//            self.membershipVerticalMenuView.isHidden = false
-//            self.membershipVerticalMenuView.alpha = 1.0
-//        }
-        
         self.deleteMembershipView.isHidden = self.purchasedMembershipID.count > 0 ? false : true
         self.deleteMembershipView.alpha = self.purchasedMembershipID.count > 0 ? 1.0 : 0.0
         self.membershipVerticalMenuView.isHidden = self.purchasedMembershipID.count > 0 ? true : false
@@ -232,8 +228,8 @@ extension CurrentMembershipDetailViewController {
                         $0?.isHidden = false
                         $0?.alpha = 1.0
                     }
-                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = false
-                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 1.0
+//                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = false
+//                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 1.0
                 } else {
                     SVProgressHUD.show()
                     [self.memberView,self.membershipDateView,self.DiscountView,self.paymentHistoryView].forEach{

@@ -9,6 +9,11 @@
 import UIKit
 import SVProgressHUD
 
+
+class ListOfTrainerTableCell: UITableViewCell {
+    @IBOutlet weak var trainerName: UILabel!
+}
+
 class MemberViewController: BaseViewController {
     @IBOutlet weak var memberNaviagationBar: CustomNavigationBar!
     @IBOutlet weak var dateOfJoiningTextField: UITextField!
@@ -78,6 +83,8 @@ class MemberViewController: BaseViewController {
     @IBOutlet weak var dobErrorLabel: UILabel!
     @IBOutlet weak var generalTypeLabel: UILabel!
     @IBOutlet weak var personalTypeLabel: UILabel!
+    @IBOutlet weak var listOfTrainerView: UIView!
+    @IBOutlet weak var listOfTrainerTable: UITableView!
     
     var isEdit:Bool = false
     var firstName:String = ""
@@ -98,6 +105,8 @@ class MemberViewController: BaseViewController {
     var actualPassword :String = ""
     var isImagePickerSelected:Bool = false
     var trainerType:String = ""
+    var trainerID:String = ""
+    var listOfTrainers:[TrainerDataStructure] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -105,11 +114,17 @@ class MemberViewController: BaseViewController {
         self.defaultLabelArray = [self.memberID,self.dateOfJoining,self.gender,self.password,self.trainerName,self.uploadID,self.email,self.address,self.phoneNo,self.dob]
         self.errorLabelArray = [self.memberIDErrorLabel,self.dateOfJoiningErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.addressErrorLabel,self.trainerNameErrorLabel,self.uploadIDErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel]
         self.textFieldArray = [self.memberIDTextField,self.dateOfJoiningTextField,self.genderTextField,self.trainerNameTextField,self.uploadIDTextField,self.phoneNoTextField,self.dobTextField]
-        
-
         self.personalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeAction(_:))))
         self.generalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeAction(_:))))
         
+        self.listOfTrainerView.layer.cornerRadius = 12.0
+        self.listOfTrainerView.layer.borderWidth = 1.0
+        self.listOfTrainerView.layer.borderColor = UIColor.black.cgColor
+        self.listOfTrainerView.isHidden = true
+        self.listOfTrainerView.alpha = 0.0
+        
+        self.trainerNameTextField.isUserInteractionEnabled = true
+        self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -119,9 +134,12 @@ class MemberViewController: BaseViewController {
         self.memberImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openUserProfilePicker)))
         self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
         self.imgPicker.delegate = self
-//        self.updateBtn.isEnabled = false
-//        self.updateBtn.alpha = 0.6
         self.setMemberProfileCompleteView()
+    }    
+    @objc func showTrainerList(){
+        self.view.endEditing(true)
+        self.listOfTrainerView.isHidden = !self.listOfTrainerView.isHidden
+        self.listOfTrainerView.alpha = self.listOfTrainerView.isHidden == true ? 0.0 : 1.0
     }
     
     @IBAction func updateBtnAction(_ sender: Any) {
@@ -166,6 +184,7 @@ class MemberViewController: BaseViewController {
             self.generalToggleBtn.setImage(UIImage(named: "selelecte"), for: .normal)
             self.personalToggleBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         }
+        self.fetchListOfTrainer(category: .general)
     }
     
     @IBAction func personalToggleBtnAction(_ sender: Any) {
@@ -173,12 +192,29 @@ class MemberViewController: BaseViewController {
             self.personalToggleBtn.setImage(UIImage(named: "selelecte"), for: .normal)
             self.generalToggleBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         }
+        self.fetchListOfTrainer(category: .personal)
     }
-    
     
 }
 
 extension MemberViewController{
+    
+    func fetchListOfTrainer(category:TrainerType) {
+        DispatchQueue.global(qos: .background).async {
+            let result = FireStoreManager.shared.getTrainerByCategory(category: category)
+            
+            DispatchQueue.main.async {
+                switch result {
+                    
+                case let .success(trainerArray):
+                    self.listOfTrainers = trainerArray
+                    self.listOfTrainerTable.reloadData()
+                case .failure(_):
+                    break
+                }
+            }
+        }
+    }
 
     func allMemberProfileFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {
@@ -393,10 +429,11 @@ extension MemberViewController{
         if type == "General"{
             self.generalToggleBtn.setImage(UIImage(named: "selelecte"), for: .normal)
             self.personalToggleBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
-       
+            self.fetchListOfTrainer(category: .general)
         } else {
             self.generalToggleBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
             self.personalToggleBtn.setImage(UIImage(named: "selelecte"), for: .normal)
+            self.fetchListOfTrainer(category: .personal)
         }
      }
     
@@ -425,6 +462,7 @@ extension MemberViewController{
              "address":self.addressTextView.text!,
              "phoneNo" : self.phoneNoTextField.text!,
              "dob":self.dobTextField.text!,
+             "trainerID":self.trainerID
          ]
          return memberDetail
      }
@@ -546,4 +584,32 @@ extension MemberViewController:UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
     }
+}
+
+
+extension MemberViewController:UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.listOfTrainers.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "listOfTrainerCell", for: indexPath) as! ListOfTrainerTableCell
+        let singleTrainer = self.listOfTrainers[indexPath.row]
+        cell.trainerName.text = "\(singleTrainer.firstName) \(singleTrainer.lastName)"
+        
+        return cell
+    }
+    
+    
+}
+
+extension MemberViewController:UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+         let singleTrainer = self.listOfTrainers[indexPath.row]
+        self.trainerNameTextField.text = "\(singleTrainer.firstName) \(singleTrainer.lastName)"
+        self.trainerID = singleTrainer.trainerID
+        self.listOfTrainerView.isHidden = true
+    }
+    
 }

@@ -64,7 +64,6 @@ class FireStoreManager: NSObject {
                         AppManager.shared.adminID = adminData?["adminID"] as! String
                         AppManager.shared.gymID = (adminData?["gymID"] as! String)
                         AppManager.shared.loggedInRole = LoggedInRole.Admin
-                        AppManager.shared.LoggedInAs = .Admin
                         result(true,nil)
                     }
                 } else {
@@ -95,7 +94,6 @@ class FireStoreManager: NSObject {
                         AppManager.shared.memberID = querySnapshot?.documents.first?.documentID as! String
                         AppManager.shared.trainerID = ""
                         AppManager.shared.loggedInRole = LoggedInRole.Member
-                        AppManager.shared.LoggedInAs = LoggedInRole.Member
                         AppManager.shared.trainerName = ""
                         AppManager.shared.trainerType = ""
                     }else {
@@ -104,7 +102,6 @@ class FireStoreManager: NSObject {
                         AppManager.shared.memberID = ""
                         AppManager.shared.adminID = ""
                         AppManager.shared.loggedInRole = LoggedInRole.Trainer
-                        AppManager.shared.LoggedInAs = LoggedInRole.Trainer
                         AppManager.shared.trainerName = trainerDetail["firstName"]!
                         AppManager.shared.trainerType = trainerDetail["type"]!
                     }
@@ -247,8 +244,9 @@ class FireStoreManager: NSObject {
        }
     
     func addMember(email:String,password:String,memberDetail:[String:String],memberships:[[String:String]],memberID:String,handler:@escaping (Error?) -> Void ) {
-     //   let attendence = AppManager.shared.getCompleteMonthAttendenceStructure()
-        let attendence = AppManager.shared.getCompleteInitialStructure(year: 2020, month: 12,checkIn: "", checkOut: "", present: false)
+        let year = Calendar.current.dateComponents([.year], from: Date()).year!
+        let month = Calendar.current.dateComponents([.month], from: Date()).month!
+        let attendence = AppManager.shared.getCompleteInitialStructure(year: year, month: month,checkIn: "", checkOut: "", present: false)
         let parentID = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerID : AppManager.shared.adminID
         self.fireDB.collection("/Members").document("/\(memberID)").setData(
             [
@@ -849,6 +847,33 @@ class FireStoreManager: NSObject {
             }
         })
         
+        let _ = semaphores.wait(wallTimeout: .distantFuture)
+        return result
+    }
+    
+    func getTrainerByCategory(category:TrainerType) -> Result<[TrainerDataStructure],Error> {
+        let trainerType = category == .general ? "General" : "Personal"
+        let semaphores = DispatchSemaphore(value: 0)
+        var result:Result<[TrainerDataStructure],Error>!
+        var trainerListArray:[TrainerDataStructure] = []
+        
+        fireDB.collection("Trainers").getDocuments(completion: {
+            (querySnapshot,err) in
+            
+            if err != nil {
+                result = .failure(err!)
+            }else{
+                for trainerDoc in querySnapshot!.documents {
+                    let trainerDetail = (trainerDoc.data())["trainerDetail"] as! Dictionary<String,String>
+                    
+                    if trainerType == trainerDetail["type"] {
+                        trainerListArray.append(AppManager.shared.getTrainerDetailS(trainerDetail: trainerDetail))
+                    }
+                }
+                result = .success(trainerListArray)
+                semaphores.signal()
+            }
+        })
         let _ = semaphores.wait(wallTimeout: .distantFuture)
         return result
     }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class MemberLoginTrainerProfileViewController: UIViewController {
     
@@ -33,7 +34,18 @@ class MemberLoginTrainerProfileViewController: UIViewController {
         self.trainerBackBtn.layer.borderColor = UIColor.black.cgColor
         self.trainerBackBtn.layer.borderWidth = 0.7
         self.trainerBackBtn.clipsToBounds = true
-        self.fetchTrainerDetail(id: "78010")
+        self.getTrainerIDFromMemberById(memberID: AppManager.shared.memberID)
+    }
+    
+    func getTrainerIDFromMemberById(memberID:String) {
+        FireStoreManager.shared.getMemberByID(id: memberID, completion: {
+            (memberData,err) in
+            if err == nil {
+                let memberDetail = memberData?["memberDetail"] as! Dictionary<String,String>
+                let trainerID = memberDetail["trainerID"]
+                self.fetchTrainerDetail(id: trainerID!)
+            }
+        })
     }
     
     func setMemberLoginTrainerProfileCustomNavigationbar()  {
@@ -44,20 +56,38 @@ class MemberLoginTrainerProfileViewController: UIViewController {
     
     
     func fetchTrainerDetail(id:String) {
-        DispatchQueue.global(qos: .background).async {
+        SVProgressHUD.show()
+
+        DispatchQueue.global(qos: .utility).async {
             let result = FireStoreManager.shared.getTrainerDetailBy(id: id)
-            
-            switch result {
-            case let .success(trainerDetail):
-                self.setTrainerDetail(trainerDetail: trainerDetail!)
-            case .failure(_):
-                break
+        
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(trainerDetail):
+                    self.setTrainerDetail(trainerDetail: trainerDetail!)
+                    FireStoreManager.shared.downloadUserImg(id: id, result: {
+                       (imgUrl,err) in
+                        if err == nil {
+                            do {
+                                let imgData = try Data(contentsOf: imgUrl!)
+                                self.trainerProfileImg.image = UIImage(data: imgData)
+                                self.trainerProfileImg.makeRounded()
+                                SVProgressHUD.dismiss()
+                            } catch _ { }
+                        } else { SVProgressHUD.dismiss() }
+                    })
+                   
+                case .failure(_):
+                    break
+                }
             }
         }
+        
     }
     
     func setTrainerDetail(trainerDetail:TrainerDataStructure) {
-        self.trainerIDLabel.text = trainerDetail.trainerID
+        self.trainerName.text = "\(trainerDetail.firstName) \(trainerDetail.lastName)"
+        self.trainerIDLabel.text = AppManager.shared.getSecureTextFor(text: trainerDetail.trainerID)
         self.trainerDateOfJoiningLabel.text = trainerDetail.dateOfJoining
         self.trainerGenderLabel.text = trainerDetail.gender
         self.trainerPasswordLabel.text = AppManager.shared.getSecureTextFor(text: trainerDetail.password)

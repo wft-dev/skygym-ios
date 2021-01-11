@@ -52,10 +52,19 @@ class MemberLoginProfileViewController: UIViewController {
     @IBOutlet weak var phoneNoLabel: UILabel!
     @IBOutlet weak var dobLabel: UILabel!
     
+    @IBOutlet weak var firstNameForNonEditLabel: UILabel!
+    @IBOutlet weak var lastNameForNonEditLabel: UILabel!
+    @IBOutlet weak var genderForNonEditLabel: UILabel!
+    @IBOutlet weak var passwordForNonEditLabel: UILabel!
+    @IBOutlet weak var emailForNonEditLabel: UILabel!
+    @IBOutlet weak var phoneNoForNonEditLabel: UILabel!
+    @IBOutlet weak var dobForNonEditLabel: UILabel!
+    
     var textFieldArray:[UITextField] = []
     var errorLabelsArray:[UILabel] = []
     var hrLineViewArray:[UIView] = []
     var defaultLabelArray:[UILabel] = []
+    var forNonEditLabelArray:[UILabel] = []
     let validator = ValidationManager.shared
     var isEditable:Bool = false
     var isUserProfileUpdated = false
@@ -71,6 +80,7 @@ class MemberLoginProfileViewController: UIViewController {
         self.errorLabelsArray = [ self.firstNameErrorLabel,self.lastNameErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.emailErrorLabel,self.phoneNoErrorLabel,self.dobErrorLabel ]
         self.hrLineViewArray = [ self.firstNameHrLineView,self.genderHrLineView,self.emailHrLineView,self.phoneNoHrLineView ]
         self.defaultLabelArray = [ self.firstNameLabel,self.lastNameLabel,self.genderLabel,self.passwordLabel,self.emailLabel,self.phoneNoLabel,self.dobLabel ]
+        self.forNonEditLabelArray = [ self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel  ]
         
         self.setMemberLoginProfileCustomNavigationbar()
         self.setMemberProfileTextFields()
@@ -79,7 +89,8 @@ class MemberLoginProfileViewController: UIViewController {
         AppManager.shared.performEditAction(dataFields: self.getDataDir(), edit: false)
         self.setMemberHrLineView(hide: false)
         self.hideErrorLabels(hide: true)
-        self.labelColor(color: .lightGray)
+        self.hideLabelsArray(labelArray: self.defaultLabelArray, hide: true)
+        self.hideLabelsArray(labelArray: self.forNonEditLabelArray, hide: false)
         self.updateBtn.isHidden = true
         self.updateBtn.alpha = 0.0
         self.updateBtn.addTarget(self, action: #selector(updateMemberInfo), for: .touchUpInside)
@@ -140,7 +151,8 @@ class MemberLoginProfileViewController: UIViewController {
         AppManager.shared.performEditAction(dataFields: self.getDataDir(), edit: self.isEditable)
         self.setMemberHrLineView(hide: self.isEditable)
         self.hideErrorLabels(hide: !self.isEditable)
-        self.labelColor(color: self.isEditable ? .black : .lightGray)
+        self.hideLabelsArray(labelArray: self.defaultLabelArray, hide: !self.isEditable)
+        self.hideLabelsArray(labelArray: self.forNonEditLabelArray, hide: self.isEditable)
         self.updateBtn.isHidden = !self.isEditable
         self.updateBtn.alpha = self.isEditable == true ?  1.0 : 0.0
         self.memberProfileImg.isUserInteractionEnabled = self.isEditable
@@ -182,6 +194,13 @@ class MemberLoginProfileViewController: UIViewController {
     
     func hideErrorLabels(hide:Bool)  {
         self.errorLabelsArray.forEach{
+            $0.isHidden = hide
+            $0.alpha = hide ? 0.0 : 1.0
+        }
+    }
+    
+    func hideLabelsArray(labelArray:[UILabel],hide:Bool) {
+        labelArray.forEach{
             $0.isHidden = hide
             $0.alpha = hide ? 0.0 : 1.0
         }
@@ -291,6 +310,8 @@ class MemberLoginProfileViewController: UIViewController {
                             SVProgressHUD.dismiss()
                         } catch let error as NSError {
                             }
+                    } else {
+                        SVProgressHUD.dismiss()
                     }
                 })
              }

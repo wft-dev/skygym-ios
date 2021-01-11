@@ -62,6 +62,7 @@ struct MemberDetailStructure {
     var password:String
     var type:String
     var trainerName:String
+    var trainerID:String
     var uploadIDName:String
     var email:String
     var address:String
@@ -154,13 +155,16 @@ struct ListOfTrainers {
     var type:String
 }
 
+enum TrainerType:String {
+    case general
+    case personal
+}
+
 struct Memberhisp {
     var membershipID:String
     var title:String
     var amount:String
     var detail:String
-//    var startDate:String
-//    var endDate:String
     var duration:String
     var selectedIndex:String
 }

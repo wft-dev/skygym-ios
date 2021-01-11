@@ -673,7 +673,7 @@ extension TrainerEditScreenViewController {
     func registerTrainer(email:String,password:String,id:String,trainerDetail:[String:String],trainerPermission:[String:Bool]) {
         SVProgressHUD.show()
         if self.isNewTrainer == false {
-            if self.userImg.image?.pngData() != nil {
+            if self.isUserImgSelected == true {
                 FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
                     err in
                     if err != nil {
@@ -691,6 +691,16 @@ extension TrainerEditScreenViewController {
                         })
                     }
                 })
+            } else {
+                FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
+                    err in
+                    SVProgressHUD.dismiss()
+                    if err != nil {
+                        self.showAlert(title: "Error", message: "Error in updating the trainer details, please try again.")
+                    } else {
+                        self.showAlert(title: "Success", message: "Trainer Detail is updated successfully.")
+                    }
+                })
             }
         } else {
             if imgURL == nil {
@@ -704,25 +714,38 @@ extension TrainerEditScreenViewController {
                          SVProgressHUD.dismiss()
                         self.showAlert(title: "Error", message: "Some fields are not field properly.")
                     } else {
-                        FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
-                            err in
-                            
-                            if err != nil {
-                                 SVProgressHUD.dismiss()
-                                self.showAlert(title: "Error", message: "Error in uploading the user profile imgage.")
-                            } else {
-                                FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
-                                    err in
-                                    if err != nil {
-                                         SVProgressHUD.dismiss()
-                                        self.showAlert(title: "Error", message: "Error in registering the trainer, please try again.")
-                                    } else {
-                                         SVProgressHUD.dismiss()
-                                        self.showAlert(title: "Success", message: "Trainer is registerd successfully.")
-                                    }
-                                })
-                            }
-                        })
+                        if self.isUserImgSelected == true {
+                            FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
+                                err in
+                                
+                                if err != nil {
+                                     SVProgressHUD.dismiss()
+                                    self.showAlert(title: "Error", message: "Error in uploading the user profile imgage.")
+                                } else {
+                                    FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
+                                        err in
+                                        if err != nil {
+                                             SVProgressHUD.dismiss()
+                                            self.showAlert(title: "Error", message: "Error in registering the trainer, please try again.")
+                                        } else {
+                                             SVProgressHUD.dismiss()
+                                            self.showAlert(title: "Success", message: "Trainer is registerd successfully.")
+                                        }
+                                    })
+                                }
+                            })
+                        }else {
+                            FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
+                                err in
+                                if err != nil {
+                                     SVProgressHUD.dismiss()
+                                    self.showAlert(title: "Error", message: "Error in registering the trainer, please try again.")
+                                } else {
+                                     SVProgressHUD.dismiss()
+                                    self.showAlert(title: "Success", message: "Trainer is registerd successfully.")
+                                }
+                            })
+                        }
                     }
                 })
             }
@@ -733,7 +756,9 @@ extension TrainerEditScreenViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default, handler:{
             _ in
-            if title == "Success"{
+            if title == "Success" && self.isNewTrainer == true {
+                self.dismiss(animated: true, completion: nil)
+            }else {
                 self.showTrainerBy(id: AppManager.shared.trainerID)
             }
         })
@@ -841,13 +866,13 @@ extension TrainerEditScreenViewController:UIImagePickerControllerDelegate,UINavi
         if self.isUserImgSelected == true{
             if let img = info[.editedImage] as? UIImage{
                 self.userImg.image = img
-                self.isUserImgSelected = false
-                dismiss(animated: true, completion: nil)
+            dismiss(animated: true, completion: nil)
             }
         }else {
             if let selectedImgURL:URL = info[ .imageURL ] as? URL {
                 self.imgURL = selectedImgURL
                 let imgaeName = selectedImgURL.lastPathComponent
+                self.isUserImgSelected = false
                 self.uploadIDProofTextField.text = imgaeName
                 dismiss(animated: true, completion: nil)
             }
