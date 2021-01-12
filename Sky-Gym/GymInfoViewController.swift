@@ -13,7 +13,6 @@ class GymInfoViewController: UIViewController {
     
     @IBOutlet weak var gymInfoCutomNavigationBar: CustomNavigationBar!
     @IBOutlet weak var gymNameLabel: UILabel!
-    @IBOutlet weak var gymIDLabel: UILabel!
     @IBOutlet weak var gymTimingLabel: UILabel!
     @IBOutlet weak var gymDaysLabel: UILabel!
     @IBOutlet weak var gymAddressLabel: UILabel!
@@ -50,7 +49,7 @@ class GymInfoViewController: UIViewController {
     
     func setGymInfo(gymDetail:GymDetail) {
         self.gymNameLabel.text = gymDetail.gymName
-        self.gymIDLabel.text = gymDetail.gymID
+       // self.gymIDLabel.text = gymDetail.gymID
         self.gymTimingLabel.text = "\(gymDetail.gymOpeningTime)/\(gymDetail.gymClosingTime)"
         self.gymDaysLabel.text  = "\(gymDetail.gymDays) days"
         self.gymAddressLabel.text  = gymDetail.gymAddress

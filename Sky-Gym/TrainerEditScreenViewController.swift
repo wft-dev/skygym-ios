@@ -9,6 +9,12 @@
 import UIKit
 import SVProgressHUD
 
+
+class WeekDayForTrainerTableCell: UITableViewCell {
+    @IBOutlet weak var weekDayImg: UIImageView!
+    @IBOutlet weak var weekDayLabel: UILabel!
+}
+
 class TrainerEditScreenViewController: BaseViewController {
     
     @IBOutlet weak var trainerEditScreenNavigationBar: CustomNavigationBar!
@@ -123,6 +129,8 @@ class TrainerEditScreenViewController: BaseViewController {
     @IBOutlet weak var eventPermissionNonEditView: UIView!
     @IBOutlet weak var memberPermissionNonEditBtn: UIButton!
     @IBOutlet weak var eventPermissionNonEditBtn: UIButton!
+    @IBOutlet weak var weekDayListView: UIView!
+    @IBOutlet weak var weekDaysListTable: UITableView!
     
     var isNewTrainer:Bool = false
     let imagePicker = UIImagePickerController()
@@ -145,12 +153,19 @@ class TrainerEditScreenViewController: BaseViewController {
     var visitorPermission:Bool = false
     var eventPermission:Bool = false
     var actualPassword:String = ""
+    let weekDayArray = ["Sunday","Monday","Tuesday","Wednesday","Thrusday","Friday","Saturday"]
+    var selectedWeekDayIndexArray:[Int] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setTrainerEditView()
         self.showTrainerBy(id: AppManager.shared.trainerID)
-        //AppManager.shared.setScrollViewContentSize(scrollView: self.trainerEditScrollView)
+        self.weekDaysListTable.delegate = self
+        self.weekDaysListTable.dataSource = self
+        self.weekDaysListTable.allowsMultipleSelection = true
+        self.weekDayListView.isHidden = true
+        self.weekDayListView.alpha = 0.0
+
         self.idTextField.text = "\(Int.random(in: 1..<100000))" 
         self.idTextField.isEnabled = false
         self.idTextField.layer.opacity = 0.4
@@ -160,6 +175,12 @@ class TrainerEditScreenViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        if AppManager.shared.loggedInRole == LoggedInRole.Trainer {
+            self.userImg.image = UIImage(named: "member")
+        } else {
+           self.userImg.image = UIImage(named: "user-1")
+        }
     }
     
     @IBAction func trainerAttendanceAction(_ sender: Any) {
@@ -216,7 +237,7 @@ class TrainerEditScreenViewController: BaseViewController {
     @IBAction func doneBtnAction(_ sender: Any) {
         self.trainerValidation()
         if self.validation.isTrainerProfileValidated(textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) == true {
-                   self.registerTrainer(email: self.emailTextField.text!, password: self.passwordTextField.text!, id: self.idTextField.text!, trainerDetail: self.getTrainerFieldsData(), trainerPermission: self.getTrainerPermissionData())
+            self.registerTrainer(email: self.emailTextField.text!, password: self.passwordTextField.text!, id: self.idTextField.text!, trainerDetail: self.getTrainerFieldsData(), trainerPermission: self.getTrainerPermissionData())
         }
     }
 }
@@ -285,9 +306,11 @@ extension TrainerEditScreenViewController {
            navigationBar?.editBtn.alpha = 0.0
             break
         case .Admin :
-            navigationBar?.editBtn.isHidden = false
-            navigationBar?.editBtn.alpha = 1.0
-            navigationBar?.editBtn.addTarget(self, action: #selector(makeEditable), for: .touchUpInside)
+            if self.isNewTrainer == false {
+                navigationBar?.editBtn.isHidden = false
+                navigationBar?.editBtn.alpha = 1.0
+                navigationBar?.editBtn.addTarget(self, action: #selector(makeEditable), for: .touchUpInside)
+            }
             break
         default:
             break
@@ -324,6 +347,7 @@ extension TrainerEditScreenViewController {
         self.generalTypeLabel.isUserInteractionEnabled = false
         self.personalTypeLabel.isUserInteractionEnabled = false
         self.setNonEditTrainerType(hide: false)
+        
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
@@ -443,11 +467,37 @@ extension TrainerEditScreenViewController {
             $0?.layer.borderWidth = 0.7
             $0?.clipsToBounds = true
         }
+        
+        self.shiftDaysTextField.isUserInteractionEnabled = true
+        self.shiftDaysTextField.addTarget(self, action: #selector(showWeekDaysList), for: .editingDidBegin)
+        self.weekDayListView.layer.cornerRadius = 12.0
+        self.weekDayListView.layer.borderColor = UIColor.black.cgColor
+        self.weekDayListView.layer.borderWidth = 1.0
     }
     
     @objc func errorValidator(_ textField:UITextField) {
         self.allTrainerFieldsRequiredValidation(textField: textField)
         self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+    }
+    
+    @objc func showWeekDaysList() {
+        self.view.endEditing(true)
+        self.weekDayListView.isHidden = !self.weekDayListView.isHidden
+        self.weekDayListView.alpha = self.weekDayListView.isHidden == true ? 0.0 : 1.0
+        
+        if self.weekDayListView.isHidden == true {
+            let selectedWeekdayArray = AppManager.shared.getSelectedWeekdays(selectedArray: self.selectedWeekDayIndexArray, defaultArray: self.weekDayArray)
+            var str:String = ""
+            for weekday in  selectedWeekdayArray {
+                if selectedWeekdayArray.last != weekday  {
+                     str += "\(weekday), "
+                } else {
+                    str += weekday
+                }
+            }
+            self.shiftDaysTextField.text = str
+        }
+        
     }
     
     func addPaddingToTextField(textField:UITextField) {
@@ -485,8 +535,8 @@ extension TrainerEditScreenViewController {
         present(self.imagePicker, animated: true, completion: nil)
       }
     
-    func getTrainerFieldsData() -> [String:String] {
-         let memberDetail:[String:String] = [
+    func getTrainerFieldsData() -> [String:Any] {
+         let memberDetail:[String:Any] = [
             "firstName":self.firstNameTextField.text!,
             "lastName": self.secondNameTextField.text!,
             "trainerID":self.idTextField.text!,
@@ -502,6 +552,7 @@ extension TrainerEditScreenViewController {
             "type":self.getTrainerType(),
             "dob":self.dobTextField.text!,
             "dateOfJoining":self.dateOfJoinTextField.text!,
+            "selectedWeekDaysIndexArray": self.selectedWeekDayIndexArray
               ]
               return memberDetail
     }
@@ -646,19 +697,22 @@ extension TrainerEditScreenViewController {
                 if err != nil {
                     self.retryAlert()
                 } else {
-                    self.setTrainerDataToFields(trainerDetails: AppManager.shared.getTrainerDetailS(trainerDetail: data?["trainerDetail"] as! [String : String]), trainerPermissions:AppManager.shared.getTrainerPermissionS(trainerPermission: data?["trainerPermission"] as! [String:Bool]) )
+                    self.setTrainerDataToFields(trainerDetails: AppManager.shared.getTrainerDetailS(trainerDetail: data?["trainerDetail"] as! [String : Any]), trainerPermissions:AppManager.shared.getTrainerPermissionS(trainerPermission: data?["trainerPermission"] as! [String:Bool]) )
                     
                     FireStoreManager.shared.downloadUserImg(id: id, result: {
                         (imgUrl,err) in
-                        SVProgressHUD.dismiss()
+                        
                         if err == nil {
                             do {
                                 let data = try Data(contentsOf: imgUrl!)
                                 self.img = UIImage(data: data)
                                 self.userImg.image = self.img
+                                SVProgressHUD.dismiss()
                             } catch let e as NSError {
                                 print(e)
                             }
+                        }else {
+                            SVProgressHUD.dismiss()
                         }
                     })
                 }
@@ -670,7 +724,7 @@ extension TrainerEditScreenViewController {
         }
     }
     
-    func registerTrainer(email:String,password:String,id:String,trainerDetail:[String:String],trainerPermission:[String:Bool]) {
+    func registerTrainer(email:String,password:String,id:String,trainerDetail:[String:Any],trainerPermission:[String:Bool]) {
         SVProgressHUD.show()
         if self.isNewTrainer == false {
             if self.isUserImgSelected == true {
@@ -807,6 +861,9 @@ extension TrainerEditScreenViewController {
         self.shiftTimingsTextField.text = trainerDetails.shiftTimings
         self.dateOfJoinTextField.text = trainerDetails.dateOfJoining
         self.dobTextField.text = trainerDetails.dob
+        self.selectedWeekDayIndexArray = trainerDetails.shiftDaysIndexArray
+        
+        self.weekDaysListTable.reloadData()
 
         self.setTrainerType(type:trainerDetails.type,generalBtn:self.generalBtnForNonEditLabel,personalBtn: self.personalBtnForNonEditLabel )
         self.setTrainerPermission(memberPermissionBtn: self.memberPermissionNonEditBtn, visitorPermissionBtn: self.visitorPermissionNonEditBtn, eventPermissionBtn: self.eventPermissionNonEditBtn,memberPermission: trainerPermissions.canAddMember, visitorPermission: trainerPermissions.canAddVisitor, eventPermission:trainerPermissions.canAddEvent)
@@ -887,7 +944,8 @@ extension TrainerEditScreenViewController:UIImagePickerControllerDelegate,UINavi
 extension TrainerEditScreenViewController:UITextFieldDelegate{
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            if textField.tag == 12 || textField.tag == 13 || textField.tag == 9 {
+        if textField.tag == 12 || textField.tag == 13 || textField.tag == 9  || textField.tag == 10 {
+            self.view.endEditing(true)
                       return false
                   }else{
                       return true
@@ -934,6 +992,38 @@ extension TrainerEditScreenViewController:UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Trainer's address required.")
+    }
+}
+
+extension TrainerEditScreenViewController:UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.weekDayArray.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "weekDaysCell", for: indexPath) as! WeekDayForTrainerTableCell
+        
+        cell.weekDayLabel.text = self.weekDayArray[indexPath.row]
+        self.selectedWeekDayIndexArray = self.selectedWeekDayIndexArray.sorted()
+        if self.selectedWeekDayIndexArray.contains(indexPath.row){
+            cell.weekDayImg.image = UIImage(named: "checked-checkbox")
+        }else {
+             cell.weekDayImg.image = UIImage(named: "unchecked-checkbox")
+        }
+        cell.selectionStyle = .none
+        return cell
+    }
+}
+
+
+extension TrainerEditScreenViewController:UITableViewDelegate{
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if selectedWeekDayIndexArray.contains(indexPath.row){
+            selectedWeekDayIndexArray.remove(at: self.selectedWeekDayIndexArray.firstIndex(of: indexPath.row)!)
+        }else {
+            selectedWeekDayIndexArray.append(indexPath.row)
+        }
+        self.weekDaysListTable.reloadData()
     }
 }
 

@@ -202,7 +202,7 @@ class TrainerProfileViewController: BaseViewController {
             (trainerData,err) in
             if err == nil {
                 
-                let trainerDetail = trainerData!["trainerDetail"] as! Dictionary<String,String>
+                let trainerDetail = trainerData!["trainerDetail"] as! Dictionary<String,Any>
                 self.setTrainerDetail(trainerDetail: AppManager.shared.getTrainerDetailS(trainerDetail: trainerDetail))
                 
                 FireStoreManager.shared.downloadUserImg(id: AppManager.shared.trainerID, result: {

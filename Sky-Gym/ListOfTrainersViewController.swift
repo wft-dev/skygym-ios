@@ -78,8 +78,11 @@ class ListOfTrainersViewController: BaseViewController {
     @IBOutlet weak var customSearchBar: UISearchBar!
     var listOfTrainerArray:[ListOfTrainers] = []
     var filteredListOfTrainerArray:[ListOfTrainers] = []
+    var membersArray:[Dictionary<String,Any>] = []
     var userImage:UIImage? = nil
     let refreshController = UIRefreshControl()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setListOfTrainersCompleteView()
@@ -88,11 +91,18 @@ class ListOfTrainersViewController: BaseViewController {
         self.refreshController.addTarget(self, action: #selector(refreshTrainerList), for: .valueChanged)
         self.listOfTrainerTable.refreshControl = self.refreshController
     }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         AppManager.shared.trainerID = ""
-        self.fetcthAllTrainer()
-       }
+        FireStoreManager.shared.getAllMembers(completion: {
+            (memberData,err) in
+            if err == nil {
+                self.membersArray = memberData!
+                self.fetcthAllTrainer()
+            }
+        })
+    }
     
   @objc func refreshTrainerList()  {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
@@ -121,28 +131,32 @@ extension ListOfTrainersViewController {
     }
     
     @objc func deleteTrainer(_ gesture:UIGestureRecognizer){
+        let trainerID = "\(gesture.view!.tag)"
         let alertController = UIAlertController(title: "Attention", message: "Do you really want to remove this trainer ?", preferredStyle: .alert)
         let okActionAlert = UIAlertAction(title: "OK", style: .default, handler: {
             _ in
             AppManager.shared.closeSwipe(gesture: gesture)
             SVProgressHUD.show()
-//            FireStoreManager.shared.deleteImgBy(id: "\(gesture.view?.tag ?? 0)", result: {
-//                err in
-//                if err != nil {
-//                    SVProgressHUD.dismiss()
-//                    self.showAlert(title: "Error", message: "Error in deleting trainer.")
-//                } else {
-//                    FireStoreManager.shared.deleteTrainerBy(id: "\(gesture.view?.tag ?? 0)", completion: {
-//                        err in
-//                        SVProgressHUD.dismiss()
-//                        if err != nil {
-//                            self.showAlert(title: "Error", message: "Error in deleting trainer.")
-//                        } else {
-//                            self.showAlert(title: "Success", message: "Trainer is deleted successfully.")
-//                        }
-//                    })
-//                }
-//            })
+            DispatchQueue.global(qos: .background).async {
+                let result  =  FireStoreManager.shared.deleteImgBy(id: trainerID)
+                
+                switch result {
+                case let .success(flag):
+                    if flag == true {
+                        FireStoreManager.shared.deleteTrainerBy(id: trainerID, completion: {
+                            (err) in
+                            SVProgressHUD.dismiss()
+                            if err != nil {
+                                self.showAlert(title: "Error", message: "Trainer is not deleted successfully.")
+                            } else {
+                                self.showAlert(title: "Success", message: "Trainer is  deleted successfully.")
+                            }
+                        })
+                    }
+                case .failure(_):
+                    break
+                }
+            }
         })
         let cancelActionAlert = UIAlertAction(title: "Cancel", style: .default, handler: {
             _ in
@@ -209,14 +223,40 @@ extension ListOfTrainersViewController {
                 self.listOfTrainerArray.removeAll()
                 for singleData in trainerData! {
                     if singleData.count > 0 {
-                        let trainerDetail = AppManager.shared.getTrainerDetailS(trainerDetail: singleData["trainerDetail"] as! [String:String])
-                        let trainer = ListOfTrainers(trainerID: trainerDetail.trainerID, trainerName: "\(trainerDetail.firstName) \(trainerDetail.lastName)", trainerPhone: trainerDetail.phoneNo, dateOfJoinging: trainerDetail.dateOfJoining, salary: trainerDetail.salary, members:"10", type: trainerDetail.type)
+                        let trainerDetail = AppManager.shared.getTrainerDetailS(trainerDetail: singleData["trainerDetail"] as! [String : Any] )
+                        let trainer = ListOfTrainers(trainerID: trainerDetail.trainerID, trainerName: "\(trainerDetail.firstName) \(trainerDetail.lastName)", trainerPhone: trainerDetail.phoneNo, dateOfJoinging: trainerDetail.dateOfJoining, salary: trainerDetail.salary, members:"0", type: trainerDetail.type)
                         self.listOfTrainerArray.append(trainer)
                     }
                 }
                 self.listOfTrainerTable.reloadData()
             }
         })
+    }
+    
+    func isAttendenceMarkedForTrainer(trainerID:String,cell:ListOfTrainersTableCell) {
+        FireStoreManager.shared.isCheckOut(memberOrTrainer: .Trainer, memberID: trainerID, result: {
+            (checkOut,err) in
+            
+            if err == nil{
+                cell.imageName = checkOut == true ? "green" : "red"
+                cell.attendenceBtn.setImage(UIImage(named: cell.imageName), for: .normal)
+            }
+        })
+    }
+    
+    func setNumberOFMembers(trainerID:String,cell:ListOfTrainersTableCell) {
+        DispatchQueue.global(qos: .background).async {
+            let result = AppManager.shared.getNumberOfMemberAddedByTrainerWith(membersData: self.membersArray, trainerID: trainerID)
+            DispatchQueue.main.async {
+                switch result {
+                    
+                case let .success(count):
+                    cell.numberOfMembersLabel.text = "\(count)"
+                case .failure(_):
+                    cell.numberOfMembersLabel.text = "0"
+                }
+            }
+        }
     }
     
     func showAlert(title:String,message:String) {
@@ -361,14 +401,8 @@ extension ListOfTrainersViewController:UITableViewDataSource{
         cell.attendenceBtn.tag = Int(singleTrainer.trainerID)!
         self.addTrainerCustomSwipe(cellView: cell.trainerCellView, cell: cell,id: singleTrainer.trainerID)
         cell.selectionStyle = .none
-        FireStoreManager.shared.isCheckOut(memberOrTrainer: .Trainer, memberID: singleTrainer.trainerID, result: {
-            (checkOut,err) in
-            
-            if err == nil{
-                cell.imageName = checkOut == true ? "green" : "red"
-                cell.attendenceBtn.setImage(UIImage(named: cell.imageName), for: .normal)
-            }
-        })
+        self.isAttendenceMarkedForTrainer(trainerID: singleTrainer.trainerID, cell: cell)
+        self.setNumberOFMembers(trainerID: singleTrainer.trainerID, cell: cell)
         
         return cell
     }

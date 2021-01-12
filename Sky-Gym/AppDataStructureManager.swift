@@ -137,6 +137,7 @@ struct TrainerDataStructure {
     var type:String
     var dob:String
     var dateOfJoining:String
+    var shiftDaysIndexArray:[Int]
 }
 
 struct TrainerPermissionStructure {

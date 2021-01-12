@@ -276,21 +276,21 @@ class AppManager: NSObject {
         return attendence
     }
   
-    func getTrainerDetailS(trainerDetail:[String:String]) -> TrainerDataStructure {
-        let trainer = TrainerDataStructure(firstName:trainerDetail["firstName"]!, lastName:  trainerDetail["lastName"]!, trainerID:trainerDetail["trainerID"]!, phoneNo:   trainerDetail["phoneNo"]!, email:trainerDetail["email"]!,password: trainerDetail["password"]!, address:trainerDetail["address"]!, gender:trainerDetail["gender"]!, salary:trainerDetail["salary"]!, uploadID: trainerDetail["uploadIDName"]!, shiftDays:trainerDetail["shiftDays"]!, shiftTimings: trainerDetail["shiftTimings"]!, type:trainerDetail["type"]!, dob:trainerDetail["dob"]!, dateOfJoining: trainerDetail["dateOfJoining"]!)
+    func getTrainerDetailS(trainerDetail:[String:Any]) -> TrainerDataStructure {
+        let selectedWeekDaysArray = trainerDetail["selectedWeekDaysIndexArray"]
+        
+        let trainer = TrainerDataStructure(firstName:trainerDetail["firstName"] as! String, lastName:  trainerDetail["lastName"] as! String, trainerID:trainerDetail["trainerID"] as! String, phoneNo:   trainerDetail["phoneNo"] as! String, email:trainerDetail["email"] as! String,password: trainerDetail["password"] as! String, address:trainerDetail["address"] as! String, gender:trainerDetail["gender"] as! String, salary:trainerDetail["salary"] as! String, uploadID: trainerDetail["uploadIDName"] as! String, shiftDays:trainerDetail["shiftDays"] as! String, shiftTimings: trainerDetail["shiftTimings"] as! String, type:trainerDetail["type"] as! String, dob:trainerDetail["dob"] as! String, dateOfJoining: trainerDetail["dateOfJoining"] as! String, shiftDaysIndexArray:selectedWeekDaysArray as! [Int])
         
         return trainer
     }
     
     func getTrainerPermissionS(trainerPermission:[String:Bool]) -> TrainerPermissionStructure {
         let permission = TrainerPermissionStructure(canAddVisitor:trainerPermission["visitorPermission"]!, canAddMember: trainerPermission["memberPermission"]!, canAddEvent: trainerPermission["eventPermission"]!)
-        
         return permission
     }
     
     func getMembership(membership:[String:String],membershipID:String) -> Memberhisp {
         let membership = Memberhisp(membershipID:membershipID,title: membership["title"]!, amount: membership["amount"]!, detail: membership["detail"]!, duration: membership["duration"]!, selectedIndex: membership["selectedIndex"]!)
-        
         return membership
     }
     
@@ -715,7 +715,37 @@ class AppManager: NSObject {
         
         return gymDetail
     }
-   
+    
+    
+    func getNumberOfMemberAddedByTrainerWith(membersData:[Dictionary<String,Any>],trainerID:String) ->
+        Result<Int,Error> {
+        let semaphores = DispatchSemaphore(value: 0)
+        var result:Result<Int,Error>!
+        var counter:Int = 0
+            
+            for member in membersData {
+                let parentID = member["parentID"] as! String
+                if parentID == trainerID {
+                    counter += 1
+                }
+            }
+            result = .success(counter)
+            semaphores.signal()
+            
+            let _ = semaphores.wait(wallTimeout: .distantFuture)
+            return result
+    }
+    
+    
+    func getSelectedWeekdays(selectedArray:[Int],defaultArray:[String]) -> [String] {
+        var array:[String] = []
+        if selectedArray.count > 0 {
+            for i in selectedArray {
+                array.append(defaultArray[i])
+            }
+        }
+        return array
+    }   
 }
 
 

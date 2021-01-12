@@ -97,13 +97,13 @@ class FireStoreManager: NSObject {
                         AppManager.shared.trainerName = ""
                         AppManager.shared.trainerType = ""
                     }else {
-                        let trainerDetail = data?["trainerDetail"] as! Dictionary<String,String>
+                        let trainerDetail = data?["trainerDetail"] as! Dictionary<String,Any>
                         AppManager.shared.trainerID = querySnapshot?.documents.first?.documentID as! String
                         AppManager.shared.memberID = ""
                         AppManager.shared.adminID = ""
                         AppManager.shared.loggedInRole = LoggedInRole.Trainer
-                        AppManager.shared.trainerName = trainerDetail["firstName"]!
-                        AppManager.shared.trainerType = trainerDetail["type"]!
+                        AppManager.shared.trainerName = trainerDetail["firstName"] as! String
+                        AppManager.shared.trainerType = trainerDetail["type"] as! String
                     }
                     result(true,nil)
                 }
@@ -282,7 +282,7 @@ class FireStoreManager: NSObject {
     }
     
     func getAllMembers(completion:@escaping ([[String:Any]]?,Error?)->Void) {
-        var dataDirctionary:[[String:Any]] = [[:]]
+        var dataDirctionary:[[String:Any]] = []
         // .whereField("adminID", isEqualTo: AppManager.shared.adminID) 
         fireDB.collection("/Members").getDocuments(completion: {
             (querySnapshot,err) in
@@ -293,7 +293,6 @@ class FireStoreManager: NSObject {
                 for singleDoc in querySnapshot!.documents{
                     let singleDocDictionary = singleDoc.data()
                     dataDirctionary.append(singleDocDictionary)
-                    //print(dataDirctionary.count)
                 }
                 completion(dataDirctionary,nil)
             }
@@ -314,7 +313,7 @@ class FireStoreManager: NSObject {
             }
         })
     }
-    
+        
     func getMembershipWith(memberID:String,membershipID:String,result:@escaping (MembershipDetailStructure?,Error?) -> Void) {
         fireDB.collection("/Members").document("\(memberID)").getDocument(completion: {
             (memberDate,err) in
@@ -757,7 +756,7 @@ class FireStoreManager: NSObject {
     }
     
     
-    func addTrainer(email:String,password:String,trainerID:String,trainerDetail:[String:String],trainerPermission:[String:Bool],completion:@escaping (Error?)->Void) {
+    func addTrainer(email:String,password:String,trainerID:String,trainerDetail:[String:Any],trainerPermission:[String:Bool],completion:@escaping (Error?)->Void) {
         let year = Calendar.current.component(.year, from: Date())
         let month = Calendar.current.component(.month, from: Date())
         let attendence = AppManager.shared.getCompleteInitialStructure(year: year, month: month, checkIn: "", checkOut: "", present: false)
@@ -801,7 +800,7 @@ class FireStoreManager: NSObject {
                 completion(nil,err)
             } else {
                 let data = docSnapshot?.data()
-                AppManager.shared.trainerID =  (data?["trainerDetail"] as! [String:String])["trainerID"]!
+                AppManager.shared.trainerID =  (data?["trainerDetail"] as! [String:Any])["trainerID"] as! String
                 completion(data,nil)
             }
         })
@@ -819,7 +818,7 @@ class FireStoreManager: NSObject {
                 result = .success(nil)
             } else {
                 let data = docSnapshot?.data()
-                let trainerDetail = data?["trainerDetail"] as! Dictionary<String,String>
+                let trainerDetail =  data!["trainerDetail"] as! [String : Any]
                 let trainerDetailStr = AppManager.shared.getTrainerDetailS(trainerDetail: trainerDetail)
                 result = .success(trainerDetailStr)
             }
@@ -864,9 +863,9 @@ class FireStoreManager: NSObject {
                 result = .failure(err!)
             }else{
                 for trainerDoc in querySnapshot!.documents {
-                    let trainerDetail = (trainerDoc.data())["trainerDetail"] as! Dictionary<String,String>
+                    let trainerDetail = (trainerDoc.data())["trainerDetail"] as! Dictionary<String,Any>
                     
-                    if trainerType == trainerDetail["type"] {
+                    if trainerType == trainerDetail["type"] as! String {
                         trainerListArray.append(AppManager.shared.getTrainerDetailS(trainerDetail: trainerDetail))
                     }
                 }
@@ -889,7 +888,7 @@ class FireStoreManager: NSObject {
             
             if err == nil {
                 let trainerData = DocumentSnapshot?.data()
-                var trainerDetail = trainerData!["trainerDetail"] as! Dictionary<String,String>
+                var trainerDetail = trainerData!["trainerDetail"] as! Dictionary<String,Any>
                 trainerDetail.updateValue(trainerInfo["firstName"]!, forKey: "firstName")
                 trainerDetail.updateValue(trainerInfo["lastName"]!, forKey: "lastName")
                 trainerDetail.updateValue(trainerInfo["email"]!, forKey: "email")

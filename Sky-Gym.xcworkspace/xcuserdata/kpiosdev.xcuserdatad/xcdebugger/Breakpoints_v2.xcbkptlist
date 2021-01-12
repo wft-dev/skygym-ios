@@ -7,22 +7,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "E302C320-328D-4ACB-90C2-41C221624731"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "4"
-            endingLineNumber = "4"
-            landmarkName = "unknown"
-            landmarkType = "0">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "7D3A2EB2-4020-4F65-8E7D-BE7D035E26AE"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -318,6 +302,22 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "360"
+            endingLineNumber = "360"
+            landmarkName = "checkFilterAction(checkFor:result:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B7E9EAC6-18A6-4AAF-A37E-6DB1FD7FFF89"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/FireStoreManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
             startingLineNumber = "361"
             endingLineNumber = "361"
             landmarkName = "checkFilterAction(checkFor:result:)"
@@ -327,7 +327,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "B7E9EAC6-18A6-4AAF-A37E-6DB1FD7FFF89"
+            uuid = "71927421-C468-446D-B788-B055384A177C"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -343,7 +343,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "71927421-C468-446D-B788-B055384A177C"
+            uuid = "F7B2A90B-1365-4485-9950-AEA164DFE276"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -359,15 +359,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F7B2A90B-1365-4485-9950-AEA164DFE276"
+            uuid = "A03006E3-3AE7-43DD-AB52-5DD5D2F02551"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "364"
-            endingLineNumber = "364"
+            startingLineNumber = "370"
+            endingLineNumber = "370"
             landmarkName = "checkFilterAction(checkFor:result:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -375,7 +375,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A03006E3-3AE7-43DD-AB52-5DD5D2F02551"
+            uuid = "AD999511-6D40-490E-BAB8-A7D635821713"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -391,7 +391,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "AD999511-6D40-490E-BAB8-A7D635821713"
+            uuid = "D33CBF71-6848-453C-9A97-222DEABAB06A"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -407,7 +407,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D33CBF71-6848-453C-9A97-222DEABAB06A"
+            uuid = "140DA179-E1A6-41A8-8D97-D8F41DCBEC7F"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -423,71 +423,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "140DA179-E1A6-41A8-8D97-D8F41DCBEC7F"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/FireStoreManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "374"
-            endingLineNumber = "374"
-            landmarkName = "checkFilterAction(checkFor:result:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "106062FA-D7E7-4D75-B424-18A3DE762EB1"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/FireStoreManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "610"
-            endingLineNumber = "610"
-            landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "380726ED-DA39-49F5-9840-7DBC14B49F1C"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/FireStoreManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "619"
-            endingLineNumber = "619"
-            landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A7EB5C7F-63BE-4979-9955-E895D8DAFB05"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/FireStoreManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "608"
-            endingLineNumber = "608"
-            landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "1381CDF5-56B5-4BED-BC62-2E10FCEB8573"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -503,7 +439,71 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "380726ED-DA39-49F5-9840-7DBC14B49F1C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/FireStoreManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "618"
+            endingLineNumber = "618"
+            landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A7EB5C7F-63BE-4979-9955-E895D8DAFB05"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/FireStoreManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "607"
+            endingLineNumber = "607"
+            landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1381CDF5-56B5-4BED-BC62-2E10FCEB8573"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/FireStoreManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "608"
+            endingLineNumber = "608"
+            landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
             uuid = "461C802B-8213-4D1A-AE24-CE3CB823785E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/FireStoreManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "611"
+            endingLineNumber = "611"
+            landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EA259D51-4E6E-4D60-B6BD-5688530FA094"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -519,22 +519,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "EA259D51-4E6E-4D60-B6BD-5688530FA094"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/FireStoreManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "613"
-            endingLineNumber = "613"
-            landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "0AFCA567-8B80-4B4B-9707-120C304E590F"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -542,8 +526,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "615"
-            endingLineNumber = "615"
+            startingLineNumber = "614"
+            endingLineNumber = "614"
             landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -558,8 +542,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "617"
-            endingLineNumber = "617"
+            startingLineNumber = "616"
+            endingLineNumber = "616"
             landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -568,6 +552,22 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "220D605F-F9DA-4F2F-BEB1-E5F93B30A30F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/FireStoreManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "624"
+            endingLineNumber = "624"
+            landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1AB6C527-CF13-4E84-B1C7-85D0B211E627"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -583,22 +583,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "1AB6C527-CF13-4E84-B1C7-85D0B211E627"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/FireStoreManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "626"
-            endingLineNumber = "626"
-            landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "514C2A0F-F128-4BA3-AB0F-79F88C59EDAF"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -606,8 +590,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "628"
-            endingLineNumber = "628"
+            startingLineNumber = "627"
+            endingLineNumber = "627"
             landmarkName = "markAttendence(attendenceDir:trainerORmember:id:year:month:day:present:checkIn:checkOut:handler:)"
             landmarkType = "7">
             <Locations>
@@ -654,8 +638,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "484"
-            endingLineNumber = "484"
+            startingLineNumber = "483"
+            endingLineNumber = "483"
             landmarkName = "uploadAttandance(trainerORmember:id:present:checkIn:checkOut:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -670,8 +654,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "485"
-            endingLineNumber = "485"
+            startingLineNumber = "484"
+            endingLineNumber = "484"
             landmarkName = "uploadAttandance(trainerORmember:id:present:checkIn:checkOut:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -686,8 +670,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "487"
-            endingLineNumber = "487"
+            startingLineNumber = "486"
+            endingLineNumber = "486"
             landmarkName = "uploadAttandance(trainerORmember:id:present:checkIn:checkOut:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -702,8 +686,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "489"
-            endingLineNumber = "489"
+            startingLineNumber = "488"
+            endingLineNumber = "488"
             landmarkName = "uploadAttandance(trainerORmember:id:present:checkIn:checkOut:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -718,8 +702,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "491"
-            endingLineNumber = "491"
+            startingLineNumber = "490"
+            endingLineNumber = "490"
             landmarkName = "uploadAttandance(trainerORmember:id:present:checkIn:checkOut:completion:)"
             landmarkType = "7">
             <Locations>
@@ -766,8 +750,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "481"
-            endingLineNumber = "481"
+            startingLineNumber = "480"
+            endingLineNumber = "480"
             landmarkName = "uploadAttandance(trainerORmember:id:present:checkIn:checkOut:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -782,8 +766,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "457"
-            endingLineNumber = "457"
+            startingLineNumber = "456"
+            endingLineNumber = "456"
             landmarkName = "getAttandance(trainerORmember:id:year:month:result:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -798,8 +782,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "460"
-            endingLineNumber = "460"
+            startingLineNumber = "459"
+            endingLineNumber = "459"
             landmarkName = "getAttandance(trainerORmember:id:year:month:result:)"
             landmarkType = "7">
             <Locations>
@@ -846,8 +830,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "462"
-            endingLineNumber = "462"
+            startingLineNumber = "461"
+            endingLineNumber = "461"
             landmarkName = "getAttandance(trainerORmember:id:year:month:result:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -862,8 +846,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "464"
-            endingLineNumber = "464"
+            startingLineNumber = "463"
+            endingLineNumber = "463"
             landmarkName = "getAttandance(trainerORmember:id:year:month:result:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -878,8 +862,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "468"
-            endingLineNumber = "468"
+            startingLineNumber = "467"
+            endingLineNumber = "467"
             landmarkName = "getAttandance(trainerORmember:id:year:month:result:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1111,22 +1095,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "7571B865-1CC8-455F-9A00-8276B1DD1BB2"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "218"
-            endingLineNumber = "218"
-            landmarkName = "performLogin()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "C5E9FFF1-629C-4863-A12C-D2ABD81B79EF"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -1326,8 +1294,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "407"
-            endingLineNumber = "407"
+            startingLineNumber = "406"
+            endingLineNumber = "406"
             landmarkName = "updateMemberDetails(id:memberDetail:handler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1614,8 +1582,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "560"
-            endingLineNumber = "560"
+            startingLineNumber = "559"
+            endingLineNumber = "559"
             landmarkName = "isCurrentMembership(memberOrTrainer:memberID:result:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1630,8 +1598,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "561"
-            endingLineNumber = "561"
+            startingLineNumber = "560"
+            endingLineNumber = "560"
             landmarkName = "isCurrentMembership(memberOrTrainer:memberID:result:)"
             landmarkType = "7">
             <Locations>
@@ -1678,8 +1646,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "563"
-            endingLineNumber = "563"
+            startingLineNumber = "562"
+            endingLineNumber = "562"
             landmarkName = "isCurrentMembership(memberOrTrainer:memberID:result:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1694,8 +1662,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "566"
-            endingLineNumber = "566"
+            startingLineNumber = "565"
+            endingLineNumber = "565"
             landmarkName = "isCurrentMembership(memberOrTrainer:memberID:result:)"
             landmarkType = "7">
             <Locations>
@@ -1742,8 +1710,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "565"
-            endingLineNumber = "565"
+            startingLineNumber = "564"
+            endingLineNumber = "564"
             landmarkName = "isCurrentMembership(memberOrTrainer:memberID:result:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1758,8 +1726,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "573"
-            endingLineNumber = "573"
+            startingLineNumber = "572"
+            endingLineNumber = "572"
             landmarkName = "isCurrentMembership(memberOrTrainer:memberID:result:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1822,8 +1790,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "559"
-            endingLineNumber = "559"
+            startingLineNumber = "558"
+            endingLineNumber = "558"
             landmarkName = "FireStoreManager"
             landmarkType = "3">
          </BreakpointContent>
@@ -1911,38 +1879,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "987B79AE-6D1B-4CC1-B4E5-BAC415AF0FDC"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "330"
-            endingLineNumber = "330"
-            landmarkName = "getMembershipEndDate(startDate:duration:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "2D815A7F-0B75-4B6D-BD61-19DF77CA4A3F"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "331"
-            endingLineNumber = "331"
-            landmarkName = "getMembershipEndDate(startDate:duration:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "62470F9E-7EB3-4927-A79D-C2A7FE51998B"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -2007,22 +1943,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "3FD1D840-EA23-4D05-B422-7398867D0D59"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "573"
-            endingLineNumber = "573"
-            landmarkName = "getMonthAttendenceStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "01B5EA03-D3C0-486F-A8A7-3C8193AC2A17"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -2030,8 +1950,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1245"
-            endingLineNumber = "1245"
+            startingLineNumber = "1244"
+            endingLineNumber = "1244"
             landmarkName = "updateAttendence(trainerORmember:id:checkOutA:completion:)"
             landmarkType = "7">
             <Locations>
@@ -2078,6 +1998,22 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1249"
+            endingLineNumber = "1249"
+            landmarkName = "updateAttendence(trainerORmember:id:checkOutA:completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "01338413-434A-4C18-A215-75159A2AAEB3"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/FireStoreManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1250"
             endingLineNumber = "1250"
             landmarkName = "updateAttendence(trainerORmember:id:checkOutA:completion:)"
@@ -2087,7 +2023,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "01338413-434A-4C18-A215-75159A2AAEB3"
+            uuid = "8EA1FDC0-EF18-4533-AA5E-56C3AB404670"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -2103,22 +2039,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8EA1FDC0-EF18-4533-AA5E-56C3AB404670"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/FireStoreManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1252"
-            endingLineNumber = "1252"
-            landmarkName = "updateAttendence(trainerORmember:id:checkOutA:completion:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "9EFE176E-F718-4E7E-8C3A-20F167F80E0D"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -2126,8 +2046,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "494"
-            endingLineNumber = "494"
+            startingLineNumber = "493"
+            endingLineNumber = "493"
             landmarkName = "uploadAttandance(trainerORmember:id:present:checkIn:checkOut:completion:)"
             landmarkType = "7">
             <Locations>
@@ -2174,8 +2094,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "493"
-            endingLineNumber = "493"
+            startingLineNumber = "492"
+            endingLineNumber = "492"
             landmarkName = "uploadAttandance(trainerORmember:id:present:checkIn:checkOut:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2190,8 +2110,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1243"
-            endingLineNumber = "1243"
+            startingLineNumber = "1242"
+            endingLineNumber = "1242"
             landmarkName = "updateAttendence(trainerORmember:id:checkOutA:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2206,8 +2126,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1253"
-            endingLineNumber = "1253"
+            startingLineNumber = "1252"
+            endingLineNumber = "1252"
             landmarkName = "updateAttendence(trainerORmember:id:checkOutA:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2216,22 +2136,6 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "B844238B-230E-412C-AFD2-F73D5B33F102"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/FireStoreManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1255"
-            endingLineNumber = "1255"
-            landmarkName = "updateAttendence(trainerORmember:id:checkOutA:completion:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "CDD86735-24A7-4600-AC8F-84BAFB07F507"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -2247,6 +2151,22 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "CDD86735-24A7-4600-AC8F-84BAFB07F507"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/FireStoreManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1253"
+            endingLineNumber = "1253"
+            landmarkName = "updateAttendence(trainerORmember:id:checkOutA:completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
             uuid = "BFCBEA82-7567-44E7-A297-7B5B1E13F36C"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -2254,8 +2174,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1161"
-            endingLineNumber = "1161"
+            startingLineNumber = "1160"
+            endingLineNumber = "1160"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2270,8 +2190,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1165"
-            endingLineNumber = "1165"
+            startingLineNumber = "1164"
+            endingLineNumber = "1164"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2286,8 +2206,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1171"
-            endingLineNumber = "1171"
+            startingLineNumber = "1170"
+            endingLineNumber = "1170"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
             <Locations>
@@ -2334,8 +2254,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1174"
-            endingLineNumber = "1174"
+            startingLineNumber = "1173"
+            endingLineNumber = "1173"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2350,8 +2270,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1173"
-            endingLineNumber = "1173"
+            startingLineNumber = "1172"
+            endingLineNumber = "1172"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2366,8 +2286,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1175"
-            endingLineNumber = "1175"
+            startingLineNumber = "1174"
+            endingLineNumber = "1174"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2382,8 +2302,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1177"
-            endingLineNumber = "1177"
+            startingLineNumber = "1176"
+            endingLineNumber = "1176"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2398,8 +2318,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1179"
-            endingLineNumber = "1179"
+            startingLineNumber = "1178"
+            endingLineNumber = "1178"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2414,8 +2334,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1183"
-            endingLineNumber = "1183"
+            startingLineNumber = "1182"
+            endingLineNumber = "1182"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2424,6 +2344,22 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "EED1DA4C-0859-4B29-8F7A-F3976D1619D4"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/FireStoreManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1189"
+            endingLineNumber = "1189"
+            landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "339FC486-FF9C-4827-9439-9897AFCC9142"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -2439,7 +2375,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "339FC486-FF9C-4827-9439-9897AFCC9142"
+            uuid = "D73C5360-5DA9-4061-AE05-3C0F48362B3F"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -2455,438 +2391,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D73C5360-5DA9-4061-AE05-3C0F48362B3F"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/FireStoreManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1192"
-            endingLineNumber = "1192"
-            landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "D742DCD2-22FF-4ABE-802E-198D90640E6A"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "596"
-            endingLineNumber = "596"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "14C5C6D6-C893-4B62-8CD5-87AB280B20B1"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "597"
-            endingLineNumber = "597"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "152EBD5F-D01F-4E7B-A464-2BB0C4DA9C9B"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "598"
-            endingLineNumber = "598"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "E3334BEE-DA35-457E-99B2-8AD9D7537B31"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "599"
-            endingLineNumber = "599"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "539D4164-7EF3-4745-A6CD-43149D8142A6"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "603"
-            endingLineNumber = "603"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "735AEAE7-3A7E-41C1-A1CD-61F543012426"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "604"
-            endingLineNumber = "604"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DD3132FC-7FEB-4A10-A8E8-5405170655DA"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "605"
-            endingLineNumber = "605"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "63A59E15-8461-48AA-86C6-B27438941B70"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "606"
-            endingLineNumber = "606"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "3B3FD976-1C31-4784-B119-23C07C5B78E7"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "607"
-            endingLineNumber = "607"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "EDDEF8B2-D3C4-476D-8F66-E25A49EBE4FD"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "608"
-            endingLineNumber = "608"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "63706EAD-8427-4E36-B799-E88E43F82513"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "609"
-            endingLineNumber = "609"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "506F408B-3560-466B-92B0-338E7E2256F9"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "611"
-            endingLineNumber = "611"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "785812BA-74F1-4E84-87CC-9FF3F2CD3F51"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "612"
-            endingLineNumber = "612"
-            landmarkName = "getCompleteInitialStructure(year:month:checkIn:checkOut:present:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "3CDC8461-7195-41F5-8F4E-C79A427F8C79"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "486"
-            endingLineNumber = "486"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "3C128092-4FA6-4B1D-9392-A8323ACC5323"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "487"
-            endingLineNumber = "487"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "5EB403C7-FF64-4F54-9409-BCB34F9470C7"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "491"
-            endingLineNumber = "491"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A59F89A3-8F53-4256-BF67-06BA2819415C"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "495"
-            endingLineNumber = "495"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "7523A540-86A6-4088-8932-F82FEFCBF441"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "498"
-            endingLineNumber = "498"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "138E902D-E051-4096-BA53-1DC0071F45DF"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "508"
-            endingLineNumber = "508"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "3AA110EE-1BA2-4668-92AE-EF8FE120BE42"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "510"
-            endingLineNumber = "510"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "F80E61A8-1AA8-44B1-8447-3F09095B078C"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "512"
-            endingLineNumber = "512"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "68E7DC8C-A91C-4122-BB65-F1134239BB7B"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "513"
-            endingLineNumber = "513"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "4D53F501-2887-4928-92CF-E850352B4E44"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "515"
-            endingLineNumber = "515"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "0BF55C3C-F123-466F-B381-C6F535B132DC"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "503"
-            endingLineNumber = "503"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "5006BA43-3856-4158-AF57-892A6173D4A0"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "505"
-            endingLineNumber = "505"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "47BC7A18-0DE2-450B-B9C7-8BA4CDB89B38"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "485"
-            endingLineNumber = "485"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "F2E1B44C-420A-4E13-9792-A58A97E2AD2A"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -2894,8 +2398,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1187"
-            endingLineNumber = "1187"
+            startingLineNumber = "1186"
+            endingLineNumber = "1186"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2910,8 +2414,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1185"
-            endingLineNumber = "1185"
+            startingLineNumber = "1184"
+            endingLineNumber = "1184"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2926,8 +2430,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1184"
-            endingLineNumber = "1184"
+            startingLineNumber = "1183"
+            endingLineNumber = "1183"
             landmarkName = "addAttendence(trainerORmember:id:present:checkInA:checkOutA:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -2967,22 +2471,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "77E87094-6E89-4CAD-A3D9-8694341CC50B"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "488"
-            endingLineNumber = "488"
-            landmarkName = "sameYearDifferenctMonthAttedenceFetching(attendence:startDate:endDate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "8D2E70AB-4DA9-4F27-92B1-C679C3ECE5E8"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -3015,54 +2503,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F99A728D-E610-4C7D-B031-887000106C63"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "689"
-            endingLineNumber = "689"
-            landmarkName = "getPreviousMembership(membershipArray:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "F28CCF99-0F92-4C5F-8690-749BC8025FA1"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "690"
-            endingLineNumber = "690"
-            landmarkName = "getPreviousMembership(membershipArray:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "FE504168-2EA4-4BB7-98A4-C364E34B1A18"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "687"
-            endingLineNumber = "687"
-            landmarkName = "getPreviousMembership(membershipArray:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "1DCDE00F-53C6-4C56-9C6B-0D9DC0D2DAE9"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -3073,38 +2513,6 @@
             startingLineNumber = "549"
             endingLineNumber = "549"
             landmarkName = "getMembershipDetails()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "15C7E6F7-C7DB-4337-9A63-A452E54AC2F7"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "623"
-            endingLineNumber = "623"
-            landmarkName = "setTrainerEditView()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "4442C096-AE41-4666-9DA8-F848F00BEED1"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "624"
-            endingLineNumber = "624"
-            landmarkName = "setTrainerEditView()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -3159,22 +2567,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8A5D8297-A581-4501-A997-47EB26A8ED17"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/AppManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "209"
-            endingLineNumber = "209"
-            landmarkName = "performLogout()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "AB1BF9A7-5043-4FBB-87B2-1FF33D5A705D"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -3215,7 +2607,7 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "94"
                   endingLineNumber = "94"
-                  offsetFromSymbolStart = "5357">
+                  offsetFromSymbolStart = "5497">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -3358,8 +2750,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1102"
-            endingLineNumber = "1102"
+            startingLineNumber = "1101"
+            endingLineNumber = "1101"
             landmarkName = "getTotalOf(role:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -3502,8 +2894,8 @@
             filePath = "Sky-Gym/AdminProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "554"
-            endingLineNumber = "554"
+            startingLineNumber = "545"
+            endingLineNumber = "545"
             landmarkName = "textFieldDidEndEditing(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -3518,8 +2910,8 @@
             filePath = "Sky-Gym/AdminProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "555"
-            endingLineNumber = "555"
+            startingLineNumber = "546"
+            endingLineNumber = "546"
             landmarkName = "textFieldDidEndEditing(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -3534,8 +2926,8 @@
             filePath = "Sky-Gym/AdminProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "550"
-            endingLineNumber = "550"
+            startingLineNumber = "541"
+            endingLineNumber = "541"
             landmarkName = "textFieldDidEndEditing(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -3550,8 +2942,8 @@
             filePath = "Sky-Gym/AdminProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "551"
-            endingLineNumber = "551"
+            startingLineNumber = "542"
+            endingLineNumber = "542"
             landmarkName = "textFieldDidEndEditing(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -3566,8 +2958,8 @@
             filePath = "Sky-Gym/AdminProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "303"
-            endingLineNumber = "303"
+            startingLineNumber = "294"
+            endingLineNumber = "294"
             landmarkName = "setTextFields()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3582,8 +2974,8 @@
             filePath = "Sky-Gym/AdminProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "304"
-            endingLineNumber = "304"
+            startingLineNumber = "295"
+            endingLineNumber = "295"
             landmarkName = "setTextFields()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3598,8 +2990,8 @@
             filePath = "Sky-Gym/AdminProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "305"
-            endingLineNumber = "305"
+            startingLineNumber = "296"
+            endingLineNumber = "296"
             landmarkName = "setTextFields()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3614,8 +3006,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1091"
-            endingLineNumber = "1091"
+            startingLineNumber = "1090"
+            endingLineNumber = "1090"
             landmarkName = "deleteEventBy(id:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -3630,8 +3022,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1092"
-            endingLineNumber = "1092"
+            startingLineNumber = "1091"
+            endingLineNumber = "1091"
             landmarkName = "deleteEventBy(id:completion:)"
             landmarkType = "7">
             <Locations>
@@ -3646,8 +3038,8 @@
                   urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/FireStoreManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1092"
-                  endingLineNumber = "1092"
+                  startingLineNumber = "1091"
+                  endingLineNumber = "1091"
                   offsetFromSymbolStart = "760">
                </Location>
                <Location
@@ -3661,8 +3053,8 @@
                   urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/FireStoreManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1094"
-                  endingLineNumber = "1094"
+                  startingLineNumber = "1093"
+                  endingLineNumber = "1093"
                   offsetFromSymbolStart = "41">
                </Location>
             </Locations>
@@ -3678,8 +3070,8 @@
             filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1093"
-            endingLineNumber = "1093"
+            startingLineNumber = "1092"
+            endingLineNumber = "1092"
             landmarkName = "deleteEventBy(id:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -3927,47 +3319,111 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "7B218620-02A7-4C8E-A783-611B875343C3"
+            uuid = "F586B013-35BC-41F7-98CB-EB8177F33551"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
+            filePath = "Sky-Gym/ListOfTrainersViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "677"
-            endingLineNumber = "677"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
+            startingLineNumber = "99"
+            endingLineNumber = "99"
+            landmarkName = "viewWillAppear(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9133D31A-8F97-42A4-9648-8E7880F0FBF0"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/ListOfTrainersViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "100"
+            endingLineNumber = "100"
+            landmarkName = "viewWillAppear(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B8DE8A2A-35F8-4949-98BA-CA7417C028DD"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/ListOfTrainersViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "102"
+            endingLineNumber = "102"
+            landmarkName = "viewWillAppear(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "12A034D2-F5B7-446F-A12E-D8B3790DC793"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/ListOfTrainersViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "101"
+            endingLineNumber = "101"
+            landmarkName = "viewWillAppear(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "58114318-6585-48B0-A4BB-454F0E88A8BC"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sky-Gym/ListOfTrainersViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "98"
+            endingLineNumber = "98"
+            landmarkName = "viewWillAppear(_:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "7B218620-02A7-4C8E-A783-611B875343C3 - 7f9491fa310cb709"
+                  uuid = "58114318-6585-48B0-A4BB-454F0E88A8BC - b4891ca2bc0e9ee9"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "Sky_Gym.TrainerEditScreenViewController.registerTrainer(email: Swift.String, password: Swift.String, id: Swift.String, trainerDetail: Swift.Dictionary&lt;Swift.String, Swift.String&gt;, trainerPermission: Swift.Dictionary&lt;Swift.String, Swift.Bool&gt;) -&gt; ()"
+                  symbolName = "Sky_Gym.ListOfTrainersViewController.viewWillAppear(Swift.Bool) -&gt; ()"
                   moduleName = "Sky-Gym"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/TrainerEditScreenViewController.swift"
+                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/ListOfTrainersViewController.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "677"
-                  endingLineNumber = "677"
-                  offsetFromSymbolStart = "478">
+                  startingLineNumber = "98"
+                  endingLineNumber = "98"
+                  offsetFromSymbolStart = "281">
                </Location>
                <Location
-                  uuid = "7B218620-02A7-4C8E-A783-611B875343C3 - 8354756e66803921"
+                  uuid = "58114318-6585-48B0-A4BB-454F0E88A8BC - 97c0d6a83723dbeb"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in Sky_Gym.TrainerEditScreenViewController.registerTrainer(email: Swift.String, password: Swift.String, id: Swift.String, trainerDetail: Swift.Dictionary&lt;Swift.String, Swift.String&gt;, trainerPermission: Swift.Dictionary&lt;Swift.String, Swift.Bool&gt;) -&gt; ()"
+                  symbolName = "closure #1 (Swift.Optional&lt;Swift.Array&lt;Swift.Dictionary&lt;Swift.String, Any&gt;&gt;&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in Sky_Gym.ListOfTrainersViewController.viewWillAppear(Swift.Bool) -&gt; ()"
                   moduleName = "Sky-Gym"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/TrainerEditScreenViewController.swift"
+                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/ListOfTrainersViewController.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "679"
-                  endingLineNumber = "679"
-                  offsetFromSymbolStart = "413">
+                  startingLineNumber = "100"
+                  endingLineNumber = "100"
+                  offsetFromSymbolStart = "118">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -3975,143 +3431,143 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4F9950E2-1D7E-4E33-97F2-8092253B8F8A"
+            uuid = "96FA6B72-FADD-46F3-87F6-C72E64D877FE"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
+            filePath = "Sky-Gym/MemberAndTrainerLoginViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "679"
-            endingLineNumber = "679"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
+            startingLineNumber = "108"
+            endingLineNumber = "108"
+            landmarkName = "memberOrTrainerLoginAction(role:email:gymID:password:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "45DF3591-A20D-4C57-8C9A-93FD37E49928"
+            uuid = "57D6CE21-1AD0-4725-A200-63D9FE2AF3EF"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
+            filePath = "Sky-Gym/MemberAndTrainerLoginViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "682"
-            endingLineNumber = "682"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
+            landmarkName = "memberOrTrainerLoginAction(role:email:gymID:password:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "7E5BE152-0903-4D75-967B-F3019691F5C0"
+            uuid = "F396A242-11C4-4DBB-9C47-F67F39C986E0"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
+            filePath = "Sky-Gym/MemberAndTrainerLoginViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "684"
-            endingLineNumber = "684"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
+            startingLineNumber = "113"
+            endingLineNumber = "113"
+            landmarkName = "memberOrTrainerLoginAction(role:email:gymID:password:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "20B945C6-BC8D-4F43-B56C-D4FB09AFC00D"
+            uuid = "BCAED989-CC15-4FA7-B050-B83E03AAE4CB"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
+            filePath = "Sky-Gym/MemberAndTrainerLoginViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "687"
-            endingLineNumber = "687"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
+            startingLineNumber = "112"
+            endingLineNumber = "112"
+            landmarkName = "memberOrTrainerLoginAction(role:email:gymID:password:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "1C056970-FB41-498B-8921-CA7B317EC0CE"
+            uuid = "4D329E45-DDE5-4607-9275-24B35720E8A7"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
+            filePath = "Sky-Gym/MemberAndTrainerLoginViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "689"
-            endingLineNumber = "689"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
+            startingLineNumber = "114"
+            endingLineNumber = "114"
+            landmarkName = "memberOrTrainerLoginAction(role:email:gymID:password:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D8906A47-B0D0-4B3B-AF26-1DE6C44E2358"
+            uuid = "490B0E60-1561-425E-864F-0D3582402C8A"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
+            filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "690"
-            endingLineNumber = "690"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
+            startingLineNumber = "812"
+            endingLineNumber = "812"
+            landmarkName = "getTrainerDetailBy(id:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A6588202-FDF2-4614-80E1-8A13142BCA9A"
+            uuid = "C203D5A3-2170-49C6-9F9A-8B3D9DD58FF3"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
+            filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "710"
-            endingLineNumber = "710"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
+            startingLineNumber = "814"
+            endingLineNumber = "814"
+            landmarkName = "getTrainerDetailBy(id:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "A6588202-FDF2-4614-80E1-8A13142BCA9A - 7f9491fa310cb709"
+                  uuid = "C203D5A3-2170-49C6-9F9A-8B3D9DD58FF3 - 8bc358a584e4d00b"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "Sky_Gym.TrainerEditScreenViewController.registerTrainer(email: Swift.String, password: Swift.String, id: Swift.String, trainerDetail: Swift.Dictionary&lt;Swift.String, Swift.String&gt;, trainerPermission: Swift.Dictionary&lt;Swift.String, Swift.Bool&gt;) -&gt; ()"
+                  symbolName = "Sky_Gym.FireStoreManager.getTrainerDetailBy(id: Swift.String) -&gt; Swift.Result&lt;Swift.Optional&lt;Sky_Gym.TrainerDataStructure&gt;, Swift.Error&gt;"
                   moduleName = "Sky-Gym"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/TrainerEditScreenViewController.swift"
+                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/FireStoreManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "710"
-                  endingLineNumber = "710"
-                  offsetFromSymbolStart = "2282">
+                  startingLineNumber = "814"
+                  endingLineNumber = "814"
+                  offsetFromSymbolStart = "1266">
                </Location>
                <Location
-                  uuid = "A6588202-FDF2-4614-80E1-8A13142BCA9A - eeab3d5c45de852f"
+                  uuid = "C203D5A3-2170-49C6-9F9A-8B3D9DD58FF3 - 4052be8836f20ee7"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "closure #3 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in Sky_Gym.TrainerEditScreenViewController.registerTrainer(email: Swift.String, password: Swift.String, id: Swift.String, trainerDetail: Swift.Dictionary&lt;Swift.String, Swift.String&gt;, trainerPermission: Swift.Dictionary&lt;Swift.String, Swift.Bool&gt;) -&gt; ()"
+                  symbolName = "closure #1 (Swift.Optional&lt;__C.FIRDocumentSnapshot&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in Sky_Gym.FireStoreManager.getTrainerDetailBy(id: Swift.String) -&gt; Swift.Result&lt;Swift.Optional&lt;Sky_Gym.TrainerDataStructure&gt;, Swift.Error&gt;"
                   moduleName = "Sky-Gym"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/TrainerEditScreenViewController.swift"
+                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/FireStoreManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "712"
-                  endingLineNumber = "712"
-                  offsetFromSymbolStart = "415">
+                  startingLineNumber = "810"
+                  endingLineNumber = "810"
+                  offsetFromSymbolStart = "262">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -4119,288 +3575,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "0375AFE1-DE4F-4841-BA62-74D70812C533"
+            uuid = "C4F60521-41B4-4792-950D-A1203F07B5E7"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
+            filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "713"
-            endingLineNumber = "713"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
+            startingLineNumber = "817"
+            endingLineNumber = "817"
+            landmarkName = "getTrainerDetailBy(id:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "DE42E949-EDDB-404E-8B7C-B1D4334538AD"
+            uuid = "3EECA2D9-1409-48E4-A1CB-9E6FA03A615C"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
+            filePath = "Sky-Gym/FireStoreManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "714"
-            endingLineNumber = "714"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "49FFA584-FFCD-4996-ABF0-A4CD064A16CC"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "707"
-            endingLineNumber = "707"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "0EA9E750-A273-490D-85F1-A430A3719C87"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "708"
-            endingLineNumber = "708"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "320BE145-525A-4850-956D-3F8FD8CE6280"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "696"
-            endingLineNumber = "696"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "27D5E5B9-0308-422A-98F4-19D0AF752D2D"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "698"
-            endingLineNumber = "698"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "F3A8595F-2979-444E-9A27-14EB259763CC"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "699"
-            endingLineNumber = "699"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "F67416B4-570C-447B-9582-85CC68657352"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "700"
-            endingLineNumber = "700"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "17E7E9A9-855E-4FD7-85BE-AF5413BF7AA5"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "718"
-            endingLineNumber = "718"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "17E7E9A9-855E-4FD7-85BE-AF5413BF7AA5 - eeab3d5c45de852f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #3 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in Sky_Gym.TrainerEditScreenViewController.registerTrainer(email: Swift.String, password: Swift.String, id: Swift.String, trainerDetail: Swift.Dictionary&lt;Swift.String, Swift.String&gt;, trainerPermission: Swift.Dictionary&lt;Swift.String, Swift.Bool&gt;) -&gt; ()"
-                  moduleName = "Sky-Gym"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/TrainerEditScreenViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "718"
-                  endingLineNumber = "718"
-                  offsetFromSymbolStart = "731">
-               </Location>
-               <Location
-                  uuid = "17E7E9A9-855E-4FD7-85BE-AF5413BF7AA5 - e3d895b6c78be8b3"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in closure #3 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in Sky_Gym.TrainerEditScreenViewController.registerTrainer(email: Swift.String, password: Swift.String, id: Swift.String, trainerDetail: Swift.Dictionary&lt;Swift.String, Swift.String&gt;, trainerPermission: Swift.Dictionary&lt;Swift.String, Swift.Bool&gt;) -&gt; ()"
-                  moduleName = "Sky-Gym"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/TrainerEditScreenViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "721"
-                  endingLineNumber = "721"
-                  offsetFromSymbolStart = "413">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "3435DFAF-0373-4666-B075-1603C8E69082"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "720"
-            endingLineNumber = "720"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "6C7EA2A6-A2CC-48B3-8B87-43E146DE9556"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "722"
-            endingLineNumber = "722"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "CDC028E1-A48A-4E3A-ADAD-567C993AE958"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "725"
-            endingLineNumber = "725"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "CDC028E1-A48A-4E3A-ADAD-567C993AE958 - e3d895b6c78be8b3"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in closure #3 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in Sky_Gym.TrainerEditScreenViewController.registerTrainer(email: Swift.String, password: Swift.String, id: Swift.String, trainerDetail: Swift.Dictionary&lt;Swift.String, Swift.String&gt;, trainerPermission: Swift.Dictionary&lt;Swift.String, Swift.Bool&gt;) -&gt; ()"
-                  moduleName = "Sky-Gym"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/TrainerEditScreenViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "725"
-                  endingLineNumber = "725"
-                  offsetFromSymbolStart = "638">
-               </Location>
-               <Location
-                  uuid = "CDC028E1-A48A-4E3A-ADAD-567C993AE958 - f2632bc528814fa3"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in closure #1 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in closure #3 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in Sky_Gym.TrainerEditScreenViewController.registerTrainer(email: Swift.String, password: Swift.String, id: Swift.String, trainerDetail: Swift.Dictionary&lt;Swift.String, Swift.String&gt;, trainerPermission: Swift.Dictionary&lt;Swift.String, Swift.Bool&gt;) -&gt; ()"
-                  moduleName = "Sky-Gym"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kpiosdev/Desktop/ios%20app%20%20examples/Sky-Gym/Sky-Gym/TrainerEditScreenViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "727"
-                  endingLineNumber = "727"
-                  offsetFromSymbolStart = "84">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "AFD1EFB7-DCA7-4FDE-9226-8D9664EEF3E1"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "727"
-            endingLineNumber = "727"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "0A57B8D6-51DB-4EBE-9F44-8541FD3DA82D"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Sky-Gym/TrainerEditScreenViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "729"
-            endingLineNumber = "729"
-            landmarkName = "registerTrainer(email:password:id:trainerDetail:trainerPermission:)"
+            startingLineNumber = "820"
+            endingLineNumber = "820"
+            landmarkName = "getTrainerDetailBy(id:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

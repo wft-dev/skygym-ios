@@ -209,15 +209,6 @@ extension AdminProfileViewController {
         self.adminProfileNavigationBar.editBtn.addTarget(self, action: #selector(editAdmin), for: .touchUpInside)
     }
     
-    func getSelectedWeekdays(selectedArray:[Int]) -> [String] {
-        var array:[String] = []
-        if self.selectedWeekdaysArray.count > 0 {
-            for i in selectedArray {
-                array.append(self.weekdayArray[i])
-            }
-        }
-        return array
-    }
     
     @objc func showWeekDays() {
         self.view.endEditing(true)
@@ -225,7 +216,7 @@ extension AdminProfileViewController {
         self.weekDaysListView.alpha = self.weekDaysListView.isHidden == true ? 0.0 : 1.0
         
         if self.weekDaysListView.isHidden == true {
-            let selectedWeekdayArray = self.getSelectedWeekdays(selectedArray: self.selectedWeekdaysArray.sorted())
+            let selectedWeekdayArray = AppManager.shared.getSelectedWeekdays(selectedArray: self.selectedWeekdaysArray.sorted(), defaultArray: self.weekdayArray)
             var str:String = ""
             for weekday in  selectedWeekdayArray {
                 if selectedWeekdayArray.last != weekday  {
