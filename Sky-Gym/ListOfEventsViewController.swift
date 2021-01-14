@@ -73,6 +73,8 @@ extension ListOfEventsViewController {
         case .Member:
             self.hideEventBtn(hide: true)
             break
+        case .Admin :
+            self.hideEventBtn(hide: false)
         default:
             AppManager.shared.trainerEventPermission == true  ? hideEventBtn(hide: false) : hideEventBtn(hide: true)
             break
@@ -282,9 +284,16 @@ extension ListOfEventsViewController:UITableViewDataSource{
         cell.eventDateLabel.layer.cornerRadius = 7.0
         cell.selectionStyle = .none
         cell.eventCellView.tag = Int(singleEvent.eventID)!
-        if AppManager.shared.trainerEventPermission == true &&
-           AppManager.shared.loggedInRole != LoggedInRole.Member{
+        
+        switch AppManager.shared.loggedInRole {
+        case .Admin:
             self.addEventCustomSwipe(cellView: cell.eventCellView, cell: cell)
+        case .Trainer:
+            if AppManager.shared.trainerEventPermission {
+               self.addEventCustomSwipe(cellView: cell.eventCellView, cell: cell)
+            }
+        default:
+            break
         }
         return cell
     }

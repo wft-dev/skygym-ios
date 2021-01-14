@@ -115,6 +115,8 @@ class AdminProfileViewController: UIViewController {
     var weekdayArray:[String] = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
     var imageName = ""
     var selectedWeekdaysArray:[Int] = []
+    var isAlreadyExistsEmail:Bool = false
+    var adminEmail:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -203,6 +205,7 @@ extension AdminProfileViewController {
 
     private func addClickToDismissGymWeekDaysList() {
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissGymWeekDaysList(_:)))
+        tapRecognizer.delegate = self
         tapRecognizer.cancelsTouchesInView = true
         self.view.isUserInteractionEnabled = true
         self.view.addGestureRecognizer(tapRecognizer)
@@ -211,6 +214,7 @@ extension AdminProfileViewController {
     @objc func dismissGymWeekDaysList(_ gesture : UITapGestureRecognizer) {
         self.weekDaysListView.isHidden = true
         self.weekDaysListView.alpha = 0.0
+        self.setGymDaysFieldData()
     }
 
     func setAdminProfileNavigationBar() {
@@ -227,20 +231,23 @@ extension AdminProfileViewController {
         self.view.endEditing(true)
         self.weekDaysListView.isHidden = !self.weekDaysListView.isHidden
         self.weekDaysListView.alpha = self.weekDaysListView.isHidden == true ? 0.0 : 1.0
-        
+         
         if self.weekDaysListView.isHidden == true {
-            let selectedWeekdayArray = AppManager.shared.getSelectedWeekdays(selectedArray: self.selectedWeekdaysArray.sorted(), defaultArray: self.weekdayArray)
-            var str:String = ""
-            for weekday in  selectedWeekdayArray {
-                if selectedWeekdayArray.last != weekday  {
-                     str += "\(weekday), "
-                } else {
-                    str += weekday
-                }
-            }
-            self.gymDaysTextField.text = str
+            self.setGymDaysFieldData()
         }
-        
+    }
+    
+    func setGymDaysFieldData() {
+        let selectedWeekdayArray = AppManager.shared.getSelectedWeekdays(selectedArray: self.selectedWeekdaysArray.sorted(), defaultArray: self.weekdayArray)
+        var str:String = ""
+        for weekday in  selectedWeekdayArray {
+            if selectedWeekdayArray.last != weekday  {
+                str += "\(weekday), "
+            } else {
+                str += weekday
+            }
+        }
+        self.gymDaysTextField.text = str
     }
     
     @objc func editAdmin() {
@@ -431,6 +438,7 @@ extension AdminProfileViewController {
         self.openningTimeNonEditLabel.text = adminDetail.gymOpenningTime
         self.closingTimeNonEditLabel.text = adminDetail.gymClosingTime
         self.gymDaysNonEditLabel.text = adminDetail.gymDays
+        self.adminEmail = adminDetail.email
         
         self.gymNameTextField.text = adminDetail.gymName
         self.gymIDTextField.text = adminDetail.gymID
@@ -560,6 +568,35 @@ extension AdminProfileViewController : UITextFieldDelegate{
             }
         }
         
+        if textField.tag == 7 {
+            let email = textField.text!
+            if self.adminEmail != email {
+                DispatchQueue.global(qos: .default).async {
+                    let result = FireStoreManager.shared.isUserExists(email: email)
+                    
+                    switch result {
+                        
+                    case let  .success(flag):
+                        if flag == false {
+                            self.isAlreadyExistsEmail = false
+                            self.updateBtn.isEnabled = true
+                            self.updateBtn.alpha = 1.0
+                        }else {
+                            textField.layer.borderColor = UIColor.red.cgColor
+                            textField.layer.borderWidth = 1.0
+                            self.emailErrorLabel.text = "Email already exists."
+                            self.isAlreadyExistsEmail = true
+                            self.updateBtn.isEnabled = false
+                            self.updateBtn.alpha = 0.4
+                        }
+                        
+                    case .failure(_):
+                        break
+                    }
+                }
+            }
+        }
+        
         self.allProfileFieldsRequiredValidation(textField: textField)
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.adminPasswordTextField.text!)
     }
@@ -599,3 +636,13 @@ extension AdminProfileViewController : UITableViewDelegate{
     }
 }
 
+
+extension AdminProfileViewController :UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if touch.view?.isDescendant(of: self.weekDaysListView) == true {
+            return false
+        }else {
+            return true
+        }
+    }
+}

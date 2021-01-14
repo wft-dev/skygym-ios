@@ -73,6 +73,8 @@ class MemberLoginProfileViewController: UIViewController {
     let imagePicker = UIImagePickerController()
     var datePicker = UIDatePicker()
     let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+    var isAlreadyExistsEmail:Bool = false
+    var memberLoginProfileEmail:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -308,7 +310,7 @@ class MemberLoginProfileViewController: UIViewController {
                             self.memberProfileImg.image = img
                             self.memberProfileImg.makeRounded()
                             SVProgressHUD.dismiss()
-                        } catch let error as NSError {
+                        } catch _ {
                             }
                     } else {
                         SVProgressHUD.dismiss()
@@ -340,6 +342,7 @@ class MemberLoginProfileViewController: UIViewController {
         self.emailNonEditLabel.text = memberDetail.email
         self.phoneNoNonEditLabel.text = memberDetail.phoneNo
         self.dobNonEditLabel.text = memberDetail.dob
+        self.memberLoginProfileEmail = memberDetail.email
 
         self.firstNameTextField.text = memberDetail.firstName
         self.lastNameTextField.text = memberDetail.lastName
@@ -374,6 +377,37 @@ extension MemberLoginProfileViewController:UITextFieldDelegate {
             textField.text = self.selectedDate
             self.selectedDate = ""
         }
+        
+        if textField.tag == 5 {
+            let email = textField.text!
+            if self.memberLoginProfileEmail != email {
+                DispatchQueue.global(qos: .default).async {
+                    let result = FireStoreManager.shared.isUserExists(email: email)
+                    DispatchQueue.main.async {
+                        switch result {
+                        case let  .success(flag):
+                            if flag == false {
+                                self.isAlreadyExistsEmail = false
+                                self.updateBtn.isEnabled = true
+                                self.updateBtn.alpha = 1.0
+                            }else {
+                                textField.layer.borderColor = UIColor.red.cgColor
+                                textField.layer.borderWidth = 1.0
+                                self.emailErrorLabel.text = "Email already exists."
+                                self.isAlreadyExistsEmail = true
+                                self.updateBtn.isEnabled = false
+                                self.updateBtn.alpha = 0.4
+                            }
+                            
+                        case .failure(_):
+                            break
+                        }
+                    }
+
+                }
+            }
+        }
+        
         self.allMemberFieldValidation(textField: textField)
         self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }

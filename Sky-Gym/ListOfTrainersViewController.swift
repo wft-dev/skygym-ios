@@ -137,26 +137,31 @@ extension ListOfTrainersViewController {
             _ in
             AppManager.shared.closeSwipe(gesture: gesture)
             SVProgressHUD.show()
-            DispatchQueue.global(qos: .background).async {
-                let result  =  FireStoreManager.shared.deleteImgBy(id: trainerID)
-                
-                switch result {
-                case let .success(flag):
-                    if flag == true {
-                        FireStoreManager.shared.deleteTrainerBy(id: trainerID, completion: {
-                            (err) in
-                            SVProgressHUD.dismiss()
-                            if err != nil {
-                                self.showAlert(title: "Error", message: "Trainer is not deleted successfully.")
-                            } else {
-                                self.showAlert(title: "Success", message: "Trainer is  deleted successfully.")
+            FireStoreManager.shared.deleteUserCredentials(id: trainerID, handler: {
+                (err) in
+                if err == nil {
+                    DispatchQueue.global(qos: .background).async {
+                        let result  =  FireStoreManager.shared.deleteImgBy(id: trainerID)
+                        
+                        switch result {
+                        case let .success(flag):
+                            if flag == true {
+                                FireStoreManager.shared.deleteTrainerBy(id: trainerID, completion: {
+                                    (err) in
+                                    SVProgressHUD.dismiss()
+                                    if err != nil {
+                                        self.showAlert(title: "Error", message: "Trainer is not deleted successfully.")
+                                    } else {
+                                        self.showAlert(title: "Success", message: "Trainer is  deleted successfully.")
+                                    }
+                                })
                             }
-                        })
+                        case .failure(_):
+                            break
+                        }
                     }
-                case .failure(_):
-                    break
                 }
-            }
+            })
         })
         let cancelActionAlert = UIAlertAction(title: "Cancel", style: .default, handler: {
             _ in
@@ -199,7 +204,7 @@ extension ListOfTrainersViewController {
         deleteView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: 0).isActive = true
         deleteView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 0).isActive = true
         deleteView.bottomAnchor.constraint(greaterThanOrEqualTo: cell.contentView.bottomAnchor, constant: 0).isActive = true
-       
+        deleteView.tag = 11
         cellView.addGestureRecognizer(leftSwipeGesture)
         cellView.addGestureRecognizer(rightSwipGesture)
         cellView.backgroundColor = .white

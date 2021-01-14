@@ -80,6 +80,8 @@ class ViewVisitorScreenViewController: BaseViewController {
     var errorLabelArray:[UILabel] = []
     var textFieldArray:[UITextField] = []
     let validation = ValidationManager.shared
+    var isAlreadyExistsEmail:Bool = false
+    var visitorEmail:String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -315,25 +317,32 @@ extension ViewVisitorScreenViewController {
     }
     
     func register(id:String,visitorDetail:[String:String],completion:@escaping (Error?)->Void) {
-        if self.isImgPickerOpened == true {
-            FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
-                err in
-                if err != nil {
-                    self.showVisitorAlert(title: "Error", message: "Error in uploading the image, Please try again.")
+        
+        FireStoreManager.shared.addNewUserCredentials(id: id, email: self.visitorEmailTextField.text!, password:"", handler: {
+            (err) in
+            
+            if err == nil {
+                if self.isImgPickerOpened == true {
+                    FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
+                        err in
+                        if err != nil {
+                            self.showVisitorAlert(title: "Error", message: "Error in uploading the image, Please try again.")
+                        } else {
+                            FireStoreManager.shared.addVisitor(id: id, visitorDetail: visitorDetail, completion: {
+                                (err) in
+                                completion(err)
+                            })
+                        }
+                        self.isImgPickerOpened = false
+                    })
                 } else {
                     FireStoreManager.shared.addVisitor(id: id, visitorDetail: visitorDetail, completion: {
                         (err) in
                         completion(err)
                     })
                 }
-                self.isImgPickerOpened = false
-            })
-        } else{
-            FireStoreManager.shared.addVisitor(id: id, visitorDetail: visitorDetail, completion: {
-                (err) in
-                completion(err)
-            })
-        }
+            }
+        })
     }
     
     func showVisitorAlert(title:String,message:String) {
@@ -413,6 +422,7 @@ extension ViewVisitorScreenViewController {
         self.noOfVisitNonEditLabel.text = visitor.noOfVisit
         self.genderNonEditLabel.text = visitor.gender
         self.phoneNoNonEditLabel.text = visitor.phoneNo
+        self.visitorEmail = visitor.email
 
         self.visitorFirstName.text = visitor.firstName
         self.visitorLastName.text = visitor.lastName
@@ -436,6 +446,33 @@ extension ViewVisitorScreenViewController {
           self.visitorGenderTextField.text = ""
           self.visitorPhoneNoTextField.text = ""
       }
+    
+    func checkEmailAlreadyExists(email:String)  {
+        
+        DispatchQueue.global(qos: .background).async {
+            let result = FireStoreManager.shared.isUserExists(email: email)
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(flag):
+                    if flag == false {
+                        self.isAlreadyExistsEmail = false
+                        self.updateBtn.isEnabled = true
+                        self.updateBtn.alpha = 1.0
+                    }else {
+                        self.visitorEmailTextField.layer.borderColor = UIColor.red.cgColor
+                        self.visitorEmailTextField.layer.borderWidth = 1.0
+                        self.emailErrorLabel.text = "Email already exists."
+                        self.isAlreadyExistsEmail = true
+                        self.updateBtn.isEnabled = false
+                        self.updateBtn.alpha = 0.4
+                    }
+                case .failure(_):
+                    break
+                }
+            }
+        }
+    }
+    
 }
 
 extension ViewVisitorScreenViewController:UITextFieldDelegate {
@@ -463,6 +500,12 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
           
     func textFieldDidEndEditing(_ textField: UITextField) {
         switch textField.tag {
+        case 3:
+            let email = textField.text!
+            if self.visitorEmail != email {
+                self.checkEmailAlreadyExists(email: email)
+        }
+            break
         case 4:
             if  self.selectedDate != "" {
                 self.visitorDateOfJoinTextField.text = self.selectedDate
@@ -476,6 +519,7 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
         default:
             break
         }
+   
         self.allVisitorFieldsRequiredValidation(textField: textField)
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
     }

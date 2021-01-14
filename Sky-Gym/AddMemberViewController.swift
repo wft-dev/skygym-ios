@@ -155,6 +155,8 @@ class AddMemberViewController: BaseViewController {
         self.trainerNameTextField.isUserInteractionEnabled = true
         self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
         self.fetchTrainersByCategory(category: .general)
+        
+        //self.memberImg.image = UIImage(data: self.visitorProfileImgData!)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -166,7 +168,8 @@ class AddMemberViewController: BaseViewController {
         self.endDateTextField.isEnabled = false
         self.endDateTextField.alpha = 0.4
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
-            if self.isNewMember == false {
+            // self.isNewMember == false ||
+            if self.memberProfileView.isHidden == true{
                self.myScrollView.contentSize.height = 750
             }
         })
@@ -485,23 +488,27 @@ extension AddMemberViewController{
     }
     
     func showMembershipScreen()  {
-        self.myScrollView.contentSize.height = 800
-        self.membershipBtn.backgroundColor = UIColor(red: 236/255, green: 217/255, blue: 72/255, alpha: 1.0)
-        self.profileBtn.backgroundColor = .clear
-        self.memberProfileView.isHidden = true
-        self.memberProfileView.alpha = 0.0
-        self.membershipView.isHidden = false
-        self.membershipView.alpha = 1.0
+        DispatchQueue.main.async {
+            self.myScrollView.contentSize.height = 800
+            self.membershipBtn.backgroundColor = UIColor(red: 236/255, green: 217/255, blue: 72/255, alpha: 1.0)
+            self.profileBtn.backgroundColor = .clear
+            self.memberProfileView.isHidden = true
+            self.memberProfileView.alpha = 0.0
+            self.membershipView.isHidden = false
+            self.membershipView.alpha = 1.0
+        }
     }
     
     func showProfileScreen() {
-        self.myScrollView.contentSize.height = 1157
-        self.profileBtn.backgroundColor = UIColor(red: 236/255, green: 217/255, blue: 72/255, alpha: 1.0)
-        self.membershipBtn.backgroundColor = .clear
-        self.memberProfileView.isHidden = false
-        self.memberProfileView.alpha = 1.0
-        self.membershipView.isHidden = true
-        self.membershipView.alpha = 0.0
+        DispatchQueue.main.async {
+            self.myScrollView.contentSize.height = 1240
+            self.profileBtn.backgroundColor = UIColor(red: 236/255, green: 217/255, blue: 72/255, alpha: 1.0)
+            self.membershipBtn.backgroundColor = .clear
+            self.memberProfileView.isHidden = false
+            self.memberProfileView.alpha = 1.0
+            self.membershipView.isHidden = true
+            self.membershipView.alpha = 0.0
+        }
     }
     
     func setNavigationBar() {
@@ -599,28 +606,33 @@ extension AddMemberViewController{
             
             if self.visitorID != "" {
                 SVProgressHUD.show()
-                DispatchQueue.global(qos: .background).async {
-                    let result = FireStoreManager.shared.deleteImgBy(id: self.visitorID)
+                FireStoreManager.shared.deleteUserCredentials(id: self.visitorID, handler: {
+                    (err) in
                     
-                    DispatchQueue.main.async {
-                        switch result {
-                        case .failure(_) :
-                            self.errorAlert(message: "Error in deleting member.")
-                        case  let .success(flag) :
-                            if flag == true {
-                                FireStoreManager.shared.deleteVisitorBy(id: self.visitorID, completion: {
-                                    err in
-                                    if err != nil {
+                    if err == nil {
+                        DispatchQueue.global(qos: .background).async {
+                            let result = FireStoreManager.shared.deleteImgBy(id: self.visitorID)
+                            
+                            DispatchQueue.main.async {
+                                switch result {
+                                case .failure(_) :
                                     self.errorAlert(message: "Error in deleting member.")
-                                    }else {
-                                        self.dismiss(animated: true, completion: nil)
+                                case  let .success(flag) :
+                                    if flag == true {
+                                        FireStoreManager.shared.deleteVisitorBy(id: self.visitorID, completion: {
+                                            err in
+                                            if err != nil {
+                                                self.errorAlert(message: "Error in deleting member.")
+                                            }else {
+                                                self.dismiss(animated: true, completion: nil)
+                                            }
+                                        })
                                     }
-                                })
+                                }
                             }
                         }
                     }
-                }
-    
+                })
             } else {
                 SVProgressHUD.dismiss()
                 self.dismiss(animated: true, completion: nil)
@@ -833,6 +845,17 @@ extension AddMemberViewController{
                 self.viewWillAppear(true)
             } else{
                 self.fillVisitorDetail(visitor: AppManager.shared.getVisitor(visitorDetail: visitor?["visitorDetail"] as! [String : String], id: visitor?["id"] as! String))
+                
+                FireStoreManager.shared.downloadUserImg(id:id, result: {
+                    (imgUrl,err) in
+                    if err == nil {
+                        do {
+                            self.visitorProfileImgData =  try Data(contentsOf: imgUrl!)
+    
+                        } catch _ {}
+                    }
+                })
+                
             }
         })
     }
@@ -1022,11 +1045,15 @@ extension AddMemberViewController:UITextFieldDelegate{
                     case let .success(flag):
                         if flag == false {
                             self.isAlreadyExistsEmail = false
+                            self.nextBtn.isEnabled = true
+                            self.nextBtn.alpha = 1.0
                         }else {
                             textField.layer.borderColor = UIColor.red.cgColor
                             textField.layer.borderWidth = 1.0
                             self.emailErrorLabel.text = "Email already exists."
                             self.isAlreadyExistsEmail = true
+                            self.nextBtn.isEnabled = false
+                            self.nextBtn.alpha = 0.4
                         }
                     case .failure(_):
                         break
@@ -1034,7 +1061,6 @@ extension AddMemberViewController:UITextFieldDelegate{
                 }
             }
         }
-        
     }
 }
 

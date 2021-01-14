@@ -1317,34 +1317,27 @@ class FireStoreManager: NSObject {
         return result
     }
     
-    func updateUserCredentials(id:String,email:String,password:String) -> Result<Bool,Error> {
+    func updateUserCredentials(id:String,email:String,password:String,handler:@escaping (Error?) -> Void){
         let userRef = fireDB.collection("Users").document("\(id)")
-        let seamphores = DispatchSemaphore(value: 0)
-        var result:Result<Bool,Error>!
         
         userRef.updateData([
             "email":email,
             "password" : password
-        ], completion: {
-            (err) in
-            if err != nil {
-                result = .failure(err!)
-                result = .success(false)
-            }else {
-                result = .success(true)
-            }
-            seamphores.signal()
+            ], completion: {
+                (err) in
+                handler(err)
         })
-        let _ = seamphores.wait(wallTimeout: .distantFuture)
-        return result
     }
     
-
-   
-}
+    func deleteUserCredentials(id:String,handler:@escaping (Error?) -> Void) {
+         let userRef = fireDB.collection("Users").document("\(id)")
+        userRef.delete(completion: {
+            (err)in
+            handler(err)
+        })
+    }
     
-
-
+}
 
 
  

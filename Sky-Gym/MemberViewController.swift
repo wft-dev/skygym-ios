@@ -107,6 +107,8 @@ class MemberViewController: BaseViewController {
     var trainerType:String = ""
     var trainerID:String = ""
     var listOfTrainers:[TrainerDataStructure] = []
+    var isAlreadyExistsEmail:Bool = false
+    var memberEmail:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -125,14 +127,17 @@ class MemberViewController: BaseViewController {
         
         self.trainerNameTextField.isUserInteractionEnabled = true
         self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
+         self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
+        
+        self.memberImg.image = self.img
+        self.memberImg.makeRounded()
+        self.memberImg.tag = 00
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.memberImg.image = self.img
-        self.memberImg.makeRounded()
         self.memberImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openUserProfilePicker)))
-        self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
+       
         self.imgPicker.delegate = self
         self.setMemberProfileCompleteView()
     }
@@ -145,39 +150,47 @@ class MemberViewController: BaseViewController {
     
     @IBAction func updateBtnAction(_ sender: Any) {
         SVProgressHUD.show()
-        
-        FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID,memberDetail: self.getMemberProfileDetails(), handler: {
+        FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.memberID, email: self.emailTextField.text!, password: self.passwordTextField.text!, handler: {
             (err) in
-            SVProgressHUD.dismiss()
-            if err != nil {
-                self.showMemberProfileAlert(title: "Error", message: "Member detail is not updated.")
-            } else {
-                if self.isUploadIdSelected == true {
-                    FireStoreManager.shared.uploadImg(url: self.imgURL!, membeID: AppManager.shared.memberID, imageName: self.uploadIDTextField.text!, completion: {
-                        (err) in
-                        if err != nil {
-                            self.showMemberProfileAlert(title: "Error", message: "Member detail is not updated.")
-                        } else {
-                            self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
-                        }
-                    })
-                    self.isUserProfileSelected = false
-                }
+            
+            FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID,memberDetail: self.getMemberProfileDetails(), handler: {
+                (err) in
+              //  SVProgressHUD.dismiss()
+                if err != nil {
+                    self.showMemberProfileAlert(title: "Error", message: "Member detail is not updated.")
+                } else {
+                    if self.isUploadIdSelected == true {
+                        FireStoreManager.shared.uploadImg(url: self.imgURL!, membeID: AppManager.shared.memberID, imageName: self.uploadIDTextField.text!, completion: {
+                            (err) in
+                            SVProgressHUD.dismiss()
+                            if err != nil {
+                                self.showMemberProfileAlert(title: "Error", message: "Member detail is not updated.")
+                            } else {
+                                self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
+                            }
+                        })
+                        self.isUserProfileSelected = false
+                    }
+                     if self.memberImg.tag == 1111 {
+                        FireStoreManager.shared.uploadUserImg(imgData: (self.memberImg.image?.pngData())!, id: AppManager.shared.memberID, completion: {
+                            err in
+                            SVProgressHUD.dismiss()
+                            if err == nil {
+                                self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
+                            }
+                        })
+                        self.isUserProfileSelected = false
+                    }
+                    else {
+                        SVProgressHUD.dismiss()
+                        self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
+                    }
                     
-                else if self.isUserProfileSelected == true {
-                    FireStoreManager.shared.uploadUserImg(imgData: (self.memberImg.image?.pngData())!, id: AppManager.shared.memberID, completion: {
-                        err in
-                        if err == nil {
-                            self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
-                        }
-                    })
-                    self.isUserProfileSelected = false
                 }
-                else {
-                    self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
-                }
-            }
+            })
+            
         })
+
     }
     
     @IBAction func generalToggleBtnAction(_ sender: Any) {
@@ -424,6 +437,7 @@ extension MemberViewController{
         self.dobNonEditScreenLabel.text = memberDetail.dob
         self.trainerType = memberDetail.type
         self.setMemberProfileTrainerType(type: self.trainerType)
+        self.memberEmail = memberDetail.email
 
         self.memberIDTextField.text! = memberDetail.memberID
         self.dateOfJoiningTextField.text! = memberDetail.dateOfJoining
@@ -512,6 +526,7 @@ extension MemberViewController{
     }
     
     @objc func openMemberProfileImgPicker(){
+        self.isUserProfileSelected = false
         self.imgPicker.allowsEditing = true
         self.imgPicker.modalPresentationStyle = .fullScreen
         self.imgPicker.sourceType = .photoLibrary
@@ -521,7 +536,7 @@ extension MemberViewController{
     @objc func openUserProfilePicker(){
            self.isUserProfileSelected = true
            self.imgPicker.allowsEditing = true
-           self.imgPicker.modalPresentationStyle = .overCurrentContext
+           self.imgPicker.modalPresentationStyle = .fullScreen
            self.imgPicker.sourceType = .photoLibrary
            present(self.imgPicker, animated: true, completion: nil)
        }
@@ -534,6 +549,7 @@ extension MemberViewController : UIImagePickerControllerDelegate,UINavigationCon
         if self.isUserProfileSelected == true{
             if let selectedImg:UIImage = info[.editedImage] as? UIImage {
                 self.memberImg.image = selectedImg
+                self.memberImg.tag = 1111
                 dismiss(animated: true, completion: nil)
             }
         } else {
@@ -584,6 +600,35 @@ extension MemberViewController:UITextFieldDelegate{
                 self.dobTextField.text = self.selectedDate
             default:
                 break
+            }
+        }
+        
+        if textField.tag == 7 {
+            let email = textField.text!
+            if self.memberEmail != email {
+                DispatchQueue.global(qos: .default).async {
+                    let result = FireStoreManager.shared.isUserExists(email: email)
+                    DispatchQueue.main.async {
+                        switch result {
+                        case let  .success(flag):
+                            if flag == false {
+                                self.isAlreadyExistsEmail = false
+                                self.updateBtn.isEnabled = true
+                                self.updateBtn.alpha = 1.0
+                            }else {
+                                textField.layer.borderColor = UIColor.red.cgColor
+                                textField.layer.borderWidth = 1.0
+                                self.emailErrorLabel.text = "Email already exists."
+                                self.isAlreadyExistsEmail = true
+                                self.updateBtn.isEnabled = false
+                                self.updateBtn.alpha = 0.4
+                            }
+                            
+                        case .failure(_):
+                            break
+                        }
+                    }
+                }
             }
         }
 

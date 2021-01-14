@@ -258,26 +258,30 @@ extension ListOfMembersViewController{
             AppManager.shared.closeSwipe(gesture: gesture)
             SVProgressHUD.show()
             let id = "\(gesture.view?.tag ?? 0 )"
-            DispatchQueue.global(qos: .background).async {
-                let result = FireStoreManager.shared.deleteImgBy(id:id )
+            FireStoreManager.shared.deleteUserCredentials(id: id, handler: {
+                (err) in
                 
-                switch result {
-                case  .failure(_):
-                    self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
-                case let .success(flag) :
-                    if flag == true {
-                        FireStoreManager.shared.deleteMemberBy(id:id, completion: {
-                            err in
-                            SVProgressHUD.dismiss()
-                            if err != nil {
-                                self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
-                            } else {
-                                self.alertBox(title: "Success", message: "Member is deleted successfully.")
-                            }
-                        })
+                DispatchQueue.global(qos: .background).async {
+                    let result = FireStoreManager.shared.deleteImgBy(id:id )
+                    
+                    switch result {
+                    case  .failure(_):
+                        self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
+                    case let .success(flag) :
+                        if flag == true {
+                            FireStoreManager.shared.deleteMemberBy(id:id, completion: {
+                                err in
+                                SVProgressHUD.dismiss()
+                                if err != nil {
+                                    self.alertBox(title: "Error", message: "Member is not deleted,Please try again.")
+                                } else {
+                                    self.alertBox(title: "Success", message: "Member is deleted successfully.")
+                                }
+                            })
+                        }
                     }
                 }
-        }
+            })
         })
         let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler: {
             _ in

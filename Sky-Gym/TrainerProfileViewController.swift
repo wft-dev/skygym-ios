@@ -65,6 +65,8 @@ class TrainerProfileViewController: BaseViewController {
     let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
     var selectedDate:String = ""
     var actuallPassword:String = ""
+    var trainerEmail:String = ""
+    var isAlreadyExistsEmail:Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -145,29 +147,33 @@ class TrainerProfileViewController: BaseViewController {
         SVProgressHUD.show()
         let trainerInfo = self.getTrainerInfo()
         let trainerImgData = self.trainerProfileImg.image?.pngData()
-        DispatchQueue.global(qos: .background).async {
-            let result = FireStoreManager.shared.updateTrainerDetailBy(id: AppManager.shared.trainerID, trainerInfo: trainerInfo)
+        FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.trainerID, email: self.emailTextField.text!, password: self.passwordTextField.text!, handler: {
+            (err) in
             
-            switch result{
-            case .failure(_) :
-                 SVProgressHUD.dismiss()
-                print("Errror")
-                self.showAlert(title: "Error", message: "Error in updating the trainer detail.")
-            case .success(_) :
-                if self.isUserProfileUpdated == true {
-                    FireStoreManager.shared.uploadUserImg(imgData: (trainerImgData)!, id: AppManager.shared.trainerID, completion: {
-                        (err) in
+            DispatchQueue.global(qos: .background).async {
+                let result = FireStoreManager.shared.updateTrainerDetailBy(id: AppManager.shared.trainerID, trainerInfo: trainerInfo)
+                
+                switch result{
+                case .failure(_) :
+                    SVProgressHUD.dismiss()
+                    print("Errror")
+                    self.showAlert(title: "Error", message: "Error in updating the trainer detail.")
+                case .success(_) :
+                    if self.isUserProfileUpdated == true {
+                        FireStoreManager.shared.uploadUserImg(imgData: (trainerImgData)!, id: AppManager.shared.trainerID, completion: {
+                            (err) in
+                            SVProgressHUD.dismiss()
+                            if err == nil {
+                                self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+                            }
+                        })
+                    } else {
                         SVProgressHUD.dismiss()
-                        if err == nil {
-                            self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
-                        }
-                    })
-                } else {
-                     SVProgressHUD.dismiss()
-                    self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+                        self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+                    }
                 }
             }
-        }
+        })
     }
     
     @objc func errorValidator(_ textField:UITextField) {
@@ -243,6 +249,7 @@ class TrainerProfileViewController: BaseViewController {
         self.emailNonEditLabel.text = trainerDetail.email
         self.phoneNoNonEditLabel.text = trainerDetail.phoneNo
         self.dobNonEditLabel.text = trainerDetail.dob
+        self.trainerEmail = trainerDetail.email
         
         self.trainerFirstNameTextField.text = trainerDetail.firstName
         self.trainerLastNameTextField.text = trainerDetail.lastName
@@ -356,6 +363,16 @@ extension TrainerProfileViewController:UITextFieldDelegate {
                 df.dateFormat = "dd-MM-yyyy"
                 self.datePicker.date = df.date(from: textField.text!)!
             }
+            
+          //  if textField.tag == 5 {
+            if self.trainerEmail != self.emailTextField.text! {
+                    self.updateBtn.isEnabled = false
+                    self.updateBtn.alpha = 0.4
+                }else {
+                    self.updateBtn.isEnabled = true
+                    self.updateBtn.alpha = 0.4
+                }
+          //  }
         }
         
         self.allTrainerFieldValidation(textField: textField)
@@ -375,6 +392,35 @@ extension TrainerProfileViewController:UITextFieldDelegate {
             textField.text = self.selectedDate
             self.selectedDate = ""
         }
+        
+        if textField.tag == 5 {
+            let email = textField.text!
+            if self.trainerEmail != email {
+                DispatchQueue.global(qos: .background).async {
+                    let result = FireStoreManager.shared.isUserExists(email: email)
+                    DispatchQueue.main.async {
+                        switch result {
+                        case let .success(flag):
+                            if flag == false {
+                                self.isAlreadyExistsEmail = false
+                                self.updateBtn.isEnabled = true
+                                self.updateBtn.alpha = 1.0
+                            }else {
+                                textField.layer.borderColor = UIColor.red.cgColor
+                                textField.layer.borderWidth = 1.0
+                                self.emailErrorLabel.text = "Email already exists."
+                                self.isAlreadyExistsEmail = true
+                                self.updateBtn.isEnabled = false
+                                self.updateBtn.alpha = 0.4
+                            }
+                        case .failure(_):
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        
         self.allTrainerFieldValidation(textField: textField)
         self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }

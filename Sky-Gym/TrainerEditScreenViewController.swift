@@ -155,9 +155,11 @@ class TrainerEditScreenViewController: BaseViewController {
     var actualPassword:String = ""
     let weekDayArray = ["Sunday","Monday","Tuesday","Wednesday","Thrusday","Friday","Saturday"]
     var selectedWeekDayIndexArray:[Int] = []
+    var isAlreadyExistsEmail:Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.tag = 1010
         self.setTrainerEditView()
         self.showTrainerBy(id: AppManager.shared.trainerID)
         self.weekDaysListTable.delegate = self
@@ -165,22 +167,25 @@ class TrainerEditScreenViewController: BaseViewController {
         self.weekDaysListTable.allowsMultipleSelection = true
         self.weekDayListView.isHidden = true
         self.weekDayListView.alpha = 0.0
+        self.userImg.tag = 00
 
         self.idTextField.text = "\(Int.random(in: 1..<100000))" 
         self.idTextField.isEnabled = false
         self.idTextField.layer.opacity = 0.4
         self.generalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeSelection(_:))))
         self.personalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeSelection(_:))))
+        if self.isUserImgSelected == false {
+            if AppManager.shared.loggedInRole == LoggedInRole.Trainer {
+                self.userImg.image = UIImage(named: "member")
+            } else {
+                self.userImg.image = UIImage(named: "user-1")
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.addClickToDismissWeekDaysList()
-        if AppManager.shared.loggedInRole == LoggedInRole.Trainer {
-            self.userImg.image = UIImage(named: "member")
-        } else {
-           self.userImg.image = UIImage(named: "user-1")
-        }
     }
     
     @IBAction func trainerAttendanceAction(_ sender: Any) {
@@ -246,7 +251,8 @@ extension TrainerEditScreenViewController {
     
     private func addClickToDismissWeekDaysList() {
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissWeekDaysList(_:)))
-        tapRecognizer.cancelsTouchesInView = true
+        tapRecognizer.delegate = self
+        tapRecognizer.cancelsTouchesInView = false
         self.view.isUserInteractionEnabled = true
         self.view.addGestureRecognizer(tapRecognizer)
     }
@@ -254,6 +260,21 @@ extension TrainerEditScreenViewController {
     @objc func dismissWeekDaysList(_ gesture : UITapGestureRecognizer) {
         self.weekDayListView.isHidden = true
         self.weekDayListView.alpha = 0.0
+        self.setValueToShiftField()
+    }
+    
+    func setValueToShiftField()  {
+        let selectedWeekdayArray = AppManager.shared.getSelectedWeekdays(selectedArray: self.selectedWeekDayIndexArray, defaultArray: self.weekDayArray)
+        var str:String = ""
+        for weekday in  selectedWeekdayArray {
+            if selectedWeekdayArray.last != weekday  {
+                str += "\(weekday), "
+            } else {
+                str += weekday
+            }
+        }
+        self.shiftDaysTextField.text = str
+        self.validation.requiredValidation(textField: self.shiftDaysTextField, errorLabel: self.shiftDaysErrorLabel, errorMessage: "Shift days required.")
     }
  
     func trainerValidation() {
@@ -498,16 +519,7 @@ extension TrainerEditScreenViewController {
         self.weekDayListView.alpha = self.weekDayListView.isHidden == true ? 0.0 : 1.0
         
         if self.weekDayListView.isHidden == true {
-            let selectedWeekdayArray = AppManager.shared.getSelectedWeekdays(selectedArray: self.selectedWeekDayIndexArray, defaultArray: self.weekDayArray)
-            var str:String = ""
-            for weekday in  selectedWeekdayArray {
-                if selectedWeekdayArray.last != weekday  {
-                     str += "\(weekday), "
-                } else {
-                    str += weekday
-                }
-            }
-            self.shiftDaysTextField.text = str
+            self.setValueToShiftField()
         }
         
     }
@@ -533,6 +545,7 @@ extension TrainerEditScreenViewController {
     }
     
     @objc func showPicker(){
+        self.isUserImgSelected = false
         self.imagePicker.allowsEditing = true
         self.imagePicker.modalPresentationStyle = .fullScreen
         self.imagePicker.sourceType = .photoLibrary
@@ -541,6 +554,7 @@ extension TrainerEditScreenViewController {
     
     @objc func showUserImgPicker(){
         self.isUserImgSelected = true
+        self.userImg.tag = 1111
         self.imagePicker.allowsEditing = true
         self.imagePicker.modalPresentationStyle = .fullScreen
         self.imagePicker.sourceType = .photoLibrary
@@ -739,12 +753,28 @@ extension TrainerEditScreenViewController {
     func registerTrainer(email:String,password:String,id:String,trainerDetail:[String:Any],trainerPermission:[String:Bool]) {
         SVProgressHUD.show()
         if self.isNewTrainer == false {
-            if self.isUserImgSelected == true {
-                FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
-                    err in
-                    if err != nil {
-                        SVProgressHUD.dismiss()
-                        self.showAlert(title: "Error", message: "Error in uploading changed user profile photo.")
+            FireStoreManager.shared.updateUserCredentials(id: id, email: email, password: password, handler: {
+                (err) in
+                
+                if err == nil {
+                    if self.userImg.tag == 1111 {
+                        FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
+                            err in
+                            if err != nil {
+                                SVProgressHUD.dismiss()
+                                self.showAlert(title: "Error", message: "Error in uploading changed user profile photo.")
+                            } else {
+                                FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
+                                    err in
+                                    SVProgressHUD.dismiss()
+                                    if err != nil {
+                                        self.showAlert(title: "Error", message: "Error in updating the trainer details, please try again.")
+                                    } else {
+                                        self.showAlert(title: "Success", message: "Trainer Detail is updated successfully.")
+                                    }
+                                })
+                            }
+                        })
                     } else {
                         FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
                             err in
@@ -756,65 +786,62 @@ extension TrainerEditScreenViewController {
                             }
                         })
                     }
-                })
-            } else {
-                FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
-                    err in
-                    SVProgressHUD.dismiss()
-                    if err != nil {
-                        self.showAlert(title: "Error", message: "Error in updating the trainer details, please try again.")
-                    } else {
-                        self.showAlert(title: "Success", message: "Trainer Detail is updated successfully.")
-                    }
-                })
-            }
+                }
+            })
         } else {
-            if imgURL == nil {
-                 SVProgressHUD.dismiss()
-                 self.showAlert(title: "Error", message: "Please select id proof.")
-            } else {
-                FireStoreManager.shared.uploadImgForTrainer(url: self.imgURL!, trainerid: id, imageName: self.uploadIDProofTextField.text!, completion: {
-                    err in
-                    SVProgressHUD.dismiss()
-                    if err != nil {
-                         SVProgressHUD.dismiss()
-                        self.showAlert(title: "Error", message: "Some fields are not field properly.")
+            
+            FireStoreManager.shared.addNewUserCredentials(id: id, email: email, password: password, handler: {
+                (err) in
+                
+                if err == nil {
+                    if self.imgURL == nil {
+                        SVProgressHUD.dismiss()
+                        self.showAlert(title: "Error", message: "Please select id proof.")
                     } else {
-                        if self.isUserImgSelected == true {
-                            FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
-                                err in
-                                
-                                if err != nil {
-                                     SVProgressHUD.dismiss()
-                                    self.showAlert(title: "Error", message: "Error in uploading the user profile imgage.")
-                                } else {
+                        FireStoreManager.shared.uploadImgForTrainer(url: self.imgURL!, trainerid: id, imageName: self.uploadIDProofTextField.text!, completion: {
+                            err in
+                            SVProgressHUD.dismiss()
+                            if err != nil {
+                                SVProgressHUD.dismiss()
+                                self.showAlert(title: "Error", message: "Some fields are not field properly.")
+                            } else {
+                                if self.userImg.tag == 1111 {
+                                    FireStoreManager.shared.uploadUserImg(imgData: (self.userImg.image?.pngData())!, id: id, completion: {
+                                        err in
+                                        
+                                        if err != nil {
+                                            SVProgressHUD.dismiss()
+                                            self.showAlert(title: "Error", message: "Error in uploading the user profile imgage.")
+                                        } else {
+                                            FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
+                                                err in
+                                                if err != nil {
+                                                    SVProgressHUD.dismiss()
+                                                    self.showAlert(title: "Error", message: "Error in registering the trainer, please try again.")
+                                                } else {
+                                                    SVProgressHUD.dismiss()
+                                                    self.showAlert(title: "Success", message: "Trainer is registerd successfully.")
+                                                }
+                                            })
+                                        }
+                                    })
+                                }else {
                                     FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
                                         err in
                                         if err != nil {
-                                             SVProgressHUD.dismiss()
+                                            SVProgressHUD.dismiss()
                                             self.showAlert(title: "Error", message: "Error in registering the trainer, please try again.")
                                         } else {
-                                             SVProgressHUD.dismiss()
+                                            SVProgressHUD.dismiss()
                                             self.showAlert(title: "Success", message: "Trainer is registerd successfully.")
                                         }
                                     })
                                 }
-                            })
-                        }else {
-                            FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
-                                err in
-                                if err != nil {
-                                     SVProgressHUD.dismiss()
-                                    self.showAlert(title: "Error", message: "Error in registering the trainer, please try again.")
-                                } else {
-                                     SVProgressHUD.dismiss()
-                                    self.showAlert(title: "Success", message: "Trainer is registerd successfully.")
-                                }
-                            })
-                        }
+                            }
+                        })
                     }
-                })
-            }
+                }
+            })
         }
     }
     
@@ -933,15 +960,14 @@ extension TrainerEditScreenViewController:UIImagePickerControllerDelegate,UINavi
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if self.isUserImgSelected == true{
-            if let img = info[.editedImage] as? UIImage{
-                self.userImg.image = img
-            dismiss(animated: true, completion: nil)
-            }
+                if let img = info[.editedImage] as? UIImage{
+                    self.userImg.image = img
+                    self.dismiss(animated: true, completion: nil)
+                }
         }else {
             if let selectedImgURL:URL = info[ .imageURL ] as? URL {
                 self.imgURL = selectedImgURL
                 let imgaeName = selectedImgURL.lastPathComponent
-                self.isUserImgSelected = false
                 self.uploadIDProofTextField.text = imgaeName
                 dismiss(animated: true, completion: nil)
             }
@@ -990,6 +1016,34 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
                 break
             }
         }
+        
+        if textField.tag == 5 {
+            let email = textField.text!
+            DispatchQueue.global(qos: .background).async {
+                let result = FireStoreManager.shared.isUserExists(email: email)
+                
+                DispatchQueue.main.async {
+                    switch result {
+                    case let .success(flag):
+                        if flag == false {
+                            self.isAlreadyExistsEmail = false
+                            self.updateBtn.isEnabled = true
+                            self.updateBtn.alpha = 1.0
+                        }else {
+                            textField.layer.borderColor = UIColor.red.cgColor
+                            textField.layer.borderWidth = 1.0
+                            self.emailErrorLabel.text = "Email already exists."
+                            self.isAlreadyExistsEmail = true
+                            self.updateBtn.isEnabled = false
+                            self.updateBtn.alpha = 0.4
+                        }
+                    case .failure(_):
+                        break
+                    }
+                }
+            }
+        }
+        
         self.allTrainerFieldsRequiredValidation(textField: textField)
         self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
     }
@@ -1039,7 +1093,16 @@ extension TrainerEditScreenViewController:UITableViewDelegate{
     }
 }
 
-
+extension TrainerEditScreenViewController:UIGestureRecognizerDelegate{
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if touch.view?.isDescendant(of: self.weekDayListView) == true ||
+            touch.view?.isDescendant(of: self.imagePicker.view) == true {
+            return false
+        }else {
+            return true
+        }
+    }
+}
 
 
 
