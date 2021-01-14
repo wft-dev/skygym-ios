@@ -277,7 +277,6 @@ extension ListOfVisitorsViewController {
               if err != nil {
                 imgView.image = UIImage(named: "user1")
                 imgView.tag = 0000
-                print("NO PROFILE IMAGE IS THERE.")
               } else {
                   do{
                     let imgData = try Data(contentsOf: imgUrl!)
@@ -371,6 +370,7 @@ extension ListOfVisitorsViewController:UITableViewDelegate{
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 15
     }
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView()
         headerView.backgroundColor = UIColor.clear

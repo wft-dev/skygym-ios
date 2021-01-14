@@ -175,7 +175,7 @@ class TrainerEditScreenViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        self.addClickToDismissWeekDaysList()
         if AppManager.shared.loggedInRole == LoggedInRole.Trainer {
             self.userImg.image = UIImage(named: "member")
         } else {
@@ -195,7 +195,7 @@ class TrainerEditScreenViewController: BaseViewController {
             destinationVC.trainerImgData = self.userImg.image?.pngData()
         }
     }
-    
+
     @IBAction func generalTypeBtnAction(_ sender: Any) {
         if  generalTypeBtn.currentImage ==  UIImage(named: "non_selecte") {
             self.generalTypeBtn.setImage(UIImage(named: "selelecte"), for: .normal)
@@ -244,6 +244,18 @@ class TrainerEditScreenViewController: BaseViewController {
 
 extension TrainerEditScreenViewController {
     
+    private func addClickToDismissWeekDaysList() {
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissWeekDaysList(_:)))
+        tapRecognizer.cancelsTouchesInView = true
+        self.view.isUserInteractionEnabled = true
+        self.view.addGestureRecognizer(tapRecognizer)
+    }
+    
+    @objc func dismissWeekDaysList(_ gesture : UITapGestureRecognizer) {
+        self.weekDayListView.isHidden = true
+        self.weekDayListView.alpha = 0.0
+    }
+ 
     func trainerValidation() {
         for textField in self.textFieldArray {
             self.allTrainerFieldsRequiredValidation(textField: textField)

@@ -248,6 +248,7 @@ class FireStoreManager: NSObject {
         let month = Calendar.current.dateComponents([.month], from: Date()).month!
         let attendence = AppManager.shared.getCompleteInitialStructure(year: year, month: month,checkIn: "", checkOut: "", present: false)
         let parentID = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerID : AppManager.shared.adminID
+
         self.fireDB.collection("/Members").document("/\(memberID)").setData(
             [
                 "parentID":parentID,
@@ -261,6 +262,7 @@ class FireStoreManager: NSObject {
                 err in
                 handler(err)
         })
+    
     }
     
     func addNewMembeship(memberID:String,membership:[String:String], completion:@escaping (Error?) -> Void) {
@@ -1206,22 +1208,6 @@ class FireStoreManager: NSObject {
         })
     }
     
-//    func addFirstAttendence() {
-//        let ref = fireDB.collection("/Members").document("9001")
-//        let attendenceDir = AppManager.shared.getMonthAttendenceStructure(year:2020,month:12,checkIn: "3:30 PM", checkOut: "4:30 PM", present: true)
-//
-//        ref.setData([
-//            "attendence" :attendenceDir
-//        ], completion: {
-//            err in
-//            if err != nil {
-//                print("Faliure")
-//            }else {
-//                print("success")
-//            }
-//        })
-//    }
-
     func updateAttendence(trainerORmember:String,id:String,checkOutA:String ,completion:@escaping (Error?)->Void)  {
         let currentYear = Calendar.current.component(.year, from: Date())
         let currentMonth = Calendar.current.component(.month, from: Date())
@@ -1290,48 +1276,71 @@ class FireStoreManager: NSObject {
         })
     }
     
+    // USER CREDENTIALS FUNCTIONALITY
+    func addNewUserCredentials(id:String,email:String,password:String,handler:@escaping (Error?) -> Void){
+        self.fireDB.collection("Users").document("\(id)").setData([
+            "id": id,
+            "email" : email,
+            "password":password
+            ], completion: {
+                (err) in
+                handler(err)
+        })
+    }
+    
+    func isUserExists(email:String) -> Result<Bool,Error>  {
+        let seamphores = DispatchSemaphore(value: 0)
+        var result:Result<Bool,Error>!
+        
+        fireDB.collection("Users").getDocuments(completion: {
+            (querySnapshot,err) in
+            if err != nil {
+                result = .failure(err!)
+                result = .success(false)
+            }else {
+                for singleDoc in querySnapshot!.documents {
+                    let data = singleDoc.data() as! Dictionary<String,String>
+                    let matchingEmail = data["email"]
+                    
+                    if email == matchingEmail {
+                        result = .success(true)
+                        break
+                    }else {
+                        result = .success(false)
+                    }
+                }
+                seamphores.signal()
+            }
+        })
 
-//    func addNewMonth(month:Int) {
-//        let ref = fireDB.collection("/Members").document("97528")
-//
-//        ref.getDocument(completion: {
-//            (docSnapshot,err) in
-//
-//            if err != nil {
-//                print("Errror in fetching the member attandance.")
-//            } else {
-//                var attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
-//                self.addMonth(attendenceDir: attandanceDic , trainerORmember: "Members", id: "97528", year: 2021, month: month, day: 1, present: true, checkIn: "1:00 AM", checkOut: "1:30 AM", handler:{
-//                    err in
-//                    if err != nil {
-//                        print("Error in adding new month.")
-//                    }else {
-//                        print("Success in adding new month.")
-//                    }
-//                })
-//            }
-//        })
-//    }
+        let _ = seamphores.wait(wallTimeout: .distantFuture)
+        return result
+    }
+    
+    func updateUserCredentials(id:String,email:String,password:String) -> Result<Bool,Error> {
+        let userRef = fireDB.collection("Users").document("\(id)")
+        let seamphores = DispatchSemaphore(value: 0)
+        var result:Result<Bool,Error>!
+        
+        userRef.updateData([
+            "email":email,
+            "password" : password
+        ], completion: {
+            (err) in
+            if err != nil {
+                result = .failure(err!)
+                result = .success(false)
+            }else {
+                result = .success(true)
+            }
+            seamphores.signal()
+        })
+        let _ = seamphores.wait(wallTimeout: .distantFuture)
+        return result
+    }
+    
 
-    
-//    func addNewYear(year:Int,month:Int) {
-//         let ref = fireDB.collection("/Members").document("97528")
-//
-//        ref.getDocument(completion: {
-//            (docSnapshot,err) in
-//            if err != nil {
-//                print("Errror in fetching the member attandance.")
-//            } else {
-//                let attandanceDic = (docSnapshot?.data() as! Dictionary<String, Any>)["attendence"] as! Dictionary<String, Any>
-//                self.addYear(attendenceDir: attandanceDic, trainerORmember: "Members", id: "97528", year: year, month: month, day: 1, present: true, checkIn: "checkInNew", checkOut: "checkOutNew", handler: {
-//                    err in
-//                    err != nil ? print("Error in adding new year.") : print("Success in adding new year.")
-//                })
-//            }
-//        })
-//    }
-    
-    
+   
 }
     
 

@@ -153,6 +153,7 @@ class AdminProfileViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.addClickToDismissGymWeekDaysList()
         DispatchQueue.main.async {
             if AppManager.shared.loggedInRole == LoggedInRole.Admin {
                 self.fetchAdminDetailBy(id: AppManager.shared.adminID)
@@ -199,6 +200,18 @@ class AdminProfileViewController: UIViewController {
 }
 
 extension AdminProfileViewController {
+
+    private func addClickToDismissGymWeekDaysList() {
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissGymWeekDaysList(_:)))
+        tapRecognizer.cancelsTouchesInView = true
+        self.view.isUserInteractionEnabled = true
+        self.view.addGestureRecognizer(tapRecognizer)
+    }
+    
+    @objc func dismissGymWeekDaysList(_ gesture : UITapGestureRecognizer) {
+        self.weekDaysListView.isHidden = true
+        self.weekDaysListView.alpha = 0.0
+    }
 
     func setAdminProfileNavigationBar() {
         self.adminProfileNavigationBar.menuBtn.isHidden = false

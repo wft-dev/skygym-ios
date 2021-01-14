@@ -110,6 +110,7 @@ class AddMemberViewController: BaseViewController {
     var selectedTrainerType:String = ""
     var listOfTrainers:[TrainerDataStructure] = []
     var trainerID:String = ""
+    var isAlreadyExistsEmail:Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -158,6 +159,7 @@ class AddMemberViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        addClickToDismissMembershipList()
         self.memberIDTextField.text = "\(Int.random(in: 1..<100000))" 
         self.memberIDTextField.isEnabled = false
         self.memberIDTextField.alpha = 0.4
@@ -170,7 +172,7 @@ class AddMemberViewController: BaseViewController {
         })
         
         if self.isNewMember == false {
-            addClickToDismissMembershipList()
+            
             self.showMembershipScreen()
             self.profileAndMembershipBarView.isUserInteractionEnabled = false
             self.profileAndMembershipBarView.isHidden = true
@@ -248,7 +250,6 @@ class AddMemberViewController: BaseViewController {
                     self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
                 }
             }
-                
             else if self.isRenewMembership == true {
                 self.updateMembershipBy(memberID: AppManager.shared.memberID, membershipId: self.membershipID)
             }
@@ -564,7 +565,10 @@ extension AddMemberViewController{
     }
     
     @objc func dismissMembershipList(_ gesture : UITapGestureRecognizer) {
-        self.showMembershipPlan()
+        self.membershipPlanView.isHidden = true
+        self.membershipPlanView.alpha = 0.0
+        self.trainerListView.isHidden = true
+        self.trainerListView.alpha = 0.0
     }
     
     @objc func trainerTypeSelection(_ gesture:UITapGestureRecognizer) {
@@ -657,27 +661,38 @@ extension AddMemberViewController{
     }
     
     func registerMember(memberDetail:[String:String],membershipDetail:[[String:String]]) {
-        DispatchQueue.main.asyncAfter(deadline: .now(), execute: {
-            
-            FireStoreManager.shared.uploadImg(url:self.imgUrl!, membeID:self.memberIDTextField.text! , imageName: self.imgUrl!.lastPathComponent, completion: {
+        SVProgressHUD.show()
+        if self.isAlreadyExistsEmail == false {
+            FireStoreManager.shared.addNewUserCredentials(id: self.memberIDTextField.text!, email: self.emailTextField.text!, password: self.passwordTextField.text!, handler: {
                 (err) in
-                if err != nil {
-                    SVProgressHUD.dismiss()
-                    self.errorAlert(message: "ID is not uploaded successfully.")
-                } else {
-                    FireStoreManager.shared.addMember(email:self.emailTextField.text!,password: self.passwordTextField.text!,memberDetail: memberDetail, memberships: membershipDetail, memberID: self.memberIDTextField.text!, handler: {
-                        (err) in
-                        if err != nil {
-                            SVProgressHUD.dismiss()
-                            self.errorAlert(message: "\(err?.localizedDescription ?? "Member is not registered successfully.")")
-                        } else {
-                            SVProgressHUD.dismiss()
-                            self.successAlert(message: "Member is registered successfully.")
-                        }
+                
+                if err == nil {
+                    DispatchQueue.main.asyncAfter(deadline: .now(), execute: {
+                        FireStoreManager.shared.uploadImg(url:self.imgUrl!, membeID:self.memberIDTextField.text! , imageName: self.imgUrl!.lastPathComponent, completion: {
+                            (err) in
+                            if err != nil {
+                                SVProgressHUD.dismiss()
+                                self.errorAlert(message: "ID is not uploaded successfully.")
+                            } else {
+                                FireStoreManager.shared.addMember(email:self.emailTextField.text!,password: self.passwordTextField.text!,memberDetail: memberDetail, memberships: membershipDetail, memberID: self.memberIDTextField.text!, handler: {
+                                    (err) in
+                                    if err != nil {
+                                        SVProgressHUD.dismiss()
+                                        self.errorAlert(message: "\(err?.localizedDescription ?? "Member is not registered successfully.")")
+                                    } else {
+                                        SVProgressHUD.dismiss()
+                                        self.successAlert(message: "Member is registered successfully.")
+                                    }
+                                })
+                            }
+                        })
                     })
                 }
             })
-        })
+            
+        }else {
+            print("ALREADY EXISTS EMAIL")
+        }
     }
     
     func addNewMembership(membershipDetail:[[String:String]]) {
@@ -922,7 +937,7 @@ extension AddMemberViewController:UITextFieldDelegate{
             }
         }
 
-        if textField.tag == 8 {
+        if textField.tag == 8 || textField.tag == 7 {
             self.view.endEditing(true)
         }
         
@@ -996,6 +1011,30 @@ extension AddMemberViewController:UITextFieldDelegate{
         } else {
             self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
         }
+        
+        if textField.tag == 9 {
+            let email = textField.text!
+            DispatchQueue.global(qos: .background).async {
+                let result = FireStoreManager.shared.isUserExists(email: email)
+                
+                DispatchQueue.main.async {
+                    switch result {
+                    case let .success(flag):
+                        if flag == false {
+                            self.isAlreadyExistsEmail = false
+                        }else {
+                            textField.layer.borderColor = UIColor.red.cgColor
+                            textField.layer.borderWidth = 1.0
+                            self.emailErrorLabel.text = "Email already exists."
+                            self.isAlreadyExistsEmail = true
+                        }
+                    case .failure(_):
+                        break
+                    }
+                }
+            }
+        }
+        
     }
 }
 
@@ -1019,6 +1058,7 @@ extension AddMemberViewController:UITextViewDelegate {
         } else {
             self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
         }
+    
     }
  
 }

@@ -135,7 +135,8 @@ class MemberViewController: BaseViewController {
         self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
         self.imgPicker.delegate = self
         self.setMemberProfileCompleteView()
-    }    
+    }
+    
     @objc func showTrainerList(){
         self.view.endEditing(true)
         self.listOfTrainerView.isHidden = !self.listOfTrainerView.isHidden
@@ -194,7 +195,6 @@ class MemberViewController: BaseViewController {
         }
         self.fetchListOfTrainer(category: .personal)
     }
-    
 }
 
 extension MemberViewController{
@@ -268,6 +268,7 @@ extension MemberViewController{
         let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
         toolBar.items = [cancelToolBarItem,space,okToolBarItem]
         toolBar.sizeToFit()
+        self.addClickToDismissTrainerList()
     }
     
     @objc func cancelTextField()  {
@@ -293,6 +294,21 @@ extension MemberViewController{
         memberNaviagationBar?.editBtn.addTarget(self, action: #selector(makeEditable), for: .touchUpInside)
     }
     
+    private func addClickToDismissTrainerList() {
+
+           let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissPresentedView(_:)))
+           tapRecognizer.cancelsTouchesInView = false
+           self.view.isUserInteractionEnabled = true
+           self.view.addGestureRecognizer(tapRecognizer)
+       }
+
+       @objc
+       private func dismissPresentedView(_ sender: Any?) {
+           self.listOfTrainerView.isHidden = true
+           self.listOfTrainerView.alpha = 0.0
+        self.view.endEditing(true)
+       }
+
     func setTextFields()  {
         [self.memberIDTextField,self.dateOfJoiningTextField,self.genderTextField,self.passwordTextField,self.trainerNameTextField,self.emailTextField,self.uploadIDTextField,self.phoneNoTextField,self.dobTextField].forEach{
             $0?.addPaddingToTextField(height: 10, Width: 10)
@@ -464,6 +480,8 @@ extension MemberViewController{
              "dob":self.dobTextField.text!,
              "trainerID":self.trainerID
          ]
+        
+        
          return memberDetail
      }
     
@@ -538,7 +556,7 @@ extension MemberViewController : UIImagePickerControllerDelegate,UINavigationCon
 
 extension MemberViewController:UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 2 || textField.tag == 9 {
+        if textField.tag == 2 || textField.tag == 9 || textField.tag == 6 {
             return false
         } else{
             return true
@@ -599,16 +617,14 @@ extension MemberViewController:UITableViewDataSource {
         
         return cell
     }
-    
-    
 }
 
 extension MemberViewController:UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
          let singleTrainer = self.listOfTrainers[indexPath.row]
-        self.trainerNameTextField.text = "\(singleTrainer.firstName) \(singleTrainer.lastName)"
         self.trainerID = singleTrainer.trainerID
+        self.trainerNameTextField.text = "\(singleTrainer.firstName) \(singleTrainer.lastName)"
         self.listOfTrainerView.isHidden = true
     }
     

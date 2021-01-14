@@ -320,7 +320,7 @@ class MemberLoginProfileViewController: UIViewController {
     
     func showAlert(title:String,message:String) {
         let alertController = UIAlertController(title:title, message: message, preferredStyle: .alert)
-        let okAlertAction = UIAlertAction(title: title, style: .default, handler: {
+        let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
         _ in
             if title == "Success" {
                 self.fetchMemberDetailBy(id: AppManager.shared.memberID)
