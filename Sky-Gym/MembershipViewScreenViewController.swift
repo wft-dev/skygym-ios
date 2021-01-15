@@ -148,7 +148,7 @@ extension  MembershipViewScreenViewController {
             if selectedText.count > 0 {
                 self.selectedOption = selectedText
                 self.selectedIndex = index
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
                     self.validation.requiredValidation(dropDown: self.membershipDropDownTitleTextField, errorLabel: self.titleErrorLabel, errorMessage: "Membership Title required.")
                 })
             }

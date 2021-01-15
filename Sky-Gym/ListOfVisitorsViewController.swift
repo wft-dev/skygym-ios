@@ -170,7 +170,8 @@ extension ListOfVisitorsViewController {
         
         deleteView.addSubview(trashImgView)
         trashImgView.translatesAutoresizingMaskIntoConstraints = false
-        trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
+      //  trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
+        trashImgView.topAnchor.constraint(equalTo: deleteView.topAnchor, constant: cellView.frame.height/3 + 5 ).isActive = true
         trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/2)).isActive = true
         trashImgView.heightAnchor.constraint(equalToConstant: 25).isActive = true
         trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true

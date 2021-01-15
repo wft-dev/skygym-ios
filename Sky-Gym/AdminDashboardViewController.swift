@@ -24,6 +24,7 @@ class AdminDashboardViewController: BaseViewController {
     let lightGrayColor = UIColor(red: 238/255, green: 238/255, blue: 238/255, alpha: 1.0)
     override func viewDidLoad() {
         super.viewDidLoad()
+        SVProgressHUD.show()
         self.assignbackground()
         self.paidMemberView.paidUserLabel.text = "Paid member"
         self.expiredMemberView.paidUserLabel.text = "Expired member"
@@ -81,7 +82,7 @@ class AdminDashboardViewController: BaseViewController {
     }
     
     func setDashboardValues()  {
-        SVProgressHUD.show()
+        
         self.getTotalNumberOf(role: .Member)
         self.getTotalNumberOf(role: .Visitor)
         if AppManager.shared.loggedInRole ==  LoggedInRole.Admin  {

@@ -298,7 +298,7 @@ extension ViewVisitorScreenViewController {
     }
     
     func getVisitorData() -> [String:String] {
-        let trainerName = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerName: " --"
+        let trainerName = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerName: "  --"
         let trainerType = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerType : " --"
         let visitor:[String:String] = [
             "firstName":self.visitorFirstName.text!,

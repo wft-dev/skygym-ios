@@ -202,7 +202,7 @@ extension ListOfMembershipViewController:UITableViewDataSource {
         cell.membershipPriceLabel.layer.cornerRadius = 7.0
         cell.membershipTitleLabel.text = singleMembership.title
         cell.membershipDetailLabel.text = singleMembership.detail
-        cell.membershipPriceLabel.text = singleMembership.amount
+        cell.membershipPriceLabel.text = "Rs. \(singleMembership.amount)"
         cell.selectionStyle = .none
         cell.membershipCellView.tag = Int(singleMembership.membershipID)!
         

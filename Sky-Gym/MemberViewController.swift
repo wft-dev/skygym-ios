@@ -185,12 +185,10 @@ class MemberViewController: BaseViewController {
                         SVProgressHUD.dismiss()
                         self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
                     }
-                    
                 }
             })
-            
         })
-
+        
     }
     
     @IBAction func generalToggleBtnAction(_ sender: Any) {

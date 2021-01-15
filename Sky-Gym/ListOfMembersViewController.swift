@@ -182,7 +182,7 @@ class ListOfMembersViewController: BaseViewController {
         self.grayView.isHidden = true
         self.grayView.alpha = 0
         self.addBtn.isHidden = false
-        AppManager.shared.setStatusBarBackgroundColor(color: .clear, alpha: 1.0)
+        AppManager.shared.setStatusBarBackgroundColor(color: .white, alpha: 1.0)
     }
     func showFilterView() {
         self.filterView.isHidden = false

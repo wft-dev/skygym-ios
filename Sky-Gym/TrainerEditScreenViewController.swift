@@ -664,7 +664,7 @@ extension TrainerEditScreenViewController {
             }
             [self.generalBtnForNonEditLabel,self.personalBtnForNonEditLabel].forEach{
                 $0?.isHidden = false
-                $0?.alpha = 1.0
+                $0?.alpha = 0.4
             }
             self.setPermissionView(isHidden: true)
             self.setPermissionLabel(isHidden: true)

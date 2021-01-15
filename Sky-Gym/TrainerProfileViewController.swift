@@ -177,6 +177,17 @@ class TrainerProfileViewController: BaseViewController {
     }
     
     @objc func errorValidator(_ textField:UITextField) {
+        if textField.tag == 5 {
+            if self.trainerEmail == textField.text! {
+                self.updateBtn.isEnabled = true
+                self.updateBtn.alpha = 1.0
+            }else {
+                DispatchQueue.main.async {
+                    self.updateBtn.isEnabled = false
+                    self.updateBtn.alpha = 0.4
+                }
+            }
+        }
         self.allTrainerFieldValidation(textField: textField)
         self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
@@ -353,7 +364,6 @@ extension TrainerProfileViewController:UIImagePickerControllerDelegate,UINavigat
 }
 
 extension TrainerProfileViewController:UITextFieldDelegate {
-
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField.tag == 7 {
             textField.inputView = self.datePicker
@@ -363,16 +373,18 @@ extension TrainerProfileViewController:UITextFieldDelegate {
                 df.dateFormat = "dd-MM-yyyy"
                 self.datePicker.date = df.date(from: textField.text!)!
             }
-            
-          //  if textField.tag == 5 {
-            if self.trainerEmail != self.emailTextField.text! {
+        }
+        
+        if textField.tag == 5 {
+            if self.trainerEmail == textField.text! {
+                self.updateBtn.isEnabled = true
+                self.updateBtn.alpha = 1.0
+            }else {
+                DispatchQueue.main.async {
                     self.updateBtn.isEnabled = false
                     self.updateBtn.alpha = 0.4
-                }else {
-                    self.updateBtn.isEnabled = true
-                    self.updateBtn.alpha = 0.4
                 }
-          //  }
+            }
         }
         
         self.allTrainerFieldValidation(textField: textField)
