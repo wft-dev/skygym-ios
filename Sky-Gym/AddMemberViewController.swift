@@ -83,7 +83,6 @@ class AddMemberViewController: BaseViewController {
     @IBOutlet weak var trainerListView: UIView!
     @IBOutlet weak var trainerListTable: UITableView!
 
-    
     let imagePicker = UIImagePickerController()
     var imgUrl:URL? = nil
     var isNewMember:Bool = false
@@ -111,10 +110,14 @@ class AddMemberViewController: BaseViewController {
     var listOfTrainers:[TrainerDataStructure] = []
     var trainerID:String = ""
     var isAlreadyExistsEmail:Bool = false
+    let genderPickerView = UIPickerView()
+    let genderArray  = ["Male","Female","Other"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCompleteView()
+        self.genderPickerView.delegate = self
+        self.genderPickerView.dataSource = self
         
         if self.isRenewMembership == true {
             if self.renewingMembershipID == "" {
@@ -155,8 +158,6 @@ class AddMemberViewController: BaseViewController {
         self.trainerNameTextField.isUserInteractionEnabled = true
         self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
         self.fetchTrainersByCategory(category: .general)
-        
-        //self.memberImg.image = UIImage(data: self.visitorProfileImgData!)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -168,14 +169,12 @@ class AddMemberViewController: BaseViewController {
         self.endDateTextField.isEnabled = false
         self.endDateTextField.alpha = 0.4
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
-            // self.isNewMember == false ||
             if self.memberProfileView.isHidden == true{
                self.myScrollView.contentSize.height = 750
             }
         })
         
         if self.isNewMember == false {
-            
             self.showMembershipScreen()
             self.profileAndMembershipBarView.isUserInteractionEnabled = false
             self.profileAndMembershipBarView.isHidden = true
@@ -968,6 +967,12 @@ extension AddMemberViewController:UITextFieldDelegate{
             self.showMembershipPlan()
             self.view.endEditing(true)
         }
+        
+        
+        if textField.tag == 5 {
+            textField.inputView = self.genderPickerView
+        }
+        
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -1061,6 +1066,7 @@ extension AddMemberViewController:UITextFieldDelegate{
                 }
             }
         }
+
     }
 }
 
@@ -1144,5 +1150,29 @@ extension AddMemberViewController:UITableViewDelegate {
     }
 }
 
+extension AddMemberViewController:UIPickerViewDataSource{
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return self.genderArray.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return self.genderArray[row]
+    }
+    
+}
+
+extension AddMemberViewController:UIPickerViewDelegate {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.genderTextField.text = self.genderArray[row]
+        DispatchQueue.main.async {
+            self.allNewMemberFieldsRequiredValidation(textField: self.genderTextField)
+            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+        }
+    }
+}
 
 

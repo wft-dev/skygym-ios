@@ -67,10 +67,14 @@ class TrainerProfileViewController: BaseViewController {
     var actuallPassword:String = ""
     var trainerEmail:String = ""
     var isAlreadyExistsEmail:Bool = false
+    let genderPickerView = UIPickerView()
+    let genderArray = ["Male","Female","Other"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.assignbackground()
+        self.genderPickerView.dataSource = self
+        self.genderPickerView.delegate = self
         self.trainerProfileCustomNavigationView.navigationTitleLabel.text = "Profile"
         self.trainerProfileCustomNavigationView.searchBtn.isHidden = true
         self.trainerProfileCustomNavigationView.searchBtn.alpha = 0.0
@@ -147,33 +151,43 @@ class TrainerProfileViewController: BaseViewController {
         SVProgressHUD.show()
         let trainerInfo = self.getTrainerInfo()
         let trainerImgData = self.trainerProfileImg.image?.pngData()
-        FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.trainerID, email: self.emailTextField.text!, password: self.passwordTextField.text!, handler: {
-            (err) in
-            
-            DispatchQueue.global(qos: .background).async {
-                let result = FireStoreManager.shared.updateTrainerDetailBy(id: AppManager.shared.trainerID, trainerInfo: trainerInfo)
+        self.view.endEditing(true)
+        if  self.allFieldsValid() == true {
+            FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.trainerID, email: self.emailTextField.text!, password: self.passwordTextField.text!, handler: {
+                (err) in
                 
-                switch result{
-                case .failure(_) :
-                    SVProgressHUD.dismiss()
-                    print("Errror")
-                    self.showAlert(title: "Error", message: "Error in updating the trainer detail.")
-                case .success(_) :
-                    if self.isUserProfileUpdated == true {
-                        FireStoreManager.shared.uploadUserImg(imgData: (trainerImgData)!, id: AppManager.shared.trainerID, completion: {
-                            (err) in
-                            SVProgressHUD.dismiss()
-                            if err == nil {
-                                self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
-                            }
-                        })
-                    } else {
+                DispatchQueue.global(qos: .background).async {
+                    let result = FireStoreManager.shared.updateTrainerDetailBy(id: AppManager.shared.trainerID, trainerInfo: trainerInfo)
+                    
+                    switch result{
+                    case .failure(_) :
                         SVProgressHUD.dismiss()
-                        self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+                        print("Errror")
+                        self.showAlert(title: "Error", message: "Error in updating the trainer detail.")
+                    case .success(_) :
+                        if self.isUserProfileUpdated == true {
+                            FireStoreManager.shared.uploadUserImg(imgData: (trainerImgData)!, id: AppManager.shared.trainerID, completion: {
+                                (err) in
+                                SVProgressHUD.dismiss()
+                                if err == nil {
+                                    self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+                                }
+                            })
+                        } else {
+                            SVProgressHUD.dismiss()
+                            self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+                        }
                     }
                 }
+            })
+        }else {
+            SVProgressHUD.dismiss()
+            for textField in self.textFieldArray {
+                self.allTrainerFieldValidation(textField: textField)
             }
-        })
+            
+            self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+        }
     }
     
     @objc func errorValidator(_ textField:UITextField) {
@@ -255,6 +269,7 @@ class TrainerProfileViewController: BaseViewController {
         self.trainerFirstNameNonEditLabel.text = trainerDetail.firstName
         self.trainerLastNameNonEditLabel.text = trainerDetail.lastName
         self.genderNonEditLabel.text = trainerDetail.gender
+        self.actuallPassword = ""
         self.actuallPassword = trainerDetail.password
         self.passwordNonEditLabel.text = AppManager.shared.getSecureTextFor(text: trainerDetail.password)
         self.emailNonEditLabel.text = trainerDetail.email
@@ -269,6 +284,17 @@ class TrainerProfileViewController: BaseViewController {
         self.emailTextField.text = trainerDetail.email
         self.phoneNoTextField.text = trainerDetail.phoneNo
         self.dobTextField.text = trainerDetail.dob
+    }
+    
+    func allFieldsValid() -> Bool {
+        var flag:Bool = false
+        if  self.validator.isAllFieldsRequiredValidated(textFieldArray: self.textFieldArray, phoneNumberTextField: self.phoneNoTextField) == true && self.validator.isEmailValid(email: self.emailTextField.text!) == true  && self.validator.isPasswordValid(password: self.passwordTextField.text!) == true {
+            flag = true
+        }else {
+            flag = false
+        }
+        
+        return flag
     }
     
     func dataFieldsDir() -> [UITextField:UILabel] {
@@ -387,6 +413,10 @@ extension TrainerProfileViewController:UITextFieldDelegate {
             }
         }
         
+        if textField.tag == 3 {
+            textField.inputView = self.genderPickerView
+        }
+        
         self.allTrainerFieldValidation(textField: textField)
         self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
@@ -437,4 +467,31 @@ extension TrainerProfileViewController:UITextFieldDelegate {
         self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
     
+}
+
+
+extension TrainerProfileViewController : UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return self.genderArray.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return self.genderArray[row]
+    }
+}
+
+extension TrainerProfileViewController: UIPickerViewDelegate {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.genderTextField.text = self.genderArray[row]
+        
+        DispatchQueue.main.async {
+            self.allTrainerFieldValidation(textField: self.genderTextField)
+            self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+        }
+        
+    }
 }

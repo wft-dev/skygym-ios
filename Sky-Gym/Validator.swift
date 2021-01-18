@@ -45,10 +45,10 @@ class ValidationManager: NSObject {
     }
 
     func isEmailValid(email:String) -> Bool {
-        return AppManager.shared.isEmailValid(email: email) ? true : false
+        return AppManager.shared.isEmailValid(email: email)
     }
     func isPasswordValid(password:String) -> Bool {
-        return AppManager.shared.isPasswordValid(text: password) ? true : false
+        return AppManager.shared.isPasswordValid(text: password)
     }
 
     func requiredValidation(textField:UITextField,errorLabel:UILabel,errorMessage:String)  {
@@ -93,7 +93,7 @@ class ValidationManager: NSObject {
     
     func emailValidation(textField:UITextField,errorLabel:UILabel,errorMessage:String) {
         if textField.text!.count > 0 {
-            if AppManager.shared.isEmailValid(email: textField.text!){
+            if AppManager.shared.isEmailValid(email: textField.text!) == true{
                 errorLabel.text = ""
                 textField.borderStyle = .none
                 textField.layer.borderColor = UIColor.clear.cgColor
@@ -157,15 +157,28 @@ class ValidationManager: NSObject {
         var flag:Bool = false
         
         if email != nil && password == nil {
-            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) == true ? true : false
+            if isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) == true {
+                flag = true
+            }else {
+                flag = false
+            }
         }
             
         else if password != nil && email == nil {
-            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isPasswordValid(password: password!) == true ? true : false
+            if isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) == true && isPasswordValid(password: password!) == true {
+                flag = true
+            }else {
+                flag = false
+            }
         }
             
         else if email != nil && password != nil {
-            flag = isAllFieldsRequiredValidated(textFieldArray: textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) && isPasswordValid(password: password!) == true ? true : false
+            if isAllFieldsRequiredValidated(textFieldArray: textFieldArray, phoneNumberTextField: phoneNumberTextField) == true && isEmailValid(email: email!) == true && isPasswordValid(password: password!) == true {
+                flag = true
+            }else {
+                flag = false
+            }
+    
         }
             
         else {
@@ -174,25 +187,30 @@ class ValidationManager: NSObject {
         
         if textView == nil {
             if flag == true {
-                updateBtn.isEnabled = true
-                updateBtn.alpha = 1.0
+                DispatchQueue.main.async {
+                    updateBtn.isEnabled = true
+                    updateBtn.alpha = 1.0
+                }
             } else {
-                updateBtn.isEnabled = false
-                updateBtn.alpha = 0.4
+                DispatchQueue.main.async {
+                    updateBtn.isEnabled = false
+                    updateBtn.alpha = 0.4
+                }
             }
         }else {
             if flag == true  && isTextViewRequiredValid(textView: textView!) == true {
-                updateBtn.isEnabled = true
-                updateBtn.alpha = 1.0
+                DispatchQueue.main.async {
+                    updateBtn.isEnabled = true
+                    updateBtn.alpha = 1.0
+                }
             } else {
-                updateBtn.isEnabled = false
-                updateBtn.alpha = 0.4
+                DispatchQueue.main.async {
+                    updateBtn.isEnabled = false
+                    updateBtn.alpha = 0.4
+                }
             }
         }
-
-
     }
-    
    
     func loginBtnValidator(loginBtn:UIButton,textFieldArray:[UITextField],phoneNumberTextField:UITextField?,email:String?,password:String?) {
         var flag:Bool = false
@@ -296,5 +314,6 @@ class ValidationManager: NSObject {
                 isTextViewRequiredValid(textView: textView)
         return flag
     }
+
 }
 

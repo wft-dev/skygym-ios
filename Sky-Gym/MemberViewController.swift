@@ -109,6 +109,8 @@ class MemberViewController: BaseViewController {
     var listOfTrainers:[TrainerDataStructure] = []
     var isAlreadyExistsEmail:Bool = false
     var memberEmail:String = ""
+    let genderPickerView:UIPickerView = UIPickerView()
+    let genderArray = ["Male","Female","Other"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -127,7 +129,10 @@ class MemberViewController: BaseViewController {
         
         self.trainerNameTextField.isUserInteractionEnabled = true
         self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
-         self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
+        self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
+        
+        self.genderPickerView.delegate = self
+        self.genderPickerView.dataSource = self
         
         self.memberImg.image = self.img
         self.memberImg.makeRounded()
@@ -196,6 +201,8 @@ class MemberViewController: BaseViewController {
             self.generalToggleBtn.setImage(UIImage(named: "selelecte"), for: .normal)
             self.personalToggleBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         }
+        self.trainerNameTextField.text = ""
+         self.allMemberProfileFieldsRequiredValidation(textField: self.trainerNameTextField)
         self.fetchListOfTrainer(category: .general)
     }
     
@@ -204,6 +211,8 @@ class MemberViewController: BaseViewController {
             self.personalToggleBtn.setImage(UIImage(named: "selelecte"), for: .normal)
             self.generalToggleBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         }
+        self.trainerNameTextField.text = ""
+         self.allMemberProfileFieldsRequiredValidation(textField: self.trainerNameTextField)
         self.fetchListOfTrainer(category: .personal)
     }
 }
@@ -250,6 +259,7 @@ extension MemberViewController{
         default:
             break
         }
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
     }
     
     func setMemberProfileCompleteView()  {
@@ -425,6 +435,7 @@ extension MemberViewController{
         self.memberIDNonEditLabel.text = memberDetail.memberID
         self.dateOfJoiningNonEditLabel.text = memberDetail.dateOfJoining
         self.genderNonEditLabel.text = memberDetail.gender
+        self.actualPassword = ""
         self.actualPassword = memberDetail.password
         self.passwordNonEditLabel.text = AppManager.shared.getSecureTextFor(text: memberDetail.password)
         self.trainerNameNonEditLabel.text = memberDetail.trainerName
@@ -436,11 +447,12 @@ extension MemberViewController{
         self.trainerType = memberDetail.type
         self.setMemberProfileTrainerType(type: self.trainerType)
         self.memberEmail = memberDetail.email
+        self.trainerID = memberDetail.trainerID
 
         self.memberIDTextField.text! = memberDetail.memberID
         self.dateOfJoiningTextField.text! = memberDetail.dateOfJoining
         self.genderTextField.text! = memberDetail.gender
-        self.passwordTextField.text! = memberDetail.password
+        self.passwordTextField.text! = self.actualPassword
         self.trainerNameTextField.text! = memberDetail.trainerName
         self.emailTextField.text! = memberDetail.email
         self.addressTextView.text! = memberDetail.address
@@ -570,7 +582,7 @@ extension MemberViewController : UIImagePickerControllerDelegate,UINavigationCon
 
 extension MemberViewController:UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 2 || textField.tag == 9 || textField.tag == 6 {
+        if textField.tag == 2 || textField.tag == 9 || textField.tag == 6 || textField.tag == 3  {
             return false
         } else{
             return true
@@ -587,6 +599,13 @@ extension MemberViewController:UITextFieldDelegate{
                 self.datePicker.date = df.date(from: textField.text!)!
             }
         }
+        
+        if textField.tag == 3 {
+            textField.inputView = self.genderPickerView
+        }
+        
+        self.allMemberProfileFieldsRequiredValidation(textField: textField)
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -636,6 +655,9 @@ extension MemberViewController:UITextFieldDelegate{
 }
 
 extension MemberViewController:UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+    validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
+    }
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
@@ -644,6 +666,7 @@ extension MemberViewController:UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
+        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
     }
 }
 
@@ -665,10 +688,40 @@ extension MemberViewController:UITableViewDataSource {
 extension MemberViewController:UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-         let singleTrainer = self.listOfTrainers[indexPath.row]
+        let singleTrainer = self.listOfTrainers[indexPath.row]
         self.trainerID = singleTrainer.trainerID
         self.trainerNameTextField.text = "\(singleTrainer.firstName) \(singleTrainer.lastName)"
         self.listOfTrainerView.isHidden = true
+        DispatchQueue.main.async {
+            self.allMemberProfileFieldsRequiredValidation(textField: self.trainerNameTextField)
+            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+        }
+    }
+    
+}
+
+extension MemberViewController:UIPickerViewDataSource{
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+       return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return self.genderArray.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return self.genderArray[row]
+    }
+}
+
+extension MemberViewController:UIPickerViewDelegate{
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.genderTextField.text = self.genderArray[row]
+        DispatchQueue.main.async {
+            self.allMemberProfileFieldsRequiredValidation(textField: self.trainerNameTextField)
+            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+
+        }
     }
     
 }

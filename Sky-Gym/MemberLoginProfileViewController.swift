@@ -75,6 +75,9 @@ class MemberLoginProfileViewController: UIViewController {
     let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
     var isAlreadyExistsEmail:Bool = false
     var memberLoginProfileEmail:String = ""
+    var memberPassword:String = ""
+    let genderPickerView = UIPickerView()
+    let genderArray = ["Male","Female","Other"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,6 +90,8 @@ class MemberLoginProfileViewController: UIViewController {
         self.setMemberLoginProfileCustomNavigationbar()
         self.setMemberProfileTextFields()
         self.imagePicker.delegate = self
+        self.genderPickerView.dataSource = self
+        self.genderPickerView.delegate = self
         
         AppManager.shared.performEditAction(dataFields: self.getDataDir(), edit: false)
         self.setMemberHrLineView(hide: false)
@@ -117,26 +122,33 @@ class MemberLoginProfileViewController: UIViewController {
         let memberDetail = self.getMemberDetailData()
         let memberImgData = self.memberProfileImg.image?.pngData()
         SVProgressHUD.show()
-        DispatchQueue.global(qos: .background).async {
-            let result = FireStoreManager.shared.updateMemberProfileDetail(id: AppManager.shared.memberID, memberDetail: memberDetail)
+        FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.memberID, email: self.emailTextField.text!, password: self.memberPassword, handler: {
+            (err ) in
             
-            switch result {
-            case .failure(_):
-                self.showAlert(title: "Error", message: "Error in updating member details.")
-            case let .success(flag) :
-                if flag == true {
-                    FireStoreManager.shared.uploadUserImg(imgData: (memberImgData)!, id: AppManager.shared.memberID, completion: {
-                        (err) in
-                        SVProgressHUD.dismiss()
-                        if err == nil {
-                            self.showAlert(title: "Success", message: "Member detail is updated successfully.")
+            if err == nil {
+                DispatchQueue.global(qos: .background).async {
+                    let result = FireStoreManager.shared.updateMemberProfileDetail(id: AppManager.shared.memberID, memberDetail: memberDetail)
+                    
+                    switch result {
+                    case .failure(_):
+                        self.showAlert(title: "Error", message: "Error in updating member details.")
+                    case let .success(flag) :
+                        if flag == true {
+                            FireStoreManager.shared.uploadUserImg(imgData: (memberImgData)!, id: AppManager.shared.memberID, completion: {
+                                (err) in
+                                SVProgressHUD.dismiss()
+                                if err == nil {
+                                    self.showAlert(title: "Success", message: "Member detail is updated successfully.")
+                                }
+                            })
+                        }else {
+                            SVProgressHUD.dismiss()
+                            self.showAlert(title: "Error", message: "Error in updating member details.")
                         }
-                    })
-                }else {
-                    self.showAlert(title: "Error", message: "Error in updating member details.")
+                    }
                 }
             }
-        }
+        })
     }
 
     func setMemberLoginProfileCustomNavigationbar() {
@@ -343,6 +355,7 @@ class MemberLoginProfileViewController: UIViewController {
         self.phoneNoNonEditLabel.text = memberDetail.phoneNo
         self.dobNonEditLabel.text = memberDetail.dob
         self.memberLoginProfileEmail = memberDetail.email
+        self.memberPassword = memberDetail.password
 
         self.firstNameTextField.text = memberDetail.firstName
         self.lastNameTextField.text = memberDetail.lastName
@@ -366,6 +379,11 @@ extension MemberLoginProfileViewController:UITextFieldDelegate {
                 self.datePicker.date = df.date(from: textField.text!)!
             }
         }
+        
+        if textField.tag == 3 {
+            textField.inputView = self.genderPickerView
+        }
+        
     }
         
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -429,4 +447,32 @@ extension MemberLoginProfileViewController : UIImagePickerControllerDelegate,UIN
         self.isUserProfileUpdated = false
         self.dismiss(animated: true, completion: nil)
     }
+}
+
+
+
+extension MemberLoginProfileViewController: UIPickerViewDataSource{
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return self.genderArray.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return self.genderArray[row]
+    }
+}
+
+
+extension MemberLoginProfileViewController : UIPickerViewDelegate{
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.genderTextField.text = self.genderArray[row]
+        DispatchQueue.main.async {
+            self.allMemberFieldValidation(textField: self.genderTextField)
+            self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text)
+        }
+    }
+    
 }

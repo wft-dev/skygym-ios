@@ -82,10 +82,15 @@ class ViewVisitorScreenViewController: BaseViewController {
     let validation = ValidationManager.shared
     var isAlreadyExistsEmail:Bool = false
     var visitorEmail:String = ""
+    let genderPickerView = UIPickerView()
+    let genderArr = ["Male","Female","Other"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setVisitorView()
+        
+        self.genderPickerView.dataSource = self
+        self.genderPickerView.delegate = self
         
         self.forNonEditLabelArray = [self.addressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.dateOfJoinForNonEditLabel,self.dateOfVisitForNonEditLabel,self.genderForNonEditLabel,self.noOfVisitForNonEditLabel,self.phoneNoForNonEditLabel]
         
@@ -494,6 +499,11 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
                 self.datePicker.date = df.date(from: textField.text!)!
             }
         }
+        
+        if textField.tag == 7 {
+            textField.inputView = self.genderPickerView
+        }
+        
         self.allVisitorFieldsRequiredValidation(textField: textField)
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
     }
@@ -547,5 +557,36 @@ extension ViewVisitorScreenViewController : UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address required.")
+        DispatchQueue.main.async {
+            self.allVisitorFieldsRequiredValidation(textField: self.visitorGenderTextField)
+            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!, password: self.visitorPhoneNoTextField.text!)
+        }
+    }
+}
+
+
+extension ViewVisitorScreenViewController :UIPickerViewDataSource{
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return self.genderArr.count
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return self.genderArr[row]
+    }
+    
+}
+
+extension ViewVisitorScreenViewController:UIPickerViewDelegate {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.visitorGenderTextField.text = self.genderArr[row]
+        
+        DispatchQueue.main.async {
+            self.allVisitorFieldsRequiredValidation(textField: self.visitorGenderTextField)
+            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!, password: self.visitorPhoneNoTextField.text!)
+        }
+        
     }
 }

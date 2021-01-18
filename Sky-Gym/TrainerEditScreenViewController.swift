@@ -42,7 +42,6 @@ class TrainerEditScreenViewController: BaseViewController {
     @IBOutlet weak var eventPermissionToggleBtn: UIButton!
     @IBOutlet weak var memberPermissionToggleBtn: UIButton!
     @IBOutlet weak var passwordTextField: UITextField!
-    @IBOutlet weak var doneBtn: UIButton!
     @IBOutlet weak var userImg: UIImageView!
     @IBOutlet weak var firstNameNonEditableLabel: UILabel!
     @IBOutlet weak var firstName: UILabel!
@@ -156,6 +155,9 @@ class TrainerEditScreenViewController: BaseViewController {
     let weekDayArray = ["Sunday","Monday","Tuesday","Wednesday","Thrusday","Friday","Saturday"]
     var selectedWeekDayIndexArray:[Int] = []
     var isAlreadyExistsEmail:Bool = false
+    let genderPickerView = UIPickerView()
+    let genderArray = ["Male","Female","Other"]
+    var trainerEmail:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -168,6 +170,8 @@ class TrainerEditScreenViewController: BaseViewController {
         self.weekDayListView.isHidden = true
         self.weekDayListView.alpha = 0.0
         self.userImg.tag = 00
+        self.genderPickerView.dataSource = self
+        self.genderPickerView.delegate = self
 
         self.idTextField.text = "\(Int.random(in: 1..<100000))" 
         self.idTextField.isEnabled = false
@@ -315,6 +319,8 @@ extension TrainerEditScreenViewController {
         default:
             break
         }
+        
+        self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
 
     func setTrainerEditScreenNavigationBar()  {
@@ -716,7 +722,7 @@ extension TrainerEditScreenViewController {
     func showTrainerBy(id:String)  {
         SVProgressHUD.show()
         if self.isNewTrainer ==  false {
-            self.doneBtn.setTitle("U P D A T E ", for: .normal)
+            self.updateBtn.setTitle("U P D A T E ", for: .normal)
             FireStoreManager.shared.getTrainerBy(id: id, completion: {
                 (data,err) in
                 
@@ -745,7 +751,7 @@ extension TrainerEditScreenViewController {
             })
         } else {
             SVProgressHUD.dismiss()
-            self.doneBtn.setTitle("A D D ", for: .normal)
+            self.updateBtn.setTitle("A D D ", for: .normal)
             self.clearTextFields()
         }
     }
@@ -885,6 +891,7 @@ extension TrainerEditScreenViewController {
         self.shiftTimingsNonEditLabel.text = trainerDetails.shiftTimings
         self.dobNonEditLabel.text = trainerDetails.dob
         self.dateOfJoinNonEditLabel.text = trainerDetails.dateOfJoining
+        self.trainerEmail = trainerDetails.email
         
         self.firstNameTextField.text = trainerDetails.firstName
         self.secondNameTextField.text = trainerDetails.lastName
@@ -982,7 +989,7 @@ extension TrainerEditScreenViewController:UIImagePickerControllerDelegate,UINavi
 extension TrainerEditScreenViewController:UITextFieldDelegate{
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 12 || textField.tag == 13 || textField.tag == 9  || textField.tag == 10 {
+        if textField.tag == 12 || textField.tag == 13 || textField.tag == 9  || textField.tag == 10 || textField.tag == 7  {
             self.view.endEditing(true)
                       return false
                   }else{
@@ -1001,6 +1008,26 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
                 self.datePicker.date = df.date(from: textField.text!)!
             }
         }
+        
+        if textField.tag == 7 {
+            textField.inputView = self.genderPickerView
+        }
+        
+        if textField.tag == 5 {
+            if self.trainerEmail == textField.text! {
+                self.isAlreadyExistsEmail = false
+                self.updateBtn.isEnabled = true
+                self.updateBtn.alpha = 1.0
+            }else {
+                textField.layer.borderColor = UIColor.red.cgColor
+                textField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.isAlreadyExistsEmail = true
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
+        }
+        
         self.allTrainerFieldsRequiredValidation(textField: textField)
         self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password:self.passwordTextField.text!)
     }
@@ -1019,26 +1046,29 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
         
         if textField.tag == 5 {
             let email = textField.text!
-            DispatchQueue.global(qos: .background).async {
-                let result = FireStoreManager.shared.isUserExists(email: email)
-                
-                DispatchQueue.main.async {
-                    switch result {
-                    case let .success(flag):
-                        if flag == false {
-                            self.isAlreadyExistsEmail = false
-                            self.updateBtn.isEnabled = true
-                            self.updateBtn.alpha = 1.0
-                        }else {
-                            textField.layer.borderColor = UIColor.red.cgColor
-                            textField.layer.borderWidth = 1.0
-                            self.emailErrorLabel.text = "Email already exists."
-                            self.isAlreadyExistsEmail = true
-                            self.updateBtn.isEnabled = false
-                            self.updateBtn.alpha = 0.4
+            
+            if  self.validation.isEmailValid(email: email) == true && self.trainerEmail != textField.text! {
+                DispatchQueue.global(qos: .background).async {
+                    let result = FireStoreManager.shared.isUserExists(email: email)
+                    
+                    DispatchQueue.main.async {
+                        switch result {
+                        case let .success(flag):
+                            if flag == false {
+                                self.isAlreadyExistsEmail = false
+                                self.updateBtn.isEnabled = true
+                                self.updateBtn.alpha = 1.0
+                            }else {
+                                textField.layer.borderColor = UIColor.red.cgColor
+                                textField.layer.borderWidth = 1.0
+                                self.emailErrorLabel.text = "Email already exists."
+                                self.isAlreadyExistsEmail = true
+                                self.updateBtn.isEnabled = false
+                                self.updateBtn.alpha = 0.4
+                            }
+                        case .failure(_):
+                            break
                         }
-                    case .failure(_):
-                        break
                     }
                 }
             }
@@ -1104,6 +1134,31 @@ extension TrainerEditScreenViewController:UIGestureRecognizerDelegate{
     }
 }
 
+
+extension TrainerEditScreenViewController : UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return self.genderArray.count
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return self.genderArray[row]
+    }
+    
+    
+}
+
+extension TrainerEditScreenViewController : UIPickerViewDelegate{
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.genderTextField.text = self.genderArray[row]
+        DispatchQueue.main.async {
+            self.allTrainerFieldsRequiredValidation(textField: self.genderTextField)
+            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+        }
+    }
+}
 
 
 
