@@ -112,6 +112,11 @@ class AddMemberViewController: BaseViewController {
     var isAlreadyExistsEmail:Bool = false
     let genderPickerView = UIPickerView()
     let genderArray  = ["Male","Female","Other"]
+    var visitorEmail:String = ""
+    var visitorProfileImageExists = false
+    
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -182,7 +187,7 @@ class AddMemberViewController: BaseViewController {
                 self.topConstraintOfMembershipView.constant = -(self.profileAndMembershipBarView.frame.size.height)
                  self.updateBtn.setTitle("U P D A T E", for: .normal)
             }
-            self.featchMemberDetail(id: AppManager.shared.memberID)
+         //   self.featchMemberDetail(id: AppManager.shared.memberID)
         }
         else {
             DispatchQueue.main.async {
@@ -609,26 +614,44 @@ extension AddMemberViewController{
                     (err) in
                     
                     if err == nil {
-                        DispatchQueue.global(qos: .background).async {
-                            let result = FireStoreManager.shared.deleteImgBy(id: self.visitorID)
-                            
-                            DispatchQueue.main.async {
-                                switch result {
-                                case .failure(_) :
-                                    self.errorAlert(message: "Error in deleting member.")
-                                case  let .success(flag) :
-                                    if flag == true {
-                                        FireStoreManager.shared.deleteVisitorBy(id: self.visitorID, completion: {
-                                            err in
-                                            if err != nil {
-                                                self.errorAlert(message: "Error in deleting member.")
-                                            }else {
-                                                self.dismiss(animated: true, completion: nil)
-                                            }
-                                        })
+                        if self.visitorProfileImageExists == true {
+
+                            DispatchQueue.global(qos: .background).async {
+                                let result = FireStoreManager.shared.deleteImgBy(id: self.visitorID)
+                                
+                                DispatchQueue.main.async {
+                                    switch result {
+                                    case .failure(_) :
+                                        SVProgressHUD.dismiss()
+                                        self.errorAlert(message: "Error in deleting member.")
+                                    case  let .success(flag) :
+                                        if flag == true {
+                                            FireStoreManager.shared.deleteVisitorBy(id: self.visitorID, completion: {
+                                                err in
+                                                if err != nil {
+                                                    SVProgressHUD.dismiss()
+                                                    self.errorAlert(message: "Error in deleting member.")
+                                                }else {
+                                                    SVProgressHUD.dismiss()
+                                                    self.dismiss(animated: true, completion: nil)
+                                                }
+                                            })
+                                        }
                                     }
                                 }
                             }
+                        }else {
+                            FireStoreManager.shared.deleteVisitorBy(id: self.visitorID, completion: {
+                                err in
+                                if err != nil {
+                                    SVProgressHUD.dismiss()
+                                    self.errorAlert(message: "Error in deleting member.")
+                                }else {
+                                    SVProgressHUD.dismiss()
+                                    self.dismiss(animated: true, completion: nil)
+                                }
+                            })
+
                         }
                     }
                 })
@@ -786,19 +809,19 @@ extension AddMemberViewController{
         toolBar.sizeToFit()
     }
     
-    func featchMemberDetail(id:String) {
-        SVProgressHUD.show()
-        FireStoreManager.shared.getMemberByID(id: id, completion: {
-            (docSnapshot,err) in
-            SVProgressHUD.dismiss()
-            if err != nil {
-                self.retryMemberDataAlert()
-            } else {
-                let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String, String>)
-                self.fillMemberDetail(memberDetail: memberDetail)
-            }
-        })
-    }
+//    func featchMemberDetail(id:String) {
+//        SVProgressHUD.show()
+//        FireStoreManager.shared.getMemberByID(id: id, completion: {
+//            (docSnapshot,err) in
+//            SVProgressHUD.dismiss()
+//            if err != nil {
+//                self.retryMemberDataAlert()
+//            } else {
+//                let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String, String>)
+//               // self.fillMemberDetail(memberDetail: memberDetail)
+//            }
+//        })
+//    }
 
     func fillMemberDetail(memberDetail:MemberDetailStructure) {
         self.firstNameTextField.text = memberDetail.firstName
@@ -820,7 +843,7 @@ extension AddMemberViewController{
             let retryAlertController = UIAlertController(title: "Error", message: "Error in getting the member Detail.", preferredStyle: .alert)
             let retryAlertBtn = UIAlertAction(title: "Retry", style: .default, handler: {
                 (action) in
-               self.featchMemberDetail(id: AppManager.shared.memberID)
+              // self.featchMemberDetail(id: AppManager.shared.memberID)
             })
             retryAlertController.addAction(retryAlertBtn)
             present(retryAlertController, animated: true, completion: nil)
@@ -850,7 +873,7 @@ extension AddMemberViewController{
                     if err == nil {
                         do {
                             self.visitorProfileImgData =  try Data(contentsOf: imgUrl!)
-    
+                            self.visitorProfileImageExists = true
                         } catch _ {}
                     }
                 })
@@ -900,6 +923,7 @@ extension AddMemberViewController{
         self.emailTextField.text = visitor.email
         self.addressTextView.text = visitor.address
         self.phoneNumberTextField.text = visitor.phoneNo
+        self.visitorEmail = visitor.email
     }
     
     func fetchAllMemberships() {
@@ -1033,6 +1057,12 @@ extension AddMemberViewController:UITextFieldDelegate{
             }
         }
         
+        if textField.tag == 5 {
+            if textField.text == "" {
+                 textField.text = self.genderArray.first
+            }
+        }
+        
         self.allNewMemberFieldsRequiredValidation(textField: textField)
         if self.isNewMember == true {
             self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
@@ -1042,28 +1072,40 @@ extension AddMemberViewController:UITextFieldDelegate{
         
         if textField.tag == 9 {
             let email = textField.text!
-            DispatchQueue.global(qos: .background).async {
-                let result = FireStoreManager.shared.isUserExists(email: email)
-                
-                DispatchQueue.main.async {
-                    switch result {
-                    case let .success(flag):
-                        if flag == false {
-                            self.isAlreadyExistsEmail = false
-                            self.nextBtn.isEnabled = true
-                            self.nextBtn.alpha = 1.0
-                        }else {
-                            textField.layer.borderColor = UIColor.red.cgColor
-                            textField.layer.borderWidth = 1.0
-                            self.emailErrorLabel.text = "Email already exists."
-                            self.isAlreadyExistsEmail = true
-                            self.nextBtn.isEnabled = false
-                            self.nextBtn.alpha = 0.4
+            if self.visitorID == "" || self.visitorEmail != email {
+                DispatchQueue.global(qos: .background).async {
+                    let result = FireStoreManager.shared.isUserExists(email: email)
+                    
+                    DispatchQueue.main.async {
+                        switch result {
+                        case let .success(flag):
+                            if flag == false {
+                                self.isAlreadyExistsEmail = false
+                                self.nextBtn.isEnabled = true
+                                self.nextBtn.alpha = 1.0
+                                self.profileAndMembershipBarView.isUserInteractionEnabled = true
+                                self.profileAndMembershipBarView.alpha = 1.0
+                            }else {
+                                textField.layer.borderColor = UIColor.red.cgColor
+                                textField.layer.borderWidth = 1.0
+                                self.emailErrorLabel.text = "Email already exists."
+                                self.isAlreadyExistsEmail = true
+                                self.nextBtn.isEnabled = false
+                                self.nextBtn.alpha = 0.4
+                                self.profileAndMembershipBarView.isUserInteractionEnabled = false
+                                self.profileAndMembershipBarView.alpha = 0.4
+                            }
+                        case .failure(_):
+                            break
                         }
-                    case .failure(_):
-                        break
                     }
                 }
+            }else {
+                self.isAlreadyExistsEmail = false
+                self.nextBtn.isEnabled = true
+                self.nextBtn.alpha = 1.0
+                self.profileAndMembershipBarView.isUserInteractionEnabled = true
+                self.profileAndMembershipBarView.alpha = 1.0
             }
         }
 

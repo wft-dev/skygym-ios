@@ -24,6 +24,11 @@ class ListOfMembersTableCell: UITableViewCell {
     @IBOutlet weak var attendImg: UIImageView?
     @IBOutlet weak var renewImg: UIImageView?
     @IBOutlet weak var attendenceLabel: UILabel!
+    @IBOutlet weak var callView: UIView!
+    @IBOutlet weak var messageView: UIView!
+    @IBOutlet weak var attendenceView: UIView!
+    @IBOutlet weak var renewView: UIView!
+    
     var customCellDelegate:CustomCellSegue?
     var imageName:String = "red"
     var attendenceAlreadyMarked:Bool = false
@@ -35,13 +40,14 @@ class ListOfMembersTableCell: UITableViewCell {
     }
     
     func attachGestures() {
-        [callImg,msgImg,attendImg,renewImg].forEach{
+        self.btnsStackView.isUserInteractionEnabled = true
+        [callView,messageView,attendenceView,renewView].forEach{
             $0?.isUserInteractionEnabled = true
         }
-        callImg?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(call(_:))))
-        msgImg?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(msg(_:))))
-        attendImg?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(attendance(_:))))
-        renewImg?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(renewPackage(_:))))
+        callView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(call(_:))))
+        messageView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(msg(_:))))
+        attendenceView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(attendance(_:))))
+        renewView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(renewPackage(_:))))
     }
 
     @objc func call(_ sender: UITapGestureRecognizer) {
@@ -144,6 +150,10 @@ class ListOfMembersViewController: BaseViewController {
         self.showMembers()
     }
     
+   @objc func callAction() {
+        print("WORKING CALLING ACTION")
+    }
+    
     @objc func refreshMembers(){
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
             self.refreshControl.endRefreshing()
@@ -204,10 +214,14 @@ extension ListOfMembersViewController : UITableViewDataSource{
     }
    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+      
         let cell = tableView.dequeueReusableCell(withIdentifier: "listOfMemberCell", for: indexPath) as! ListOfMembersTableCell
         cell.contentView.layer.cornerRadius = 15.0
         cell.contentView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
         cell.contentView.layer.borderWidth = 1.0
+        cell.listOfmemberTCView.layer.cornerRadius = 15.0
+        cell.listOfmemberTCView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
+        cell.listOfmemberTCView.layer.borderWidth = 1.0
         self.adjustFontSizeForRenewPackageLabel(label: cell.renewPackageLabel)
         let singleMember = self.filteredMemberArray.count > 0 ? self.filteredMemberArray[indexPath.section] : self.listOfMemberArray[indexPath.section]
         self.getMemberProfileImage(id: singleMember.memberID, imageName:singleMember.uploadName, imgView: cell.userImag)
@@ -242,10 +256,9 @@ extension ListOfMembersViewController : UITableViewDelegate{
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.memberID = self.listOfMemberArray[indexPath.section].memberID
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
-          //  print("Member id is : \(AppManager.shared.memberID)")
+        DispatchQueue.main.async {
             self.performSegue(withIdentifier: "memberDetailSegue", sender:nil)
-        })
+        }
     }
 }
 
@@ -294,6 +307,7 @@ extension ListOfMembersViewController{
     }
     
     func addCustomSwipe(cellView:UIView,cell:ListOfMembersTableCell) {
+        
         let leftSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(leftSwipeAction(_:)))
         let rightSwipGesture = UISwipeGestureRecognizer(target: self, action: #selector(rightSwipeAction(_:)))
         leftSwipeGesture.direction = .left

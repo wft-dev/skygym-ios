@@ -84,6 +84,7 @@ class ViewVisitorScreenViewController: BaseViewController {
     var visitorEmail:String = ""
     let genderPickerView = UIPickerView()
     let genderArr = ["Male","Female","Other"]
+    var visitorTrainerID:String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -134,8 +135,14 @@ class ViewVisitorScreenViewController: BaseViewController {
     @IBAction func updateBtnAction(_ sender: Any) {
         self.visitorValidation()
         
-        if self.validation.isVisitorValidated(textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!) {
+        if self.validation.isVisitorValidated(textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!) == true && self.isAlreadyExistsEmail == false {
           self.isNewVisitor ? self.registerVisitor() : self.updateVisitor()
+        }else {
+            self.visitorEmailTextField.layer.borderColor = UIColor.red.cgColor
+            self.visitorEmailTextField.layer.borderWidth = 1.0
+            self.emailErrorLabel.text = "Email already exists."
+            self.updateBtn.isEnabled = false
+            self.updateBtn.alpha = 0.4
         }
     }
     
@@ -303,8 +310,14 @@ extension ViewVisitorScreenViewController {
     }
     
     func getVisitorData() -> [String:String] {
-        let trainerName = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerName: "  --"
-        let trainerType = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerType : " --"
+    
+        var trainerID = ""
+        if isNewVisitor == true {
+            trainerID = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerID: ""
+        }else {
+            trainerID = self.visitorTrainerID
+        }
+         
         let visitor:[String:String] = [
             "firstName":self.visitorFirstName.text!,
             "lastName" : self.visitorLastName.text!,
@@ -315,8 +328,7 @@ extension ViewVisitorScreenViewController {
             "noOfVisit":self.noOfVisitTextField.text!,
             "gender":self.visitorGenderTextField.text!,
             "phoneNo":self.visitorPhoneNoTextField.text!,
-            "trainerName" : trainerName,
-            "trainerType"  : trainerType
+            "trainerID" : trainerID,
         ]
         return visitor
     }
@@ -428,6 +440,7 @@ extension ViewVisitorScreenViewController {
         self.genderNonEditLabel.text = visitor.gender
         self.phoneNoNonEditLabel.text = visitor.phoneNo
         self.visitorEmail = visitor.email
+        self.visitorTrainerID = visitor.trainerID
 
         self.visitorFirstName.text = visitor.firstName
         self.visitorLastName.text = visitor.lastName
@@ -514,7 +527,9 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
             let email = textField.text!
             if self.visitorEmail != email {
                 self.checkEmailAlreadyExists(email: email)
-        }
+            }else {
+                self.isAlreadyExistsEmail = false
+            }
             break
         case 4:
             if  self.selectedDate != "" {
@@ -522,13 +537,21 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
                 self.selectedDate = ""
             }
         case 5:
-             if  self.selectedDate != "" {
-            self.visitorDateOfVisitTextField.text = self.selectedDate
-            self.selectedDate = ""
+            if  self.selectedDate != "" {
+                self.visitorDateOfVisitTextField.text = self.selectedDate
+                self.selectedDate = ""
             }
+            
+        case 7:
+            if textField.text == "" {
+                textField.text = self.genderArr.first
+            }
+            
         default:
             break
         }
+        
+        
    
         self.allVisitorFieldsRequiredValidation(textField: textField)
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)

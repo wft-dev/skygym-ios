@@ -181,8 +181,7 @@ struct Visitor {
     var noOfVisit:String
     var gender:String
     var phoneNo:String
-    var trainerName:String
-    var trainerType:String
+    var trainerID:String
 }
 
 struct Event {

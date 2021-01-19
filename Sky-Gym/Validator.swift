@@ -41,6 +41,7 @@ class ValidationManager: NSObject {
                 }
             }
         }
+      //  print("fffffff : \(flag)")
         return flag
     }
 
@@ -244,21 +245,33 @@ class ValidationManager: NSObject {
         var flag:Bool = false
         
         if email != nil && password == nil {
-            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) == true ? true : false
+            if isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) == true  && isEmailValid(email: email!) == true  {
+                flag = true
+            }else {
+                flag = false
+            }
         }
             
         else if password != nil && email == nil {
-            flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) && isPasswordValid(password: password!) == true ? true : false
+            if isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField) == true && isPasswordValid(password: password!) == true {
+                flag = true
+            }else {
+                flag = false
+            }
         }
             
         else if email != nil && password != nil {
-            flag = isAllFieldsRequiredValidated(textFieldArray: textFieldArray, phoneNumberTextField: phoneNumberTextField) && isEmailValid(email: email!) && isPasswordValid(password: password!) == true ? true : false
+            if isAllFieldsRequiredValidated(textFieldArray: textFieldArray, phoneNumberTextField: phoneNumberTextField) == true && isEmailValid(email: email!) == true  && isPasswordValid(password: password!) == true {
+                flag = true
+            }else{
+                flag = false
+            }
         }
             
         else {
             flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField)
         }
-
+print(" FLAG IS : \(flag)")
         return flag
     }
     

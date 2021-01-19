@@ -245,8 +245,16 @@ class TrainerEditScreenViewController: BaseViewController {
     
     @IBAction func doneBtnAction(_ sender: Any) {
         self.trainerValidation()
-        if self.validation.isTrainerProfileValidated(textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) == true {
+        if self.validation.isTrainerProfileValidated(textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) == true  && self.isAlreadyExistsEmail == false {
             self.registerTrainer(email: self.emailTextField.text!, password: self.passwordTextField.text!, id: self.idTextField.text!, trainerDetail: self.getTrainerFieldsData(), trainerPermission: self.getTrainerPermissionData())
+        }else {
+            DispatchQueue.main.async {
+                self.emailTextField.layer.borderColor = UIColor.red.cgColor
+                self.emailTextField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
         }
     }
 }
@@ -1047,7 +1055,7 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
         if textField.tag == 5 {
             let email = textField.text!
             
-            if  self.validation.isEmailValid(email: email) == true && self.trainerEmail != textField.text! {
+            if  self.validation.isEmailValid(email: email) == true && self.trainerEmail != email {
                 DispatchQueue.global(qos: .background).async {
                     let result = FireStoreManager.shared.isUserExists(email: email)
                     
@@ -1071,6 +1079,14 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
                         }
                     }
                 }
+            }else {
+                self.isAlreadyExistsEmail = false
+            }
+        }
+        
+        if textField.tag == 7 {
+            if textField.text == "" {
+                textField.text = self.genderArray.first
             }
         }
         
@@ -1147,7 +1163,6 @@ extension TrainerEditScreenViewController : UIPickerViewDataSource {
         return self.genderArray[row]
     }
     
-    
 }
 
 extension TrainerEditScreenViewController : UIPickerViewDelegate{
@@ -1158,6 +1173,7 @@ extension TrainerEditScreenViewController : UIPickerViewDelegate{
             self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
         }
     }
+   
 }
 
 

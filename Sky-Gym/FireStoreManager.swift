@@ -203,7 +203,7 @@ class FireStoreManager: NSObject {
         var result:Result<Bool,Error>!
         let semaphores = DispatchSemaphore(value: 0)
         let imgRef = fireStorageRef.child("Images/\(id)")
-        
+
         imgRef.listAll(completion: {
             (data,err) in
             for singleItem in data.items{

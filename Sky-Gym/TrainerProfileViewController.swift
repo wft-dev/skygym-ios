@@ -64,7 +64,7 @@ class TrainerProfileViewController: BaseViewController {
     var datePicker = UIDatePicker()
     let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
     var selectedDate:String = ""
-    var actuallPassword:String = ""
+    var actuallPassword:UILabel = UILabel()
     var trainerEmail:String = ""
     var isAlreadyExistsEmail:Bool = false
     let genderPickerView = UIPickerView()
@@ -152,7 +152,7 @@ class TrainerProfileViewController: BaseViewController {
         let trainerInfo = self.getTrainerInfo()
         let trainerImgData = self.trainerProfileImg.image?.pngData()
         self.view.endEditing(true)
-        if  self.allFieldsValid() == true {
+        if  self.allFieldsValid() == true && self.isAlreadyExistsEmail == false {
             FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.trainerID, email: self.emailTextField.text!, password: self.passwordTextField.text!, handler: {
                 (err) in
                 
@@ -185,8 +185,11 @@ class TrainerProfileViewController: BaseViewController {
             for textField in self.textFieldArray {
                 self.allTrainerFieldValidation(textField: textField)
             }
-            
-            self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+            self.emailTextField.layer.borderColor = UIColor.red.cgColor
+            self.emailTextField.layer.borderWidth = 1.0
+            self.emailErrorLabel.text = "Email already exists."
+            self.updateBtn.isEnabled = false
+            self.updateBtn.alpha = 0.4
         }
     }
     
@@ -269,8 +272,8 @@ class TrainerProfileViewController: BaseViewController {
         self.trainerFirstNameNonEditLabel.text = trainerDetail.firstName
         self.trainerLastNameNonEditLabel.text = trainerDetail.lastName
         self.genderNonEditLabel.text = trainerDetail.gender
-        self.actuallPassword = ""
-        self.actuallPassword = trainerDetail.password
+        self.actuallPassword.text = ""
+        self.actuallPassword.text = trainerDetail.password
         self.passwordNonEditLabel.text = AppManager.shared.getSecureTextFor(text: trainerDetail.password)
         self.emailNonEditLabel.text = trainerDetail.email
         self.phoneNoNonEditLabel.text = trainerDetail.phoneNo
@@ -280,7 +283,7 @@ class TrainerProfileViewController: BaseViewController {
         self.trainerFirstNameTextField.text = trainerDetail.firstName
         self.trainerLastNameTextField.text = trainerDetail.lastName
         self.genderTextField.text = trainerDetail.gender
-        self.passwordTextField.text = self.actuallPassword
+        self.passwordTextField.text = self.actuallPassword.text
         self.emailTextField.text = trainerDetail.email
         self.phoneNoTextField.text = trainerDetail.phoneNo
         self.dobTextField.text = trainerDetail.dob
@@ -293,7 +296,6 @@ class TrainerProfileViewController: BaseViewController {
         }else {
             flag = false
         }
-        
         return flag
     }
     
@@ -302,7 +304,7 @@ class TrainerProfileViewController: BaseViewController {
             self.trainerFirstNameTextField! : self.trainerFirstNameNonEditLabel!,
             self.trainerLastNameTextField! : self.trainerLastNameNonEditLabel!,
             self.genderTextField! : self.genderNonEditLabel!,
-            self.passwordTextField! : self.passwordNonEditLabel!,
+            self.passwordTextField! : self.actuallPassword,
             self.emailTextField! : self.emailNonEditLabel! ,
             self.dobTextField! : self.dobNonEditLabel!,
             self.phoneNoTextField! : self.phoneNoNonEditLabel!
@@ -460,6 +462,8 @@ extension TrainerProfileViewController:UITextFieldDelegate {
                         }
                     }
                 }
+            } else {
+                self.isAlreadyExistsEmail = false
             }
         }
         

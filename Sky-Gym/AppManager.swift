@@ -312,7 +312,7 @@ class AppManager: NSObject {
     }
     
     func getVisitor(visitorDetail:[String:String],id:String) -> Visitor {
-        let visitor = Visitor(id: id, firstName: visitorDetail["firstName"]!, lastName: visitorDetail["lastName"]!, email: visitorDetail["email"]!, address: visitorDetail["address"]!, dateOfJoin: visitorDetail["dateOfJoin"]!, dateOfVisit: visitorDetail["dateOfVisit"]!, noOfVisit: visitorDetail["noOfVisit"]!, gender: visitorDetail["gender"]!, phoneNo: visitorDetail["phoneNo"]!,trainerName: visitorDetail["trainerName"]!,trainerType: visitorDetail["trainerType"]!)
+        let visitor = Visitor(id: id, firstName: visitorDetail["firstName"]!, lastName: visitorDetail["lastName"]!, email: visitorDetail["email"]!, address: visitorDetail["address"]!, dateOfJoin: visitorDetail["dateOfJoin"]!, dateOfVisit: visitorDetail["dateOfVisit"]!, noOfVisit: visitorDetail["noOfVisit"]!, gender: visitorDetail["gender"]!, phoneNo: visitorDetail["phoneNo"]!,trainerID: visitorDetail["trainerID"] ?? "")
         return visitor
     }
     

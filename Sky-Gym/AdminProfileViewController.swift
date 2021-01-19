@@ -117,6 +117,8 @@ class AdminProfileViewController: UIViewController {
     var selectedWeekdaysArray:[Int] = []
     var isAlreadyExistsEmail:Bool = false
     var adminEmail:String = ""
+    let genderPickerView = UIPickerView()
+    let genderArray = ["Male","Female","Other"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -130,6 +132,8 @@ class AdminProfileViewController: UIViewController {
         self.imageName  = "unchecked-checkbox"
         self.weekDaysListTable.allowsMultipleSelection = true
         self.weekDaysListTable.isMultipleTouchEnabled = true
+        self.genderPickerView.dataSource = self
+        self.genderPickerView.delegate = self
         self.forNonEditLabelArray = [self.gymNameForNonEditLabel,self.gymIDForNonEditLabel,self.gymAddressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.openningTimeForNonEditLabel,self.closingTimeForNonEditLabel,self.gymDaysForNonEditLabel]
         
         self.defaultLabelArray = [self.gymName,self.gymID,self.gymAddress,self.firstName,self.lastName,self.email,self.gender,self.password,self.phoneNo,self.dob,self.openningTimeLabel,self.closingTimeLabel,self.gymDaysLabel]
@@ -167,36 +171,45 @@ class AdminProfileViewController: UIViewController {
     @IBAction func updateBtnAction(_ sender: Any) {
         let adminID = AppManager.shared.adminID
         SVProgressHUD.show()
-        if self.isProfileImgSelected == true {
-            FireStoreManager.shared.uploadUserImg(imgData: (self.adminImg.image?.pngData())!, id: AppManager.shared.adminID, completion: {
-                err in
-                SVProgressHUD.dismiss()
-                if err != nil {
-                    self.showAdminProfileAlert(title: "Error", message: "Error in uploading the user profile image, Please try again.")
-                } else {
-                    FireStoreManager.shared.updateAdminDetail(id: adminID,adminDetail: self.getAdminDetailForUpdate(), result: {
-                        (err) in
-                        self.isProfileImgSelected = false
-                        AppManager.shared.isInitialUploaded = true
-                        if err != nil {
-                            self.showAdminProfileAlert(title: "Error", message: "Error in updating admin details, please try again.")
-                        } else {
-                            self.showAdminProfileAlert(title: "Success", message: "Admin details are updated successfully.")
-                        }
-                    })
-                }
-            })
-        }  else {
-            FireStoreManager.shared.updateAdminDetail(id: adminID, adminDetail: self.getAdminDetailForUpdate(), result: {
-                (err) in
-                SVProgressHUD.dismiss()
-                if err != nil {
-                    self.showAdminProfileAlert(title: "Error", message: "\(err!.localizedDescription)")
-                    //Error in updating admin details, please try again.
-                } else {
-                    self.showAdminProfileAlert(title: "Success", message: "Admin details are updated successfully.")
-                }
-            })
+        if self.validation.isAllFieldsRequiredValidated(textFieldArray: self.textFieldsArray, phoneNumberTextField: self.phoneNoTextField) == true && self.validation.isEmailValid(email: self.emailTextField.text!) == true && self.validation.isPasswordValid(password: self.adminPasswordTextField.text!) == true && self.isAlreadyExistsEmail == false {
+            if self.isProfileImgSelected == true {
+                FireStoreManager.shared.uploadUserImg(imgData: (self.adminImg.image?.pngData())!, id: AppManager.shared.adminID, completion: {
+                    err in
+                    SVProgressHUD.dismiss()
+                    if err != nil {
+                        self.showAdminProfileAlert(title: "Error", message: "Error in uploading the user profile image, Please try again.")
+                    } else {
+                        FireStoreManager.shared.updateAdminDetail(id: adminID,adminDetail: self.getAdminDetailForUpdate(), result: {
+                            (err) in
+                            self.isProfileImgSelected = false
+                            AppManager.shared.isInitialUploaded = true
+                            if err != nil {
+                                self.showAdminProfileAlert(title: "Error", message: "Error in updating admin details, please try again.")
+                            } else {
+                                self.showAdminProfileAlert(title: "Success", message: "Admin details are updated successfully.")
+                            }
+                        })
+                    }
+                })
+            }  else {
+                FireStoreManager.shared.updateAdminDetail(id: adminID, adminDetail: self.getAdminDetailForUpdate(), result: {
+                    (err) in
+                    SVProgressHUD.dismiss()
+                    if err != nil {
+                        self.showAdminProfileAlert(title: "Error", message: "\(err!.localizedDescription)")
+                        //Error in updating admin details, please try again.
+                    } else {
+                        self.showAdminProfileAlert(title: "Success", message: "Admin details are updated successfully.")
+                    }
+                })
+            }
+        }else {
+            SVProgressHUD.dismiss()
+            self.emailTextField.layer.borderColor = UIColor.red.cgColor
+            self.emailTextField.layer.borderWidth = 1.0
+            self.emailErrorLabel.text = "Email already exists."
+            self.updateBtn.isEnabled = false
+            self.updateBtn.alpha = 0.4
         }
     }
 }
@@ -542,6 +555,10 @@ extension AdminProfileViewController : UITextFieldDelegate{
                 self.timePicker.date = df.date(from: textField.text!)!
             }
         }
+        
+        if textField.tag == 5 {
+            textField.inputView = self.genderPickerView
+        }
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -573,27 +590,37 @@ extension AdminProfileViewController : UITextFieldDelegate{
             if self.adminEmail != email {
                 DispatchQueue.global(qos: .default).async {
                     let result = FireStoreManager.shared.isUserExists(email: email)
-                    
+                    DispatchQueue.main.async {
                     switch result {
-                        
-                    case let  .success(flag):
-                        if flag == false {
-                            self.isAlreadyExistsEmail = false
-                            self.updateBtn.isEnabled = true
-                            self.updateBtn.alpha = 1.0
-                        }else {
-                            textField.layer.borderColor = UIColor.red.cgColor
-                            textField.layer.borderWidth = 1.0
-                            self.emailErrorLabel.text = "Email already exists."
-                            self.isAlreadyExistsEmail = true
-                            self.updateBtn.isEnabled = false
-                            self.updateBtn.alpha = 0.4
+                        case let  .success(flag):
+                            if flag == false {
+                                self.isAlreadyExistsEmail = false
+                                self.updateBtn.isEnabled = true
+                                self.updateBtn.alpha = 1.0
+                            }else {
+                                textField.layer.borderColor = UIColor.red.cgColor
+                                textField.layer.borderWidth = 1.0
+                                self.emailErrorLabel.text = "Email already exists."
+                                self.isAlreadyExistsEmail = true
+                                self.updateBtn.isEnabled = false
+                                self.updateBtn.alpha = 0.4
+                            }
+                            
+                        case .failure(_):
+                            break
                         }
-                        
-                    case .failure(_):
-                        break
                     }
+
                 }
+            }else {
+                self.isAlreadyExistsEmail = false
+                
+            }
+        }
+        
+        if textField.tag == 5 {
+            if textField.text == "" {
+                textField.text = self.genderArray.first
             }
         }
         
@@ -643,6 +670,33 @@ extension AdminProfileViewController :UIGestureRecognizerDelegate {
             return false
         }else {
             return true
+        }
+    }
+}
+
+
+extension AdminProfileViewController : UIPickerViewDataSource{
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return self.genderArray.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return self.genderArray[row]
+    }
+    
+    
+}
+
+extension AdminProfileViewController:UIPickerViewDelegate{
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.adminGenderTextField.text = self.genderArray[row]
+        DispatchQueue.main.async {
+            self.allProfileFieldsRequiredValidation(textField: self.adminGenderTextField)
+            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.adminPasswordTextField.text!)
         }
     }
 }

@@ -118,37 +118,56 @@ class MemberLoginProfileViewController: UIViewController {
         self.present(self.imagePicker, animated: true, completion: nil)
     }
     
+    func isAllFieldsValid() -> Bool {
+      if  self.validator.isAllFieldsRequiredValidated(textFieldArray: self.textFieldArray, phoneNumberTextField: self.phoneNumberTextField) == true && self.validator.isEmailValid(email: self.emailTextField.text!) == true && self.validator.isPasswordValid(password: self.passwordTextField.text!) == true {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     @objc func updateMemberInfo(){
         let memberDetail = self.getMemberDetailData()
         let memberImgData = self.memberProfileImg.image?.pngData()
         SVProgressHUD.show()
-        FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.memberID, email: self.emailTextField.text!, password: self.memberPassword, handler: {
-            (err ) in
+        
+        if isAllFieldsValid() == true && self.isAlreadyExistsEmail == false {
             
-            if err == nil {
-                DispatchQueue.global(qos: .background).async {
-                    let result = FireStoreManager.shared.updateMemberProfileDetail(id: AppManager.shared.memberID, memberDetail: memberDetail)
-                    
-                    switch result {
-                    case .failure(_):
-                        self.showAlert(title: "Error", message: "Error in updating member details.")
-                    case let .success(flag) :
-                        if flag == true {
-                            FireStoreManager.shared.uploadUserImg(imgData: (memberImgData)!, id: AppManager.shared.memberID, completion: {
-                                (err) in
-                                SVProgressHUD.dismiss()
-                                if err == nil {
-                                    self.showAlert(title: "Success", message: "Member detail is updated successfully.")
-                                }
-                            })
-                        }else {
-                            SVProgressHUD.dismiss()
+            FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.memberID, email: self.emailTextField.text!, password: self.memberPassword, handler: {
+                (err ) in
+                
+                if err == nil {
+                    DispatchQueue.global(qos: .background).async {
+                        let result = FireStoreManager.shared.updateMemberProfileDetail(id: AppManager.shared.memberID, memberDetail: memberDetail)
+                        
+                        switch result {
+                        case .failure(_):
                             self.showAlert(title: "Error", message: "Error in updating member details.")
+                        case let .success(flag) :
+                            if flag == true {
+                                FireStoreManager.shared.uploadUserImg(imgData: (memberImgData)!, id: AppManager.shared.memberID, completion: {
+                                    (err) in
+                                    SVProgressHUD.dismiss()
+                                    if err == nil {
+                                        self.showAlert(title: "Success", message: "Member detail is updated successfully.")
+                                    }
+                                })
+                            }else {
+                                SVProgressHUD.dismiss()
+                                self.showAlert(title: "Error", message: "Error in updating member details.")
+                            }
                         }
                     }
                 }
-            }
-        })
+            })
+        } else {
+            SVProgressHUD.dismiss()
+            self.emailTextField.layer.borderColor = UIColor.red.cgColor
+            self.emailTextField.layer.borderWidth = 1.0
+            self.emailErrorLabel.text = "Email already exists."
+            self.updateBtn.isEnabled = false
+            self.updateBtn.alpha = 0.4
+        }
     }
 
     func setMemberLoginProfileCustomNavigationbar() {
@@ -423,6 +442,8 @@ extension MemberLoginProfileViewController:UITextFieldDelegate {
                     }
 
                 }
+            }else {
+                self.isAlreadyExistsEmail = false
             }
         }
         

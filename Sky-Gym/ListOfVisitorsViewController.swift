@@ -33,8 +33,6 @@ class VisitorTableCell: UITableViewCell {
 }
 
 class ListOfVisitorsViewController: BaseViewController {
-    var visitorsArray:[Visitor] = []
-    var filteredVisitorArray:[Visitor] = []
 
     @IBOutlet weak var visitorsTable: UITableView!
     @IBOutlet weak var listOfVisitorsNavigationBar: CustomNavigationBar!
@@ -42,6 +40,11 @@ class ListOfVisitorsViewController: BaseViewController {
     @IBOutlet weak var customSearchBar: UISearchBar!
     var visitorProfileImage:UIImage? = nil
     let refreshControl = UIRefreshControl()
+    var visitorsArray:[Visitor] = []
+    var filteredVisitorArray:[Visitor] = []
+    var trainerName:String = ""
+    var trainerType:String = ""
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -109,39 +112,45 @@ extension ListOfVisitorsViewController {
             SVProgressHUD.show()
             let profileImageView = gesture.view?.superview?.superview?.subviews.last?.subviews.first as! UIImageView
             
-            if profileImageView.tag == 1111 {
-                DispatchQueue.global(qos: .background).async {
-                    let result = FireStoreManager.shared.deleteImgBy(id: id)
-                    
-                    switch result {
-                    case .failure(_):
-                        self.showVisitorAlert(title: "Error", message: "Error in deleting visitor,Try again.")
-                        break
-                    case let .success(flag):
-                        if flag == true {
-                            FireStoreManager.shared.deleteVisitorBy(id: id, completion: {
-                                err in
-                                SVProgressHUD.dismiss()
-                                if err != nil {
-                                    self.showVisitorAlert(title: "Error", message: "Error in deleting visitor,Try again.")
-                                } else {
-                                    self.showVisitorAlert(title: "Success", message: "Visitor is deleted successfully.")
+            FireStoreManager.shared.deleteUserCredentials(id: id, handler: {
+                (err) in
+                
+                if err == nil {
+                    if profileImageView.tag == 1111 {
+                        DispatchQueue.global(qos: .background).async {
+                            let result = FireStoreManager.shared.deleteImgBy(id: id)
+                            
+                            switch result {
+                            case .failure(_):
+                                self.showVisitorAlert(title: "Error", message: "Error in deleting visitor,Try again.")
+                                break
+                            case let .success(flag):
+                                if flag == true {
+                                    FireStoreManager.shared.deleteVisitorBy(id: id, completion: {
+                                        err in
+                                        SVProgressHUD.dismiss()
+                                        if err != nil {
+                                            self.showVisitorAlert(title: "Error", message: "Error in deleting visitor,Try again.")
+                                        } else {
+                                            self.showVisitorAlert(title: "Success", message: "Visitor is deleted successfully.")
+                                        }
+                                    })
                                 }
-                            })
+                            }
                         }
+                    }else {
+                        FireStoreManager.shared.deleteVisitorBy(id: id, completion: {
+                            err in
+                            SVProgressHUD.dismiss()
+                            if err != nil {
+                                self.showVisitorAlert(title: "Error", message: "Error in deleting visitor,Try again.")
+                            } else {
+                                self.showVisitorAlert(title: "Success", message: "Visitor is deleted successfully.")
+                            }
+                        })
                     }
                 }
-            }else {
-                FireStoreManager.shared.deleteVisitorBy(id: id, completion: {
-                    err in
-                    SVProgressHUD.dismiss()
-                    if err != nil {
-                        self.showVisitorAlert(title: "Error", message: "Error in deleting visitor,Try again.")
-                    } else {
-                        self.showVisitorAlert(title: "Success", message: "Visitor is deleted successfully.")
-                    }
-                })
-            }
+            })
         })
         let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler: {
             _ in
@@ -270,6 +279,23 @@ extension ListOfVisitorsViewController {
         })
     }
     
+    func fetchTraineDetails(trainerID:String,cell:VisitorTableCell) {
+        DispatchQueue.global(qos: .background).async {
+            let result =  FireStoreManager.shared.getTrainerDetailBy(id: trainerID)
+            
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(trainerDetail):
+                    cell.trainerNameLabel.text = trainerDetail!.firstName
+                    cell.trainerTypeLabel.text = trainerDetail!.type
+                    
+                case .failure(_):
+                    break
+                }
+            }
+        }
+    }
+    
     func getVisitorProfileImage(id:String,imgView :UIImageView) {
           SVProgressHUD.show()
           FireStoreManager.shared.downloadUserImg(id: id, result: {
@@ -350,8 +376,6 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
         cell.numberOfvisits.text = "visitor: \(singleVisitor.noOfVisit)"
         cell.dateOfJoinLabel.text = singleVisitor.dateOfJoin
         cell.dateOfVisitLabel.text = singleVisitor.dateOfVisit
-        cell.trainerNameLabel.text = singleVisitor.trainerName
-        cell.trainerTypeLabel.text = singleVisitor.trainerType
         self.getVisitorProfileImage(id: singleVisitor.id, imgView: cell.visitorProfileImg)
         cell.delegate = self
         self.adjustFontSizeForVisitorLabel(label: cell.dateOfJoinLabel)
@@ -362,6 +386,12 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
         cell.selectionStyle = .none
         cell.visitorCellView.tag = Int(singleVisitor.id)!
         self.addVisitorCustomSwipe(cellView: cell.visitorCellView, cell: cell)
+        if singleVisitor.trainerID != ""{
+           self.fetchTraineDetails(trainerID: singleVisitor.trainerID, cell: cell)
+        }else {
+            cell.trainerNameLabel.text = "  --"
+            cell.trainerTypeLabel.text  = " --"
+        }        
         
         return cell
     }

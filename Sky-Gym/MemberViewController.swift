@@ -112,6 +112,7 @@ class MemberViewController: BaseViewController {
     let genderPickerView:UIPickerView = UIPickerView()
     let genderArray = ["Male","Female","Other"]
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.forNonEditLabelArray = [self.memberIDForNonEditLabel,self.dateOfJoiningForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.trainerNameForNonEditLabel,self.uploadForNonEditLabel,self.emailForNonEditLabel,self.addressForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
@@ -153,47 +154,65 @@ class MemberViewController: BaseViewController {
         self.listOfTrainerView.alpha = self.listOfTrainerView.isHidden == true ? 0.0 : 1.0
     }
     
+    func isFieldsDataValid() -> Bool {
+        print("DUPLICATE EMAIL : \(isAlreadyExistsEmail) ")
+        
+        return self.validation.isMemberProfileValidated(textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) == true  && isAlreadyExistsEmail == false
+    }
+    
     @IBAction func updateBtnAction(_ sender: Any) {
         SVProgressHUD.show()
-        FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.memberID, email: self.emailTextField.text!, password: self.passwordTextField.text!, handler: {
-            (err) in
-            
-            FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID,memberDetail: self.getMemberProfileDetails(), handler: {
-                (err) in
-              //  SVProgressHUD.dismiss()
-                if err != nil {
-                    self.showMemberProfileAlert(title: "Error", message: "Member detail is not updated.")
-                } else {
-                    if self.isUploadIdSelected == true {
-                        FireStoreManager.shared.uploadImg(url: self.imgURL!, membeID: AppManager.shared.memberID, imageName: self.uploadIDTextField.text!, completion: {
-                            (err) in
-                            SVProgressHUD.dismiss()
-                            if err != nil {
-                                self.showMemberProfileAlert(title: "Error", message: "Member detail is not updated.")
-                            } else {
-                                self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
-                            }
-                        })
-                        self.isUserProfileSelected = false
-                    }
-                     if self.memberImg.tag == 1111 {
-                        FireStoreManager.shared.uploadUserImg(imgData: (self.memberImg.image?.pngData())!, id: AppManager.shared.memberID, completion: {
-                            err in
-                            SVProgressHUD.dismiss()
-                            if err == nil {
-                                self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
-                            }
-                        })
-                        self.isUserProfileSelected = false
-                    }
-                    else {
-                        SVProgressHUD.dismiss()
-                        self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
-                    }
-                }
-            })
-        })
         
+        if self.isFieldsDataValid() == true {
+            FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.memberID, email: self.emailTextField.text!, password: self.passwordTextField.text!, handler: {
+                (err) in
+                
+                FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID,memberDetail: self.getMemberProfileDetails(), handler: {
+                    (err) in
+                  //  SVProgressHUD.dismiss()
+                    if err != nil {
+                        self.showMemberProfileAlert(title: "Error", message: "Member detail is not updated.")
+                    } else {
+                        if self.isUploadIdSelected == true {
+                            FireStoreManager.shared.uploadImg(url: self.imgURL!, membeID: AppManager.shared.memberID, imageName: self.uploadIDTextField.text!, completion: {
+                                (err) in
+                                SVProgressHUD.dismiss()
+                                if err != nil {
+                                    self.showMemberProfileAlert(title: "Error", message: "Member detail is not updated.")
+                                } else {
+                                    self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
+                                }
+                            })
+                            self.isUserProfileSelected = false
+                        }
+                         if self.memberImg.tag == 1111 {
+                            FireStoreManager.shared.uploadUserImg(imgData: (self.memberImg.image?.pngData())!, id: AppManager.shared.memberID, completion: {
+                                err in
+                                SVProgressHUD.dismiss()
+                                if err == nil {
+                                    self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
+                                }
+                            })
+                            self.isUserProfileSelected = false
+                        }
+                        else {
+                            SVProgressHUD.dismiss()
+                            self.showMemberProfileAlert(title: "Success", message: "Member detail is updated successfully.")
+                        }
+                    }
+                })
+            })
+        }else {
+            SVProgressHUD.dismiss()
+            for textField in self.textFieldArray {
+                self.allMemberProfileFieldsRequiredValidation(textField: textField)
+            }
+            DispatchQueue.main.async {
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
+   
+        }
     }
     
     @IBAction func generalToggleBtnAction(_ sender: Any) {
@@ -458,6 +477,13 @@ extension MemberViewController{
         self.addressTextView.text! = memberDetail.address
         self.phoneNoTextField.text! = memberDetail.phoneNo
         self.dobTextField.text! = memberDetail.dob
+        
+        if self.emailTextField.text == memberDetail.email {
+            self.isAlreadyExistsEmail = false
+        }else {
+            self.isAlreadyExistsEmail = true
+        }
+        
      }
     
     @objc func trainerTypeAction(_ gesture:UITapGestureRecognizer){
@@ -646,6 +672,8 @@ extension MemberViewController:UITextFieldDelegate{
                         }
                     }
                 }
+            }else {
+                self.isAlreadyExistsEmail = false
             }
         }
 
