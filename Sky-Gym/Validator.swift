@@ -9,12 +9,20 @@
 import Foundation
 import UIKit
 import iOSDropDown
+import CryptoSwift
 
 
 class ValidationManager: NSObject {
     static let shared:ValidationManager = ValidationManager()
-    private override init() {}
-     
+    private let passwordForKey:Array<UInt8> = "sagarragassagars".bytes
+    private let saltForKey:Array<UInt8> = "shraddhaahddarhs".bytes
+    private var aesKey:Array<UInt8> = []
+    private let aesIV = "shraddhaahddarhs"
+
+     private override init() {
+        aesKey = try! PKCS5.PBKDF2(password: passwordForKey, salt: saltForKey, iterations: 3000, keyLength: 32, variant: .sha256).calculate()
+    }
+    
     func isTextViewRequiredValid(textView:UITextView) -> Bool {
         return textView.text!.count > 0 ? true : false
     }
@@ -41,7 +49,6 @@ class ValidationManager: NSObject {
                 }
             }
         }
-      //  print("fffffff : \(flag)")
         return flag
     }
 
@@ -327,6 +334,35 @@ print(" FLAG IS : \(flag)")
                 isTextViewRequiredValid(textView: textView)
         return flag
     }
-
+    
+    func stringToHash(text:String) -> String {
+        return text.md5()
+    }
+    
+    func encryption(text:String) -> String {
+        let textBytes = text.bytes
+        var encryptedPassword = ""
+        do {
+            let aes = try AES(key: aesKey, blockMode: CBC(iv: aesIV.bytes), padding: .pkcs7)
+            encryptedPassword = try aes.encrypt(textBytes).toBase64() ?? ""
+        } catch let err {
+            print("ERROR IN ENCRYPTION. \(err)")
+        }
+       return encryptedPassword
+    }
+    
+    func decryption(hash:String) -> String {
+        var decryptedPassword = ""
+        let hashData = Data(base64Encoded: hash)
+        do {
+            let aes = try AES(key: aesKey, blockMode: CBC(iv: aesIV.bytes), padding: .pkcs7)
+            let decrptedCipher = try aes.decrypt(hashData?.bytes ?? [])
+            let decrptedData = Data(decrptedCipher)
+            decryptedPassword = String(data: decrptedData, encoding: .utf8) ?? ""
+        } catch let err {
+            print("ERROR IN DECRYPTION. \(err)")
+        }
+        return decryptedPassword
+    }
 }
 

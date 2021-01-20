@@ -74,7 +74,10 @@ class ViewController: UIViewController {
     
     @IBAction func loginBtnAction(_ sender: Any) {
         SVProgressHUD.show()
-        FireStoreManager.shared.isAdminLogin(email: (self.emailTextField?.text)!, password: (self.passwordTextField?.text)!, result: {
+        let password = self.passwordTextField!.text!
+        let decryptedPassword = AppManager.shared.encryption(plainText: password)
+        
+        FireStoreManager.shared.isAdminLogin(email: (self.emailTextField?.text)!, password:decryptedPassword , result: {
             (loggedIn,err) in
             SVProgressHUD.dismiss()
             if err != nil {

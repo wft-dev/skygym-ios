@@ -162,9 +162,9 @@ class MemberViewController: BaseViewController {
     
     @IBAction func updateBtnAction(_ sender: Any) {
         SVProgressHUD.show()
-        
+        let encryptedPassword = AppManager.shared.encryption(plainText: self.passwordTextField.text!)
         if self.isFieldsDataValid() == true {
-            FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.memberID, email: self.emailTextField.text!, password: self.passwordTextField.text!, handler: {
+            FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.memberID, email: self.emailTextField.text!, password: encryptedPassword, handler: {
                 (err) in
                 
                 FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID,memberDetail: self.getMemberProfileDetails(), handler: {
@@ -520,7 +520,7 @@ extension MemberViewController{
              "memberID":self.memberIDTextField.text!,
              "dateOfJoining":self.dateOfJoiningTextField.text!,
              "gender":self.genderTextField.text!,
-             "password":self.passwordTextField.text!,
+             "password":AppManager.shared.encryption(plainText: self.passwordTextField.text!),
              "type":self.selectedMemberType(),
              "trainerName":self.trainerNameTextField.text!,
              "uploadIDName":self.uploadIDTextField.text!,

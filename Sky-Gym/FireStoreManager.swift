@@ -45,7 +45,7 @@ class FireStoreManager: NSObject {
     
     //FOR ADMIN LOGIN
     func isAdminLogin(email:String,password:String,result:@escaping (Bool,Error?)->Void) {
-            
+       
         self.fireDB.collection("Admin")
             .whereField("email", isEqualTo: email)
             .whereField("password", isEqualTo: password)
@@ -74,10 +74,12 @@ class FireStoreManager: NSObject {
     }
     
     func trainerOrMemberLogin(collectionPath:String,gymID:String,email:String,password:String,result:@escaping (Bool,Error?) -> Void) {
+        let encryptedPassword = AppManager.shared.encryption(plainText: password)
+        print("ENCRYPTED PASSWORD IS : \(encryptedPassword)")
         self.fireDB.collection(collectionPath)
         .whereField("email", isEqualTo: email)
         .whereField("gymID", isEqualTo: gymID)
-        .whereField("password", isEqualTo: password)
+        .whereField("password", isEqualTo: encryptedPassword)
         .getDocuments(completion: {
             (querySnapshot,err) in
             
@@ -139,28 +141,44 @@ class FireStoreManager: NSObject {
     }
 
     func register(id:String,gymID:String,adminDetail:[String:Any],result:@escaping (Error?) ->Void) {
-        
-        self.fireDB.collection("Admin").document("/\(id)").setData([
-            "gymID":gymID,
-            "adminID": id ,
-            "email" : adminDetail["email"] as! String,
-            "password" : adminDetail["password"] as! String,
-            "adminDetail" : adminDetail
-            ], completion: {
-                (err) in
-                result(err)
+        let email = adminDetail["email"] as! String
+        let password = adminDetail["password"] as! String
+        addNewUserCredentials(id: id, email: email, password: password, handler: {
+            (err) in
+            
+            if err == nil {
+                self.fireDB.collection("Admin").document("/\(id)").setData([
+                    "gymID":gymID,
+                    "adminID": id ,
+                    "email" : email,
+                    "password" : password ,
+                    "adminDetail" : adminDetail
+                    ], completion: {
+                        (err) in
+                        result(err)
+                })
+            }
         })
+
     }
     
     
     func updateAdminDetail(id:String,adminDetail:[String:Any],result:@escaping (Error?)->Void) {
-        self.fireDB.collection("Admin").document("/\(id)").updateData([
-            "email" : adminDetail["email"] as! String,
-            "password" : adminDetail["password"] as! String,
-            "adminDetail" : adminDetail
-            ], completion: {
-                err in
-                result(err)
+        let email = adminDetail["email"] as! String
+        let password = adminDetail["password"] as! String
+        
+        updateUserCredentials(id: id, email: email, password: password, handler: {
+            (err) in
+            if err == nil {
+                self.fireDB.collection("Admin").document("/\(id)").updateData([
+                    "email" : email,
+                    "password" : password,
+                    "adminDetail" : adminDetail
+                    ], completion: {
+                        err in
+                        result(err)
+                })
+            }
         })
     }
     

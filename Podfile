@@ -17,4 +17,5 @@ target 'Sky-Gym' do
         pod 'FirebaseStorage', '~> 3.9'
 	pod 'Firebase'
 	pod 'iOSDropDown', '~> 0.3'
+        pod 'CryptoSwift', '~> 1.3'
 end

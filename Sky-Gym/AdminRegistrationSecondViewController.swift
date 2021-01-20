@@ -33,9 +33,18 @@ class AdminRegistrationSecondViewController: UIViewController {
     var selectedDate:Date? = nil
     var datePicker = UIDatePicker()
     var toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+    var isAlreadyExistsEmail:Bool = false
+    var textFieldArray:[UITextField] = []
+    let validator = ValidationManager.shared
+    let genderPickerView = UIPickerView()
+    let genderArray = ["Male","Female","Other"]
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.genderPickerView.delegate = self
+        self.genderPickerView.dataSource = self
+        self.textFieldArray = [self.genderTextField!,self.emailTextField!,self.mobileNumberTextField!,self.passwordTextField!,self.dobTextField!]
         self.setDatePicker()
         self.setTextFields()
     }
@@ -45,21 +54,65 @@ class AdminRegistrationSecondViewController: UIViewController {
     }
     
     @objc func errorChecker(_ textfield:UITextField)  {
-           self.textFieldValidations(textField: textfield)
+           self.allFieldValidation(textField: textfield)
        }
+    
+    func allDataValid() -> Bool {
+        
+        if validator.isAllFieldsRequiredValidated(textFieldArray: self.textFieldArray, phoneNumberTextField: self.mobileNumberTextField) == true && validator.isEmailValid(email: (self.emailTextField?.text)!) == true && validator.isPasswordValid(password: (self.passwordTextField?.text)!) == true {
+            return true
+        }else {
+            return false
+        }
+    }
     
     @IBAction func doneBtnAction(_ sender: Any) {
         SVProgressHUD.show()
-        FireStoreManager.shared.register(id: UUID().uuidString, gymID: AppManager.shared.gymID, adminDetail:self.getAdminData() as! [String:String], result: {
-            err in
-            SVProgressHUD.dismiss()
-            if err != nil {
-                self.showAlert(title: "Error", message: "Error in registering admin,please try again.")
-            }else{
-                self.showAlert(title: "Success", message: "Admin is registered successfully.")
+        DispatchQueue.main.async {
+            for textField in self.textFieldArray {
+                self.allFieldValidation(textField: textField)
             }
-        })
+        }
+
+        if allDataValid() == true && self.isAlreadyExistsEmail == false {
+            FireStoreManager.shared.register(id: UUID().uuidString, gymID: AppManager.shared.gymID, adminDetail:self.getAdminData() as! [String:String], result: {
+                err in
+                SVProgressHUD.dismiss()
+                if err != nil {
+                    self.showAlert(title: "Error", message: "Error in registering admin,please try again.")
+                }else{
+                    self.showAlert(title: "Success", message: "Admin is registered successfully.")
+                }
+            })
+        }else {
+                SVProgressHUD.dismiss()
+            if self.isAlreadyExistsEmail == true {
+                self.emailTextField?.layer.borderColor = UIColor.red.cgColor
+                self.emailTextField?.layer.borderWidth = 1.0
+                self.emailErrorText!.text = "Email already exists."
+            }
+                self.doneBtn!.isEnabled = false
+                self.doneBtn!.alpha = 0.4
+        }
     }
+    
+    func allFieldValidation(textField:UITextField) {
+        switch textField.tag {
+        case 1:
+            validator.requiredValidation(textField: textField, errorLabel: self.genderErrorText!, errorMessage: "Gender required.")
+        case 2:
+            validator.emailValidation(textField: textField, errorLabel: self.emailErrorText!, errorMessage: "Invalid Email.")
+        case 3:
+            validator.phoneNumberValidation(textField: textField, errorLabel: self.mobileNumberErrorText!, errorMessage: "Phone no must be 10 digit only.")
+        case 4:
+            validator.passwordValidation(textField: textField, errorLabel: self.passwordErrorText!, errorMessage: "Password must be greater than 8 Characters.")
+        case 5 :
+            validator.requiredValidation(textField: textField, errorLabel: self.dobErrortext!, errorMessage: "D.O.B. reauired.")
+        default:
+            break
+        }
+    }
+    
 }
 
 extension AdminRegistrationSecondViewController{
@@ -108,56 +161,6 @@ extension AdminRegistrationSecondViewController{
                doneBtn?.clipsToBounds = true
     }
     
-    func textFieldValidations(textField:UITextField) {
-    switch textField.tag {
-    case 1:
-        if textField.text!.count < 1 {
-            self.genderErrorText?.text = "Gender should be there."
-        } else {
-            self.genderErrorText?.text = ""
-        }
-        
-    case 2:
-        if textField.text!.count < 1 {
-            self.emailErrorText?.text = "Email Address should be there."
-        } else {
-              if AppManager.shared.isEmailValid(email: (self.emailTextField?.text)!) {
-                                      self.emailErrorText?.text = ""
-                                  }
-                                  else {
-                                    self.emailErrorText?.text = "Incorrect Email Address"
-                                  }
-        }
-        case 3:
-        if textField.text!.count < 1 {
-            self.mobileNumberErrorText?.text = "Mobile Number should be there."
-        } else {
-            self.mobileNumberErrorText?.text = ""
-        }
-    case 4:
-        if textField.text!.count < 1 {
-            self.passwordErrorText?.text = "Password should be there."
-        } else {
-            if AppManager.shared.isPasswordValid(text: (self.passwordTextField?.text)!) {
-                self.passwordErrorText?.text = ""
-            }
-            else {
-                self.passwordErrorText?.text = "Password should be greater than 8 characters."
-            }
-        }
-    case 5:
-        if textField.text!.count < 1 {
-            self.dobErrortext?.text = "D.O.B. should be there."
-        } else {
-            self.dobErrortext?.text = ""
-        }
-        
-    default:
-        break
-    }
-      //  self.isAllTextFieldsValid()
-        }
-    
     func getAdminData() -> [String:Any] {
         let admin:[String:Any] =  [
             "dob":self.dobTextField?.text ?? "",
@@ -169,9 +172,8 @@ extension AdminRegistrationSecondViewController{
             "gymID":self.gymID,
             "gymName":self.gymName,
             "mobileNo":self.mobileNumberTextField?.text! ?? "",
-            "password":self.passwordTextField?.text ?? ""
+            "password":AppManager.shared.encryption(plainText: (self.passwordTextField?.text)!) 
             ]
-        
         return admin
     }
 
@@ -190,14 +192,57 @@ extension AdminRegistrationSecondViewController{
 }
 
 extension AdminRegistrationSecondViewController : UITextFieldDelegate {
-    
-    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
-        self.textFieldValidations(textField: textField)
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.allFieldValidation(textField: textField)
         
         if textField.tag == 5 && self.selectedDate != nil {
             textField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
+            DispatchQueue.main.async {
+                self.allFieldValidation(textField: textField)
+            }
         }
+        
+        if textField.tag == 2 {
+            let email = textField.text!
+            DispatchQueue.global(qos: .background).async {
+                let result = FireStoreManager.shared.isUserExists(email: email)
+                
+                DispatchQueue.main.async {
+                    switch result {
+                    case let .success(flag):
+                        if flag == false {
+                            textField.borderStyle = .none
+                            self.isAlreadyExistsEmail = false
+                            self.doneBtn!.isEnabled = true
+                            self.doneBtn!.alpha = 1.0
+                        }else {
+                            textField.layer.borderColor = UIColor.red.cgColor
+                            textField.layer.borderWidth = 1.0
+                            self.emailErrorText!.text = "Email already exists."
+                            self.isAlreadyExistsEmail = true
+                            self.doneBtn!.isEnabled = false
+                            self.doneBtn!.alpha = 0.4
+                        }
+
+                    case .failure(_):
+                        break
+                    }
+                }
+                
+            }
+        }
+        
+        if textField.tag == 1 && textField.text == "" {
+            textField.text = self.genderArray.first
+            DispatchQueue.main.async {
+                self.allFieldValidation(textField: self.genderTextField!)
+            }
+        }
+        self.validator.updateBtnValidator(updateBtn: self.doneBtn!, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.mobileNumberTextField, email: self.emailTextField?.text, password: self.passwordTextField?.text)
+        
     }
+    
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if textField.tag == 5 {
@@ -208,9 +253,43 @@ extension AdminRegistrationSecondViewController : UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        
         if textField.tag == 5 {
             textField.inputAccessoryView = self.toolBar
             textField.inputView = datePicker
         }
+        
+        if textField.tag == 1{
+            textField.inputView = self.genderPickerView
+        }
+        
+    }
+}
+
+
+extension AdminRegistrationSecondViewController:UIPickerViewDataSource{
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return self.genderArray.count
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return self.genderArray[row]
+    }
+    
+    
+}
+
+
+extension AdminRegistrationSecondViewController:UIPickerViewDelegate{
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.genderTextField?.text = self.genderArray[row]
+        
+        DispatchQueue.main.async {
+            self.allFieldValidation(textField: self.genderTextField!)
+        }
+        
     }
 }

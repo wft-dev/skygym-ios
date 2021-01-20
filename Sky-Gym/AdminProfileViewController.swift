@@ -481,7 +481,7 @@ extension AdminProfileViewController {
             "gymID":self.gymIDTextField.text!,
             "gymName":self.gymNameTextField.text!,
             "mobileNo":self.phoneNoTextField.text!,
-            "password":self.adminPasswordTextField.text!,
+            "password":AppManager.shared.encryption(plainText: self.adminPasswordTextField.text!),
             "gymOpenningTime" : self.openningTimeTextField.text!,
             "gymClosingTime" : self.closingTimeTextField.text!,
             "gymDays":self.gymDaysTextField.text!,

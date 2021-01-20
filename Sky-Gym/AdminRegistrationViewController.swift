@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class AdminRegistrationViewController: UIViewController {
     
@@ -34,9 +35,7 @@ class AdminRegistrationViewController: UIViewController {
     @IBAction func backBtnAction(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
-    
-    
-    
+
     
     @IBAction func forwardBtnAction(_ sender: Any) {
         performSegue(withIdentifier: "forwardSegue", sender: nil)
@@ -125,17 +124,19 @@ default:
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "forwardSegue" {
-            let  secondRegisterationVC = segue.destination as! AdminRegistrationSecondViewController
-            secondRegisterationVC.gymName = self.gymNameTextField?.text ?? ""
-            secondRegisterationVC.gymID = self.gymIDTextField?.text ?? ""
-            secondRegisterationVC.gymAddress = self.gymAddressTextView?.text ?? ""
-            secondRegisterationVC.firstName = self.firstNameTextField?.text ?? ""
-            secondRegisterationVC.lastName = self.lastNameTextField?.text ?? ""
-            secondRegisterationVC.id = UUID().uuidString
+            SVProgressHUD.show()
+        //    DispatchQueue.main.async {
+                let  secondRegisterationVC = segue.destination as! AdminRegistrationSecondViewController
+                secondRegisterationVC.gymName = self.gymNameTextField?.text ?? ""
+                secondRegisterationVC.gymID = self.gymIDTextField?.text ?? ""
+                secondRegisterationVC.gymAddress = self.gymAddressTextView?.text ?? ""
+                secondRegisterationVC.firstName = self.firstNameTextField?.text ?? ""
+                secondRegisterationVC.lastName = self.lastNameTextField?.text ?? ""
+                secondRegisterationVC.id = UUID().uuidString
+                SVProgressHUD.dismiss()
+         //   }
         }
     }
-    
-    
 }
 
 extension AdminRegistrationViewController : UITextFieldDelegate {

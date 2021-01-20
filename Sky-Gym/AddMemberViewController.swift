@@ -530,7 +530,7 @@ extension AddMemberViewController{
             "memberID":self.memberIDTextField.text!,
             "dateOfJoining":self.dateOfJoiningTextField.text!,
             "gender":self.genderTextField.text!,
-            "password":self.passwordTextField.text!,
+            "password":AppManager.shared.encryption(plainText: self.passwordTextField.text!),
             "type":self.selectedMembershipType(),
             "trainerName":self.trainerNameTextField.text!,
             "uploadIDName":self.uploadIDTextField.text!,
@@ -696,8 +696,9 @@ extension AddMemberViewController{
     
     func registerMember(memberDetail:[String:String],membershipDetail:[[String:String]]) {
         SVProgressHUD.show()
+        let encryptedPassword = AppManager.shared.encryption(plainText: self.passwordTextField.text!)
         if self.isAlreadyExistsEmail == false {
-            FireStoreManager.shared.addNewUserCredentials(id: self.memberIDTextField.text!, email: self.emailTextField.text!, password: self.passwordTextField.text!, handler: {
+            FireStoreManager.shared.addNewUserCredentials(id: self.memberIDTextField.text!, email: self.emailTextField.text!, password:encryptedPassword, handler: {
                 (err) in
                 
                 if err == nil {
@@ -708,7 +709,7 @@ extension AddMemberViewController{
                                 SVProgressHUD.dismiss()
                                 self.errorAlert(message: "ID is not uploaded successfully.")
                             } else {
-                                FireStoreManager.shared.addMember(email:self.emailTextField.text!,password: self.passwordTextField.text!,memberDetail: memberDetail, memberships: membershipDetail, memberID: self.memberIDTextField.text!, handler: {
+                                FireStoreManager.shared.addMember(email:self.emailTextField.text!,password: encryptedPassword,memberDetail: memberDetail, memberships: membershipDetail, memberID: self.memberIDTextField.text!, handler: {
                                     (err) in
                                     if err != nil {
                                         SVProgressHUD.dismiss()

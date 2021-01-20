@@ -210,7 +210,7 @@ class MemberLoginProfileViewController: UIViewController {
             "firstName" : self.firstNameTextField.text!,
             "lastName" : self.lastNameTextField.text!,
             "gender" : self.genderTextField.text!,
-            "password" : self.passwordTextField.text!,
+            "password" : AppManager.shared.encryption(plainText: self.passwordTextField.text!),
             "email"  : self.emailTextField.text!,
             "phoneNo" : self.phoneNumberTextField.text!,
             "dob" : self.dobTextField.text!

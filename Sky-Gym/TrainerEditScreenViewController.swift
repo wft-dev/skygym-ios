@@ -245,8 +245,9 @@ class TrainerEditScreenViewController: BaseViewController {
     
     @IBAction func doneBtnAction(_ sender: Any) {
         self.trainerValidation()
+        let password = AppManager.shared.encryption(plainText:  self.passwordTextField.text!)
         if self.validation.isTrainerProfileValidated(textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) == true  && self.isAlreadyExistsEmail == false {
-            self.registerTrainer(email: self.emailTextField.text!, password: self.passwordTextField.text!, id: self.idTextField.text!, trainerDetail: self.getTrainerFieldsData(), trainerPermission: self.getTrainerPermissionData())
+            self.registerTrainer(email: self.emailTextField.text!, password: password, id: self.idTextField.text!, trainerDetail: self.getTrainerFieldsData(), trainerPermission: self.getTrainerPermissionData())
         }else {
             DispatchQueue.main.async {
                 self.emailTextField.layer.borderColor = UIColor.red.cgColor
@@ -582,7 +583,7 @@ extension TrainerEditScreenViewController {
             "trainerID":self.idTextField.text!,
             "phoneNo" : self.phoneNoTextField.text!,
             "email":self.emailTextField.text!,
-            "password":self.passwordTextField.text!,
+            "password":AppManager.shared.encryption(plainText: self.passwordTextField.text!),
             "address":self.addressView.text!,
             "gender":self.genderTextField.text!,
             "salary":self.salaryTextField.text!,
@@ -596,6 +597,7 @@ extension TrainerEditScreenViewController {
               ]
               return memberDetail
     }
+
     
     func getTrainerType() -> String {
         var type :String = ""

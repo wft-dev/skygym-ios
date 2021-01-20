@@ -238,7 +238,8 @@ class AppManager: NSObject {
     }
     
     func getMemberDetailStr(memberDetail:Dictionary<String,String>) -> MemberDetailStructure {
-        let member:MemberDetailStructure = MemberDetailStructure(firstName:memberDetail["firstName"]!,lastName: memberDetail["lastName"]! ,memberID: memberDetail["memberID"]!, dateOfJoining: memberDetail["dateOfJoining"]!, gender: memberDetail["gender"]!, password: memberDetail["password"]!, type: memberDetail["type"]!, trainerName: memberDetail["trainerName"]!, trainerID: memberDetail["trainerID"]!, uploadIDName: memberDetail["uploadIDName"]!, email: memberDetail["email"]!, address: memberDetail["address"]!, phoneNo: memberDetail["phoneNo"]!, dob: memberDetail["dob"]!)
+        let decryptedPassword = AppManager.shared.decryption(cipherText: memberDetail["password"]!)
+        let member:MemberDetailStructure = MemberDetailStructure(firstName:memberDetail["firstName"]!,lastName: memberDetail["lastName"]! ,memberID: memberDetail["memberID"]!, dateOfJoining: memberDetail["dateOfJoining"]!, gender: memberDetail["gender"]!, password: decryptedPassword, type: memberDetail["type"]!, trainerName: memberDetail["trainerName"]!, trainerID: memberDetail["trainerID"]!, uploadIDName: memberDetail["uploadIDName"]!, email: memberDetail["email"]!, address: memberDetail["address"]!, phoneNo: memberDetail["phoneNo"]!, dob: memberDetail["dob"]!)
           
           return member
       }
@@ -295,8 +296,9 @@ class AppManager: NSObject {
   
     func getTrainerDetailS(trainerDetail:[String:Any]) -> TrainerDataStructure {
         let selectedWeekDaysArray = trainerDetail["selectedWeekDaysIndexArray"]
+        let password = AppManager.shared.decryption(cipherText: trainerDetail["password"] as! String)
         
-        let trainer = TrainerDataStructure(firstName:trainerDetail["firstName"] as! String, lastName:  trainerDetail["lastName"] as! String, trainerID:trainerDetail["trainerID"] as! String, phoneNo:   trainerDetail["phoneNo"] as! String, email:trainerDetail["email"] as! String,password: trainerDetail["password"] as! String, address:trainerDetail["address"] as! String, gender:trainerDetail["gender"] as! String, salary:trainerDetail["salary"] as! String, uploadID: trainerDetail["uploadIDName"] as! String, shiftDays:trainerDetail["shiftDays"] as! String, shiftTimings: trainerDetail["shiftTimings"] as! String, type:trainerDetail["type"] as! String, dob:trainerDetail["dob"] as! String, dateOfJoining: trainerDetail["dateOfJoining"] as! String, shiftDaysIndexArray:selectedWeekDaysArray as! [Int])
+        let trainer = TrainerDataStructure(firstName:trainerDetail["firstName"] as! String, lastName:  trainerDetail["lastName"] as! String, trainerID:trainerDetail["trainerID"] as! String, phoneNo:   trainerDetail["phoneNo"] as! String, email:trainerDetail["email"] as! String,password: password, address:trainerDetail["address"] as! String, gender:trainerDetail["gender"] as! String, salary:trainerDetail["salary"] as! String, uploadID: trainerDetail["uploadIDName"] as! String, shiftDays:trainerDetail["shiftDays"] as! String, shiftTimings: trainerDetail["shiftTimings"] as! String, type:trainerDetail["type"] as! String, dob:trainerDetail["dob"] as! String, dateOfJoining: trainerDetail["dateOfJoining"] as! String, shiftDaysIndexArray:selectedWeekDaysArray as! [Int])
         
         return trainer
     }
@@ -317,7 +319,9 @@ class AppManager: NSObject {
     }
     
     func getAdminProfile(adminDetails:[String:Any]) -> AdminProfile {
-        let adminProfile = AdminProfile(gymName: adminDetails["gymName"] as! String, gymID: adminDetails["gymID"] as! String, gymAddress: adminDetails["gymAddress"] as! String, firstName: adminDetails["firstName"] as! String, lastName: adminDetails["lastName"] as! String, gender: adminDetails["gender"] as! String, password: adminDetails["password"] as! String, email: adminDetails["email"] as! String, phoneNO: adminDetails["mobileNo"] as! String, dob: adminDetails["dob"] as! String,gymOpenningTime: adminDetails["gymOpenningTime"] as! String,gymClosingTime: adminDetails["gymClosingTime"] as! String,gymDays: adminDetails["gymDays"] as! String, gymDyasArrayIndexs: adminDetails["gymDaysArrayIndexs"] as! [Int])
+        let decryptedPassword = AppManager.shared.decryption(cipherText: adminDetails["password"] as! String)
+        
+        let adminProfile = AdminProfile(gymName: adminDetails["gymName"] as! String, gymID: adminDetails["gymID"] as! String, gymAddress: adminDetails["gymAddress"] as! String, firstName: adminDetails["firstName"] as! String, lastName: adminDetails["lastName"] as! String, gender: adminDetails["gender"] as! String, password:decryptedPassword, email: adminDetails["email"] as! String, phoneNO: adminDetails["mobileNo"] as! String, dob: adminDetails["dob"] as! String,gymOpenningTime: adminDetails["gymOpenningTime"] as! String,gymClosingTime: adminDetails["gymClosingTime"] as! String,gymDays: adminDetails["gymDays"] as! String, gymDyasArrayIndexs: adminDetails["gymDaysArrayIndexs"] as! [Int])
         
         return adminProfile
     }
@@ -762,7 +766,16 @@ class AppManager: NSObject {
             }
         }
         return array
-    }   
+    }
+    
+    func encryption(plainText:String) -> String {
+        return ValidationManager.shared.encryption(text: plainText)
+    }
+    
+    func decryption(cipherText:String) -> String {
+        return ValidationManager.shared.decryption(hash: cipherText)
+    }
+  
 }
 
 

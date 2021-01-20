@@ -32,7 +32,7 @@ class MemberDetailViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         if AppManager.shared.loggedInRole == LoggedInRole.Member {
         memberDetailOptionArrary = ["Current membership details","Purchase","Attendence",""]
         }else {
