@@ -35,6 +35,7 @@
 		42651AD425303F1500539B19 /* ListOfMembershipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD325303F1500539B19 /* ListOfMembershipViewController.swift */; };
 		42651AD62530657400539B19 /* MembershipViewScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD52530657400539B19 /* MembershipViewScreenViewController.swift */; };
 		42651AD825307F7600539B19 /* ListOfVisitorsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD725307F7600539B19 /* ListOfVisitorsViewController.swift */; };
+		42985EE625B949CE004915E5 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42985EE525B949CE004915E5 /* ForgotPasswordViewController.swift */; };
 		429F714B257DF2E300965DB8 /* MessengerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429F714A257DF2E300965DB8 /* MessengerManager.swift */; };
 		42A407A1251C59940087B02F /* AdminRegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A407A0251C59940087B02F /* AdminRegistrationViewController.swift */; };
 		42A407A3251C780A0087B02F /* AdminRegistrationSecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A407A2251C780A0087B02F /* AdminRegistrationSecondViewController.swift */; };
@@ -88,6 +89,7 @@
 		42651AD325303F1500539B19 /* ListOfMembershipViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfMembershipViewController.swift; sourceTree = "<group>"; };
 		42651AD52530657400539B19 /* MembershipViewScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipViewScreenViewController.swift; sourceTree = "<group>"; };
 		42651AD725307F7600539B19 /* ListOfVisitorsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfVisitorsViewController.swift; sourceTree = "<group>"; };
+		42985EE525B949CE004915E5 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		429F714A257DF2E300965DB8 /* MessengerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessengerManager.swift; sourceTree = "<group>"; };
 		42A407A0251C59940087B02F /* AdminRegistrationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminRegistrationViewController.swift; sourceTree = "<group>"; };
 		42A407A2251C780A0087B02F /* AdminRegistrationSecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminRegistrationSecondViewController.swift; sourceTree = "<group>"; };
@@ -191,6 +193,7 @@
 				425E40D22599F0DB0052401F /* TrainerProfileViewController.swift */,
 				4219F69625A49750005BF579 /* MemberLoginProfileViewController.swift */,
 				4219F69825A498D3005BF579 /* MemberLoginTrainerProfileViewController.swift */,
+				42985EE525B949CE004915E5 /* ForgotPasswordViewController.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -366,6 +369,7 @@
 				42F7DBB12521E870001F0050 /* AdminDashboardViewController.swift in Sources */,
 				42A407A1251C59940087B02F /* AdminRegistrationViewController.swift in Sources */,
 				423BB6532594BA8400F5FB45 /* GymInfoViewController.swift in Sources */,
+				42985EE625B949CE004915E5 /* ForgotPasswordViewController.swift in Sources */,
 				42CAADF3252C90DA006E1D76 /* PurchaseViewController.swift in Sources */,
 				4219F69925A498D3005BF579 /* MemberLoginTrainerProfileViewController.swift in Sources */,
 				423F870A252B4846001C30D4 /* MemberDetailViewController.swift in Sources */,

@@ -61,11 +61,14 @@ extension PurchaseViewController {
     
     func getMembershipPlans(id:String)  {
         self.purchaseArray.removeAll()
+        SVProgressHUD.show()
         FireStoreManager.shared.getMemberByID(id: id, completion: {
             (docSnapshot,err) in
             if err != nil {
+                SVProgressHUD.dismiss()
                 self.retryMembershipPlansAlert()
             } else {
+                SVProgressHUD.dismiss()
                 self.memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String,String>)
                 let memberships = docSnapshot?["memberships"] as! Array<Dictionary<String,String>>
                 if memberships.count > 0 {
@@ -144,6 +147,7 @@ extension PurchaseViewController :UITableViewDataSource {
         cell.dueAmountLabel.text = singleMembership.dueAmount
         cell.paidAmountLabel.text = singleMembership.paidAmount
         cell.purchaseDateLabel.text = singleMembership.purchaseDate
+        cell.selectionStyle = .none
         
        return cell
     }

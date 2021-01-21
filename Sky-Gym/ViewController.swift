@@ -29,6 +29,8 @@ class ViewController: UIViewController {
         super.viewDidAppear(animated)
         self.emailTextField?.text = ""
         self.passwordTextField?.text = ""
+        self.loginBtn.isEnabled = false
+        self.loginBtn.alpha = 0.4
     }
     
     

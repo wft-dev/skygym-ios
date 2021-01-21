@@ -139,6 +139,49 @@ class FireStoreManager: NSObject {
       _ = semaphores.wait(wallTimeout: .distantFuture)
         return result
     }
+    
+    func isMemberWith(id:String) -> Result<Bool,Error> {
+        var result:Result<Bool,Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        self.fireDB.collection("Members").document("/\(id)").getDocument(completion: {
+            (docSnapshot,err) in
+            if docSnapshot?.exists == true {
+                result = .success(true)
+            }else {
+                result = .success(false)
+            }
+            semaphores.signal()
+        })
+        _ = semaphores.wait(wallTimeout: .distantFuture)
+        return result
+    }
+    
+    
+    func setPasswordFor(role:Role,id:String,password:String,handler:@escaping (Error?) -> Void) {
+        let roleStr = AppManager.shared.getRole(role: role)
+        let ref = self.fireDB.collection("\(roleStr)").document("\(id)")
+        let detail = role == .Member ? "memberDetail" : "trainerDetail"
+        
+        ref.getDocument(completion: {
+            (document,err) in
+            if err == nil {
+                let detailData = document?.data()
+                var detailStr = detailData?["\(detail)"] as! Dictionary<String,Any>
+                detailStr.updateValue(password, forKey: "password")
+                
+                ref.updateData([
+                    "password":password,
+                    "\(detail)" : detailStr
+                    ], completion: {
+                        (err) in
+                        handler(err)
+                })
+            }else {
+                handler(err!)
+            }
+        })
+    }
+    
 
     func register(id:String,gymID:String,adminDetail:[String:Any],result:@escaping (Error?) ->Void) {
         let email = adminDetail["email"] as! String
@@ -1325,6 +1368,35 @@ class FireStoreManager: NSObject {
                         break
                     }else {
                         result = .success(false)
+                    }
+                }
+                seamphores.signal()
+            }
+        })
+
+        let _ = seamphores.wait(wallTimeout: .distantFuture)
+        return result
+    }
+    
+    func isUserExistsWithID(email:String) -> Result<Dictionary<String,Any>?,Error>  {
+        let seamphores = DispatchSemaphore(value: 0)
+        var result:Result<Dictionary<String,Any>?,Error>!
+        
+        fireDB.collection("Users").getDocuments(completion: {
+            (querySnapshot,err) in
+            if err != nil {
+                result = .failure(err!)
+                result = .success(nil)
+            }else {
+                for singleDoc in querySnapshot!.documents {
+                    let data = singleDoc.data() as! Dictionary<String,String>
+                    let matchingEmail = data["email"]
+                    
+                    if email == matchingEmail {
+                        result = .success(["ID":data["id"]!,"exists":true])
+                        break
+                    }else {
+                        result = .success(nil)
                     }
                 }
                 seamphores.signal()

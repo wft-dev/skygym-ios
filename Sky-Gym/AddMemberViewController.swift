@@ -115,9 +115,7 @@ class AddMemberViewController: BaseViewController {
     var visitorEmail:String = ""
     var visitorProfileImageExists = false
     
-    
-    
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCompleteView()
@@ -585,6 +583,7 @@ extension AddMemberViewController{
     @objc func trainerTypeSelection(_ gesture:UITapGestureRecognizer) {
         let selectedLabel = gesture.view as! UILabel
         self.setMembershipType(type: selectedLabel.text!)
+       
     }
     
     func getTotalAmount() -> Int {
@@ -678,9 +677,11 @@ extension AddMemberViewController{
         if type == "General" {
             self.generalTypeOptionBtn.setImage(UIImage(named: "selelecte"), for: .normal)
             self.personalTypeOptionBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
+            self.fetchTrainersByCategory(category: .general)
         } else {
             self.generalTypeOptionBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
             self.personalTypeOptionBtn.setImage(UIImage(named: "selelecte"), for: .normal)
+            self.fetchTrainersByCategory(category: .personal)
         }
     }
 
@@ -823,23 +824,23 @@ extension AddMemberViewController{
 //            }
 //        })
 //    }
-
-    func fillMemberDetail(memberDetail:MemberDetailStructure) {
-        self.firstNameTextField.text = memberDetail.firstName
-        self.lastNameTextField.text = memberDetail.lastName
-        self.memberIDTextField.text = memberDetail.memberID
-        self.dateOfJoiningTextField.text = memberDetail.dateOfJoining
-        self.genderTextField.text = memberDetail.gender
-        self.passwordTextField.text = memberDetail.password
-        self.selectedTrainerType = memberDetail.type
-        self.setMembershipType(type: self.selectedTrainerType)
-        self.trainerNameTextField.text = memberDetail.trainerName
-        self.uploadIDTextField.text = memberDetail.uploadIDName
-        self.emailTextField.text = memberDetail.email
-        self.addressTextView.text = memberDetail.address
-        self.phoneNumberTextField.text = memberDetail.phoneNo
-        self.dobTextField.text = memberDetail.dob
-    }
+//
+//    func fillMemberDetail(memberDetail:MemberDetailStructure) {
+//        self.firstNameTextField.text = memberDetail.firstName
+//        self.lastNameTextField.text = memberDetail.lastName
+//        self.memberIDTextField.text = memberDetail.memberID
+//        self.dateOfJoiningTextField.text = memberDetail.dateOfJoining
+//        self.genderTextField.text = memberDetail.gender
+//        self.passwordTextField.text = memberDetail.password
+//        self.selectedTrainerType = memberDetail.type
+//        self.setMembershipType(type: self.selectedTrainerType)
+//        self.trainerNameTextField.text = memberDetail.trainerName
+//        self.uploadIDTextField.text = memberDetail.uploadIDName
+//        self.emailTextField.text = memberDetail.email
+//        self.addressTextView.text = memberDetail.address
+//        self.phoneNumberTextField.text = memberDetail.phoneNo
+//        self.dobTextField.text = memberDetail.dob
+//    }
        func retryMemberDataAlert() {
             let retryAlertController = UIAlertController(title: "Error", message: "Error in getting the member Detail.", preferredStyle: .alert)
             let retryAlertBtn = UIAlertAction(title: "Retry", style: .default, handler: {
@@ -981,6 +982,8 @@ extension AddMemberViewController:UITextFieldDelegate{
                 df.dateFormat = "dd-MM-yyyy"
                 df.timeZone = TimeZone(secondsFromGMT: 0)
                 self.datePicker.date = df.date(from: textField.text!)!
+            }else {
+                self.datePicker.date = Date()
             }
         }
 

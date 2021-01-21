@@ -37,7 +37,7 @@ class TrainerAttendanceViewController: BaseViewController {
     var trainerAddress:String = ""
     var toolBar = UIToolbar()
     var datePicker  = UIDatePicker()
-    var  heightConstraint:CGFloat = 0
+    var heightConstraint:CGFloat = 0
     var trainerImgData:Data? = nil
     
     override func viewDidLoad() {

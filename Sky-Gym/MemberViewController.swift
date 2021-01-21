@@ -112,7 +112,6 @@ class MemberViewController: BaseViewController {
     let genderPickerView:UIPickerView = UIPickerView()
     let genderArray = ["Male","Female","Other"]
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.forNonEditLabelArray = [self.memberIDForNonEditLabel,self.dateOfJoiningForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.trainerNameForNonEditLabel,self.uploadForNonEditLabel,self.emailForNonEditLabel,self.addressForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
@@ -457,22 +456,26 @@ extension MemberViewController{
         self.actualPassword = ""
         self.actualPassword = memberDetail.password
         self.passwordNonEditLabel.text = AppManager.shared.getSecureTextFor(text: memberDetail.password)
-        self.trainerNameNonEditLabel.text = memberDetail.trainerName
         self.emailNonEditLabel.text = memberDetail.email
         self.uploadIDNonEditLabel.text = memberDetail.uploadIDName
         self.addressNonEditLabel.text = memberDetail.address
         self.phoneNoNonEditScreenLabel.text = memberDetail.phoneNo
         self.dobNonEditScreenLabel.text = memberDetail.dob
-        self.trainerType = memberDetail.type
-        self.setMemberProfileTrainerType(type: self.trainerType)
         self.memberEmail = memberDetail.email
         self.trainerID = memberDetail.trainerID
+        if memberDetail.trainerID != "" {
+            self.fetchTrainer(trainerID: memberDetail.trainerID)
+        }else {
+            self.trainerNameNonEditLabel.text = ""
+            self.trainerNameTextField.text! = ""
+            self.trainerType = ""
+            self.setMemberProfileTrainerTypeNone()
+        }
 
         self.memberIDTextField.text! = memberDetail.memberID
         self.dateOfJoiningTextField.text! = memberDetail.dateOfJoining
         self.genderTextField.text! = memberDetail.gender
         self.passwordTextField.text! = self.actualPassword
-        self.trainerNameTextField.text! = memberDetail.trainerName
         self.emailTextField.text! = memberDetail.email
         self.addressTextView.text! = memberDetail.address
         self.phoneNoTextField.text! = memberDetail.phoneNo
@@ -485,6 +488,30 @@ extension MemberViewController{
         }
         
      }
+    
+    func fetchTrainer(trainerID:String)  {
+        DispatchQueue.global(qos: .background).async {
+            let result = FireStoreManager.shared.getTrainerDetailBy(id: trainerID)
+            
+            DispatchQueue.main.async {
+                switch result {
+                    
+                case let .success(trainerDetail):
+                    self.trainerType = trainerDetail!.type
+                    self.setMemberProfileTrainerType(type: self.trainerType)
+                    self.trainerNameNonEditLabel.text = "\(trainerDetail!.firstName) \(trainerDetail!.lastName)"
+                    self.trainerNameTextField.text! = "\(trainerDetail!.firstName) \(trainerDetail!.lastName)"
+                case .failure(_):
+                    break
+                }
+            }
+        }
+    }
+    
+    func setMemberProfileTrainerTypeNone() {
+        self.generalToggleBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
+        self.personalToggleBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
+    }
     
     @objc func trainerTypeAction(_ gesture:UITapGestureRecognizer){
         let selectedLabel = gesture.view as! UILabel

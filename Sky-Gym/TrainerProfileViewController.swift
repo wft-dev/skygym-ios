@@ -151,9 +151,10 @@ class TrainerProfileViewController: BaseViewController {
         SVProgressHUD.show()
         let trainerInfo = self.getTrainerInfo()
         let trainerImgData = self.trainerProfileImg.image?.pngData()
+        let password = AppManager.shared.encryption(plainText: self.passwordTextField.text!)
         self.view.endEditing(true)
         if  self.allFieldsValid() == true && self.isAlreadyExistsEmail == false {
-            FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.trainerID, email: self.emailTextField.text!, password: self.passwordTextField.text!, handler: {
+            FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.trainerID, email: self.emailTextField.text!, password: password, handler: {
                 (err) in
                 
                 DispatchQueue.global(qos: .background).async {
@@ -358,7 +359,7 @@ class TrainerProfileViewController: BaseViewController {
             "firstName" : self.trainerFirstNameTextField.text!,
             "lastName" : self.trainerLastNameTextField.text!,
             "gender" : self.genderTextField.text!,
-            "password" : self.passwordTextField.text!,
+            "password" : AppManager.shared.encryption(plainText: self.passwordTextField.text!),
             "email" : self.emailTextField.text!,
             "phoneNo" : self.phoneNoTextField.text!,
             "dob" : self.dobTextField.text!

@@ -658,14 +658,14 @@ extension ListOfMembersViewController{
             (flag,membershipExists,err) in
             
             if err == nil {
-                memberCell.attendImg?.isUserInteractionEnabled = flag!
-                memberCell.attendImg?.alpha = flag == true ? 1.0 : 0.4
+                memberCell.attendenceView?.isUserInteractionEnabled = flag!
+                memberCell.attendenceView?.alpha = flag == true ? 1.0 : 0.4
                 memberCell.attendenceLabel.alpha = flag == true ? 1.0 : 0.4
                 memberCell.dueAmount.text =  flag == true ? dueAmount :"0"
               //  memberCell.dateOfExpiry.text = flag == true ? dateOfExpiry : "--"
-                memberCell.renewImg?.isUserInteractionEnabled = membershipExists!
-                memberCell.renewImg?.alpha = membershipExists == true ? 1.0 : 0.4
-                memberCell.renewPackageLabel.alpha = membershipExists == true ? 1.0 : 0.4
+                memberCell.renewView?.isUserInteractionEnabled = membershipExists!
+                memberCell.renewView?.alpha = membershipExists == true ? 1.0 : 0.4
+                memberCell.renewView.alpha = membershipExists == true ? 1.0 : 0.4
             }
         })
     }

@@ -45,49 +45,49 @@ class AdminRegistrationViewController: UIViewController {
 
 extension AdminRegistrationViewController{
     func assignbackground(){
-             let background = UIImage(named: "Bg_yel.png")
-             var imageView : UIImageView!
-             imageView = UIImageView(frame: view.bounds)
-            imageView.contentMode =  UIView.ContentMode.scaleToFill
-             imageView.clipsToBounds = true
-             imageView.image = background
-             imageView.center = view.center
-             view.addSubview(imageView)
-             self.view.sendSubviewToBack(imageView)
-         }
-    
-   func textFieldValidations(textField:UITextField) {
-switch textField.tag {
-case 1:
-    if textField.text!.count < 1 {
-        self.gymNameErrorText?.text = "Gym Name should be there."
-    } else {
-        self.gymNameErrorText?.text = ""
+        let background = UIImage(named: "Bg_yel.png")
+        var imageView : UIImageView!
+        imageView = UIImageView(frame: view.bounds)
+        imageView.contentMode =  UIView.ContentMode.scaleToFill
+        imageView.clipsToBounds = true
+        imageView.image = background
+        imageView.center = view.center
+        view.addSubview(imageView)
+        self.view.sendSubviewToBack(imageView)
     }
     
-case 2:
-    if textField.text!.count < 1 {
-        self.gymIDErrorText?.text = "Gym ID should be there."
-    } else {
-        self.gymIDErrorText?.text = ""
-    }
-case 4:
-    if textField.text!.count < 1 {
-        self.firstNameErrorText?.text = "First Name should be there."
-    } else {
-        self.firstNameErrorText?.text = ""
-    }
-case 5:
-    if textField.text!.count < 1 {
-        self.lastNameErrorText?.text = "Last Name should be there."
-    } else {
-        self.lastNameErrorText?.text = ""
-    }
-    
-default:
-    break
-}
-    self.isAllTextFieldsValid()
+    func textFieldValidations(textField:UITextField) {
+        switch textField.tag {
+        case 1:
+            if textField.text!.count < 1 {
+                self.gymNameErrorText?.text = "Gym Name should be there."
+            } else {
+                self.gymNameErrorText?.text = ""
+            }
+            
+        case 2:
+            if textField.text!.count < 1 {
+                self.gymIDErrorText?.text = "Gym ID should be there."
+            } else {
+                self.gymIDErrorText?.text = ""
+            }
+        case 4:
+            if textField.text!.count < 1 {
+                self.firstNameErrorText?.text = "First Name should be there."
+            } else {
+                self.firstNameErrorText?.text = ""
+            }
+        case 5:
+            if textField.text!.count < 1 {
+                self.lastNameErrorText?.text = "Last Name should be there."
+            } else {
+                self.lastNameErrorText?.text = ""
+            }
+            
+        default:
+            break
+        }
+        self.isAllTextFieldsValid()
     }
     
     func isAllTextFieldsValid()  {
@@ -99,10 +99,10 @@ default:
         
         if gymNameCount ?? 0  > 1 && gymIDCount ?? 0 > 1 && gymAddressCount ?? 0  > 1 && firstNameCount  ?? 0 > 1 && lastNameCount ?? 0  > 1 {
             self.forwardBtn?.isEnabled = true
-                  self.forwardBtn?.alpha = 1.0
+            self.forwardBtn?.alpha = 1.0
         } else {
-                 self.forwardBtn?.isEnabled = false
-              self.forwardBtn?.alpha = 0.5
+            self.forwardBtn?.isEnabled = false
+            self.forwardBtn?.alpha = 0.5
         }
     }
     
@@ -125,16 +125,16 @@ default:
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "forwardSegue" {
             SVProgressHUD.show()
-        //    DispatchQueue.main.async {
-                let  secondRegisterationVC = segue.destination as! AdminRegistrationSecondViewController
-                secondRegisterationVC.gymName = self.gymNameTextField?.text ?? ""
-                secondRegisterationVC.gymID = self.gymIDTextField?.text ?? ""
-                secondRegisterationVC.gymAddress = self.gymAddressTextView?.text ?? ""
-                secondRegisterationVC.firstName = self.firstNameTextField?.text ?? ""
-                secondRegisterationVC.lastName = self.lastNameTextField?.text ?? ""
-                secondRegisterationVC.id = UUID().uuidString
-                SVProgressHUD.dismiss()
-         //   }
+            
+            let  secondRegisterationVC = segue.destination as! AdminRegistrationSecondViewController
+            secondRegisterationVC.gymName = self.gymNameTextField?.text ?? ""
+            secondRegisterationVC.gymID = self.gymIDTextField?.text ?? ""
+            secondRegisterationVC.gymAddress = self.gymAddressTextView?.text ?? ""
+            secondRegisterationVC.firstName = self.firstNameTextField?.text ?? ""
+            secondRegisterationVC.lastName = self.lastNameTextField?.text ?? ""
+            secondRegisterationVC.id = UUID().uuidString
+            SVProgressHUD.dismiss()
+
         }
     }
 }

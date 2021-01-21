@@ -201,7 +201,9 @@ class TrainerEditScreenViewController: BaseViewController {
             let destinationVC = segue.destination as! TrainerAttendanceViewController
             destinationVC.trainerName = self.name
             destinationVC.trainerAddress = self.addressStr
-            destinationVC.trainerImgData = self.userImg.image?.pngData()
+            if self.userImg.tag != 1010 {
+                destinationVC.trainerImgData = self.userImg.image?.pngData()
+            }
         }
     }
 
@@ -754,6 +756,7 @@ extension TrainerEditScreenViewController {
                                 print(e)
                             }
                         }else {
+                            self.userImg.tag = 1010
                             SVProgressHUD.dismiss()
                         }
                     })

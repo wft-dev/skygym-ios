@@ -22,10 +22,19 @@ class ListOfTrainersTableCell: UITableViewCell {
     @IBOutlet weak var attendenceBtn: UIButton!
     @IBOutlet weak var messageBtn: UIButton!
     @IBOutlet weak var userImg: UIImageView!
+    @IBOutlet weak var callLabel: UILabel!
+    @IBOutlet weak var msgLabel: UILabel!
+    @IBOutlet weak var attendLabel: UILabel!
 
     var imageName:String = "red"
     
     override func awakeFromNib() {
+        callLabel.isUserInteractionEnabled = true
+        callLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(callAction)))
+        msgLabel.isUserInteractionEnabled = true
+        msgLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(messageAction)))
+        attendLabel.isUserInteractionEnabled = true
+        attendLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(attendenceAction)))
         callBtn.addTarget(self, action: #selector(callAction), for: .touchUpInside)
         messageBtn.addTarget(self, action: #selector(messageAction), for: .touchUpInside)
         attendenceBtn.addTarget(self, action: #selector(attendenceAction), for: .touchUpInside)

@@ -19,6 +19,8 @@ class MemberAndTrainerLoginViewController: UIViewController {
     @IBOutlet weak var passwordErrorText: UILabel?
     @IBOutlet weak var loginBtn: UIButton?
     
+    
+    
     let validator = ValidationManager.shared
     
     override func viewDidLoad() {
@@ -41,6 +43,11 @@ class MemberAndTrainerLoginViewController: UIViewController {
         loginBtn?.clipsToBounds = true
         
         self.loginBtn?.addTarget(self, action: #selector(loginAction), for: .touchUpInside)
+    }
+    
+    
+    @IBAction func forgotPasswordAction(_ sender: Any) {
+        performSegue(withIdentifier: "forgotPasswordSegue", sender: nil)
     }
 }
 

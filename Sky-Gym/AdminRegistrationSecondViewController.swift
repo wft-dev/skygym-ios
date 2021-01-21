@@ -279,7 +279,6 @@ extension AdminRegistrationSecondViewController:UIPickerViewDataSource{
         return self.genderArray[row]
     }
     
-    
 }
 
 
