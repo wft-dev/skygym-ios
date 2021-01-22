@@ -225,6 +225,7 @@ extension AdminProfileViewController {
     }
     
     @objc func dismissGymWeekDaysList(_ gesture : UITapGestureRecognizer) {
+        self.view.endEditing(true)
         self.weekDaysListView.isHidden = true
         self.weekDaysListView.alpha = 0.0
         self.setGymDaysFieldData()
@@ -242,12 +243,15 @@ extension AdminProfileViewController {
     
     @objc func showWeekDays() {
         self.view.endEditing(true)
-        self.weekDaysListView.isHidden = !self.weekDaysListView.isHidden
-        self.weekDaysListView.alpha = self.weekDaysListView.isHidden == true ? 0.0 : 1.0
-         
-        if self.weekDaysListView.isHidden == true {
-            self.setGymDaysFieldData()
-        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+            
+            self.weekDaysListView.isHidden = !self.weekDaysListView.isHidden
+            self.weekDaysListView.alpha = self.weekDaysListView.isHidden == true ? 0.0 : 1.0
+            
+            if self.weekDaysListView.isHidden == true {
+                self.setGymDaysFieldData()
+            }
+        })
     }
     
     func setGymDaysFieldData() {
@@ -509,7 +513,6 @@ extension AdminProfileViewController {
         self.imagePicker.modalPresentationStyle = .fullScreen
         present(self.imagePicker, animated: true, completion: nil)
     }
-    
 }
 
 extension AdminProfileViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate{
@@ -535,8 +538,16 @@ extension AdminProfileViewController : UITextFieldDelegate{
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        
-        if textField.tag == 9 {
+        if self.weekDaysListView.isHidden == false && textField.tag != 12  {
+            self.weekDaysListView.isHidden = true
+            self.weekDaysListView.alpha = 0.0
+        }
+        switch textField.tag {
+        case 5:
+            textField.inputView = self.genderPickerView
+            break
+            
+        case 9:
             textField.inputView = self.datePicker
             textField.inputAccessoryView = self.toolBar
             if textField.text!.count > 0 {
@@ -544,9 +555,9 @@ extension AdminProfileViewController : UITextFieldDelegate{
                 df.dateFormat = "dd-MM-yyyy"
                 self.datePicker.date = df.date(from: textField.text!)!
             }
-        }
-        
-        if textField.tag == 10 || textField.tag == 11 {
+            break
+            
+        case 10  :
             textField.inputView = self.timePicker
             textField.inputAccessoryView = self.toolBar
             if textField.text!.count > 0 {
@@ -554,44 +565,38 @@ extension AdminProfileViewController : UITextFieldDelegate{
                 df.dateFormat = "hh:mm a"
                 self.timePicker.date = df.date(from: textField.text!)!
             }
-        }
-        
-        if textField.tag == 5 {
-            textField.inputView = self.genderPickerView
+            break
+        case 11 :
+            textField.inputView = self.timePicker
+            textField.inputAccessoryView = self.toolBar
+            if textField.text!.count > 0 {
+                let df = DateFormatter()
+                df.dateFormat = "hh:mm a"
+                self.timePicker.date = df.date(from: textField.text!)!
+            }
+            break
+            
+        default:
+            break
         }
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField.tag == 9 && self.selectedDate != "" {
-            textField.text = self.selectedDate
-            self.selectedDate = ""
-        }
         
-        if  textField.tag == 10{
-            if  self.selectedTime.count > 1 {
-                textField.text = self.selectedTime
-                self.selectedTime = ""
+        switch textField.tag {
+        case 5 :
+            if textField.text == "" {
+                textField.text = self.genderArray.first
             }
-        }
-        
-        if textField.tag == 11 && self.selectedTime.count > 1 {
-            if validation.isDuplicate(text1: self.openningTimeTextField.text!, text2: self.selectedTime) == false{
-                self.closingTimeTextField.text = self.selectedTime
-                self.selectedTime = ""
-            } else {
-                self.closingTimeTextField.text = ""
-                duplicateError = "Start time and end time can not be same."
-                 self.selectedTime = ""
-            }
-        }
-        
-        if textField.tag == 7 {
+            break
+            
+        case 7:
             let email = textField.text!
             if self.adminEmail != email {
                 DispatchQueue.global(qos: .default).async {
                     let result = FireStoreManager.shared.isUserExists(email: email)
                     DispatchQueue.main.async {
-                    switch result {
+                        switch result {
                         case let  .success(flag):
                             if flag == false {
                                 self.isAlreadyExistsEmail = false
@@ -610,18 +615,46 @@ extension AdminProfileViewController : UITextFieldDelegate{
                             break
                         }
                     }
-
+                    
                 }
             }else {
                 self.isAlreadyExistsEmail = false
                 
             }
-        }
-        
-        if textField.tag == 5 {
-            if textField.text == "" {
-                textField.text = self.genderArray.first
+            break
+            
+        case 9:
+            if self.selectedDate != "" {
+                textField.text = self.selectedDate
+                self.selectedDate = ""
             }
+            break
+            
+        case 10 :
+            if  self.selectedTime.count > 1 {
+                textField.text = self.selectedTime
+                self.selectedTime = ""
+            }
+            break
+            
+        case 11:
+
+            if self.selectedTime.count > 1 {
+                if validation.isDuplicate(text1: self.openningTimeTextField.text!, text2: self.selectedTime) == false{
+                    self.closingTimeTextField.text = self.selectedTime
+                    self.selectedTime = ""
+                } else {
+                    self.closingTimeTextField.text = ""
+                    duplicateError = "Start time and end time can not be same."
+                    self.selectedTime = ""
+                }
+                
+
+            }
+            break
+            
+        default:
+            break
         }
         
         self.allProfileFieldsRequiredValidation(textField: textField)
@@ -666,6 +699,7 @@ extension AdminProfileViewController : UITableViewDelegate{
 
 extension AdminProfileViewController :UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        view.endEditing(true)
         if touch.view?.isDescendant(of: self.weekDaysListView) == true {
             return false
         }else {

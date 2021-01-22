@@ -23,7 +23,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.window = self.window
         appDelegate.setRoot()
-        IQKeyboardManager.shared.enable = true
     }
     
 

@@ -1011,6 +1011,12 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
        }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        if self.weekDayListView.isHidden == false && textField.tag != 11 {
+            self.weekDayListView.isHidden = true
+            self.weekDayListView.alpha = 0.0
+        }
+        
         if textField.tag == 12 || textField.tag == 13 {
             textField.inputAccessoryView = self.toolBar
             textField.inputView = datePicker
@@ -1146,6 +1152,7 @@ extension TrainerEditScreenViewController:UITableViewDelegate{
 
 extension TrainerEditScreenViewController:UIGestureRecognizerDelegate{
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+       // self.view.endEditing(true)
         if touch.view?.isDescendant(of: self.weekDayListView) == true ||
             touch.view?.isDescendant(of: self.imagePicker.view) == true {
             return false
@@ -1180,6 +1187,7 @@ extension TrainerEditScreenViewController : UIPickerViewDelegate{
     }
    
 }
+
 
 
 

@@ -570,6 +570,7 @@ extension AddMemberViewController{
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissMembershipList(_:)))
         tapRecognizer.cancelsTouchesInView = false
         self.view.isUserInteractionEnabled = true
+        tapRecognizer.delegate = self
         self.view.addGestureRecognizer(tapRecognizer)
     }
     
@@ -974,6 +975,10 @@ extension AddMemberViewController:UITextFieldDelegate{
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        if self.trainerListView.isHidden == false && textField.tag != 7 {
+            self.trainerListView.isHidden = true
+            self.trainerListView.alpha = 0.0
+        }
         if textField.tag == 4 || textField.tag == 11 || textField.tag == 14 {
             textField.inputAccessoryView = self.toolBar
             textField.inputView = datePicker
@@ -992,10 +997,9 @@ extension AddMemberViewController:UITextFieldDelegate{
         }
         
         if textField.tag == 12  {
-            self.showMembershipPlan()
             self.view.endEditing(true)
+            self.showMembershipPlan()
         }
-        
         
         if textField.tag == 5 {
             textField.inputView = self.genderPickerView
@@ -1222,3 +1226,16 @@ extension AddMemberViewController:UIPickerViewDelegate {
 }
 
 
+
+extension AddMemberViewController:UIGestureRecognizerDelegate{
+ 
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        self.view.endEditing(true)
+        if touch.view?.isDescendant(of: self.trainerListView) == true {
+            return false
+        }else {
+            return true
+        }
+    }
+    
+}

@@ -212,10 +212,10 @@ class ValidationManager: NSObject {
                     updateBtn.alpha = 1.0
                 }
             } else {
-                DispatchQueue.main.async {
+               // DispatchQueue.main.async {
                     updateBtn.isEnabled = false
                     updateBtn.alpha = 0.4
-                }
+             //   }
             }
         }
     }
