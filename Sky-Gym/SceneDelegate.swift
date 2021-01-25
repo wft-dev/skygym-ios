@@ -10,7 +10,7 @@ import UIKit
 import SWRevealViewController
 import FirebaseCore
 import FirebaseFirestore
-import IQKeyboardManagerSwift
+
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?

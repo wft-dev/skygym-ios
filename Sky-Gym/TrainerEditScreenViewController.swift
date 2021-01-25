@@ -188,7 +188,7 @@ class TrainerEditScreenViewController: BaseViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        super.viewWillAppear(true)
         self.addClickToDismissWeekDaysList()
     }
     
@@ -534,11 +534,10 @@ extension TrainerEditScreenViewController {
         self.view.endEditing(true)
         self.weekDayListView.isHidden = !self.weekDayListView.isHidden
         self.weekDayListView.alpha = self.weekDayListView.isHidden == true ? 0.0 : 1.0
-        
+
         if self.weekDayListView.isHidden == true {
             self.setValueToShiftField()
         }
-        
     }
     
     func addPaddingToTextField(textField:UITextField) {
@@ -1011,11 +1010,13 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
        }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        print("text field tag : \(textField.tag)")
+        print("week days list view : \(self.weekDayListView.isHidden)")
         
-        if self.weekDayListView.isHidden == false && textField.tag != 11 {
-            self.weekDayListView.isHidden = true
-            self.weekDayListView.alpha = 0.0
-        }
+//        if self.weekDayListView.isHidden == false && textField.tag != 11 {
+//            self.weekDayListView.isHidden = true
+//            self.weekDayListView.alpha = 0.0
+//        }
         
         if textField.tag == 12 || textField.tag == 13 {
             textField.inputAccessoryView = self.toolBar

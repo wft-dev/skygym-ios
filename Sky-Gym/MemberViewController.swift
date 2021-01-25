@@ -85,9 +85,9 @@ class MemberViewController: BaseViewController {
     @IBOutlet weak var personalTypeLabel: UILabel!
     @IBOutlet weak var listOfTrainerView: UIView!
     @IBOutlet weak var listOfTrainerTable: UITableView!
-    
     @IBOutlet weak var constraintContentHeight: NSLayoutConstraint!
-    
+    @IBOutlet weak var mainView: UIView!
+
     var isEdit:Bool = false
     var firstName:String = ""
     var lastName:String = ""
@@ -121,9 +121,9 @@ class MemberViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
       
-//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name:UIResponder.keyboardWillShowNotification, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name:UIResponder.keyboardWillShowNotification, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+
         self.forNonEditLabelArray = [self.memberIDForNonEditLabel,self.dateOfJoiningForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.trainerNameForNonEditLabel,self.uploadForNonEditLabel,self.emailForNonEditLabel,self.addressForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
         self.defaultLabelArray = [self.memberID,self.dateOfJoining,self.gender,self.password,self.trainerName,self.uploadID,self.email,self.address,self.phoneNo,self.dob]
         self.errorLabelArray = [self.memberIDErrorLabel,self.dateOfJoiningErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.addressErrorLabel,self.trainerNameErrorLabel,self.uploadIDErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel]
@@ -150,11 +150,13 @@ class MemberViewController: BaseViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        super.viewWillAppear(true)
         self.memberImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openUserProfilePicker)))
        
         self.imgPicker.delegate = self
         self.setMemberProfileCompleteView()
+        self.listOfTrainerTable.isScrollEnabled = false
+        //self.listOfTrainerTable.
     }
     
     @objc func showTrainerList(){
@@ -218,7 +220,6 @@ class MemberViewController: BaseViewController {
                 self.updateBtn.isEnabled = false
                 self.updateBtn.alpha = 0.4
             }
-   
         }
     }
     
@@ -246,47 +247,15 @@ class MemberViewController: BaseViewController {
 extension MemberViewController{
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        if keyboardHeight != nil {
-            return
-        }
-        
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            keyboardHeight = keyboardSize.height
-            print("KEY BOARD HEIGHT : \(keyboardHeight)")
-            UIView.animate(withDuration: 0.3, animations: {
-                self.constraintContentHeight.constant += self.keyboardHeight!
-                print("HEIGHT CONSTRAINT : \(self.constraintContentHeight.constant)")
-            })
-            
-            let distanceToBottom = self.memberViewScrollView.frame.size.height - (activeTextField?.frame.origin.y)! - (activeTextField?.frame.size.height)!
-            
-            print("DISTANCE TO BOTTOM : \(distanceToBottom)")
-            
-            let collapseSpace = keyboardHeight! - distanceToBottom
-              print("COLLAPSE DISTANCE : \(collapseSpace)")
-            if collapseSpace < 0 {
-                return
-            }
-            
-            UIView.animate(withDuration: 0.3, animations: {
-               // self.memberViewScrollView.contentOffset = CGPoint(x: self.lastOffset!.x, y: distanceToBottom + 20)
-                
-                
-                self.memberViewScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: self.keyboardHeight! + 20 , right: 0)
-                
-                print("CONTENT OFFSET : \(self.memberViewScrollView.contentInset)")
-            })
-        }
-        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.view.frame.origin.y = -150
+        })
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
-        UIView.animate(withDuration: 0.3) {
-            self.constraintContentHeight.constant -= self.keyboardHeight!
-            self.memberViewScrollView.contentOffset = self.lastOffset!
-            self.memberViewScrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        }
-        keyboardHeight = nil
+        UIView.animate(withDuration: 0.3, animations: {
+            self.view.frame.origin.y = 0
+        })
     }
     
     func fetchListOfTrainer(category:TrainerType) {
@@ -709,17 +678,16 @@ extension MemberViewController:UITextFieldDelegate{
         }
     }
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        self.activeTextField!.resignFirstResponder()
-        self.activeTextField = nil
-        return true
-    }
+//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+//        self.activeTextField!.resignFirstResponder()
+//        self.activeTextField = nil
+//        return true
+//    }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        self.activeTextField = textField
-        lastOffset = self.memberViewScrollView.contentOffset
-        print("LAST OFFSET : \(lastOffset!)")
-        
+//        self.activeTextField = textField
+//        lastOffset = self.memberViewScrollView.contentOffset
+//
         if self.listOfTrainerView.isHidden == false && textField.tag != 5 {
             self.listOfTrainerView.isHidden = true
             self.listOfTrainerView.alpha = 0.0
@@ -857,12 +825,10 @@ extension MemberViewController:UIPickerViewDelegate{
         DispatchQueue.main.async {
             self.allMemberProfileFieldsRequiredValidation(textField: self.trainerNameTextField)
             self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
-
         }
     }
     
 }
-
 
 extension MemberViewController:UIGestureRecognizerDelegate{
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {

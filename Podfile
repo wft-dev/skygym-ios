@@ -12,10 +12,10 @@ target 'Sky-Gym' do
 # https://firebase.google.com/docs/ios/setup#available-pods
 
         pod 'FirebaseFirestoreSwift'
-	pod 'IQKeyboardManagerSwift'
 	pod 'SVProgressHUD'
         pod 'FirebaseStorage', '~> 3.9'
 	pod 'Firebase'
 	pod 'iOSDropDown', '~> 0.3'
         pod 'CryptoSwift', '~> 1.3'
+	
 end
