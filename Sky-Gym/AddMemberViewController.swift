@@ -161,8 +161,8 @@ class AddMemberViewController: BaseViewController {
         self.trainerNameTextField.isUserInteractionEnabled = true
         self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
         self.fetchTrainersByCategory(category: .general)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name:UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name:UIResponder.keyboardWillShowNotification, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -202,17 +202,26 @@ class AddMemberViewController: BaseViewController {
         }
     }
     
-    @objc func keyboardWillShow(notification: NSNotification) {
-        UIView.animate(withDuration: 0.3, animations: {
-            self.view.frame.origin.y = -150
-        })
-    }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        UIView.animate(withDuration: 0.3, animations: {
-            self.view.frame.origin.y = 0
-        })
-    }
+//    @objc func keyboardWillShow(notification: NSNotification) {
+//        UIView.animate(withDuration: 0.3, animations: {
+//          //  print("MEMBERSHIP VIEW : \(self.membershipView.frame.origin)")
+//            if self.membershipView.isHidden == true {
+//                  self.view.frame.origin.y = -150
+//            }else {
+//                self.membershipView.frame.origin.y = -150
+//            }
+//        })
+//    }
+//
+//    @objc func keyboardWillHide(notification: NSNotification) {
+//        UIView.animate(withDuration: 0.3, animations: {
+//            if self.membershipView.isHidden == true {
+//                 self.view.frame.origin.y = 0
+//            }else {
+//                self.membershipView.frame.origin.y = 60
+//            }
+//        })
+//    }
     
     @objc func showTrainerList() {
         self.view.endEditing(true)

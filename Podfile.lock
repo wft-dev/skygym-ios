@@ -336,7 +336,7 @@ DEPENDENCIES:
   - FirebaseFirestoreSwift
   - FirebaseStorage (~> 3.9)
   - iOSDropDown (~> 0.3)
-  - IQKeyboardManager (~> 6.5)
+  - IQKeyboardManager
   - SVProgressHUD
   - SWRevealViewController (~> 2.3)
 
@@ -393,6 +393,6 @@ SPEC CHECKSUMS:
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   SWRevealViewController: 6d3fd97f70112fd7cef9de14df4260eacce4c63a
 
-PODFILE CHECKSUM: ad61d6730146c7a7f23a772c27ddb1205ca98e2c
+PODFILE CHECKSUM: cd34bbc7f88653ebed7aa6f0443e58001d79ad38
 
 COCOAPODS: 1.9.3

@@ -120,49 +120,32 @@ class MemberViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-      
-    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name:UIResponder.keyboardWillShowNotification, object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-
-        self.forNonEditLabelArray = [self.memberIDForNonEditLabel,self.dateOfJoiningForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.trainerNameForNonEditLabel,self.uploadForNonEditLabel,self.emailForNonEditLabel,self.addressForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
-        self.defaultLabelArray = [self.memberID,self.dateOfJoining,self.gender,self.password,self.trainerName,self.uploadID,self.email,self.address,self.phoneNo,self.dob]
-        self.errorLabelArray = [self.memberIDErrorLabel,self.dateOfJoiningErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.addressErrorLabel,self.trainerNameErrorLabel,self.uploadIDErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel]
-        self.textFieldArray = [self.memberIDTextField,self.dateOfJoiningTextField,self.genderTextField,self.trainerNameTextField,self.uploadIDTextField,self.phoneNoTextField,self.dobTextField]
-        self.personalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeAction(_:))))
-        self.generalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeAction(_:))))
-        
-        self.listOfTrainerView.layer.cornerRadius = 12.0
-        self.listOfTrainerView.layer.borderWidth = 1.0
-        self.listOfTrainerView.layer.borderColor = UIColor.black.cgColor
-        self.listOfTrainerView.isHidden = true
-        self.listOfTrainerView.alpha = 0.0
-        
-        self.trainerNameTextField.isUserInteractionEnabled = true
-        self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
-        self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
-        
-        self.genderPickerView.delegate = self
-        self.genderPickerView.dataSource = self
-        
-        self.memberImg.image = self.img
-        self.memberImg.makeRounded()
-        self.memberImg.tag = 00
+        self.setMemberProfileCompleteView()
+        self.memberViewScrollView.shouldIgnoreScrollingAdjustment = true
+        if #available(iOS 13.0, *) {
+            self.memberViewScrollView.automaticallyAdjustsScrollIndicatorInsets = false
+        } else {
+            // Fallback on earlier versions
+        }
+        self.memberViewScrollView.contentInsetAdjustmentBehavior = .never
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        self.memberImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openUserProfilePicker)))
-       
-        self.imgPicker.delegate = self
-        self.setMemberProfileCompleteView()
-        self.listOfTrainerTable.isScrollEnabled = false
-        //self.listOfTrainerTable.
+        self.memberViewScrollView.contentOffset = .zero
+        //    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name:UIResponder.keyboardWillShowNotification, object: nil)
+        //    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     @objc func showTrainerList(){
         self.view.endEditing(true)
         self.listOfTrainerView.isHidden = !self.listOfTrainerView.isHidden
         self.listOfTrainerView.alpha = self.listOfTrainerView.isHidden == true ? 0.0 : 1.0
+        print("SCROLL VIEW OFFSET : \(self.memberViewScrollView.contentOffset)")
+//        if self.listOfTrainerView.isHidden == true {
+//            self.memberViewScrollView.contentOffset = self.lastOffset!
+//            print("SCROLL VIEW OFFSET : \(self.memberViewScrollView.contentOffset)")
+//        }
     }
     
     func isFieldsDataValid() -> Bool {
@@ -246,17 +229,17 @@ class MemberViewController: BaseViewController {
 
 extension MemberViewController{
     
-    @objc func keyboardWillShow(notification: NSNotification) {
-        UIView.animate(withDuration: 0.3, animations: {
-            self.view.frame.origin.y = -150
-        })
-    }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        UIView.animate(withDuration: 0.3, animations: {
-            self.view.frame.origin.y = 0
-        })
-    }
+//    @objc func keyboardWillShow(notification: NSNotification) {
+//        UIView.animate(withDuration: 0.3, animations: {
+//            self.view.frame.origin.y = -150
+//        })
+//    }
+//
+//    @objc func keyboardWillHide(notification: NSNotification) {
+//        UIView.animate(withDuration: 0.3, animations: {
+//            self.view.frame.origin.y = 0
+//        })
+//    }
     
     func fetchListOfTrainer(category:TrainerType) {
         DispatchQueue.global(qos: .background).async {
@@ -307,6 +290,17 @@ extension MemberViewController{
         self.updateBtn.layer.cornerRadius = 15.0
         self.updateBtn.isHidden = !self.isImagePickerSelected
         
+        self.memberImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openUserProfilePicker)))
+        self.imgPicker.delegate = self
+        self.listOfTrainerTable.isScrollEnabled = false
+        
+        self.forNonEditLabelArray = [self.memberIDForNonEditLabel,self.dateOfJoiningForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.trainerNameForNonEditLabel,self.uploadForNonEditLabel,self.emailForNonEditLabel,self.addressForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel]
+        self.defaultLabelArray = [self.memberID,self.dateOfJoining,self.gender,self.password,self.trainerName,self.uploadID,self.email,self.address,self.phoneNo,self.dob]
+        self.errorLabelArray = [self.memberIDErrorLabel,self.dateOfJoiningErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.addressErrorLabel,self.trainerNameErrorLabel,self.uploadIDErrorLabel,self.emailErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel]
+        self.textFieldArray = [self.memberIDTextField,self.dateOfJoiningTextField,self.genderTextField,self.trainerNameTextField,self.uploadIDTextField,self.phoneNoTextField,self.dobTextField]
+        self.personalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeAction(_:))))
+        self.generalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeAction(_:))))
+        
         AppManager.shared.performEditAction(dataFields: self.getMemberProfileFieldsAndLabelDic(), edit: self.isImagePickerSelected )
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: !self.isImagePickerSelected)
         AppManager.shared.hidePasswordTextField(hide: !self.isImagePickerSelected, passwordTextField: self.passwordTextField, passwordLabel: self.passwordNonEditLabel)
@@ -329,6 +323,24 @@ extension MemberViewController{
         toolBar.items = [cancelToolBarItem,space,okToolBarItem]
         toolBar.sizeToFit()
         self.addClickToDismissTrainerList()
+        
+        self.listOfTrainerView.layer.cornerRadius = 12.0
+        self.listOfTrainerView.layer.borderWidth = 1.0
+        self.listOfTrainerView.layer.borderColor = UIColor.black.cgColor
+        self.listOfTrainerView.isHidden = true
+        self.listOfTrainerView.alpha = 0.0
+        
+        self.trainerNameTextField.isUserInteractionEnabled = true
+        self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
+        self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
+        
+        self.genderPickerView.delegate = self
+        self.genderPickerView.dataSource = self
+        
+        self.memberImg.image = self.img
+        self.memberImg.makeRounded()
+        self.memberImg.tag = 00
+        
     }
     
     @objc func cancelTextField()  {
@@ -686,8 +698,11 @@ extension MemberViewController:UITextFieldDelegate{
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
 //        self.activeTextField = textField
-//        lastOffset = self.memberViewScrollView.contentOffset
-//
+//        if textField.tag == 5 {
+//             print("SCROLL VIEW OFFSET : \(self.memberViewScrollView.contentOffset)")
+//              self.lastOffset = self.memberViewScrollView.contentOffset
+//        }
+        
         if self.listOfTrainerView.isHidden == false && textField.tag != 5 {
             self.listOfTrainerView.isHidden = true
             self.listOfTrainerView.alpha = 0.0

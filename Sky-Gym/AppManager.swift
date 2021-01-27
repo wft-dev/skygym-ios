@@ -776,37 +776,37 @@ class AppManager: NSObject {
         return ValidationManager.shared.decryption(hash: cipherText)
     }
     
-    func keyboardWillShow(keyboardHeight:CGFloat?,constraintContentHeight:NSLayoutConstraint,activeTextField:UITextField?,scrollView:UIScrollView,lastOffset:CGPoint?) {
-        var constraintHeight = constraintContentHeight
-        
-        if keyboardHeight != nil {
-            return
-        }
-        UIView.animate(withDuration: 0.3, animations: {
-            constraintHeight.constant += keyboardHeight!
-        })
-        
-        let distanceToBottom = scrollView.frame.size.height - (activeTextField?.frame.origin.y)! - (activeTextField?.frame.size.height)!
-        
-        let collapseSpace = keyboardHeight! - distanceToBottom
-        if collapseSpace < 0 {
-            return
-        }
-        
-        UIView.animate(withDuration: 0.3, animations: {
-            scrollView.contentOffset = CGPoint(x: lastOffset!.x, y: collapseSpace + 20)
-        })
-    }
+//    func keyboardWillShow(keyboardHeight:CGFloat?,constraintContentHeight:NSLayoutConstraint,activeTextField:UITextField?,scrollView:UIScrollView,lastOffset:CGPoint?) {
+//        var constraintHeight = constraintContentHeight
+//
+//        if keyboardHeight != nil {
+//            return
+//        }
+//        UIView.animate(withDuration: 0.3, animations: {
+//            constraintHeight.constant += keyboardHeight!
+//        })
+//
+//        let distanceToBottom = scrollView.frame.size.height - (activeTextField?.frame.origin.y)! - (activeTextField?.frame.size.height)!
+//
+//        let collapseSpace = keyboardHeight! - distanceToBottom
+//        if collapseSpace < 0 {
+//            return
+//        }
+//
+//        UIView.animate(withDuration: 0.3, animations: {
+//            scrollView.contentOffset = CGPoint(x: lastOffset!.x, y: collapseSpace + 20)
+//        })
+//    }
     
-    func keyboardWillHide(keyboardHeight:CGFloat?,constraintContentHeight:NSLayoutConstraint,scrollView:UIScrollView,lastOffset:CGPoint?)  {
-        var keyboardHeight:CGFloat? = keyboardHeight
-        
-        UIView.animate(withDuration: 0.3) {
-            constraintContentHeight.constant -= keyboardHeight!
-            scrollView.contentOffset = lastOffset!
-        }
-        keyboardHeight = nil
-    }
+//    func keyboardWillHide(keyboardHeight:CGFloat?,constraintContentHeight:NSLayoutConstraint,scrollView:UIScrollView,lastOffset:CGPoint?)  {
+//        var keyboardHeight:CGFloat? = keyboardHeight
+//        
+//        UIView.animate(withDuration: 0.3) {
+//            constraintContentHeight.constant -= keyboardHeight!
+//            scrollView.contentOffset = lastOffset!
+//        }
+//        keyboardHeight = nil
+//    }
 
 }
 

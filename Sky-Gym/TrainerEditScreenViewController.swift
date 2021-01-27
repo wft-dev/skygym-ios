@@ -158,11 +158,15 @@ class TrainerEditScreenViewController: BaseViewController {
     let genderPickerView = UIPickerView()
     let genderArray = ["Male","Female","Other"]
     var trainerEmail:String = ""
+    var contentOffSets:CGPoint? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.tag = 1010
         self.setTrainerEditView()
+        
+
+        
         self.showTrainerBy(id: AppManager.shared.trainerID)
         self.weekDaysListTable.delegate = self
         self.weekDaysListTable.dataSource = self
@@ -185,11 +189,26 @@ class TrainerEditScreenViewController: BaseViewController {
                 self.userImg.image = UIImage(named: "user-1")
             }
         }
+        self.weekDaysListTable.isScrollEnabled = false
+        self.weekDaysListTable.scrollsToTop = false
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        self.trainerEditScrollView.shouldIgnoreScrollingAdjustment = true
+        if #available(iOS 13.0, *) {
+            self.trainerEditScrollView.automaticallyAdjustsScrollIndicatorInsets = false
+        } else {
+          //  self.trainerEditScrollView.
+        }
+        self.trainerEditScrollView.contentInsetAdjustmentBehavior = .never
         self.addClickToDismissWeekDaysList()
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+      //  self.trainerEditScrollView.contentInset  = .zero
+     //   self.trainerEditScrollView.contentOffset = .zero
     }
     
     @IBAction func trainerAttendanceAction(_ sender: Any) {
@@ -263,7 +282,7 @@ class TrainerEditScreenViewController: BaseViewController {
 }
 
 extension TrainerEditScreenViewController {
-    
+
     private func addClickToDismissWeekDaysList() {
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissWeekDaysList(_:)))
         tapRecognizer.delegate = self
@@ -495,6 +514,7 @@ extension TrainerEditScreenViewController {
             $0?.layer.cornerRadius = 7.0
             $0?.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
             $0?.clipsToBounds = true
+            $0?.autocorrectionType = .no
             $0?.addTarget(self, action: #selector(errorValidator(_:)), for: .editingChanged)
         }
         
@@ -534,9 +554,10 @@ extension TrainerEditScreenViewController {
         self.view.endEditing(true)
         self.weekDayListView.isHidden = !self.weekDayListView.isHidden
         self.weekDayListView.alpha = self.weekDayListView.isHidden == true ? 0.0 : 1.0
-
+        
         if self.weekDayListView.isHidden == true {
             self.setValueToShiftField()
+
         }
     }
     
@@ -921,7 +942,7 @@ extension TrainerEditScreenViewController {
         self.dobTextField.text = trainerDetails.dob
         self.selectedWeekDayIndexArray = trainerDetails.shiftDaysIndexArray
         
-        self.weekDaysListTable.reloadData()
+    self.weekDaysListTable.reloadData()
 
         self.setTrainerType(type:trainerDetails.type,generalBtn:self.generalBtnForNonEditLabel,personalBtn: self.personalBtnForNonEditLabel )
         self.setTrainerPermission(memberPermissionBtn: self.memberPermissionNonEditBtn, visitorPermissionBtn: self.visitorPermissionNonEditBtn, eventPermissionBtn: self.eventPermissionNonEditBtn,memberPermission: trainerPermissions.canAddMember, visitorPermission: trainerPermissions.canAddVisitor, eventPermission:trainerPermissions.canAddEvent)
@@ -1000,6 +1021,12 @@ extension TrainerEditScreenViewController:UIImagePickerControllerDelegate,UINavi
 
 extension TrainerEditScreenViewController:UITextFieldDelegate{
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return true
+    }
+    
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if textField.tag == 12 || textField.tag == 13 || textField.tag == 9  || textField.tag == 10 || textField.tag == 7  {
             self.view.endEditing(true)
@@ -1010,13 +1037,6 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
        }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        print("text field tag : \(textField.tag)")
-        print("week days list view : \(self.weekDayListView.isHidden)")
-        
-//        if self.weekDayListView.isHidden == false && textField.tag != 11 {
-//            self.weekDayListView.isHidden = true
-//            self.weekDayListView.alpha = 0.0
-//        }
         
         if textField.tag == 12 || textField.tag == 13 {
             textField.inputAccessoryView = self.toolBar
@@ -1053,6 +1073,7 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
+       
         if self.selectedDate.count > 1 {
             switch textField.tag {
             case 12:
