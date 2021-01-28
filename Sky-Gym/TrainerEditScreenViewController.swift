@@ -15,7 +15,7 @@ class WeekDayForTrainerTableCell: UITableViewCell {
     @IBOutlet weak var weekDayLabel: UILabel!
 }
 
-class TrainerEditScreenViewController: BaseViewController {
+class TrainerEditScreenViewController: BaseViewController{
     
     @IBOutlet weak var trainerEditScreenNavigationBar: CustomNavigationBar!
     @IBOutlet weak var firstNameTextField: UITextField!
@@ -160,55 +160,30 @@ class TrainerEditScreenViewController: BaseViewController {
     var trainerEmail:String = ""
     var contentOffSets:CGPoint? = nil
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.tag = 1010
         self.setTrainerEditView()
-        
-
-        
         self.showTrainerBy(id: AppManager.shared.trainerID)
-        self.weekDaysListTable.delegate = self
-        self.weekDaysListTable.dataSource = self
-        self.weekDaysListTable.allowsMultipleSelection = true
-        self.weekDayListView.isHidden = true
-        self.weekDayListView.alpha = 0.0
-        self.userImg.tag = 00
-        self.genderPickerView.dataSource = self
-        self.genderPickerView.delegate = self
-
-        self.idTextField.text = "\(Int.random(in: 1..<100000))" 
-        self.idTextField.isEnabled = false
-        self.idTextField.layer.opacity = 0.4
-        self.generalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeSelection(_:))))
-        self.personalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeSelection(_:))))
-        if self.isUserImgSelected == false {
-            if AppManager.shared.loggedInRole == LoggedInRole.Trainer {
-                self.userImg.image = UIImage(named: "member")
-            } else {
-                self.userImg.image = UIImage(named: "user-1")
-            }
+        self.trainerEditScrollView.shouldIgnoreScrollingAdjustment = true
+        
+        if #available(iOS 13.0, *) {
+            self.trainerEditScrollView.automaticallyAdjustsScrollIndicatorInsets = false
+        } else {
         }
-        self.weekDaysListTable.isScrollEnabled = false
-        self.weekDaysListTable.scrollsToTop = false
+        self.trainerEditScrollView.contentInsetAdjustmentBehavior = .never
+        self.trainerEditScrollView.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        self.trainerEditScrollView.shouldIgnoreScrollingAdjustment = true
-        if #available(iOS 13.0, *) {
-            self.trainerEditScrollView.automaticallyAdjustsScrollIndicatorInsets = false
-        } else {
-          //  self.trainerEditScrollView.
-        }
-        self.trainerEditScrollView.contentInsetAdjustmentBehavior = .never
+        self.trainerEditScrollView.contentOffset = .zero
         self.addClickToDismissWeekDaysList()
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-      //  self.trainerEditScrollView.contentInset  = .zero
-     //   self.trainerEditScrollView.contentOffset = .zero
     }
     
     @IBAction func trainerAttendanceAction(_ sender: Any) {
@@ -308,7 +283,9 @@ extension TrainerEditScreenViewController {
             }
         }
         self.shiftDaysTextField.text = str
-        self.validation.requiredValidation(textField: self.shiftDaysTextField, errorLabel: self.shiftDaysErrorLabel, errorMessage: "Shift days required.")
+        if self.shiftDaysTextField.text != "" {
+           self.validation.requiredValidation(textField: self.shiftDaysTextField, errorLabel: self.shiftDaysErrorLabel, errorMessage: "Shift days required.")
+        }
     }
  
     func trainerValidation() {
@@ -454,6 +431,7 @@ extension TrainerEditScreenViewController {
         self.personalTypeLabel.isUserInteractionEnabled = true
         self.setNonEditTrainerType(hide: true)
     }
+ 
     }
 
     func setHrLineView(isHidden:Bool,alpha:CGFloat) {
@@ -461,6 +439,7 @@ extension TrainerEditScreenViewController {
             $0?.isHidden = isHidden
             $0?.alpha = alpha
         }
+    
     }
 
     func getFieldsAndLabelDic() -> [UITextField:UILabel] {
@@ -737,7 +716,34 @@ extension TrainerEditScreenViewController {
             self.setNonEditTrainerType(hide: true)
             self.generalTypeLabel.isUserInteractionEnabled = true
             self.personalTypeLabel.isUserInteractionEnabled = true
+            self.idTextField.text = "\(Int.random(in: 1..<100000))"
+            print("ID: \(self.idTextField.text)")
         }
+       
+        self.weekDaysListTable.delegate = self
+        self.weekDaysListTable.dataSource = self
+        self.weekDaysListTable.allowsMultipleSelection = true
+        self.weekDayListView.isHidden = true
+        self.weekDayListView.alpha = 0.0
+        self.userImg.tag = 00
+        self.genderPickerView.dataSource = self
+        self.genderPickerView.delegate = self
+
+
+        self.idTextField.isEnabled = false
+        self.idTextField.layer.opacity = 0.4
+        self.generalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeSelection(_:))))
+        self.personalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeSelection(_:))))
+        if self.isUserImgSelected == false {
+            if AppManager.shared.loggedInRole == LoggedInRole.Trainer {
+                self.userImg.image = UIImage(named: "member")
+            } else {
+                self.userImg.image = UIImage(named: "user-1")
+            }
+        }
+        self.weekDaysListTable.isScrollEnabled = false
+        self.weekDaysListTable.scrollsToTop = false
+        
     }
     
     @objc func cancelTextField()  {
@@ -957,7 +963,7 @@ extension TrainerEditScreenViewController {
     }
 
     func clearTextFields() {
-        [self.firstNameTextField,self.secondNameTextField,self.idTextField,self.phoneNoTextField,self.emailTextField,self.passwordTextField,self.genderTextField,self.salaryTextField,self.dobTextField,self.dateOfJoinTextField,self.shiftTimingsTextField,self.shiftDaysTextField,self.uploadIDProofTextField].forEach{
+        [self.firstNameTextField,self.secondNameTextField,self.phoneNoTextField,self.emailTextField,self.passwordTextField,self.genderTextField,self.salaryTextField,self.dobTextField,self.dateOfJoinTextField,self.shiftTimingsTextField,self.shiftDaysTextField,self.uploadIDProofTextField].forEach{
             $0?.text = ""
         }
         self.addressView.text = ""
@@ -1037,6 +1043,12 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
        }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+//
+//        if textField.tag == 1 || textField.tag == 2 {
+//            self.contentOffSets = .zero
+//        }
+        
+        self.contentOffSets = textField.frame.origin
         
         if textField.tag == 12 || textField.tag == 13 {
             textField.inputAccessoryView = self.toolBar
@@ -1211,5 +1223,14 @@ extension TrainerEditScreenViewController : UIPickerViewDelegate{
 }
 
 
-
-
+extension TrainerEditScreenViewController:UIScrollViewDelegate {
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        let scrollableLength:CGFloat = (self.contentOffSets!.y/2)
+        UIView.animate(withDuration: 0.3, animations: {
+            if scrollView.contentOffset.y > self.contentOffSets!.y  {
+                print("SCROLLING length : \(scrollableLength)")
+                scrollView.contentOffset.y = scrollableLength
+            }
+        })
+    }
+}

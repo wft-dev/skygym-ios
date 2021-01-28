@@ -115,7 +115,6 @@ class AddMemberViewController: BaseViewController {
     var visitorEmail:String = ""
     var visitorProfileImageExists = false
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCompleteView()
@@ -161,8 +160,6 @@ class AddMemberViewController: BaseViewController {
         self.trainerNameTextField.isUserInteractionEnabled = true
         self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
         self.fetchTrainersByCategory(category: .general)
-//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name:UIResponder.keyboardWillShowNotification, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -835,36 +832,6 @@ extension AddMemberViewController{
         toolBar.sizeToFit()
     }
     
-//    func featchMemberDetail(id:String) {
-//        SVProgressHUD.show()
-//        FireStoreManager.shared.getMemberByID(id: id, completion: {
-//            (docSnapshot,err) in
-//            SVProgressHUD.dismiss()
-//            if err != nil {
-//                self.retryMemberDataAlert()
-//            } else {
-//                let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String, String>)
-//               // self.fillMemberDetail(memberDetail: memberDetail)
-//            }
-//        })
-//    }
-//
-//    func fillMemberDetail(memberDetail:MemberDetailStructure) {
-//        self.firstNameTextField.text = memberDetail.firstName
-//        self.lastNameTextField.text = memberDetail.lastName
-//        self.memberIDTextField.text = memberDetail.memberID
-//        self.dateOfJoiningTextField.text = memberDetail.dateOfJoining
-//        self.genderTextField.text = memberDetail.gender
-//        self.passwordTextField.text = memberDetail.password
-//        self.selectedTrainerType = memberDetail.type
-//        self.setMembershipType(type: self.selectedTrainerType)
-//        self.trainerNameTextField.text = memberDetail.trainerName
-//        self.uploadIDTextField.text = memberDetail.uploadIDName
-//        self.emailTextField.text = memberDetail.email
-//        self.addressTextView.text = memberDetail.address
-//        self.phoneNumberTextField.text = memberDetail.phoneNo
-//        self.dobTextField.text = memberDetail.dob
-//    }
        func retryMemberDataAlert() {
             let retryAlertController = UIAlertController(title: "Error", message: "Error in getting the member Detail.", preferredStyle: .alert)
             let retryAlertBtn = UIAlertAction(title: "Retry", style: .default, handler: {

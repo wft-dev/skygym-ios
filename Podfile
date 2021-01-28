@@ -17,5 +17,5 @@ target 'Sky-Gym' do
         pod 'Firebase'
         pod 'iOSDropDown', '~> 0.3'
         pod 'CryptoSwift', '~> 1.3'
-	pod 'IQKeyboardManager'
+	pod 'IQKeyboardManagerSwift', '~> 6.0.4'
 end

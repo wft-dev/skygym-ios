@@ -291,7 +291,7 @@ extension ListOfTrainersViewController {
             (imgUrl,err) in
             SVProgressHUD.dismiss()
             if err != nil {
-                
+                imgView.image = UIImage(named: "user1")
             } else {
                 do{
                   let imgData = try Data(contentsOf: imgUrl!)

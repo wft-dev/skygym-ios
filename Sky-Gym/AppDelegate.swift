@@ -11,7 +11,7 @@ import CoreData
 import SWRevealViewController
 import FirebaseCore
 import FirebaseFirestore
-import IQKeyboardManager
+import IQKeyboardManagerSwift
 
 
 @UIApplicationMain
@@ -24,9 +24,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
         setRoot()
-        IQKeyboardManager.shared().isEnabled = true
-        IQKeyboardManager.shared().keyboardDistanceFromTextField = 30
-        IQKeyboardManager.shared().layoutIfNeededOnUpdate = true
+        IQKeyboardManager.shared.enable = true
+        IQKeyboardManager.shared.keyboardDistanceFromTextField = 30
+        IQKeyboardManager.shared.layoutIfNeededOnUpdate = true
+        //IQKeyboardManagerSwift.IQKeyboardManager.shared.sugge
         
     return true
     }

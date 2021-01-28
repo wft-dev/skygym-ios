@@ -133,19 +133,12 @@ class MemberViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         self.memberViewScrollView.contentOffset = .zero
-        //    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name:UIResponder.keyboardWillShowNotification, object: nil)
-        //    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     @objc func showTrainerList(){
         self.view.endEditing(true)
         self.listOfTrainerView.isHidden = !self.listOfTrainerView.isHidden
         self.listOfTrainerView.alpha = self.listOfTrainerView.isHidden == true ? 0.0 : 1.0
-        print("SCROLL VIEW OFFSET : \(self.memberViewScrollView.contentOffset)")
-//        if self.listOfTrainerView.isHidden == true {
-//            self.memberViewScrollView.contentOffset = self.lastOffset!
-//            print("SCROLL VIEW OFFSET : \(self.memberViewScrollView.contentOffset)")
-//        }
     }
     
     func isFieldsDataValid() -> Bool {
@@ -228,19 +221,7 @@ class MemberViewController: BaseViewController {
 }
 
 extension MemberViewController{
-    
-//    @objc func keyboardWillShow(notification: NSNotification) {
-//        UIView.animate(withDuration: 0.3, animations: {
-//            self.view.frame.origin.y = -150
-//        })
-//    }
-//
-//    @objc func keyboardWillHide(notification: NSNotification) {
-//        UIView.animate(withDuration: 0.3, animations: {
-//            self.view.frame.origin.y = 0
-//        })
-//    }
-    
+
     func fetchListOfTrainer(category:TrainerType) {
         DispatchQueue.global(qos: .background).async {
             let result = FireStoreManager.shared.getTrainerByCategory(category: category)
@@ -327,6 +308,9 @@ extension MemberViewController{
         self.listOfTrainerView.layer.cornerRadius = 12.0
         self.listOfTrainerView.layer.borderWidth = 1.0
         self.listOfTrainerView.layer.borderColor = UIColor.black.cgColor
+        self.listOfTrainerTable.layer.cornerRadius = 12.0
+        self.listOfTrainerTable.layer.borderWidth = 1.0
+        self.listOfTrainerTable.layer.borderColor = UIColor.black.cgColor
         self.listOfTrainerView.isHidden = true
         self.listOfTrainerView.alpha = 0.0
         
@@ -340,7 +324,6 @@ extension MemberViewController{
         self.memberImg.image = self.img
         self.memberImg.makeRounded()
         self.memberImg.tag = 00
-        
     }
     
     @objc func cancelTextField()  {
@@ -689,20 +672,8 @@ extension MemberViewController:UITextFieldDelegate{
             return true
         }
     }
-    
-//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        self.activeTextField!.resignFirstResponder()
-//        self.activeTextField = nil
-//        return true
-//    }
-    
+
     func textFieldDidBeginEditing(_ textField: UITextField) {
-//        self.activeTextField = textField
-//        if textField.tag == 5 {
-//             print("SCROLL VIEW OFFSET : \(self.memberViewScrollView.contentOffset)")
-//              self.lastOffset = self.memberViewScrollView.contentOffset
-//        }
-        
         if self.listOfTrainerView.isHidden == false && textField.tag != 5 {
             self.listOfTrainerView.isHidden = true
             self.listOfTrainerView.alpha = 0.0

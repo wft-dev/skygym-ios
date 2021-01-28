@@ -319,7 +319,7 @@ PODS:
   - gRPC-Core/Interface (1.28.2)
   - GTMSessionFetcher/Core (1.5.0)
   - iOSDropDown (0.3.4)
-  - IQKeyboardManager (6.5.6)
+  - IQKeyboardManagerSwift (6.0.5)
   - leveldb-library (1.22)
   - nanopb (1.30906.0):
     - nanopb/decode (= 1.30906.0)
@@ -336,7 +336,7 @@ DEPENDENCIES:
   - FirebaseFirestoreSwift
   - FirebaseStorage (~> 3.9)
   - iOSDropDown (~> 0.3)
-  - IQKeyboardManager
+  - IQKeyboardManagerSwift (~> 6.0.4)
   - SVProgressHUD
   - SWRevealViewController (~> 2.3)
 
@@ -360,7 +360,7 @@ SPEC REPOS:
     - gRPC-Core
     - GTMSessionFetcher
     - iOSDropDown
-    - IQKeyboardManager
+    - IQKeyboardManagerSwift
     - leveldb-library
     - nanopb
     - PromisesObjC
@@ -386,13 +386,13 @@ SPEC CHECKSUMS:
   gRPC-Core: 4afa11bfbedf7cdecd04de535a9e046893404ed5
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   iOSDropDown: c10a761f9a00c3f1cc9d3bce43ae504628e2f692
-  IQKeyboardManager: 2a6e97afdafc7becf0cb17a9a8d795e3a980717f
+  IQKeyboardManagerSwift: c14eca30f6001457d6ddf25e313f23fb6578c41c
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   SWRevealViewController: 6d3fd97f70112fd7cef9de14df4260eacce4c63a
 
-PODFILE CHECKSUM: cd34bbc7f88653ebed7aa6f0443e58001d79ad38
+PODFILE CHECKSUM: 1e4bda23e1fbaaa771d655a55dbeb6a9be93961f
 
 COCOAPODS: 1.9.3
