@@ -159,26 +159,33 @@ class TrainerEditScreenViewController: BaseViewController{
     let genderArray = ["Male","Female","Other"]
     var trainerEmail:String = ""
     var contentOffSets:CGPoint? = nil
-    
+   // var cellHeightsDictionary: [IndexPath: CGFloat] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.tag = 1010
         self.setTrainerEditView()
         self.showTrainerBy(id: AppManager.shared.trainerID)
+        self.trainerEditScrollView.tag = 1212
         self.trainerEditScrollView.shouldIgnoreScrollingAdjustment = true
         
         if #available(iOS 13.0, *) {
             self.trainerEditScrollView.automaticallyAdjustsScrollIndicatorInsets = false
+            self.weekDaysListTable.automaticallyAdjustsScrollIndicatorInsets = false
         } else {
         }
         self.trainerEditScrollView.contentInsetAdjustmentBehavior = .never
+        self.weekDaysListTable.shouldIgnoreScrollingAdjustment = true
+        self.weekDaysListTable.contentInsetAdjustmentBehavior = .never
         self.trainerEditScrollView.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         self.trainerEditScrollView.contentOffset = .zero
+        self.weekDaysListTable.contentOffset = .zero
+        self.weekDaysListTable.isScrollEnabled = false
+        self.weekDaysListTable.scrollsToTop = false
         self.addClickToDismissWeekDaysList()
     }
     
@@ -717,7 +724,6 @@ extension TrainerEditScreenViewController {
             self.generalTypeLabel.isUserInteractionEnabled = true
             self.personalTypeLabel.isUserInteractionEnabled = true
             self.idTextField.text = "\(Int.random(in: 1..<100000))"
-            print("ID: \(self.idTextField.text)")
         }
        
         self.weekDaysListTable.delegate = self
@@ -728,7 +734,6 @@ extension TrainerEditScreenViewController {
         self.userImg.tag = 00
         self.genderPickerView.dataSource = self
         self.genderPickerView.delegate = self
-
 
         self.idTextField.isEnabled = false
         self.idTextField.layer.opacity = 0.4
@@ -743,7 +748,6 @@ extension TrainerEditScreenViewController {
         }
         self.weekDaysListTable.isScrollEnabled = false
         self.weekDaysListTable.scrollsToTop = false
-        
     }
     
     @objc func cancelTextField()  {
@@ -1043,12 +1047,8 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
        }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-//
-//        if textField.tag == 1 || textField.tag == 2 {
-//            self.contentOffSets = .zero
-//        }
-        
-        self.contentOffSets = textField.frame.origin
+
+      //  self.contentOffSets = textField.frame.origin
         
         if textField.tag == 12 || textField.tag == 13 {
             textField.inputAccessoryView = self.toolBar
@@ -1170,6 +1170,18 @@ extension TrainerEditScreenViewController:UITableViewDataSource{
         cell.selectionStyle = .none
         return cell
     }
+    
+//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        cellHeightsDictionary[indexPath] = cell.frame.size.height
+//    }
+//
+//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+//        if let height =  cellHeightsDictionary[indexPath] {
+//            return height
+//        }
+//        return UITableView.automaticDimension
+//    }
+    
 }
 
 
@@ -1224,13 +1236,25 @@ extension TrainerEditScreenViewController : UIPickerViewDelegate{
 
 
 extension TrainerEditScreenViewController:UIScrollViewDelegate {
-    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        let scrollableLength:CGFloat = (self.contentOffSets!.y/2)
-        UIView.animate(withDuration: 0.3, animations: {
-            if scrollView.contentOffset.y > self.contentOffSets!.y  {
-                print("SCROLLING length : \(scrollableLength)")
-                scrollView.contentOffset.y = scrollableLength
-            }
-        })
-    }
+//    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+//        let scrollableLength:CGFloat = (self.contentOffSets!.y/2)
+//        UIView.animate(withDuration: 0.3, animations: {
+//            if scrollView.contentOffset.y > self.contentOffSets!.y  {
+//                print("SCROLLING length : \(scrollableLength)")
+//                scrollView.contentOffset.y = scrollableLength
+//            }
+//        })
+//    }
+//
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//
+//        if scrollView.tag == 1212 {
+//             print(" MAINSCROLL VIEW ENABLED.")
+//        }else {
+//            print("TABLE SCROLL VIEW ENABLED.")
+//        }
+//
+//
+//    }
+    
 }

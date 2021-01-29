@@ -43,6 +43,7 @@ class MembershipViewScreenViewController: BaseViewController {
     var textFieldArray:[UITextField] = []
     let validation = ValidationManager.shared
     var duplicateErrorText:String? = nil
+    var weekdayImg = UIImage(named: "unchecked-checkbox")
  
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,6 +69,8 @@ class MembershipViewScreenViewController: BaseViewController {
             "Membership for 12 months"
         ]
         self.membershipDropDownTitleTextField.optionIds = [1,2,3,4,5,6,7,8,9,10,11,12]
+        self.membershipDropDownTitleTextField.checkMarkEnabled = true
+
         if self.isNewMemberhsip == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
             self.setHrLineView(isHidden: false, alpha: 1.0)

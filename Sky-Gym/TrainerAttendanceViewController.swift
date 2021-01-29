@@ -114,8 +114,10 @@ extension TrainerAttendanceViewController{
     
     @objc  func previousWeekTrainerAttendence() {
         let previousStartDate = AppManager.shared.getPreviousDayDate(startDate: AppManager.shared.getDate(date: self.attendenceStartDateLabel.text!))
-        let previousEndDate = AppManager.shared.getPreviousDayDate(startDate: AppManager.shared.getDate(date: self.attendenceEndDateLabel.text!))
-        
+        let previousEndDate = AppManager.shared.getNext7DaysDate(startDate: AppManager.shared.getDate(date: previousStartDate))
+            
+        //    AppManager.shared.getPreviousDayDate(startDate: AppManager.shared.getDate(date: self.attendenceEndDateLabel.text!))
+            
         self.fetchTrainerAttendenceFrom(startDate: previousStartDate, endDate:previousEndDate)
         self.attendenceStartDateLabel.text = previousStartDate
         self.attendenceEndDateLabel.text = previousEndDate
@@ -123,7 +125,11 @@ extension TrainerAttendanceViewController{
     
     @objc  func nextWeekTrainerAttendence () {
         let nextStartDateStr = AppManager.shared.getNextDayDate(startDate: AppManager.shared.getDate(date: self.attendenceStartDateLabel.text!))
-        let nextEndDateStr = AppManager.shared.getNextDayDate(startDate: AppManager.shared.getDate(date: self.attendenceEndDateLabel.text!))
+        
+        let nextEndDateStr = AppManager.shared.getNext7DaysDate(startDate: AppManager.shared.getDate(date: nextStartDateStr))
+        
+     //   AppManager.shared.getNextDayDate(startDate: AppManager.shared.getDate(date: self.attendenceEndDateLabel.text!))
+        
         self.fetchTrainerAttendenceFrom(startDate: nextStartDateStr, endDate: nextEndDateStr)
         self.attendenceStartDateLabel.text = nextStartDateStr
         self.attendenceEndDateLabel.text = nextEndDateStr
@@ -163,21 +169,21 @@ extension TrainerAttendanceViewController{
              }
          }
 
-         @objc func onDoneButtonClick() {
-             let dateFormatter = DateFormatter()
-             dateFormatter.dateFormat =  "d MMM yyyy"
-             self.attendenceStartDateLabel.text = "\(dateFormatter.string(from: self.datePicker.date))"
-             self.attendenceEndDateLabel.text = "\(AppManager.shared.getNext7DaysDate(startDate: self.datePicker.date))"
-             self.toolBar.removeFromSuperview()
-             self.datePicker.removeFromSuperview()
-            self.fetchTrainerAttendenceFrom(startDate: self.attendenceStartDateLabel.text!, endDate: self.attendenceEndDateLabel.text!)
-         }
+    @objc func onDoneButtonClick() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat =  "d MMM yyyy"
+        self.attendenceStartDateLabel.text = "\(dateFormatter.string(from: self.datePicker.date))"
+        self.attendenceEndDateLabel.text = "\(AppManager.shared.getNext7DaysDate(startDate: self.datePicker.date))"
+        self.toolBar.removeFromSuperview()
+        self.datePicker.removeFromSuperview()
+        self.fetchTrainerAttendenceFrom(startDate: self.attendenceStartDateLabel.text!, endDate: self.attendenceEndDateLabel.text!)
+    }
     
-         @objc func onCancelButtonClick() {
-             self.toolBar.removeFromSuperview()
-             self.datePicker.removeFromSuperview()
-            self.view.endEditing(true)
-         }
+    @objc func onCancelButtonClick() {
+        self.toolBar.removeFromSuperview()
+        self.datePicker.removeFromSuperview()
+        self.view.endEditing(true)
+    }
     
     func fetchTrainerAttendenceFrom(startDate:String,endDate:String) {
         SVProgressHUD.show()
@@ -197,8 +203,8 @@ extension TrainerAttendanceViewController{
                 self.heightConstraint = CGFloat(self.trainerAttendanceArray.count * 66)
                 DispatchQueue.main.async {
                     SVProgressHUD.dismiss()
-                self.trainerAttendenceHeigthConstriant.constant = self.heightConstraint
-                self.trainerAttendanceTable.reloadData()
+                    self.trainerAttendenceHeigthConstriant.constant = self.heightConstraint
+                    self.trainerAttendanceTable.reloadData()
                 }
             }else {
                 SVProgressHUD.dismiss()
@@ -220,19 +226,19 @@ extension TrainerAttendanceViewController:UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "trainerAttendanceCell", for: indexPath) as! TrainerAttendanceTableCell
-
+        
         self.setAttandanceTableCellView(tableCellView: cell.trainerAttendanceCellView )
         cell.checkInTimeView.layer.cornerRadius = 12.0
         cell.checkOutTimeView.layer.cornerRadius = 12.0
         
         cell.weekdayLabel.text = AppManager.shared.getTodayWeekDay(date: self.trainerAttendanceArray[indexPath.row]!.date)
-
+        
         if self.trainerAttendanceArray[indexPath.row]?.present == false {
             cell.attendanceImg.image = UIImage(named: "red")
             cell.checkInTimeLabel.text = "-"
             cell.checkOutTimeLabel.text = "-"
         } else {
-             cell.attendanceImg.image = UIImage(named: "green")
+            cell.attendanceImg.image = UIImage(named: "green")
             cell.checkInTimeLabel.text = self.trainerAttendanceArray[indexPath.row]?.checkIn
             cell.checkOutTimeLabel.text = self.trainerAttendanceArray[indexPath.row]?.checkOut
         }
