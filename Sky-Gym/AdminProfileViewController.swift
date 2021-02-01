@@ -96,7 +96,8 @@ class AdminProfileViewController: UIViewController {
     @IBOutlet weak var gymDaysHrLineView: UIView!
     @IBOutlet weak var weekDaysListView: UIView!
     @IBOutlet weak var weekDaysListTable: UITableView!
-    
+    @IBOutlet weak var adminScrollView: UIScrollView!
+
     var imagePicker = UIImagePickerController()
     var isProfileImgSelected:Bool = false
     var isEdit:Bool = false
@@ -155,6 +156,15 @@ class AdminProfileViewController: UIViewController {
         self.adminImg.isUserInteractionEnabled = false
         self.gymDaysTextField.isUserInteractionEnabled = true
         self.gymDaysTextField.addTarget(self, action: #selector(showWeekDays), for: .editingDidBegin)
+        
+        self.adminScrollView.shouldIgnoreScrollingAdjustment = true
+       if #available(iOS 13.0, *) {
+           self.adminScrollView.automaticallyAdjustsScrollIndicatorInsets = false
+       } else {
+           // Fallback on earlier versions
+       }
+       self.adminScrollView.contentInsetAdjustmentBehavior = .never
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {

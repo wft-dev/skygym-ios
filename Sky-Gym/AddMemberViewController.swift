@@ -118,48 +118,14 @@ class AddMemberViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCompleteView()
-        self.genderPickerView.delegate = self
-        self.genderPickerView.dataSource = self
         
-        if self.isRenewMembership == true {
-            if self.renewingMembershipID == "" {
-                FireStoreManager.shared.getMemberByID(id: AppManager.shared.memberID, completion: {
-                    (memberDetail,err) in
-                    if err == nil {
-                        let memberships = memberDetail!["memberships"] as! Array<Dictionary<String,String>>
-                        let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: memberships)
-                        if currentMembership.count > 0 {
-                            self.setRenewingMembershipData(membership: currentMembership.first!)
-                            self.renewingMembershipID = currentMembership.first!.membershipID
-                        } else {
-                            let previousMembership = AppManager.shared.getPreviousMembership(membershipArray: memberships)
-                            self.setRenewingMembershipData(membership: previousMembership)
-                            self.renewingMembershipID = previousMembership.membershipID
-                        }
-                    }
-                })
-            } else {
-                FireStoreManager.shared.getMembershipWith(memberID: AppManager.shared.memberID, membershipID: self.renewingMembershipID, result: {
-                    (membershipData,err) in
-                    if err != nil {
-                       
-                    } else{
-                        self.setRenewingMembershipData(membership: membershipData!)
-                    }
-                })
-            }
-            DispatchQueue.main.async {
-                self.updateBtn.setTitle("U P D A T E", for: .normal)
-            }
+        self.myScrollView.shouldIgnoreScrollingAdjustment = true
+        if #available(iOS 13.0, *) {
+            self.myScrollView.automaticallyAdjustsScrollIndicatorInsets = false
+        } else {
+            // Fallback on earlier versions
         }
-        self.trainerListView.layer.cornerRadius = 12.0
-        self.trainerListView.layer.borderWidth = 1.0
-        self.trainerListView.layer.borderColor = UIColor.black.cgColor
-        self.trainerListView.isHidden = true
-        self.trainerListView.alpha = 0.0
-        self.trainerNameTextField.isUserInteractionEnabled = true
-        self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
-        self.fetchTrainersByCategory(category: .general)
+        self.myScrollView.contentInsetAdjustmentBehavior = .never
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -184,7 +150,6 @@ class AddMemberViewController: BaseViewController {
                 self.topConstraintOfMembershipView.constant = -(self.profileAndMembershipBarView.frame.size.height)
                  self.updateBtn.setTitle("U P D A T E", for: .normal)
             }
-         //   self.featchMemberDetail(id: AppManager.shared.memberID)
         }
         else {
             DispatchQueue.main.async {
@@ -198,27 +163,6 @@ class AddMemberViewController: BaseViewController {
             }
         }
     }
-    
-//    @objc func keyboardWillShow(notification: NSNotification) {
-//        UIView.animate(withDuration: 0.3, animations: {
-//          //  print("MEMBERSHIP VIEW : \(self.membershipView.frame.origin)")
-//            if self.membershipView.isHidden == true {
-//                  self.view.frame.origin.y = -150
-//            }else {
-//                self.membershipView.frame.origin.y = -150
-//            }
-//        })
-//    }
-//
-//    @objc func keyboardWillHide(notification: NSNotification) {
-//        UIView.animate(withDuration: 0.3, animations: {
-//            if self.membershipView.isHidden == true {
-//                 self.view.frame.origin.y = 0
-//            }else {
-//                self.membershipView.frame.origin.y = 60
-//            }
-//        })
-//    }
     
     @objc func showTrainerList() {
         self.view.endEditing(true)
@@ -779,7 +723,7 @@ extension AddMemberViewController{
             }
         })
     }
-  
+
     func setCompleteView() {
         self.setNavigationBar()
         self.addTopAndBottomBorders(toView: profileAndMembershipBarView)
@@ -830,6 +774,49 @@ extension AddMemberViewController{
         let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
         toolBar.items = [cancelToolBarItem,space,okToolBarItem]
         toolBar.sizeToFit()
+        
+        self.genderPickerView.delegate = self
+        self.genderPickerView.dataSource = self
+        
+        if self.isRenewMembership == true {
+            if self.renewingMembershipID == "" {
+                FireStoreManager.shared.getMemberByID(id: AppManager.shared.memberID, completion: {
+                    (memberDetail,err) in
+                    if err == nil {
+                        let memberships = memberDetail!["memberships"] as! Array<Dictionary<String,String>>
+                        let currentMembership = AppManager.shared.getCurrentMembership(membershipArray: memberships)
+                        if currentMembership.count > 0 {
+                            self.setRenewingMembershipData(membership: currentMembership.first!)
+                            self.renewingMembershipID = currentMembership.first!.membershipID
+                        } else {
+                            let previousMembership = AppManager.shared.getPreviousMembership(membershipArray: memberships)
+                            self.setRenewingMembershipData(membership: previousMembership)
+                            self.renewingMembershipID = previousMembership.membershipID
+                        }
+                    }
+                })
+            } else {
+                FireStoreManager.shared.getMembershipWith(memberID: AppManager.shared.memberID, membershipID: self.renewingMembershipID, result: {
+                    (membershipData,err) in
+                    if err != nil {
+                        
+                    } else{
+                        self.setRenewingMembershipData(membership: membershipData!)
+                    }
+                })
+            }
+            DispatchQueue.main.async {
+                self.updateBtn.setTitle("U P D A T E", for: .normal)
+            }
+        }
+        self.trainerListView.layer.cornerRadius = 12.0
+        self.trainerListView.layer.borderWidth = 1.0
+        self.trainerListView.layer.borderColor = UIColor.black.cgColor
+        self.trainerListView.isHidden = true
+        self.trainerListView.alpha = 0.0
+        self.trainerNameTextField.isUserInteractionEnabled = true
+        self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
+        self.fetchTrainersByCategory(category: .general)
     }
     
        func retryMemberDataAlert() {

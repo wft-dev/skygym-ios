@@ -98,7 +98,7 @@ class TrainerEditScreenViewController: BaseViewController{
     @IBOutlet weak var shiftDaysForNonEditLabel: UILabel!
     @IBOutlet weak var shiftTimingForNonEditLabel: UILabel!
     @IBOutlet weak var idProofForNonEditLabel: UILabel!
-    @IBOutlet weak var trainerEditScrollView: UIScrollView!
+
     @IBOutlet weak var typeForNonEditLabel: UILabel!
     @IBOutlet weak var generalBtnForNonEditLabel: UIButton!
     @IBOutlet weak var personalBtnForNonEditLabel: UIButton!
@@ -130,6 +130,8 @@ class TrainerEditScreenViewController: BaseViewController{
     @IBOutlet weak var eventPermissionNonEditBtn: UIButton!
     @IBOutlet weak var weekDayListView: UIView!
     @IBOutlet weak var weekDaysListTable: UITableView!
+    @IBOutlet weak var trainerEditScrollView: UIScrollView!
+    
     
     var isNewTrainer:Bool = false
     let imagePicker = UIImagePickerController()
@@ -166,26 +168,18 @@ class TrainerEditScreenViewController: BaseViewController{
         self.view.tag = 1010
         self.setTrainerEditView()
         self.showTrainerBy(id: AppManager.shared.trainerID)
-        self.trainerEditScrollView.tag = 1212
-        self.trainerEditScrollView.shouldIgnoreScrollingAdjustment = true
-        
-        if #available(iOS 13.0, *) {
-            self.trainerEditScrollView.automaticallyAdjustsScrollIndicatorInsets = false
-            self.weekDaysListTable.automaticallyAdjustsScrollIndicatorInsets = false
-        } else {
-        }
-        self.trainerEditScrollView.contentInsetAdjustmentBehavior = .never
-        self.weekDaysListTable.shouldIgnoreScrollingAdjustment = true
-        self.weekDaysListTable.contentInsetAdjustmentBehavior = .never
-        self.trainerEditScrollView.delegate = self
+      self.trainerEditScrollView.shouldIgnoreScrollingAdjustment = true
+      if #available(iOS 13.0, *) {
+          self.trainerEditScrollView.automaticallyAdjustsScrollIndicatorInsets = false
+      } else {
+          // Fallback on earlier versions
+      }
+      self.trainerEditScrollView.contentInsetAdjustmentBehavior = .never
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         self.trainerEditScrollView.contentOffset = .zero
-        self.weekDaysListTable.contentOffset = .zero
-        self.weekDaysListTable.isScrollEnabled = false
-        self.weekDaysListTable.scrollsToTop = false
         self.addClickToDismissWeekDaysList()
     }
     
