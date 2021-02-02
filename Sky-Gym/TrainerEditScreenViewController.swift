@@ -161,32 +161,37 @@ class TrainerEditScreenViewController: BaseViewController{
     let genderArray = ["Male","Female","Other"]
     var trainerEmail:String = ""
     var contentOffSets:CGPoint? = nil
-   // var cellHeightsDictionary: [IndexPath: CGFloat] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.tag = 1010
         self.setTrainerEditView()
         self.showTrainerBy(id: AppManager.shared.trainerID)
-      self.trainerEditScrollView.shouldIgnoreScrollingAdjustment = true
-      if #available(iOS 13.0, *) {
+        self.trainerEditScrollView.shouldIgnoreScrollingAdjustment = true
+        self.weekDaysListTable.shouldIgnoreScrollingAdjustment = true
+
+        if #available(iOS 13.0, *) {
           self.trainerEditScrollView.automaticallyAdjustsScrollIndicatorInsets = false
+            self.weekDaysListTable.automaticallyAdjustsScrollIndicatorInsets = false
       } else {
           // Fallback on earlier versions
       }
       self.trainerEditScrollView.contentInsetAdjustmentBehavior = .never
+      self.weekDaysListTable.contentInsetAdjustmentBehavior = .never
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         self.trainerEditScrollView.contentOffset = .zero
+        self.trainerEditScrollView.contentInset = .zero
         self.addClickToDismissWeekDaysList()
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
+    override func viewLayoutMarginsDidChange() {
+        self.trainerEditScrollView.contentOffset = .zero
+        self.trainerEditScrollView.contentInset = .zero
     }
-    
+
     @IBAction func trainerAttendanceAction(_ sender: Any) {
         performSegue(withIdentifier: "trainerAttendanceSegue", sender: nil)
     }
@@ -1164,18 +1169,6 @@ extension TrainerEditScreenViewController:UITableViewDataSource{
         cell.selectionStyle = .none
         return cell
     }
-    
-//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        cellHeightsDictionary[indexPath] = cell.frame.size.height
-//    }
-//
-//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-//        if let height =  cellHeightsDictionary[indexPath] {
-//            return height
-//        }
-//        return UITableView.automaticDimension
-//    }
-    
 }
 
 

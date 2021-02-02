@@ -26,7 +26,7 @@ class ListOfTrainersTableCell: UITableViewCell {
     @IBOutlet weak var msgLabel: UILabel!
     @IBOutlet weak var attendLabel: UILabel!
 
-    var imageName:String = "red"
+    var imageName:String = "Attend"
     
     override func awakeFromNib() {
         callLabel.isUserInteractionEnabled = true
@@ -55,12 +55,12 @@ class ListOfTrainersTableCell: UITableViewCell {
     
     private func performTrainerAttandance(id:String){
         switch self.imageName {
-        case "red":
+        case "Attend":
             FireStoreManager.shared.addAttendence(trainerORmember: "Trainers", id: id, present: true, checkInA: AppManager.shared.getTimeFrom(date: Date()), checkOutA: "-")
-            imageName = "green"
+            imageName = "AttendYlw"
             self.attendenceBtn.setImage(UIImage(named: imageName), for: .normal)
-        case "green":
-            imageName = "red"
+        case "AttendYlw":
+            imageName = "Attend"
             self.attendenceBtn.setImage(UIImage(named: imageName), for: .normal)
             FireStoreManager.shared.updateAttendence(trainerORmember: "Trainers", id: id, checkOutA: AppManager.shared.getTimeFrom(date: Date()), completion: {
                 err in
@@ -252,7 +252,7 @@ extension ListOfTrainersViewController {
             (checkOut,err) in
             
             if err == nil{
-                cell.imageName = checkOut == true ? "green" : "red"
+                cell.imageName = checkOut == true ? "AttendYlw" : "Attend"
                 cell.attendenceBtn.setImage(UIImage(named: cell.imageName), for: .normal)
             }
         })

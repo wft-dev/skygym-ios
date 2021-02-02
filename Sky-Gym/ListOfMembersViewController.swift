@@ -30,7 +30,7 @@ class ListOfMembersTableCell: UITableViewCell {
     @IBOutlet weak var renewView: UIView!
     
     var customCellDelegate:CustomCellSegue?
-    var imageName:String = "red"
+    var imageName:String = "Attend"
     var attendenceAlreadyMarked:Bool = false
     let messenger = MessengerManager()
 
@@ -88,14 +88,14 @@ class ListOfMembersTableCell: UITableViewCell {
     
     private func performAttandance(id:String){
         switch self.imageName{
-        case "red":
+        case "Attend":
             if attendenceAlreadyMarked == false {
             FireStoreManager.shared.addAttendence(trainerORmember: "Members", id: id, present: true, checkInA: AppManager.shared.getTimeFrom(date: Date()), checkOutA: "-")
             }
-            imageName = "green"
+            imageName = "AttendYlw"
             self.attendImg?.image = UIImage(named: imageName)
-        case "green":
-            imageName = "red"
+        case "AttendYlw":
+            imageName = "Attend"
              self.attendImg?.image = UIImage(named: imageName)
             if attendenceAlreadyMarked == false{
                 FireStoreManager.shared.updateAttendence(trainerORmember: "Members", id: id, checkOutA: AppManager.shared.getTimeFrom(date: Date()), completion: {
@@ -647,7 +647,7 @@ extension ListOfMembersViewController{
             (checkOut,err) in
             
             if err == nil{
-                memberCell.imageName = checkOut == true ? "green" : "red"
+                memberCell.imageName = checkOut == true ? "AttendYlw" : "Attend"
                 memberCell.attendImg?.image = UIImage(named: memberCell.imageName)
             }
         })
@@ -700,11 +700,3 @@ extension ListOfMembersViewController:CustomCellSegue{
     }
 }
 
-//extension UIView {
-//    func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
-//        let path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-//        let mask = CAShapeLayer()
-//        mask.path = path.cgPath
-//        self.layer.mask = mask
-//    }
-//}
