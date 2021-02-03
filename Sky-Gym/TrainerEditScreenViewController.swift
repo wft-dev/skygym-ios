@@ -8,6 +8,7 @@
 
 import UIKit
 import SVProgressHUD
+import IQKeyboardManagerSwift
 
 
 class WeekDayForTrainerTableCell: UITableViewCell {
@@ -160,37 +161,22 @@ class TrainerEditScreenViewController: BaseViewController{
     let genderPickerView = UIPickerView()
     let genderArray = ["Male","Female","Other"]
     var trainerEmail:String = ""
-    var contentOffSets:CGPoint? = nil
+    var contentOffSets:CGPoint = .zero
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.tag = 1010
         self.setTrainerEditView()
         self.showTrainerBy(id: AppManager.shared.trainerID)
-        self.trainerEditScrollView.shouldIgnoreScrollingAdjustment = true
-        self.weekDaysListTable.shouldIgnoreScrollingAdjustment = true
-
-        if #available(iOS 13.0, *) {
-          self.trainerEditScrollView.automaticallyAdjustsScrollIndicatorInsets = false
-            self.weekDaysListTable.automaticallyAdjustsScrollIndicatorInsets = false
-      } else {
-          // Fallback on earlier versions
-      }
-      self.trainerEditScrollView.contentInsetAdjustmentBehavior = .never
-      self.weekDaysListTable.contentInsetAdjustmentBehavior = .never
+        self.weekDaysListTable.isScrollEnabled = false
+        self.weekDaysListTable.scrollsToTop  = false
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        self.trainerEditScrollView.contentOffset = .zero
-        self.trainerEditScrollView.contentInset = .zero
         self.addClickToDismissWeekDaysList()
     }
     
-    override func viewLayoutMarginsDidChange() {
-        self.trainerEditScrollView.contentOffset = .zero
-        self.trainerEditScrollView.contentInset = .zero
-    }
 
     @IBAction func trainerAttendanceAction(_ sender: Any) {
         performSegue(withIdentifier: "trainerAttendanceSegue", sender: nil)
@@ -245,6 +231,21 @@ class TrainerEditScreenViewController: BaseViewController{
         }
     }
     
+    @IBAction func showWeekDaysListBtnAction(_ sender: Any) {
+        print("week days : \(self.weekDayListView.isHidden)")
+        if self.weekDayListView.isHidden == true {
+            self.weekDayListView.isHidden = false
+            self.weekDayListView.alpha = 1.0
+        }else {
+            self.weekDayListView.isHidden = true
+            self.weekDayListView.alpha = 0.0
+        }
+        
+        if self.weekDayListView.isHidden == true {
+            self.setValueToShiftField()
+        }
+    }
+
     @IBAction func doneBtnAction(_ sender: Any) {
         self.trainerValidation()
         let password = AppManager.shared.encryption(plainText:  self.passwordTextField.text!)
@@ -522,9 +523,8 @@ extension TrainerEditScreenViewController {
             $0?.layer.borderWidth = 0.7
             $0?.clipsToBounds = true
         }
+       
         
-        self.shiftDaysTextField.isUserInteractionEnabled = true
-        self.shiftDaysTextField.addTarget(self, action: #selector(showWeekDaysList), for: .editingDidBegin)
         self.weekDayListView.layer.cornerRadius = 12.0
         self.weekDayListView.layer.borderColor = UIColor.black.cgColor
         self.weekDayListView.layer.borderWidth = 1.0
@@ -534,18 +534,7 @@ extension TrainerEditScreenViewController {
         self.allTrainerFieldsRequiredValidation(textField: textField)
         self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
     }
-    
-    @objc func showWeekDaysList() {
-        self.view.endEditing(true)
-        self.weekDayListView.isHidden = !self.weekDayListView.isHidden
-        self.weekDayListView.alpha = self.weekDayListView.isHidden == true ? 0.0 : 1.0
-        
-        if self.weekDayListView.isHidden == true {
-            self.setValueToShiftField()
 
-        }
-    }
-    
     func addPaddingToTextField(textField:UITextField) {
            let paddingView: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
            textField.leftView = paddingView
@@ -707,14 +696,17 @@ extension TrainerEditScreenViewController {
             self.addressView.alpha = 1.0
             self.addressView.text = self.addressNonEditLabel.text
             self.addressNonEditLabel.alpha = 0.0
-            [self.generalTypeBtn,self.personalTypeBtn].forEach{
-                $0?.isHidden = false
-                $0?.alpha = 1.0
-            }
-            [self.generalBtnForNonEditLabel,self.personalBtnForNonEditLabel].forEach{
-                $0?.isHidden = true
-                $0?.alpha = 0.0
-            }
+            
+            self.generalTypeBtn.isHidden = false
+            self.generalTypeBtn.alpha = 1.0
+            self.personalTypeBtn.isHidden = false
+            self.personalTypeBtn.alpha = 1.0
+            
+            self.generalBtnForNonEditLabel.isHidden = true
+            self.generalBtnForNonEditLabel.alpha = 0.0
+            self.personalBtnForNonEditLabel.isHidden = true
+            self.personalBtnForNonEditLabel.alpha = 0.0
+            
             self.setPermissionView(isHidden: false)
             self.setPermissionLabel(isHidden: false)
             self.updateBtn.isHidden = false
@@ -724,9 +716,9 @@ extension TrainerEditScreenViewController {
             self.personalTypeLabel.isUserInteractionEnabled = true
             self.idTextField.text = "\(Int.random(in: 1..<100000))"
         }
-       
-        self.weekDaysListTable.delegate = self
+
         self.weekDaysListTable.dataSource = self
+        self.weekDaysListTable.delegate = self
         self.weekDaysListTable.allowsMultipleSelection = true
         self.weekDayListView.isHidden = true
         self.weekDayListView.alpha = 0.0
@@ -734,6 +726,7 @@ extension TrainerEditScreenViewController {
         self.genderPickerView.dataSource = self
         self.genderPickerView.delegate = self
 
+        self.shiftDaysTextField.isEnabled = false
         self.idTextField.isEnabled = false
         self.idTextField.layer.opacity = 0.4
         self.generalTypeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(trainerTypeSelection(_:))))
@@ -745,8 +738,7 @@ extension TrainerEditScreenViewController {
                 self.userImg.image = UIImage(named: "user-1")
             }
         }
-        self.weekDaysListTable.isScrollEnabled = false
-        self.weekDaysListTable.scrollsToTop = false
+        
     }
     
     @objc func cancelTextField()  {
@@ -1046,8 +1038,8 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
        }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-
-      //  self.contentOffSets = textField.frame.origin
+ 
+        self.contentOffSets = textField.frame.origin
         
         if textField.tag == 12 || textField.tag == 13 {
             textField.inputAccessoryView = self.toolBar
@@ -1222,26 +1214,3 @@ extension TrainerEditScreenViewController : UIPickerViewDelegate{
 }
 
 
-extension TrainerEditScreenViewController:UIScrollViewDelegate {
-//    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-//        let scrollableLength:CGFloat = (self.contentOffSets!.y/2)
-//        UIView.animate(withDuration: 0.3, animations: {
-//            if scrollView.contentOffset.y > self.contentOffSets!.y  {
-//                print("SCROLLING length : \(scrollableLength)")
-//                scrollView.contentOffset.y = scrollableLength
-//            }
-//        })
-//    }
-//
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//
-//        if scrollView.tag == 1212 {
-//             print(" MAINSCROLL VIEW ENABLED.")
-//        }else {
-//            print("TABLE SCROLL VIEW ENABLED.")
-//        }
-//
-//
-//    }
-    
-}

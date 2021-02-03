@@ -278,7 +278,6 @@ class ValidationManager: NSObject {
         else {
             flag = isAllFieldsRequiredValidated(textFieldArray:textFieldArray, phoneNumberTextField: phoneNumberTextField)
         }
-print(" FLAG IS : \(flag)")
         return flag
     }
     

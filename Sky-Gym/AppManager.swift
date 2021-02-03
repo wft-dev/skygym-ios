@@ -303,6 +303,15 @@ class AppManager: NSObject {
         return trainer
     }
     
+    func getTraineListInfo(trainerDetail:[String:Any]) -> ListOfTrainers {
+        let trainerName = "\(trainerDetail["firstName"] as! String) \(trainerDetail["lastName"] as! String) "
+        
+        let trainer = ListOfTrainers(trainerID: trainerDetail["trainerID"] as! String, trainerName: trainerName , trainerPhone: trainerDetail["phoneNo"] as! String, dateOfJoinging: trainerDetail["dateOfJoining"]  as! String, salary: trainerDetail["salary"] as! String, members: "", type: trainerDetail["type"] as! String)
+        
+        return trainer
+    }
+    
+    
     func getTrainerPermissionS(trainerPermission:[String:Bool]) -> TrainerPermissionStructure {
         let permission = TrainerPermissionStructure(canAddVisitor:trainerPermission["visitorPermission"]!, canAddMember: trainerPermission["memberPermission"]!, canAddEvent: trainerPermission["eventPermission"]!)
         return permission

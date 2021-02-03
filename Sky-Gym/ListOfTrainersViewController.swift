@@ -64,8 +64,7 @@ class ListOfTrainersTableCell: UITableViewCell {
             self.attendenceBtn.setImage(UIImage(named: imageName), for: .normal)
             FireStoreManager.shared.updateAttendence(trainerORmember: "Trainers", id: id, checkOutA: AppManager.shared.getTimeFrom(date: Date()), completion: {
                 err in
-                let s = err == nil ? "Successfull" : "false"
-                print("Attendence \(s)")
+                
             })
         default:
             break
@@ -99,6 +98,7 @@ class ListOfTrainersViewController: BaseViewController {
         self.refreshController.attributedTitle = NSAttributedString(string: "Fetching Trainer List")
         self.refreshController.addTarget(self, action: #selector(refreshTrainerList), for: .valueChanged)
         self.listOfTrainerTable.refreshControl = self.refreshController
+         self.fetcthAllTrainer()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -108,7 +108,6 @@ class ListOfTrainersViewController: BaseViewController {
             (memberData,err) in
             if err == nil {
                 self.membersArray = memberData!
-                self.fetcthAllTrainer()
             }
         })
     }
@@ -237,8 +236,7 @@ extension ListOfTrainersViewController {
                 self.listOfTrainerArray.removeAll()
                 for singleData in trainerData! {
                     if singleData.count > 0 {
-                        let trainerDetail = AppManager.shared.getTrainerDetailS(trainerDetail: singleData["trainerDetail"] as! [String : Any] )
-                        let trainer = ListOfTrainers(trainerID: trainerDetail.trainerID, trainerName: "\(trainerDetail.firstName) \(trainerDetail.lastName)", trainerPhone: trainerDetail.phoneNo, dateOfJoinging: trainerDetail.dateOfJoining, salary: trainerDetail.salary, members:"0", type: trainerDetail.type)
+                        let trainer = AppManager.shared.getTraineListInfo(trainerDetail: singleData["trainerDetail"] as! [String :Any ])
                         self.listOfTrainerArray.append(trainer)
                     }
                 }
