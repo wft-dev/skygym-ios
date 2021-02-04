@@ -135,12 +135,6 @@ class MemberViewController: BaseViewController {
         self.memberViewScrollView.contentOffset = .zero
     }
     
-    @objc func showTrainerList(){
-        self.view.endEditing(true)
-        self.listOfTrainerView.isHidden = !self.listOfTrainerView.isHidden
-        self.listOfTrainerView.alpha = self.listOfTrainerView.isHidden == true ? 0.0 : 1.0
-    }
-    
     func isFieldsDataValid() -> Bool {
         return self.validation.isMemberProfileValidated(textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) == true  && isAlreadyExistsEmail == false
     }
@@ -218,6 +212,13 @@ class MemberViewController: BaseViewController {
          self.allMemberProfileFieldsRequiredValidation(textField: self.trainerNameTextField)
         self.fetchListOfTrainer(category: .personal)
     }
+    
+    
+    @IBAction func trainerNameListBtnAction(_ sender: Any) {
+       self.listOfTrainerView.isHidden = !self.listOfTrainerView.isHidden
+        self.listOfTrainerView.alpha = self.listOfTrainerView.isHidden == true ? 0.0 : 1.0
+    }
+
 }
 
 extension MemberViewController{
@@ -314,8 +315,9 @@ extension MemberViewController{
         self.listOfTrainerView.isHidden = true
         self.listOfTrainerView.alpha = 0.0
         
-        self.trainerNameTextField.isUserInteractionEnabled = true
-        self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
+        self.trainerNameTextField.isUserInteractionEnabled = false
+        self.trainerNameTextField.isEnabled = false
+        //self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
         self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
         
         self.genderPickerView.delegate = self
@@ -692,9 +694,6 @@ extension MemberViewController:UITextFieldDelegate{
         if textField.tag == 3 {
             textField.inputView = self.genderPickerView
         }
-        
-        self.allMemberProfileFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -742,13 +741,21 @@ extension MemberViewController:UITextFieldDelegate{
 
         self.allMemberProfileFieldsRequiredValidation(textField: textField)
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
+        
+        DispatchQueue.main.async {
+            if self.isAlreadyExistsEmail == true {
+                self.emailTextField.layer.borderColor = UIColor.red.cgColor
+                self.emailTextField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
+        }
+        
     }
 }
 
 extension MemberViewController:UITextViewDelegate {
-    func textViewDidBeginEditing(_ textView: UITextView) {
-    validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
-    }
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
@@ -758,6 +765,18 @@ extension MemberViewController:UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField,email:self.emailTextField.text!,password:self.passwordTextField.text!)
+        
+        DispatchQueue.main.async {
+            if self.isAlreadyExistsEmail == true {
+                self.emailTextField.layer.borderColor = UIColor.red.cgColor
+                self.emailTextField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
+        }
+
+        
     }
 }
 
@@ -819,7 +838,8 @@ extension MemberViewController:UIPickerViewDelegate{
 extension MemberViewController:UIGestureRecognizerDelegate{
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
          self.view.endEditing(true)
-        if touch.view?.isDescendant(of: self.listOfTrainerView) == true {
+        if touch.view?.isDescendant(of: self.listOfTrainerView) == true ||
+        touch.view?.tag == 110{
             return false
             
         }else {

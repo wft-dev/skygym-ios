@@ -420,8 +420,8 @@ extension TrainerProfileViewController:UITextFieldDelegate {
             textField.inputView = self.genderPickerView
         }
         
-        self.allTrainerFieldValidation(textField: textField)
-        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+//        self.allTrainerFieldValidation(textField: textField)
+//        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -470,6 +470,16 @@ extension TrainerProfileViewController:UITextFieldDelegate {
         
         self.allTrainerFieldValidation(textField: textField)
         self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+        
+        DispatchQueue.main.async {
+            if self.isAlreadyExistsEmail == true {
+                self.emailTextField.layer.borderColor = UIColor.red.cgColor
+                self.emailTextField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
+        }
     }
     
 }

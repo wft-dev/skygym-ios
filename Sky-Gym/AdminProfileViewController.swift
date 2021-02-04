@@ -97,7 +97,7 @@ class AdminProfileViewController: UIViewController {
     @IBOutlet weak var weekDaysListView: UIView!
     @IBOutlet weak var weekDaysListTable: UITableView!
     @IBOutlet weak var adminScrollView: UIScrollView!
-
+ 
     var imagePicker = UIImagePickerController()
     var isProfileImgSelected:Bool = false
     var isEdit:Bool = false
@@ -154,17 +154,9 @@ class AdminProfileViewController: UIViewController {
         self.gymAddressNoEditLabel.alpha = 1.0
         self.updateBtn.isHidden = true
         self.adminImg.isUserInteractionEnabled = false
-        self.gymDaysTextField.isUserInteractionEnabled = true
-        self.gymDaysTextField.addTarget(self, action: #selector(showWeekDays), for: .editingDidBegin)
-        
-        self.adminScrollView.shouldIgnoreScrollingAdjustment = true
-       if #available(iOS 13.0, *) {
-           self.adminScrollView.automaticallyAdjustsScrollIndicatorInsets = false
-       } else {
-           // Fallback on earlier versions
-       }
-       self.adminScrollView.contentInsetAdjustmentBehavior = .never
-        
+        self.gymDaysTextField.isUserInteractionEnabled = false
+        self.gymDaysTextField.isEnabled = false
+  
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -222,6 +214,17 @@ class AdminProfileViewController: UIViewController {
             self.updateBtn.alpha = 0.4
         }
     }
+    
+    @IBAction func gymDaysListBtnAction(_ sender: Any) {
+        self.weekDaysListView.isHidden = !self.weekDaysListView.isHidden
+        self.weekDaysListView.alpha = self.weekDaysListView.isHidden == true ? 0.0 : 1.0
+        
+        if self.weekDaysListView.isHidden == true {
+            self.setGymDaysFieldData()
+        }
+    }
+    
+    
 }
 
 extension AdminProfileViewController {
@@ -248,20 +251,6 @@ extension AdminProfileViewController {
         self.adminProfileNavigationBar.editBtn.isHidden = false
         self.adminProfileNavigationBar.editBtn.alpha = 1.0
         self.adminProfileNavigationBar.editBtn.addTarget(self, action: #selector(editAdmin), for: .touchUpInside)
-    }
-    
-    
-    @objc func showWeekDays() {
-        self.view.endEditing(true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-            
-            self.weekDaysListView.isHidden = !self.weekDaysListView.isHidden
-            self.weekDaysListView.alpha = self.weekDaysListView.isHidden == true ? 0.0 : 1.0
-            
-            if self.weekDaysListView.isHidden == true {
-                self.setGymDaysFieldData()
-            }
-        })
     }
     
     func setGymDaysFieldData() {
@@ -710,7 +699,8 @@ extension AdminProfileViewController : UITableViewDelegate{
 extension AdminProfileViewController :UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         view.endEditing(true)
-        if touch.view?.isDescendant(of: self.weekDaysListView) == true {
+        if touch.view?.isDescendant(of: self.weekDaysListView) == true ||
+        touch.view?.tag == 110 {
             return false
         }else {
             return true

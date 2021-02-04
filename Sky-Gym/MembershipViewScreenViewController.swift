@@ -32,7 +32,8 @@ class MembershipViewScreenViewController: BaseViewController {
     @IBOutlet weak var titleErrorLabel: UILabel!
     @IBOutlet weak var amountErrorLabel: UILabel!
     @IBOutlet weak var detailErrorLabel: UILabel!
-    
+    @IBOutlet weak var weekDaysListBtn: UIButton!
+
     var isNewMemberhsip:Bool = false
     var selectedIndex:Int = 0
     var selectedOption:String = ""
@@ -94,6 +95,10 @@ class MembershipViewScreenViewController: BaseViewController {
              self.doneBtn.isHidden = false
             self.doneBtn.setTitle("A D D", for: .normal)
         }
+        
+        self.membershipDropDownTitleTextField.isEnabled = false
+        self.membershipDropDownTitleTextField.isUserInteractionEnabled = false
+        
     }
     
     @IBAction func doneBtnAction(_ sender: Any) {
@@ -102,6 +107,16 @@ class MembershipViewScreenViewController: BaseViewController {
             self.isNewMemberhsip ? self.registerNewMembership() : self.updateMembership()
         }
     }
+    
+    
+    @IBAction func showMembershipListBtnAction(_ sender: Any) {
+        self.view.endEditing(true)
+        DispatchQueue.main.async {
+            self.membershipDropDownTitleTextField.showList()
+        }
+        
+    }
+    
 }
 
 extension  MembershipViewScreenViewController {
@@ -353,19 +368,16 @@ extension MembershipViewScreenViewController :UITextFieldDelegate{
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-           if textField.tag == 1 {
-            self.view.endEditing(true)
-            DispatchQueue.main.async {
-                self.view.endEditing(true)
-            }
-            self.membershipDropDownTitleTextField.showList()
-           }
+//           if textField.tag == 1 {
+//            self.view.endEditing(true)
+//            DispatchQueue.main.async {
+//                self.view.endEditing(true)
+//            }
+//            self.membershipDropDownTitleTextField.showList()
+//           }
        }
        
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField.tag == 1 {
-            self.view.endEditing(true)
-        }
         self.allMembershipFieldsRequiredValidation(textField: textField, duplicateDateErrorText: duplicateErrorText)
         validation.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: self.detailTextView, phoneNumberTextField: nil,email: nil,password: nil)
     }

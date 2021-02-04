@@ -60,7 +60,20 @@ class AdminRegistrationSecondViewController: UIViewController {
     func allDataValid() -> Bool {
         
         if validator.isAllFieldsRequiredValidated(textFieldArray: self.textFieldArray, phoneNumberTextField: self.mobileNumberTextField) == true && validator.isEmailValid(email: (self.emailTextField?.text)!) == true && validator.isPasswordValid(password: (self.passwordTextField?.text)!) == true {
-            return true
+           
+            if self.isAlreadyExistsEmail == true {
+                self.emailTextField?.layer.borderColor = UIColor.red.cgColor
+                self.emailTextField?.layer.borderWidth = 1.0
+                self.emailErrorText?.text = "Email already exists."
+                return false
+            }else{
+                self.emailTextField?.layer.borderColor = UIColor.clear.cgColor
+                self.emailTextField?.layer.borderWidth = 0.0
+                self.emailTextField?.borderStyle = .none
+                self.emailErrorText?.text = ""
+                return true
+            }
+            
         }else {
             return false
         }
@@ -239,13 +252,24 @@ extension AdminRegistrationSecondViewController : UITextFieldDelegate {
                 self.allFieldValidation(textField: self.genderTextField!)
             }
         }
+        
         self.validator.updateBtnValidator(updateBtn: self.doneBtn!, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.mobileNumberTextField, email: self.emailTextField?.text, password: self.passwordTextField?.text)
+        
+        DispatchQueue.main.async {
+            if self.isAlreadyExistsEmail == true {
+                self.emailTextField?.layer.borderColor = UIColor.red.cgColor
+                self.emailTextField?.layer.borderWidth = 1.0
+                self.emailErrorText!.text = "Email already exists."
+                self.doneBtn!.isEnabled = false
+                self.doneBtn!.alpha = 0.4
+            }
+        }
         
     }
     
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 5 {
+        if textField.tag == 5 || textField.tag == 1 {
             return false
         } else {
             return true

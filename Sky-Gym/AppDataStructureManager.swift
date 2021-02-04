@@ -161,6 +161,12 @@ enum TrainerType:String {
     case personal
 }
 
+struct TrainerNameAndType {
+    var trainerName:String
+    var trainerType:String
+    var trainerID:String
+}
+
 struct Memberhisp {
     var membershipID:String
     var title:String
@@ -181,6 +187,18 @@ struct Visitor {
     var noOfVisit:String
     var gender:String
     var phoneNo:String
+    var trainerID:String
+}
+
+struct ListOfVisitor {
+    var visitorID:String
+    var visitorName:String
+    var mobileNumber:String
+    var dateOfVisit:String
+    var dateOfJoining:String
+    var trainerName:String
+    var trainerType:String
+    var noOfVisit:String
     var trainerID:String
 }
 

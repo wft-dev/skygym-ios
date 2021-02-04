@@ -38,7 +38,7 @@ class AdminRegistrationViewController: UIViewController {
 
     
     @IBAction func forwardBtnAction(_ sender: Any) {
-        performSegue(withIdentifier: "forwardSegue", sender: nil)
+       performSegue(withIdentifier: "forwardSegue", sender: nil)
     }
     
 }

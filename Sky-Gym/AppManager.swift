@@ -243,6 +243,26 @@ class AppManager: NSObject {
           
           return member
       }
+    
+    func getListOfMembersDetailStr(memberDetail:Dictionary<String,String>,membershipArray:Array<Dictionary<String,String>>) -> ListOfMemberStr {
+        let userName = "\(memberDetail["firstName"] ?? "") \(memberDetail["lastName"] ?? "")"
+        var membership:MembershipDetailStructure? = nil
+        
+        let currentMembership =
+            self.getCurrentMembership(membershipArray:membershipArray )
+        
+        if currentMembership.count > 0 {
+            membership = currentMembership.first
+        }else {
+            membership =  membershipArray.count > 0 ? self.getLatestMembership(membershipsArray:  membershipArray) :
+                MembershipDetailStructure(membershipID:memberDetail["memberID"] ?? "", membershipPlan: "--", membershipDetail: "--", amount:"0", startDate: "--", endDate: "--", totalAmount: "0", paidAmount: "0", discount: "0", paymentType: "--", dueAmount: "0", purchaseTime: "--", purchaseDate: "--", membershipDuration: "0")
+        }
+        
+        let member = ListOfMemberStr(memberID: memberDetail["memberID"] ?? "", userImg: UIImage(named: "user1")!, userName: userName, phoneNumber: memberDetail["phoneNo"] ?? "" , dateOfExp: membership?.endDate ?? "", dueAmount: membership?.dueAmount ?? "--" , uploadName: memberDetail["uploadIDName"] ?? "" )
+        
+        return member
+    }
+    
       
     func getLatestMembership(membershipsArray:Array<Dictionary<String,String>>) -> MembershipDetailStructure{
         let lastMemberhipData = membershipsArray.last!
@@ -327,6 +347,19 @@ class AppManager: NSObject {
         return visitor
     }
     
+    func getListOfVisitor(visitorDetail:Dictionary<String,String>,id:String) -> ListOfVisitor {
+        let visitorName = "\(visitorDetail["firstName"] ?? "" ) \(visitorDetail["lastName"] ?? "")"
+        let trainerID = visitorDetail["trainerID"] ?? ""
+        let visitor = ListOfVisitor(visitorID: id, visitorName: visitorName, mobileNumber: visitorDetail["phoneNo"] ?? "", dateOfVisit: visitorDetail["dateOfVisit"] ?? "", dateOfJoining: visitorDetail["dateOfJoin"] ?? "", trainerName: "", trainerType: "", noOfVisit: visitorDetail["noOfVisit"] ?? "", trainerID: trainerID ?? "" )
+        return visitor
+    }
+    
+    func getTrainerTypeAndName(trainerDetail:Dictionary<String,Any>,id:String) -> TrainerNameAndType {
+        let trainerName = "\(trainerDetail["firstName"] as! String) \(trainerDetail["lastName"] as! String)"
+        let trainer = TrainerNameAndType(trainerName: trainerName, trainerType: trainerDetail["type"] as! String , trainerID: id)
+        return trainer
+    }
+
     func getAdminProfile(adminDetails:[String:Any]) -> AdminProfile {
         let decryptedPassword = AppManager.shared.decryption(cipherText: adminDetails["password"] as! String)
         

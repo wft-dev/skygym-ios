@@ -40,8 +40,8 @@ class ListOfVisitorsViewController: BaseViewController {
     @IBOutlet weak var customSearchBar: UISearchBar!
     var visitorProfileImage:UIImage? = nil
     let refreshControl = UIRefreshControl()
-    var visitorsArray:[Visitor] = []
-    var filteredVisitorArray:[Visitor] = []
+    var visitorsArray:[ListOfVisitor] = []
+    var filteredVisitorArray:[ListOfVisitor] = []
     var trainerName:String = ""
     var trainerType:String = ""
 
@@ -261,6 +261,31 @@ extension ListOfVisitorsViewController {
            self.view.endEditing(true)
        }
     
+    func setTrainerNameAndType(trainerID:String,cell:VisitorTableCell) {
+        if trainerID != ""{
+            DispatchQueue.global(qos: .userInteractive).async {
+                let result =  FireStoreManager.shared.getTrainerTypeAndNameBy(id: trainerID)
+                DispatchQueue.main.async {
+                    switch result {
+                    case let .success(trainerDetail):
+                        cell.trainerNameLabel.text = trainerDetail!.trainerName
+                        cell.trainerTypeLabel.text = trainerDetail!.trainerType
+                        print("trainer name : \(trainerDetail!.trainerName)")
+
+                        
+                    case .failure(_):
+                        break
+                    }
+                    
+                }
+            }
+
+        }else {
+            trainerName = "  --"
+            trainerType  = " --"
+        }
+    }
+    
     func fetchVisitors() {
         SVProgressHUD.show()
         FireStoreManager.shared.getAllVisitors(result: {
@@ -271,7 +296,9 @@ extension ListOfVisitorsViewController {
             }else {
                 self.visitorsArray.removeAll()
                 for visitor in visitors!{
-                let visitorData = AppManager.shared.getVisitor(visitorDetail:visitor["visitorDetail"] as! [String:String], id: visitor["id"] as! String)
+                   let visitorDetail = visitor["visitorDetail"] as! Dictionary<String,String>
+                    let id = visitor["id"] as! String
+                   let visitorData = AppManager.shared.getListOfVisitor(visitorDetail: visitorDetail,id: id)
                     self.visitorsArray.append(visitorData)
                 }
                 self.visitorsTable.reloadData()
@@ -279,22 +306,7 @@ extension ListOfVisitorsViewController {
         })
     }
     
-    func fetchTraineDetails(trainerID:String,cell:VisitorTableCell) {
-        DispatchQueue.global(qos: .background).async {
-            let result =  FireStoreManager.shared.getTrainerDetailBy(id: trainerID)
-            
-            DispatchQueue.main.async {
-                switch result {
-                case let .success(trainerDetail):
-                    cell.trainerNameLabel.text = trainerDetail!.firstName
-                    cell.trainerTypeLabel.text = trainerDetail!.type
-                    
-                case .failure(_):
-                    break
-                }
-            }
-        }
-    }
+
     
     func getVisitorProfileImage(id:String,imgView :UIImageView) {
           SVProgressHUD.show()
@@ -371,27 +383,24 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
         cell.contentView.layer.borderWidth = 1.0
         cell.contentView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
         cell.memberBtn.layer.cornerRadius = 7.0
-        cell.visitorNameLabel.text = "\(singleVisitor.firstName) \(singleVisitor.lastName)"
-        cell.phoneNoLabel.text = singleVisitor.phoneNo
+        cell.visitorNameLabel.text = singleVisitor.visitorName
+        cell.phoneNoLabel.text = singleVisitor.mobileNumber
         cell.numberOfvisits.text = "visitor: \(singleVisitor.noOfVisit)"
-        cell.dateOfJoinLabel.text = singleVisitor.dateOfJoin
+        cell.dateOfJoinLabel.text = singleVisitor.dateOfJoining
         cell.dateOfVisitLabel.text = singleVisitor.dateOfVisit
-        self.getVisitorProfileImage(id: singleVisitor.id, imgView: cell.visitorProfileImg)
+        cell.trainerNameLabel.text = singleVisitor.trainerName
+        cell.trainerTypeLabel.text = singleVisitor.trainerType
+        self.getVisitorProfileImage(id: singleVisitor.visitorID, imgView: cell.visitorProfileImg)
         cell.delegate = self
-        self.adjustFontSizeForVisitorLabel(label: cell.dateOfJoinLabel)
-        self.adjustFontSizeForVisitorLabel(label: cell.dateOfVisitLabel)
-        self.adjustFontSizeForVisitorLabel(label:cell.trainerNameLabel)
-        self.adjustFontSizeForVisitorLabel(label: cell.trainerTypeLabel)
-        cell.memberBtn.tag = Int(singleVisitor.id)!
+//        self.adjustFontSizeForVisitorLabel(label: cell.dateOfJoinLabel)
+//        self.adjustFontSizeForVisitorLabel(label: cell.dateOfVisitLabel)
+//        self.adjustFontSizeForVisitorLabel(label:cell.trainerNameLabel)
+//        self.adjustFontSizeForVisitorLabel(label: cell.trainerTypeLabel)
+        cell.memberBtn.tag = Int(singleVisitor.visitorID)!
         cell.selectionStyle = .none
-        cell.visitorCellView.tag = Int(singleVisitor.id)!
+        cell.visitorCellView.tag = Int(singleVisitor.visitorID)!
         self.addVisitorCustomSwipe(cellView: cell.visitorCellView, cell: cell)
-        if singleVisitor.trainerID != ""{
-           self.fetchTraineDetails(trainerID: singleVisitor.trainerID, cell: cell)
-        }else {
-            cell.trainerNameLabel.text = "  --"
-            cell.trainerTypeLabel.text  = " --"
-        }        
+        self.setTrainerNameAndType(trainerID: singleVisitor.trainerID, cell: cell)
         
         return cell
     }
@@ -409,7 +418,7 @@ extension ListOfVisitorsViewController:UITableViewDelegate{
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        AppManager.shared.visitorID = self.visitorsArray[indexPath.section].id
+        AppManager.shared.visitorID = self.visitorsArray[indexPath.section].visitorID
         performSegue(withIdentifier: "visitorViewSegue", sender: false)
     }
 }
@@ -420,8 +429,8 @@ extension ListOfVisitorsViewController:UISearchBarDelegate{
         if searchText.count > 0 {
             self.filteredVisitorArray.removeAll()
             for singleVisitor in self.visitorsArray {
-                let fullName = "\(singleVisitor.firstName) \(singleVisitor.lastName)"
-                if  fullName.lowercased().contains(searchText.lowercased()) || singleVisitor.phoneNo.contains(searchText){
+                let fullName = singleVisitor.visitorName
+                if  fullName.lowercased().contains(searchText.lowercased()) || singleVisitor.mobileNumber.contains(searchText){
                     self.filteredVisitorArray.append(singleVisitor)
                     self.visitorsTable.reloadData()
                 }

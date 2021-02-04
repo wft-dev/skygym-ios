@@ -45,10 +45,11 @@ class FireStoreManager: NSObject {
     
     //FOR ADMIN LOGIN
     func isAdminLogin(email:String,password:String,result:@escaping (Bool,Error?)->Void) {
+        let decryptedPassword = AppManager.shared.encryption(plainText: password)
        
         self.fireDB.collection("Admin")
             .whereField("email", isEqualTo: email)
-            .whereField("password", isEqualTo: password)
+            .whereField("password", isEqualTo: decryptedPassword)
             .getDocuments(completion: {
             (querySnapshot,err) in
             if err != nil {
@@ -891,6 +892,30 @@ class FireStoreManager: NSObject {
         let _ = semaphores.wait(wallTimeout: .distantFuture)
          return result
     }
+    
+    func getTrainerTypeAndNameBy(id:String) -> Result<TrainerNameAndType?,Error> {
+        var result:Result<TrainerNameAndType?,Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+         let trainerRef = fireDB.collection("Trainers").document("/\(id)")
+        
+        trainerRef.getDocument(completion: {
+            (docSnapshot,err) in
+            if err != nil{
+                result = .failure(err!)
+                result = .success(nil)
+            } else {
+                let data = docSnapshot?.data()
+                let trainerDetail =  data?["trainerDetail"] as? Dictionary<String,Any>
+                let trainerDetailStr = AppManager.shared.getTrainerTypeAndName(trainerDetail: trainerDetail!, id: id)
+                result = .success(trainerDetailStr)
+            }
+            semaphores.signal()
+        })
+
+        let _ = semaphores.wait(wallTimeout: .distantFuture)
+         return result
+    }
+    
     
     func getTrainerPermission(id:String) -> Result<TrainerPermissionStructure,Error> {
         let trainerRef = fireDB.collection("/Trainers").document("/\(id)")

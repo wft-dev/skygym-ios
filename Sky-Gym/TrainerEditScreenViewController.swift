@@ -132,6 +132,7 @@ class TrainerEditScreenViewController: BaseViewController{
     @IBOutlet weak var weekDayListView: UIView!
     @IBOutlet weak var weekDaysListTable: UITableView!
     @IBOutlet weak var trainerEditScrollView: UIScrollView!
+    @IBOutlet weak var shiftDaysListBtn: UIButton!
     
     
     var isNewTrainer:Bool = false
@@ -161,7 +162,7 @@ class TrainerEditScreenViewController: BaseViewController{
     let genderPickerView = UIPickerView()
     let genderArray = ["Male","Female","Other"]
     var trainerEmail:String = ""
-    var contentOffSets:CGPoint = .zero
+    var isWeekDaysListHidden:Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -170,6 +171,7 @@ class TrainerEditScreenViewController: BaseViewController{
         self.showTrainerBy(id: AppManager.shared.trainerID)
         self.weekDaysListTable.isScrollEnabled = false
         self.weekDaysListTable.scrollsToTop  = false
+        self.isWeekDaysListHidden = self.weekDayListView.isHidden
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -232,15 +234,9 @@ class TrainerEditScreenViewController: BaseViewController{
     }
     
     @IBAction func showWeekDaysListBtnAction(_ sender: Any) {
-        print("week days : \(self.weekDayListView.isHidden)")
-        if self.weekDayListView.isHidden == true {
-            self.weekDayListView.isHidden = false
-            self.weekDayListView.alpha = 1.0
-        }else {
-            self.weekDayListView.isHidden = true
-            self.weekDayListView.alpha = 0.0
-        }
-        
+        self.weekDayListView.isHidden = !self.weekDayListView.isHidden
+        self.weekDayListView.alpha = self.weekDayListView.isHidden == true ? 0.0 : 1.0
+ 
         if self.weekDayListView.isHidden == true {
             self.setValueToShiftField()
         }
@@ -274,9 +270,12 @@ extension TrainerEditScreenViewController {
     }
     
     @objc func dismissWeekDaysList(_ gesture : UITapGestureRecognizer) {
-        self.weekDayListView.isHidden = true
-        self.weekDayListView.alpha = 0.0
-        self.setValueToShiftField()
+        if self.weekDayListView.isHidden == false {
+            self.weekDayListView.isHidden = true
+            self.weekDayListView.alpha = 0.0
+            self.isWeekDaysListHidden = true
+            self.setValueToShiftField()
+        }
     }
     
     func setValueToShiftField()  {
@@ -1039,8 +1038,6 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
  
-        self.contentOffSets = textField.frame.origin
-        
         if textField.tag == 12 || textField.tag == 13 {
             textField.inputAccessoryView = self.toolBar
             textField.inputView = datePicker
@@ -1073,6 +1070,17 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
         
         self.allTrainerFieldsRequiredValidation(textField: textField)
         self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password:self.passwordTextField.text!)
+        
+        DispatchQueue.main.async {
+            if self.isAlreadyExistsEmail == true {
+                self.emailTextField.layer.borderColor = UIColor.red.cgColor
+                self.emailTextField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
+        }
+        
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -1128,6 +1136,16 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
         
         self.allTrainerFieldsRequiredValidation(textField: textField)
         self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+        
+        DispatchQueue.main.async {
+            if self.isAlreadyExistsEmail == true {
+                self.emailTextField.layer.borderColor = UIColor.red.cgColor
+                self.emailTextField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
+        }
     }
 }
 
@@ -1140,6 +1158,15 @@ extension TrainerEditScreenViewController:UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Trainer's address required.")
+        DispatchQueue.main.async {
+            if self.isAlreadyExistsEmail == true {
+                self.emailTextField.layer.borderColor = UIColor.red.cgColor
+                self.emailTextField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
+        }
     }
 }
 
@@ -1177,9 +1204,10 @@ extension TrainerEditScreenViewController:UITableViewDelegate{
 
 extension TrainerEditScreenViewController:UIGestureRecognizerDelegate{
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-       // self.view.endEditing(true)
+ 
         if touch.view?.isDescendant(of: self.weekDayListView) == true ||
-            touch.view?.isDescendant(of: self.imagePicker.view) == true {
+            touch.view?.isDescendant(of: self.imagePicker.view) == true ||
+            touch.view?.tag == 110 {
             return false
         }else {
             return true

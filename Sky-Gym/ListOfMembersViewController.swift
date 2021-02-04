@@ -143,13 +143,9 @@ class ListOfMembersViewController: BaseViewController {
         self.refreshControl.tintColor = .black
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Member List")
         self.listOfMemberTable.refreshControl = self.refreshControl
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         self.showMembers()
     }
-    
+
    @objc func callAction() {
         print("WORKING CALLING ACTION")
     }
@@ -458,9 +454,7 @@ extension ListOfMembersViewController{
     
     func showMembers() {
         self.view.isUserInteractionEnabled = false
-        var membership:MembershipDetailStructure? = nil
         SVProgressHUD.show()
-        
         FireStoreManager.shared.getAllMembers(completion: {
             (dataDirctionary,err) in
             SVProgressHUD.dismiss()
@@ -470,19 +464,8 @@ extension ListOfMembersViewController{
                 self.listOfMemberArray.removeAll()
                 for singleData in dataDirctionary! {
                     if singleData.count > 0 {
-                        
-                        let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: singleData["memberDetail"] as! Dictionary<String, String>)
                         let membershipArray = singleData["memberships"] as! Array<Dictionary<String,String>>
-                        let currentMembership =
-                            AppManager.shared.getCurrentMembership(membershipArray:membershipArray )
-                        
-                        if currentMembership.count > 0 {
-                            membership = currentMembership.first
-                        }else {
-                            membership =  membershipArray.count > 0 ? AppManager.shared.getLatestMembership(membershipsArray:  membershipArray) :
-                                MembershipDetailStructure(membershipID: memberDetail.memberID, membershipPlan: "--", membershipDetail: "--", amount:"0", startDate: "--", endDate: "--", totalAmount: "0", paidAmount: "0", discount: "0", paymentType: "--", dueAmount: "0", purchaseTime: "--", purchaseDate: "--", membershipDuration: "0")
-                        }
-                        let member = ListOfMemberStr(memberID: memberDetail.memberID, userImg: UIImage(named: "user1")!, userName: "\(memberDetail.firstName) \(memberDetail.lastName)", phoneNumber: memberDetail.phoneNo, dateOfExp:membership!.endDate , dueAmount: membership!.dueAmount, uploadName: memberDetail.uploadIDName)
+                        let member = AppManager.shared.getListOfMembersDetailStr(memberDetail: singleData["memberDetail"] as! Dictionary<String, String>, membershipArray: membershipArray)
                             self.listOfMemberArray.append(member)
                     }
                 }

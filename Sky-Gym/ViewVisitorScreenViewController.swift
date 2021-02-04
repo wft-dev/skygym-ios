@@ -516,9 +516,20 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
         if textField.tag == 7 {
             textField.inputView = self.genderPickerView
         }
-        
+
         self.allVisitorFieldsRequiredValidation(textField: textField)
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
+        
+        DispatchQueue.main.async {
+            if self.isAlreadyExistsEmail == true {
+                self.visitorEmailTextField.layer.borderColor = UIColor.red.cgColor
+                self.visitorEmailTextField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
+        }
+        
     }
           
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -550,11 +561,19 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
         default:
             break
         }
-        
-        
    
         self.allVisitorFieldsRequiredValidation(textField: textField)
         validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
+        
+        DispatchQueue.main.async {
+            if self.isAlreadyExistsEmail == true {
+                self.visitorEmailTextField.layer.borderColor = UIColor.red.cgColor
+                self.visitorEmailTextField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
+        }
     }
 }
 
@@ -580,10 +599,20 @@ extension ViewVisitorScreenViewController : UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address required.")
-        DispatchQueue.main.async {
+
             self.allVisitorFieldsRequiredValidation(textField: self.visitorGenderTextField)
             self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!, password: self.visitorPhoneNoTextField.text!)
+        
+        DispatchQueue.main.async {
+            if self.isAlreadyExistsEmail == true {
+                self.visitorEmailTextField.layer.borderColor = UIColor.red.cgColor
+                self.visitorEmailTextField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
         }
+       
     }
 }
 
