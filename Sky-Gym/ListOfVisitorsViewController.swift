@@ -21,6 +21,7 @@ class VisitorTableCell: UITableViewCell {
     @IBOutlet weak var dateOfVisitLabel: UILabel!
     @IBOutlet weak var trainerTypeLabel: UILabel!
     @IBOutlet weak var visitorProfileImg: UIImageView!
+    @IBOutlet weak var visitorInfoStackView: UIStackView!
     var delegate:CustomCellSegue? = nil
     
     override func awakeFromNib() {
@@ -44,7 +45,7 @@ class ListOfVisitorsViewController: BaseViewController {
     var filteredVisitorArray:[ListOfVisitor] = []
     var trainerName:String = ""
     var trainerType:String = ""
-
+    var trainerDic:Dictionary<String,TrainerNameAndType>? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,6 +58,8 @@ class ListOfVisitorsViewController: BaseViewController {
         self.refreshControl.addTarget(self, action: #selector(refreshVisitorList), for: .valueChanged)
         self.fetchVisitors()
         self.visitorsTable.refreshControl = self.refreshControl
+        self.visitorsTable.rowHeight = UITableView.automaticDimension
+        self.visitorsTable.estimatedRowHeight = UITableView.automaticDimension
     }
     
     override func viewDidAppear(_ animated: Bool)  {
@@ -171,7 +174,8 @@ extension ListOfVisitorsViewController {
                  $0.removeFromSuperview()
              }
          })
-        let deleteView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: cellView.frame.height))
+        let deleteView = UIView()
+        deleteView.frame = CGRect(x: 0, y: 0, width: cellView.frame.width, height: cellView.frame.height)
         let trashImgView = UIImageView(image: UIImage(named: "delete"))
         trashImgView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
         trashImgView.isUserInteractionEnabled = true
@@ -179,13 +183,12 @@ extension ListOfVisitorsViewController {
         
         deleteView.addSubview(trashImgView)
         trashImgView.translatesAutoresizingMaskIntoConstraints = false
-      //  trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
-        trashImgView.topAnchor.constraint(equalTo: deleteView.topAnchor, constant: cellView.frame.height/3 + 5 ).isActive = true
-        trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/2)).isActive = true
+        trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
+      //  trashImgView.topAnchor.constraint(equalTo: deleteView.topAnchor, constant: cellView.frame.height/3 + 5 ).isActive = true
+        trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/3)).isActive = true
         trashImgView.heightAnchor.constraint(equalToConstant: 25).isActive = true
         trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
         trashImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(deleteVisitor(_:))))
-        
         deleteView.tag = 11
         deleteView.heightAnchor.constraint(equalToConstant: cell.frame.height).isActive = true
         deleteView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
@@ -262,28 +265,20 @@ extension ListOfVisitorsViewController {
        }
     
     func setTrainerNameAndType(trainerID:String,cell:VisitorTableCell) {
-        if trainerID != ""{
-            DispatchQueue.global(qos: .userInteractive).async {
-                let result =  FireStoreManager.shared.getTrainerTypeAndNameBy(id: trainerID)
-                DispatchQueue.main.async {
-                    switch result {
-                    case let .success(trainerDetail):
-                        cell.trainerNameLabel.text = trainerDetail!.trainerName
-                        cell.trainerTypeLabel.text = trainerDetail!.trainerType
-                        print("trainer name : \(trainerDetail!.trainerName)")
-
-                        
-                    case .failure(_):
-                        break
-                    }
-                    
-                }
-            }
-
+        if trainerID != "" && self.trainerDic != nil {
+            let trainerDetail = self.trainerDic?["\(trainerID)"]
+            cell.trainerNameLabel.text = trainerDetail?.trainerName
+            cell.trainerTypeLabel.text = trainerDetail?.trainerType
         }else {
             trainerName = "  --"
             trainerType  = " --"
         }
+    
+    }
+    
+    func noOfWords(text:String) -> Int {
+        let array = text.split(separator:  " ")
+        return array.count
     }
     
     func fetchVisitors() {
@@ -296,17 +291,28 @@ extension ListOfVisitorsViewController {
             }else {
                 self.visitorsArray.removeAll()
                 for visitor in visitors!{
-                   let visitorDetail = visitor["visitorDetail"] as! Dictionary<String,String>
+                    let visitorDetail = visitor["visitorDetail"] as! Dictionary<String,String>
                     let id = visitor["id"] as! String
-                   let visitorData = AppManager.shared.getListOfVisitor(visitorDetail: visitorDetail,id: id)
+                    let visitorData = AppManager.shared.getListOfVisitor(visitorDetail: visitorDetail,id: id)
                     self.visitorsArray.append(visitorData)
                 }
-                self.visitorsTable.reloadData()
+                DispatchQueue.global(qos: .background).async {
+                    let result =   FireStoreManager.shared.getAllTrainerTypeAndNameBy()
+                    DispatchQueue.main.async {
+                        switch result {
+                        case let .success(dicValue):
+                            self.trainerDic = dicValue
+                            print("\(self.trainerDic)")
+                            self.visitorsTable.reloadData()
+                        case .failure(_):
+                            break
+                        }
+                    }
+                }
             }
         })
     }
     
-
     
     func getVisitorProfileImage(id:String,imgView :UIImageView) {
           SVProgressHUD.show()
@@ -328,29 +334,29 @@ extension ListOfVisitorsViewController {
           })
       }
     
-    func adjustFontSizeForVisitorLabel(label:UILabel) {
-                  let deviceType = UIDevice.current.deviceType
-                  switch deviceType {
-                   
-                  case .iPhone4_4S:
-                    label.font = UIFont.boldSystemFont(ofSize: 6)
-                   
-                  case .iPhones_5_5s_5c_SE:
-                    label.font = UIFont.boldSystemFont(ofSize: 6)
-                   
-                  case .iPhones_6_6s_7_8:
-              label.font = UIFont.systemFont(ofSize: 8)
-                   
-                  case .iPhones_6Plus_6sPlus_7Plus_8Plus:
-                    label.font = UIFont.systemFont(ofSize: 8)
-                   
-                  case .iPhoneX:
-                    label.font = UIFont.systemFont(ofSize: 8)
-                   
-                  default:
-                    label.font = UIFont.systemFont(ofSize: 8)
-                  }
-              }
+//    func adjustFontSizeForVisitorLabel(label:UILabel) {
+//                  let deviceType = UIDevice.current.deviceType
+//                  switch deviceType {
+//
+//                  case .iPhone4_4S:
+//                    label.font = UIFont.boldSystemFont(ofSize: 6)
+//
+//                  case .iPhones_5_5s_5c_SE:
+//                    label.font = UIFont.boldSystemFont(ofSize: 6)
+//
+//                  case .iPhones_6_6s_7_8:
+//              label.font = UIFont.systemFont(ofSize: 8)
+//
+//                  case .iPhones_6Plus_6sPlus_7Plus_8Plus:
+//                    label.font = UIFont.systemFont(ofSize: 8)
+//
+//                  case .iPhoneX:
+//                    label.font = UIFont.systemFont(ofSize: 8)
+//
+//                  default:
+//                    label.font = UIFont.systemFont(ofSize: 8)
+//                  }
+//              }
     
     func showVisitorAlert(title:String,message:String)  {
            let alertController = UIAlertController(title:title, message: message, preferredStyle: .alert)
@@ -378,6 +384,7 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "visitorCell", for: indexPath) as! VisitorTableCell
         let singleVisitor = self.visitorsArray[indexPath.section]
+       
         self.setAttandanceTableCellView(tableCellView: cell.visitorCellView)
         cell.contentView.layer.cornerRadius = 20.0
         cell.contentView.layer.borderWidth = 1.0
@@ -388,8 +395,6 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
         cell.numberOfvisits.text = "visitor: \(singleVisitor.noOfVisit)"
         cell.dateOfJoinLabel.text = singleVisitor.dateOfJoining
         cell.dateOfVisitLabel.text = singleVisitor.dateOfVisit
-        cell.trainerNameLabel.text = singleVisitor.trainerName
-        cell.trainerTypeLabel.text = singleVisitor.trainerType
         self.getVisitorProfileImage(id: singleVisitor.visitorID, imgView: cell.visitorProfileImg)
         cell.delegate = self
 //        self.adjustFontSizeForVisitorLabel(label: cell.dateOfJoinLabel)
@@ -401,8 +406,14 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
         cell.visitorCellView.tag = Int(singleVisitor.visitorID)!
         self.addVisitorCustomSwipe(cellView: cell.visitorCellView, cell: cell)
         self.setTrainerNameAndType(trainerID: singleVisitor.trainerID, cell: cell)
-        
+       // cell.trainerNameLabel.text =
+       // cell.trainerTypeLabel.text =
+
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
 }
 

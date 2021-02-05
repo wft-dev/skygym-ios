@@ -893,21 +893,26 @@ class FireStoreManager: NSObject {
          return result
     }
     
-    func getTrainerTypeAndNameBy(id:String) -> Result<TrainerNameAndType?,Error> {
-        var result:Result<TrainerNameAndType?,Error>!
+    func getAllTrainerTypeAndNameBy() -> Result<Dictionary<String,TrainerNameAndType>?,Error> {
+        var result:Result<Dictionary<String,TrainerNameAndType>?,Error>!
         let semaphores = DispatchSemaphore(value: 0)
-         let trainerRef = fireDB.collection("Trainers").document("/\(id)")
+         let trainerRef = fireDB.collection("Trainers")
+        var dic:Dictionary<String,TrainerNameAndType> = [:]
         
-        trainerRef.getDocument(completion: {
-            (docSnapshot,err) in
+        trainerRef.getDocuments(completion:{
+            (querySnapshot,err) in
             if err != nil{
                 result = .failure(err!)
                 result = .success(nil)
             } else {
-                let data = docSnapshot?.data()
-                let trainerDetail =  data?["trainerDetail"] as? Dictionary<String,Any>
-                let trainerDetailStr = AppManager.shared.getTrainerTypeAndName(trainerDetail: trainerDetail!, id: id)
-                result = .success(trainerDetailStr)
+                for eachDocument in querySnapshot!.documents {
+                    let data = eachDocument.data()
+                    let trainerDetail =  data["trainerDetail"] as? Dictionary<String,Any>
+                    let id = eachDocument.documentID
+                    let trainerDetailStr = AppManager.shared.getTrainerTypeAndName(trainerDetail: trainerDetail!, id: id)
+                    dic["\(id)"] = trainerDetailStr
+                }
+                result = .success(dic)
             }
             semaphores.signal()
         })
