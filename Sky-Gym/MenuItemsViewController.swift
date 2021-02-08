@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SWRevealViewController
 
 
 class MyMenuItemTableCell: UITableViewCell {
@@ -22,6 +23,11 @@ class MenuItemsViewController: UIViewController {
     var trainerMemberPermission:Bool = false
     var trainerEventPermission:Bool = false
     var trainerVisitorPermission:Bool = false
+    let storyBoard:UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+  //  var adminProfileVC:AdminProfileViewController? = nil
+    var sw:SWRevealViewController? = nil
+    
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +35,9 @@ class MenuItemsViewController: UIViewController {
         self.menuItemTable.tableFooterView = UIView(frame: .zero)
         self.menuItemTable.separatorStyle = .none
         appDelgate = UIApplication.shared.delegate as? AppDelegate
+//        self.adminProfileVC = self.storyBoard.instantiateViewController(withIdentifier: "adminProfileVC") as? AdminProfileViewController
+//        adminProfileVC?.loadViewIfNeeded()
+        self.sw = storyBoard.instantiateViewController(withIdentifier: "swRevealVC") as? SWRevealViewController
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -83,34 +92,37 @@ extension MenuItemsViewController {
     }
     
     func menuItemMappingForAdmin(index:Int) {
-        
+
         switch (index) {
         case 0:
-            let dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
+            let dashboardVC = self.storyBoard.instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(dashboardVC, animated: true)
             break
         case 1:
-            let listOfMemberVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "listOfMemberVC") as! ListOfMembersViewController
+            let listOfMemberVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfMemberVC") as! ListOfMembersViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfMemberVC, animated: true)
             break
         case 2:
-            let listOfTrainersVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "listOfTrainersVC") as! ListOfTrainersViewController
+            let listOfTrainersVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfTrainersVC") as! ListOfTrainersViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfTrainersVC, animated: true)
             break
         case 3:
-            let listOfMembershipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
+            let listOfMembershipVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfMembershipVC, animated: true)
             break
         case 4:
-            let listOfVisitorVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "visitorVC") as! ListOfVisitorsViewController
+            let listOfVisitorVC = self.storyBoard.instantiateViewController(withIdentifier: "visitorVC") as! ListOfVisitorsViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfVisitorVC, animated: true)
             break
         case 5 :
-            let adminProfileVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "adminProfileVC") as! AdminProfileViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(adminProfileVC, animated: true)
-            break
+            DispatchQueue.main.async {
+                let adminProfileVC = self.storyBoard.instantiateViewController(withIdentifier: "profileAdminVC") as! ProfileAdminViewController
+                self.appDelgate?.swRevealVC.pushFrontViewController(adminProfileVC, animated: true)
+            }
+
+            
         case 6 :
-            let eventVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "eventsVC") as! ListOfEventsViewController
+            let eventVC = self.storyBoard.instantiateViewController(withIdentifier: "eventsVC") as! ListOfEventsViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(eventVC, animated: true)
             break
         case 7 :
@@ -126,35 +138,35 @@ extension MenuItemsViewController {
         let visitorIndex = AppManager.shared.trainerVisitorPermission ? 6 : 12
         switch (index) {
         case 0:
-            let dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
+            let dashboardVC = self.storyBoard.instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(dashboardVC, animated: true)
             break
         case 1:
-            let gymInfoVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "gymInfoVC") as! GymInfoViewController
+            let gymInfoVC = self.storyBoard.instantiateViewController(withIdentifier: "gymInfoVC") as! GymInfoViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(gymInfoVC, animated: true)
             break
         case 2:
-            let trainerEditVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "trainerEditVC") as! TrainerEditScreenViewController
+            let trainerEditVC = self.storyBoard.instantiateViewController(withIdentifier: "trainerEditVC") as! TrainerEditScreenViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(trainerEditVC, animated: true)
             break
         case memberIndex :
-            let listOfMemberVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "listOfMemberVC") as! ListOfMembersViewController
+            let listOfMemberVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfMemberVC") as! ListOfMembersViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfMemberVC, animated: true)
             break
         case memberIndex == 3 ? 4 : 3 :
-            let listOfMembershipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
+            let listOfMembershipVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfMembershipVC, animated: true)
             break
         case memberIndex == 3 ? 5 : 4 :
-            let trainerProfileVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "trainerProfileVC") as! TrainerProfileViewController
+            let trainerProfileVC = self.storyBoard.instantiateViewController(withIdentifier: "trainerProfileVC") as! TrainerProfileViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(trainerProfileVC, animated: true)
             break
         case  memberIndex == 3 ? visitorIndex : visitorIndex == 6 ? 5 : 13 :
-            let listOfVisitorVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "visitorVC") as! ListOfVisitorsViewController
+            let listOfVisitorVC = self.storyBoard.instantiateViewController(withIdentifier: "visitorVC") as! ListOfVisitorsViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfVisitorVC, animated: true)
             break
         case  memberIndex == 3 && visitorIndex == 6 ? 7 : visitorIndex == 6 || memberIndex == 3 ? 6: 5:
-            let eventVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "eventsVC") as! ListOfEventsViewController
+            let eventVC = self.storyBoard.instantiateViewController(withIdentifier: "eventsVC") as! ListOfEventsViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(eventVC, animated: true)
             break
         case   memberIndex == 3 && visitorIndex == 6  ? 8 : visitorIndex == 6 || memberIndex == 3 ? 7 : 6 :
@@ -169,27 +181,27 @@ extension MenuItemsViewController {
     func menuItemMappingForMember(index:Int) {
         switch(index) {
         case 0 :
-            let memberDetailVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberDetailVC") as! MemberDetailViewController
+            let memberDetailVC = self.storyBoard.instantiateViewController(withIdentifier: "memberDetailVC") as! MemberDetailViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(memberDetailVC, animated: true)
             break
         case 1 :
-            let gymInfoVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "gymInfoVC") as! GymInfoViewController
+            let gymInfoVC = self.storyBoard.instantiateViewController(withIdentifier: "gymInfoVC") as! GymInfoViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(gymInfoVC, animated: true)
             break
         case 2:
-            let membershipPlanVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
+            let membershipPlanVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(membershipPlanVC, animated: true)
             break
         case 3:
-            let memberLoginProfile = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberLoginProfileVC") as! MemberLoginProfileViewController
+            let memberLoginProfile = self.storyBoard.instantiateViewController(withIdentifier: "memberLoginProfileVC") as! MemberLoginProfileViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(memberLoginProfile, animated: true)
             break
         case 4:
-            let memberLoginTrainerProfile = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberLoginTrainerProfileVC") as! MemberLoginTrainerProfileViewController
+            let memberLoginTrainerProfile = self.storyBoard.instantiateViewController(withIdentifier: "memberLoginTrainerProfileVC") as! MemberLoginTrainerProfileViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(memberLoginTrainerProfile, animated: true)
             break
         case 5 :
-            let eventsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "eventsVC") as! ListOfEventsViewController
+            let eventsVC = self.storyBoard.instantiateViewController(withIdentifier: "eventsVC") as! ListOfEventsViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(eventsVC, animated: true)
             break
         case 6:
@@ -200,7 +212,6 @@ extension MenuItemsViewController {
             break
         }
     }
-    
 }
 
 extension MenuItemsViewController : UITableViewDataSource{

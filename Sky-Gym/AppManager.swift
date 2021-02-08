@@ -171,6 +171,8 @@ class AppManager: NSObject {
             UserDefaults.standard.set(newValue, forKey: "trainerEventPermission")
         }
     }
+    
+
 
     func setStatusBarBackgroundColor(color: UIColor,alpha:CGFloat) {
         

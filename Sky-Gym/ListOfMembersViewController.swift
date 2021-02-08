@@ -128,6 +128,7 @@ class ListOfMembersViewController: BaseViewController {
     @IBOutlet weak var expiredMembersFilterBtn: UIButton!
     @IBOutlet weak var CheckinFilterBtn: UIButton!
     @IBOutlet weak var checkoutFilterBtn: UIButton!
+    @IBOutlet weak var noResultFoundText: UILabel!
         
     var listOfMemberArray:[ListOfMemberStr] = []
     var filteredMemberArray:[ListOfMemberStr] = []
@@ -368,9 +369,21 @@ extension ListOfMembersViewController{
       FireStoreManager.shared.expiredMemberFilterAction(result: {
         (array,err) in
         if err == nil {
-            self.listOfMemberArray.removeAll()
-            self.listOfMemberArray = array!
-            self.listOfMemberTable.reloadData()
+            
+            if array!.count > 0 {
+                self.listOfMemberArray.removeAll()
+                self.listOfMemberArray = array ?? []
+                self.listOfMemberTable.reloadData()
+                self.noResultFoundText.isHidden = true
+                self.noResultFoundText.alpha = 0.0
+                self.listOfMemberTable.isHidden = false
+                self.listOfMemberTable.alpha = 1.0
+            }else {
+                self.listOfMemberTable.isHidden = true
+                self.listOfMemberTable.alpha = 0.0
+                self.noResultFoundText.isHidden = false
+                self.noResultFoundText.alpha = 1.0
+            }
         }
       })
     }
@@ -379,9 +392,22 @@ extension ListOfMembersViewController{
         FireStoreManager.shared.checkFilterAction(checkFor:checkFor, result: {
             (array,err) in
             if err == nil {
-                self.listOfMemberArray.removeAll()
-                self.listOfMemberArray = array ?? []
-                self.listOfMemberTable.reloadData()
+                
+                if array!.count > 0 {
+                    self.listOfMemberArray.removeAll()
+                    self.listOfMemberArray = array ?? []
+                    self.listOfMemberTable.reloadData()
+                    self.noResultFoundText.isHidden = true
+                    self.noResultFoundText.alpha = 0.0
+                    self.listOfMemberTable.isHidden = false
+                    self.listOfMemberTable.alpha = 1.0
+                }else {
+                    self.listOfMemberTable.isHidden = true
+                    self.listOfMemberTable.alpha = 0.0
+                    self.noResultFoundText.isHidden = false
+                    self.noResultFoundText.alpha = 1.0
+                }
+                
             }
         })
     }
@@ -461,16 +487,27 @@ extension ListOfMembersViewController{
             if err != nil {
                 self.alertBox(title: "Retry", message: "Error in fetching member's list, please try again.")
             }else{
-                self.listOfMemberArray.removeAll()
-                for singleData in dataDirctionary! {
-                    if singleData.count > 0 {
-                        let membershipArray = singleData["memberships"] as! Array<Dictionary<String,String>>
-                        let member = AppManager.shared.getListOfMembersDetailStr(memberDetail: singleData["memberDetail"] as! Dictionary<String, String>, membershipArray: membershipArray)
+                if dataDirctionary!.count > 0 {
+                    self.noResultFoundText.isHidden = true
+                    self.noResultFoundText.alpha = 0.0
+                    self.listOfMemberTable.isHidden = false
+                    self.listOfMemberTable.alpha = 1.0
+                    self.listOfMemberArray.removeAll()
+                    for singleData in dataDirctionary! {
+                        if singleData.count > 0 {
+                            let membershipArray = singleData["memberships"] as! Array<Dictionary<String,String>>
+                            let member = AppManager.shared.getListOfMembersDetailStr(memberDetail: singleData["memberDetail"] as! Dictionary<String, String>, membershipArray: membershipArray)
                             self.listOfMemberArray.append(member)
+                        }
                     }
+                    self.listOfMemberTable.reloadData()
+                    self.view.isUserInteractionEnabled = true
+                }else {
+                    self.listOfMemberTable.isHidden = true
+                    self.listOfMemberTable.alpha = 0.0
+                    self.noResultFoundText.isHidden = false
+                    self.noResultFoundText.alpha = 1.0
                 }
-                self.listOfMemberTable.reloadData()
-                self.view.isUserInteractionEnabled = true
             }
         })
     }

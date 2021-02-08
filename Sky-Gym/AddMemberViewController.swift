@@ -147,7 +147,7 @@ class AddMemberViewController: BaseViewController {
             self.profileAndMembershipBarView.isUserInteractionEnabled = false
             self.profileAndMembershipBarView.isHidden = true
             DispatchQueue.main.async {
-                self.topConstraintOfMembershipView.constant = -(self.profileAndMembershipBarView.frame.size.height)
+                self.topConstraintOfMembershipView.constant = -(self.profileAndMembershipBarView.frame.size.height + 10.0 )
                  self.updateBtn.setTitle("U P D A T E", for: .normal)
             }
         }
