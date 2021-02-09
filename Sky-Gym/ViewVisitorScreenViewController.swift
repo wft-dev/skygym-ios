@@ -67,10 +67,20 @@ class ViewVisitorScreenViewController: BaseViewController {
     @IBOutlet weak var genderErrorLabel: UILabel!
     @IBOutlet weak var phoneNumberErrorLabel: UILabel!
     
-    var imagePicker = UIImagePickerController()
+    
+    private lazy var imagePicker:UIImagePickerController = {
+        return UIImagePickerController()
+    }()
+    
+    private lazy var datePicker:UIDatePicker = {
+        return UIDatePicker()
+    }()
+    
+    private lazy var genderPickerView:UIPickerView = {
+        return UIPickerView()
+    }()
+    
     var isNewVisitor:Bool = false
-    var datePicker = UIDatePicker()
-    let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
     var selectedDate:String = ""
     var isImgPickerOpened:Bool = false
     var selectedVisitorImg:UIImage? = nil
@@ -79,17 +89,17 @@ class ViewVisitorScreenViewController: BaseViewController {
     var defaultLabelArray:[UILabel]? = nil
     var errorLabelArray:[UILabel] = []
     var textFieldArray:[UITextField] = []
-    let validation = ValidationManager.shared
     var isAlreadyExistsEmail:Bool = false
     var visitorEmail:String = ""
-    let genderPickerView = UIPickerView()
-    let genderArr = ["Male","Female","Other"]
+    var genderArr:[String] = []
     var visitorTrainerID:String = ""
+    var toolBar:UIToolbar? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setVisitorView()
-        
+
+        self.genderArr =  ["Male","Female","Other"]
         self.genderPickerView.dataSource = self
         self.genderPickerView.delegate = self
         
@@ -128,6 +138,7 @@ class ViewVisitorScreenViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+       
         self.userImg.makeRounded()
         self.isNewVisitor == false ? self.fetchVisitor(id: AppManager.shared.visitorID) : self.clearVisitorTextFields()
     }
@@ -135,7 +146,7 @@ class ViewVisitorScreenViewController: BaseViewController {
     @IBAction func updateBtnAction(_ sender: Any) {
         self.visitorValidation()
         
-        if self.validation.isVisitorValidated(textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!) == true && self.isAlreadyExistsEmail == false {
+        if ValidationManager.shared.isVisitorValidated(textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!) == true && self.isAlreadyExistsEmail == false {
           self.isNewVisitor ? self.registerVisitor() : self.updateVisitor()
         }else {
             self.visitorEmailTextField.layer.borderColor = UIColor.red.cgColor
@@ -150,7 +161,7 @@ class ViewVisitorScreenViewController: BaseViewController {
         for textField in self.textFieldArray{
             self.allVisitorFieldsRequiredValidation(textField: textField)
         }
-        self.validation.requiredValidation(textView: self.visitorDetailTextView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address require.")
+        ValidationManager.shared.requiredValidation(textView: self.visitorDetailTextView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address require.")
     }
 }
 
@@ -159,21 +170,21 @@ extension ViewVisitorScreenViewController {
     func allVisitorFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {
         case 1:
-            validation.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
         case 2:
-            validation.requiredValidation(textField: textField, errorLabel: self.secondNameErrorLabel, errorMessage: "Last Name required.")
+          ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.secondNameErrorLabel, errorMessage: "Last Name required.")
         case 3:
-            validation.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "invalid email address.")
+            ValidationManager.shared.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "invalid email address.")
         case 4:
-            validation.requiredValidation(textField: textField, errorLabel: self.dateOfJoinErrorLabel, errorMessage: "Date of join required.")
+           ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dateOfJoinErrorLabel, errorMessage: "Date of join required.")
         case 5:
-            validation.requiredValidation(textField: textField, errorLabel: self.dateOfVisitErrorLabel, errorMessage: "Date of visit required.")
+          ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dateOfVisitErrorLabel, errorMessage: "Date of visit required.")
         case 6:
-            validation.requiredValidation(textField: textField, errorLabel: self.noOfVisitErrorLabel, errorMessage: "No. of visit required." )
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.noOfVisitErrorLabel, errorMessage: "No. of visit required." )
         case 7:
-            validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "gender required.")
+        ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "gender required.")
         case 8:
-            validation.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
+          ValidationManager.shared.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
 
         default:
             break
@@ -181,17 +192,18 @@ extension ViewVisitorScreenViewController {
     }
 
     func setVisitorView()  {
+         self.toolBar =  UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
         self.setVisitorViewNavigationBar()
         self.setTextFields()
         setBackAction(toView: self.visitorViewNavigationBar)
         self.isNewVisitor ? updateBtn.setTitle("A D D", for: .normal) : updateBtn.setTitle("U P D A T E ", for: .normal)
         self.datePicker.datePickerMode = .date
-        toolBar.barStyle = .default
+        toolBar!.barStyle = .default
         let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
-        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
-        toolBar.sizeToFit()
+        toolBar!.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar!.sizeToFit()
         self.imagePicker.delegate = self
         self.userImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPicker)))
     }
@@ -297,7 +309,7 @@ extension ViewVisitorScreenViewController {
     
     @objc func fieldsValidatorAction(_ textField:UITextField)  {
         self.allVisitorFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email: visitorEmailTextField.text!,password:nil)
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email: visitorEmailTextField.text!,password:nil)
     }
     
         
@@ -504,8 +516,8 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
        
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField.tag == 4 || textField.tag == 5 {
-            textField.inputAccessoryView = self.toolBar
             textField.inputView = datePicker
+            textField.inputAccessoryView = self.toolBar
             if textField.text!.count > 0  {
                 let df = DateFormatter()
                 df.dateFormat = "dd-MM-yyyy"
@@ -518,7 +530,7 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
         }
 
         self.allVisitorFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
+       ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
         
         DispatchQueue.main.async {
             if self.isAlreadyExistsEmail == true {
@@ -563,7 +575,7 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
         }
    
         self.allVisitorFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
+      ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
         
         DispatchQueue.main.async {
             if self.isAlreadyExistsEmail == true {
@@ -592,16 +604,16 @@ extension ViewVisitorScreenViewController : UIImagePickerControllerDelegate,UINa
 
 extension ViewVisitorScreenViewController : UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-     self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address required.")
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
+     ValidationManager.shared.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address required.")
+     ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.visitorPhoneNoTextField,email:self.visitorEmailTextField.text!,password: nil)
         return true
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address required.")
+        ValidationManager.shared.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address required.")
 
             self.allVisitorFieldsRequiredValidation(textField: self.visitorGenderTextField)
-            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!, password: self.visitorPhoneNoTextField.text!)
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!, password: self.visitorPhoneNoTextField.text!)
         
         DispatchQueue.main.async {
             if self.isAlreadyExistsEmail == true {
@@ -637,7 +649,7 @@ extension ViewVisitorScreenViewController:UIPickerViewDelegate {
         
         DispatchQueue.main.async {
             self.allVisitorFieldsRequiredValidation(textField: self.visitorGenderTextField)
-            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!, password: self.visitorPhoneNoTextField.text!)
+            ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!, password: self.visitorPhoneNoTextField.text!)
         }
         
     }

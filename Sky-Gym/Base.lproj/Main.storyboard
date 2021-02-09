@@ -9792,10 +9792,10 @@
                                                                     </constraints>
                                                                 </view>
                                                                 <view contentMode="scaleToFill" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="NRM-58-f7P">
-                                                                    <rect key="frame" x="147" y="0.0" width="35.5" height="21.5"/>
+                                                                    <rect key="frame" x="150" y="0.0" width="32.5" height="21.5"/>
                                                                     <subviews>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Type" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="N14-xy-iYb">
-                                                                            <rect key="frame" x="0.0" y="0.0" width="35.5" height="9"/>
+                                                                            <rect key="frame" x="0.0" y="0.0" width="32.5" height="9"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="height" constant="9" id="fDx-29-iJ0"/>
                                                                             </constraints>
@@ -9803,8 +9803,8 @@
                                                                             <color key="textColor" red="0.88235294119999996" green="0.80784313730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
-                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="asdf" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bXo-ZA-zRj">
-                                                                            <rect key="frame" x="0.0" y="9" width="35.5" height="12.5"/>
+                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="General" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bXo-ZA-zRj">
+                                                                            <rect key="frame" x="0.0" y="9" width="32.5" height="12.5"/>
                                                                             <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="7"/>
                                                                             <nil key="textColor"/>
                                                                             <nil key="highlightedColor"/>
@@ -9833,7 +9833,7 @@
                                                                 <constraint firstItem="6az-QC-iZj" firstAttribute="leading" secondItem="Bfd-Ib-dZj" secondAttribute="trailing" constant="5" id="JW8-6v-GVw"/>
                                                                 <constraint firstItem="NRM-58-f7P" firstAttribute="top" secondItem="3rJ-Hl-Aac" secondAttribute="top" id="KwY-90-pyt"/>
                                                                 <constraint firstAttribute="bottom" secondItem="6az-QC-iZj" secondAttribute="bottom" id="Muf-mr-WaW"/>
-                                                                <constraint firstItem="NRM-58-f7P" firstAttribute="leading" secondItem="Ief-rK-xUp" secondAttribute="trailing" id="QMN-zF-rQT"/>
+                                                                <constraint firstItem="NRM-58-f7P" firstAttribute="leading" secondItem="Ief-rK-xUp" secondAttribute="trailing" constant="3" id="QMN-zF-rQT"/>
                                                                 <constraint firstAttribute="bottom" secondItem="NRM-58-f7P" secondAttribute="bottom" id="W0X-gL-l8J"/>
                                                                 <constraint firstAttribute="bottom" secondItem="Bfd-Ib-dZj" secondAttribute="bottom" id="Zte-kp-xUt"/>
                                                                 <constraint firstItem="Ief-rK-xUp" firstAttribute="leading" secondItem="6az-QC-iZj" secondAttribute="trailing" constant="5" id="cHx-LG-8VT"/>
@@ -10630,7 +10630,7 @@
         <!--Profile Admin View Controller-->
         <scene sceneID="YDl-w6-va1">
             <objects>
-                <viewController storyboardIdentifier="profileAdminVC" id="Q79-Z6-qgD" customClass="ProfileAdminViewController" customModule="Sky_Gym" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="profileAdminVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Q79-Z6-qgD" customClass="ProfileAdminViewController" customModule="Sky_Gym" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mHa-gl-X7E">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -10823,13 +10823,13 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" verticalHuggingPriority="251" text="Closing Time" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="esv-0B-my9">
-                                                <rect key="frame" x="173.5" y="301" width="116.5" height="22.5"/>
+                                                <rect key="frame" x="170" y="301" width="120" height="22.5"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NhB-Ig-zRK">
-                                                <rect key="frame" x="173.5" y="323.5" width="116.5" height="0.0"/>
+                                                <rect key="frame" x="170" y="323.5" width="120" height="0.0"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -11012,7 +11012,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DrN-XG-evY">
-                                                <rect key="frame" x="170" y="505" width="135" height="0.0"/>
+                                                <rect key="frame" x="170" y="505" width="130" height="0.0"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -11122,7 +11122,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="D.O.B." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VV7-So-rxZ">
-                                                <rect key="frame" x="170" y="866" width="87" height="22.5"/>
+                                                <rect key="frame" x="170" y="866" width="120" height="22.5"/>
                                                 <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -11259,7 +11259,6 @@
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="bottom" secondItem="SMX-Io-cSU" secondAttribute="bottom" id="5or-4q-Mcc"/>
-                                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="400" id="Cr7-uE-y3x"/>
                                                     <constraint firstItem="SMX-Io-cSU" firstAttribute="leading" secondItem="QDH-Lj-J9X" secondAttribute="leading" id="VMD-7X-Npx"/>
                                                     <constraint firstAttribute="trailing" secondItem="SMX-Io-cSU" secondAttribute="trailing" id="i64-7X-ZTU"/>
                                                     <constraint firstItem="SMX-Io-cSU" firstAttribute="top" secondItem="QDH-Lj-J9X" secondAttribute="top" id="rCY-IO-HOH"/>
@@ -11280,7 +11279,7 @@
                                             <constraint firstAttribute="trailing" secondItem="zRK-KG-YnY" secondAttribute="trailing" constant="30" id="44H-aL-iXO"/>
                                             <constraint firstItem="YaJ-BD-UsB" firstAttribute="height" secondItem="FHx-de-Pyv" secondAttribute="height" id="4D5-S5-oP7"/>
                                             <constraint firstItem="T6x-f4-R1o" firstAttribute="top" secondItem="YaJ-BD-UsB" secondAttribute="bottom" constant="2" id="4GM-PU-xwA"/>
-                                            <constraint firstAttribute="trailing" secondItem="DrN-XG-evY" secondAttribute="trailing" constant="15" id="4ha-tc-bCE"/>
+                                            <constraint firstAttribute="trailing" secondItem="DrN-XG-evY" secondAttribute="trailing" constant="20" id="4ha-tc-bCE"/>
                                             <constraint firstItem="VuQ-Xp-EOp" firstAttribute="leading" secondItem="PS1-bf-dYH" secondAttribute="leading" id="4qW-As-7c4"/>
                                             <constraint firstItem="ToO-CZ-8n9" firstAttribute="top" secondItem="CUd-RA-nPU" secondAttribute="bottom" id="4vu-bN-rhg"/>
                                             <constraint firstAttribute="bottom" secondItem="Pzt-C9-Kr6" secondAttribute="bottom" constant="20" id="58z-Ou-3Bs"/>
@@ -11464,7 +11463,7 @@
                                             <constraint firstItem="VuQ-Xp-EOp" firstAttribute="top" secondItem="go8-Qb-SD0" secondAttribute="bottom" constant="35" id="jLT-Yx-NSY"/>
                                             <constraint firstItem="D2a-CQ-hPE" firstAttribute="trailing" secondItem="kEo-OB-ivn" secondAttribute="trailing" id="jWO-fM-NGp"/>
                                             <constraint firstAttribute="trailing" secondItem="REr-dE-xaT" secondAttribute="trailing" constant="30" id="jsJ-29-FPc"/>
-                                            <constraint firstAttribute="trailing" secondItem="VV7-So-rxZ" secondAttribute="trailing" constant="63" id="jtI-e6-C9C"/>
+                                            <constraint firstAttribute="trailing" secondItem="VV7-So-rxZ" secondAttribute="trailing" constant="30" id="jtI-e6-C9C"/>
                                             <constraint firstAttribute="trailing" secondItem="SQn-qR-5Or" secondAttribute="trailing" constant="30" id="kCe-ty-Yxl"/>
                                             <constraint firstItem="mRb-v2-zp7" firstAttribute="leading" secondItem="zRK-KG-YnY" secondAttribute="leading" id="kbD-8c-LIj"/>
                                             <constraint firstItem="kEo-OB-ivn" firstAttribute="leading" secondItem="ovm-Sz-Ygn" secondAttribute="trailing" constant="20" id="kbG-dc-3Za"/>
@@ -11472,6 +11471,7 @@
                                             <constraint firstItem="2oE-dX-psL" firstAttribute="height" secondItem="YaJ-BD-UsB" secondAttribute="height" id="l20-dm-v0H"/>
                                             <constraint firstItem="zRK-KG-YnY" firstAttribute="width" secondItem="zTl-g8-oUq" secondAttribute="width" id="l9J-gi-ebe"/>
                                             <constraint firstItem="fgo-B0-lmF" firstAttribute="top" secondItem="ymN-Lw-wTZ" secondAttribute="bottom" constant="2" id="lPb-Yb-RY0"/>
+                                            <constraint firstItem="esv-0B-my9" firstAttribute="leading" secondItem="CUd-RA-nPU" secondAttribute="leading" id="lgY-L2-r7M"/>
                                             <constraint firstAttribute="trailing" secondItem="K8g-83-xyq" secondAttribute="trailing" constant="30" id="lxT-dP-MW5"/>
                                             <constraint firstAttribute="trailing" secondItem="CUd-RA-nPU" secondAttribute="trailing" constant="30" id="m1v-xy-dtn"/>
                                             <constraint firstItem="huN-RR-PbF" firstAttribute="leading" secondItem="2JD-mQ-TbM" secondAttribute="leading" constant="30" id="mHi-Xn-IAO"/>
@@ -11530,7 +11530,6 @@
                                             <constraint firstAttribute="trailing" secondItem="kEo-OB-ivn" secondAttribute="trailing" constant="30" id="y6s-fE-3V0"/>
                                             <constraint firstItem="GJa-tW-E4j" firstAttribute="bottom" secondItem="2oE-dX-psL" secondAttribute="bottom" id="yE9-79-TTl"/>
                                             <constraint firstItem="6iN-dL-jhe" firstAttribute="leading" secondItem="2JD-mQ-TbM" secondAttribute="leading" constant="30" id="yUJ-2E-FwP"/>
-                                            <constraint firstItem="esv-0B-my9" firstAttribute="leading" secondItem="G4X-Fg-kwv" secondAttribute="trailing" constant="30" id="zKf-aZ-UwS"/>
                                             <constraint firstAttribute="trailing" secondItem="esv-0B-my9" secondAttribute="trailing" constant="30" id="zgz-mO-Kz4"/>
                                         </constraints>
                                     </view>
@@ -13273,7 +13272,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="a1y-0k-oIj"/>
         <segue reference="0wx-uF-HLE"/>
-        <segue reference="Ao5-lR-tYC"/>
+        <segue reference="NnL-LF-egv"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="add_Icon" width="225" height="210"/>

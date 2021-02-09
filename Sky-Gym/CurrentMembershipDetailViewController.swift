@@ -39,7 +39,7 @@ class CurrentMembershipDetailViewController: BaseViewController {
     
     var currentMembershipID:String = ""
     var purchasedMembershipID:String = ""
-    var memberDetail:MemberDetailStructure? = nil
+    var memberDetail:MemberFullNameAndPhone? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -219,17 +219,15 @@ extension CurrentMembershipDetailViewController {
             } else {
                 SVProgressHUD.dismiss()
                 let memberships = docSnapshot?["memberships"] as! Array<Dictionary<String,String>>
-                let memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String, String>)
+                let memberDetail = AppManager.shared.getMemberNameAndPhone(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String, String>)
                 let membershipArray = AppManager.shared.getCurrentMembership(membershipArray: memberships)
  
                 if membershipArray.count > 0  {
-                    self.setCurrentMembership(memberDetail: memberDetail, currentMembership: membershipArray.first!)
+                    self.setCurrentMembership(memberDetail:memberDetail, currentMembership: membershipArray.first!)
                     [self.memberView,self.membershipDateView,self.DiscountView,self.paymentHistoryView].forEach{
                         $0?.isHidden = false
                         $0?.alpha = 1.0
                     }
-//                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = false
-//                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 1.0
                 } else {
                     SVProgressHUD.show()
                     [self.memberView,self.membershipDateView,self.DiscountView,self.paymentHistoryView].forEach{
@@ -257,7 +255,7 @@ extension CurrentMembershipDetailViewController {
         })
     }
     
-    func setCurrentMembership(memberDetail:MemberDetailStructure,currentMembership:MembershipDetailStructure) {
+    func setCurrentMembership(memberDetail:MemberFullNameAndPhone,currentMembership:MembershipDetailStructure) {
         let dueAmount = Int(currentMembership.dueAmount)
         
         if dueAmount! > 0 {
@@ -270,7 +268,7 @@ extension CurrentMembershipDetailViewController {
         self.membershipStartDateLabel.text = currentMembership.purchaseDate
         self.membershipEndDateLabel.text = currentMembership.endDate
         self.memberhsipStartDate.text = currentMembership.startDate
-        self.memberNameLabel.text = "\(memberDetail.firstName) \(memberDetail.lastName)"
+        self.memberNameLabel.text = memberDetail.userName
         self.mobileNumberLabel.text = memberDetail.phoneNo
         self.membershipPlanLabel.text = currentMembership.membershipPlan
         self.membershipEndDateLabel.text = currentMembership.endDate

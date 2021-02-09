@@ -97,6 +97,12 @@ struct ListOfMemberStr {
     var uploadName:String
 }
 
+struct  MemberFullNameAndPhone {
+    var memberID:String
+    var userName:String
+    var phoneNo:String
+}
+
 
 struct PurchaseMembershipPlan {
     var membershipID:String

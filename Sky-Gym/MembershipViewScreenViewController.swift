@@ -42,7 +42,6 @@ class MembershipViewScreenViewController: BaseViewController {
     var defaultLabelArray:[UILabel]? = nil
     var errorLabelArray:[UILabel] = []
     var textFieldArray:[UITextField] = []
-    let validation = ValidationManager.shared
     var duplicateErrorText:String? = nil
     var weekdayImg = UIImage(named: "unchecked-checkbox")
  
@@ -103,7 +102,7 @@ class MembershipViewScreenViewController: BaseViewController {
     
     @IBAction func doneBtnAction(_ sender: Any) {
         self.membershipValidation()
-       if self.validation.isMembershipFieldsValidated(textFieldArray: self.textFieldArray, textView: self.detailTextView) == true {
+       if ValidationManager.shared.isMembershipFieldsValidated(textFieldArray: self.textFieldArray, textView: self.detailTextView) == true {
             self.isNewMemberhsip ? self.registerNewMembership() : self.updateMembership()
         }
     }
@@ -126,8 +125,8 @@ extension  MembershipViewScreenViewController {
         for textField in self.textFieldArray {
             self.allMembershipFieldsRequiredValidation(textField: textField, duplicateDateErrorText: nil)
         }
-        self.validation.requiredValidation(textView: self.detailTextView, errorLabel: self.detailErrorLabel, errorMessage: "Membership detail required.")
-        self.validation.requiredValidation(dropDown: self.membershipDropDownTitleTextField, errorLabel: self.titleErrorLabel, errorMessage: "Membership title required.")
+        ValidationManager.shared.requiredValidation(textView: self.detailTextView, errorLabel: self.detailErrorLabel, errorMessage: "Membership detail required.")
+        ValidationManager.shared.requiredValidation(dropDown: self.membershipDropDownTitleTextField, errorLabel: self.titleErrorLabel, errorMessage: "Membership title required.")
     }
     
     func hideMembershipTitleDropDown(hide:Bool) {
@@ -141,9 +140,9 @@ extension  MembershipViewScreenViewController {
     func allMembershipFieldsRequiredValidation(textField:UITextField,duplicateDateErrorText:String?)  {
         switch textField.tag {
         case 1:
-            validation.requiredValidation(textField: textField, errorLabel: self.titleErrorLabel, errorMessage: "Membership Title required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.titleErrorLabel, errorMessage: "Membership Title required.")
         case 2:
-            validation.requiredValidation(textField: textField, errorLabel: self.amountErrorLabel, errorMessage: "Membership Amount required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.amountErrorLabel, errorMessage: "Membership Amount required.")
         default:
             break
         }
@@ -167,7 +166,7 @@ extension  MembershipViewScreenViewController {
                 self.selectedOption = selectedText
                 self.selectedIndex = index
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
-                    self.validation.requiredValidation(dropDown: self.membershipDropDownTitleTextField, errorLabel: self.titleErrorLabel, errorMessage: "Membership Title required.")
+                   ValidationManager.shared.requiredValidation(dropDown: self.membershipDropDownTitleTextField, errorLabel: self.titleErrorLabel, errorMessage: "Membership Title required.")
                 })
             }
         })
@@ -262,7 +261,7 @@ extension  MembershipViewScreenViewController {
     
     @objc func fieldsValidatorAction(_ textField:UITextField) {
         self.allMembershipFieldsRequiredValidation(textField: textField, duplicateDateErrorText: duplicateErrorText)
-        validation.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: self.detailTextView, phoneNumberTextField: nil,email: nil,password: nil)
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: self.detailTextView, phoneNumberTextField: nil,email: nil,password: nil)
     }
     
     func getMembershipData() -> [String:String] {
@@ -379,21 +378,21 @@ extension MembershipViewScreenViewController :UITextFieldDelegate{
        
     func textFieldDidEndEditing(_ textField: UITextField) {
         self.allMembershipFieldsRequiredValidation(textField: textField, duplicateDateErrorText: duplicateErrorText)
-        validation.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: self.detailTextView, phoneNumberTextField: nil,email: nil,password: nil)
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: self.detailTextView, phoneNumberTextField: nil,email: nil,password: nil)
     }
 }
 
 
 extension MembershipViewScreenViewController:UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        self.validation.requiredValidation(textView: textView, errorLabel: self.detailErrorLabel, errorMessage: "Membership details required.")
-        validation.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: nil,email: nil,password: nil)
+        ValidationManager.shared.requiredValidation(textView: textView, errorLabel: self.detailErrorLabel, errorMessage: "Membership details required.")
+       ValidationManager.shared.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: nil,email: nil,password: nil)
         return true
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        self.validation.requiredValidation(textView: textView, errorLabel: self.detailErrorLabel, errorMessage: "Membership details required.")
-                validation.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: nil,email: nil,password: nil)
+        ValidationManager.shared.requiredValidation(textView: textView, errorLabel: self.detailErrorLabel, errorMessage: "Membership details required.")
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.doneBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: nil,email: nil,password: nil)
     }
 }
 

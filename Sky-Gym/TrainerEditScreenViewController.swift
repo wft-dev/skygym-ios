@@ -8,7 +8,6 @@
 
 import UIKit
 import SVProgressHUD
-import IQKeyboardManagerSwift
 
 
 class WeekDayForTrainerTableCell: UITableViewCell {
@@ -135,13 +134,18 @@ class TrainerEditScreenViewController: BaseViewController{
     @IBOutlet weak var shiftDaysListBtn: UIButton!
     
     
+    private lazy var imagePicker:UIImagePickerController = {
+        return UIImagePickerController()
+    }()
+
+    private lazy var genderPickerView:UIPickerView = {
+        return UIPickerView()
+    }()
+    
     var isNewTrainer:Bool = false
-    let imagePicker = UIImagePickerController()
     var imgURL:URL? = nil
     var name:String = ""
     var addressStr:String = ""
-    var datePicker = UIDatePicker()
-    let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
     var selectedDate:String = ""
     var isUserImgSelected:Bool = false
     var img:UIImage? = nil
@@ -151,34 +155,31 @@ class TrainerEditScreenViewController: BaseViewController{
     var errorLabelArray:[UILabel] = []
     var textFieldArray:[UITextField] = []
     var trainerType:String = ""
-    let validation = ValidationManager.shared
     var memberPermission:Bool = false
     var visitorPermission:Bool = false
     var eventPermission:Bool = false
     var actualPassword:String = ""
-    let weekDayArray = ["Sunday","Monday","Tuesday","Wednesday","Thrusday","Friday","Saturday"]
+    var weekDayArray:[String] = []
     var selectedWeekDayIndexArray:[Int] = []
     var isAlreadyExistsEmail:Bool = false
-    let genderPickerView = UIPickerView()
-    let genderArray = ["Male","Female","Other"]
+    var genderArray:[String] = []
     var trainerEmail:String = ""
     var isWeekDaysListHidden:Bool = false
+    var datePicker:UIDatePicker? = nil
+    var toolBar:UIToolbar? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.tag = 1010
-        self.setTrainerEditView()
-        self.showTrainerBy(id: AppManager.shared.trainerID)
-        self.weekDaysListTable.isScrollEnabled = false
-        self.weekDaysListTable.scrollsToTop  = false
-        self.isWeekDaysListHidden = self.weekDayListView.isHidden
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        self.addClickToDismissWeekDaysList()
+         self.setTrainerEditView()
+        self.showTrainerBy(id: AppManager.shared.trainerID)
+        self.weekDaysListTable.isScrollEnabled = false
+        self.isWeekDaysListHidden = self.weekDayListView.isHidden
     }
-    
 
     @IBAction func trainerAttendanceAction(_ sender: Any) {
         performSegue(withIdentifier: "trainerAttendanceSegue", sender: nil)
@@ -245,7 +246,7 @@ class TrainerEditScreenViewController: BaseViewController{
     @IBAction func doneBtnAction(_ sender: Any) {
         self.trainerValidation()
         let password = AppManager.shared.encryption(plainText:  self.passwordTextField.text!)
-        if self.validation.isTrainerProfileValidated(textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) == true  && self.isAlreadyExistsEmail == false {
+        if ValidationManager.shared.isTrainerProfileValidated(textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) == true  && self.isAlreadyExistsEmail == false {
             self.registerTrainer(email: self.emailTextField.text!, password: password, id: self.idTextField.text!, trainerDetail: self.getTrainerFieldsData(), trainerPermission: self.getTrainerPermissionData())
         }else {
             DispatchQueue.main.async {
@@ -290,7 +291,7 @@ extension TrainerEditScreenViewController {
         }
         self.shiftDaysTextField.text = str
         if self.shiftDaysTextField.text != "" {
-           self.validation.requiredValidation(textField: self.shiftDaysTextField, errorLabel: self.shiftDaysErrorLabel, errorMessage: "Shift days required.")
+           ValidationManager.shared.requiredValidation(textField: self.shiftDaysTextField, errorLabel: self.shiftDaysErrorLabel, errorMessage: "Shift days required.")
         }
     }
  
@@ -298,42 +299,42 @@ extension TrainerEditScreenViewController {
         for textField in self.textFieldArray {
             self.allTrainerFieldsRequiredValidation(textField: textField)
         }
-        self.validation.requiredValidation(textView: self.addressView, errorLabel: self.addressErrorLabel, errorMessage:"Trainer's address require.")
+        ValidationManager.shared.requiredValidation(textView: self.addressView, errorLabel: self.addressErrorLabel, errorMessage:"Trainer's address require.")
     }
     
     func allTrainerFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {
         case 1:
-            validation.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
         case 2:
-            validation.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last Name required.")
+           ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last Name required.")
         case 3:
-            validation.requiredValidation(textField: textField, errorLabel: self.idErrorLabel, errorMessage: "Trainer ID required")
+           ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.idErrorLabel, errorMessage: "Trainer ID required")
         case 4:
-            validation.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
+            ValidationManager.shared.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
         case 5:
-            validation.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid email address.")
+           ValidationManager.shared.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid email address.")
         case 6:
-            validation.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 character.")
+            ValidationManager.shared.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 character.")
         case 7:
-            validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Gender required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Gender required.")
         case 8:
-            validation.requiredValidation(textField: textField, errorLabel: self.salaryErrorLabel, errorMessage: "Salary required.")
+           ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.salaryErrorLabel, errorMessage: "Salary required.")
         case 9:
-            validation.requiredValidation(textField: textField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required.")
         case 10:
-            validation.requiredValidation(textField: textField, errorLabel: self.shiftDaysErrorLabel, errorMessage: "Shift days required.")
+         ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.shiftDaysErrorLabel, errorMessage: "Shift days required.")
         case 11:
-            validation.requiredValidation(textField: textField, errorLabel: self.shiftTimingErrorLabel, errorMessage: "Shift timings required.")
+           ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.shiftTimingErrorLabel, errorMessage: "Shift timings required.")
         case 12:
-            validation.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required.")
+          ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required.")
         case 13:
-            validation.requiredValidation(textField: textField, errorLabel: self.dateOfJoinErrorLabel, errorMessage: "Date of join required.")
+           ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dateOfJoinErrorLabel, errorMessage: "Date of join required.")
         default:
             break
         }
         
-        self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+       ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
 
     func setTrainerEditScreenNavigationBar()  {
@@ -531,7 +532,7 @@ extension TrainerEditScreenViewController {
     
     @objc func errorValidator(_ textField:UITextField) {
         self.allTrainerFieldsRequiredValidation(textField: textField)
-        self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+       ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
     }
 
     func addPaddingToTextField(textField:UITextField) {
@@ -622,6 +623,12 @@ extension TrainerEditScreenViewController {
     }
     
     func setTrainerEditView() {
+        self.addClickToDismissWeekDaysList()
+        self.weekDayArray = ["Sunday","Monday","Tuesday","Wednesday","Thrusday","Friday","Saturday"]
+        self.genderArray = ["Male","Female","Others"]
+        self.datePicker = UIDatePicker()
+        
+        self.toolBar =  UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
         assignbackground()
         self.setTrainerEditScreenNavigationBar()
         self.setTrainerEditScreenTextFields()
@@ -634,13 +641,14 @@ extension TrainerEditScreenViewController {
         [self.visitorPermissionToggleBtn,self.memberPermissionToggleBtn,self.eventPermissionToggleBtn].forEach{
             $0?.setImage(UIImage(named: "toggle-off"), for: .normal)
         }
-        self.datePicker.datePickerMode = .date
-        toolBar.barStyle = .default
+        self.datePicker?.datePickerMode = .date
+        
+        toolBar!.barStyle = .default
         let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
-        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
-        toolBar.sizeToFit()
+        toolBar!.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar!.sizeToFit()
         
         self.forNonEditLabelArray = [
             self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.idForNonEditLabel,self.phoneNoForNonEditLabel,self.emailForNonEditLabel,self.passwordForNonEditLabel,self.addressForNonEditLabel,self.genderForNonEditLabel,self.salaryForNonEditLabel,self.idProofForNonEditLabel,self.shiftDaysForNonEditLabel,self.shiftTimingForNonEditLabel,self.dobForNonEditLabel,self.dateOfJoinForNonEditLabel,self.typeForNonEditLabel
@@ -737,20 +745,19 @@ extension TrainerEditScreenViewController {
                 self.userImg.image = UIImage(named: "user-1")
             }
         }
-        
     }
     
     @objc func cancelTextField()  {
-           self.view.endEditing(true)
+             self.view.endEditing(true)
+         }
+      
+      @objc func doneTextField()  {
+             let dateFormatter = DateFormatter()
+             dateFormatter.dateFormat =  "dd-MMM-YYYY"
+        selectedDate = dateFormatter.string(from: datePicker!.date)
+          self.view.endEditing(true)
        }
-    
-    @objc func doneTextField()  {
-           let dateFormatter = DateFormatter()
-           dateFormatter.dateFormat =  "dd-MMM-YYYY"
-         selectedDate = dateFormatter.string(from: datePicker.date)
-        self.view.endEditing(true)
-     }
-    
+
     func showTrainerBy(id:String)  {
         SVProgressHUD.show()
         if self.isNewTrainer ==  false {
@@ -1039,13 +1046,12 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
     func textFieldDidBeginEditing(_ textField: UITextField) {
  
         if textField.tag == 12 || textField.tag == 13 {
-            textField.inputAccessoryView = self.toolBar
             textField.inputView = datePicker
-            
+            textField.inputAccessoryView = self.toolBar
             if textField.text!.count > 0  {
                 let df = DateFormatter()
                 df.dateFormat = "dd-MM-yyyy"
-                self.datePicker.date = df.date(from: textField.text!)!
+                self.datePicker?.date = df.date(from: textField.text!)!
             }
         }
         
@@ -1069,7 +1075,7 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
         }
         
         self.allTrainerFieldsRequiredValidation(textField: textField)
-        self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password:self.passwordTextField.text!)
+       ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password:self.passwordTextField.text!)
         
         DispatchQueue.main.async {
             if self.isAlreadyExistsEmail == true {
@@ -1099,7 +1105,7 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
         if textField.tag == 5 {
             let email = textField.text!
             
-            if  self.validation.isEmailValid(email: email) == true && self.trainerEmail != email {
+            if  ValidationManager.shared.isEmailValid(email: email) == true && self.trainerEmail != email {
                 DispatchQueue.global(qos: .background).async {
                     let result = FireStoreManager.shared.isUserExists(email: email)
                     
@@ -1135,7 +1141,7 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
         }
         
         self.allTrainerFieldsRequiredValidation(textField: textField)
-        self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+       ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
         
         DispatchQueue.main.async {
             if self.isAlreadyExistsEmail == true {
@@ -1151,13 +1157,13 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
 
 extension TrainerEditScreenViewController:UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-     self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Trainer's address required.")
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+     ValidationManager.shared.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Trainer's address required.")
+      ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: textView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
         return true
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Trainer's address required.")
+       ValidationManager.shared.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Trainer's address required.")
         DispatchQueue.main.async {
             if self.isAlreadyExistsEmail == true {
                 self.emailTextField.layer.borderColor = UIColor.red.cgColor
@@ -1235,7 +1241,7 @@ extension TrainerEditScreenViewController : UIPickerViewDelegate{
         self.genderTextField.text = self.genderArray[row]
         DispatchQueue.main.async {
             self.allTrainerFieldsRequiredValidation(textField: self.genderTextField)
-            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+            ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
         }
     }
    

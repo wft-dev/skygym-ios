@@ -115,12 +115,9 @@ extension MenuItemsViewController {
             self.appDelgate?.swRevealVC.pushFrontViewController(listOfVisitorVC, animated: true)
             break
         case 5 :
-            DispatchQueue.main.async {
-                let adminProfileVC = self.storyBoard.instantiateViewController(withIdentifier: "profileAdminVC") as! ProfileAdminViewController
-                self.appDelgate?.swRevealVC.pushFrontViewController(adminProfileVC, animated: true)
-            }
-
-            
+            let adminProfileVC = self.storyBoard.instantiateViewController(withIdentifier: "profileAdminVC") as! ProfileAdminViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(adminProfileVC, animated: true)
+            break
         case 6 :
             let eventVC = self.storyBoard.instantiateViewController(withIdentifier: "eventsVC") as! ListOfEventsViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(eventVC, animated: true)

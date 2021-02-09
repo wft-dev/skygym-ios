@@ -50,7 +50,6 @@ class ViewEventScreenViewController: BaseViewController {
     var defaultLabelArray:[UILabel]? = nil
     var errorLabelArray:[UILabel]? = nil
     var textFieldsArray:[UITextField]? = nil
-    let validation = ValidationManager.shared
     var datePicker = UIDatePicker()
     var timePicker = UIDatePicker()
     let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
@@ -77,7 +76,7 @@ class ViewEventScreenViewController: BaseViewController {
     
     @IBAction func updateBtnAction(_ sender: Any) {
         self.eventValidation()
-        if self.validation.isEventFieldsValidated(textFieldArray: self.textFieldsArray!, textView: self.addressTextView) == true {
+        if ValidationManager.shared.isEventFieldsValidated(textFieldArray: self.textFieldsArray!, textView: self.addressTextView) == true {
             self.isNewEvent ?  self.addEvent() : self.updateEvent()
         }
     }
@@ -86,7 +85,7 @@ class ViewEventScreenViewController: BaseViewController {
         for textField in self.textFieldsArray! {
             self.allFieldsRequiredValidation(textField: textField, duplicateError: nil)
         }
-        self.validation.requiredValidation(textView: self.addressTextView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address require.")
+        ValidationManager.shared.requiredValidation(textView: self.addressTextView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address require.")
     }
 }
 
@@ -150,13 +149,13 @@ extension ViewEventScreenViewController {
     func allFieldsRequiredValidation(textField:UITextField,duplicateError:String?)  {
         switch textField.tag {
         case 1:
-            validation.requiredValidation(textField: textField, errorLabel: self.eventNameErrorTextLabel, errorMessage: "Event name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.eventNameErrorTextLabel, errorMessage: "Event name required.")
         case 2:
-            validation.requiredValidation(textField: textField, errorLabel: self.eventDateErrorTextLabel, errorMessage: "Event date required.")
+         ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.eventDateErrorTextLabel, errorMessage: "Event date required.")
         case 3:
-            validation.requiredValidation(textField: textField, errorLabel: self.eventStarTimeErrorTextLabel, errorMessage: "Event start time required.")
+        ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.eventStarTimeErrorTextLabel, errorMessage: "Event start time required.")
         case 4:
-            validation.requiredValidation(textField: textField, errorLabel: self.eventEndTimeErrorTextLabel, errorMessage: (duplicateError != nil ? duplicateError : "Event end time required.")! )
+          ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.eventEndTimeErrorTextLabel, errorMessage: (duplicateError != nil ? duplicateError : "Event end time required.")! )
         default:
             break
         }
@@ -395,7 +394,7 @@ extension ViewEventScreenViewController:UITextFieldDelegate{
                 self.selectedTime = ""
                 
             case 4:
-                if validation.isDuplicate(text1: self.eventStartTimeTextField.text!, text2: self.selectedTime) == false{
+                if ValidationManager.shared.isDuplicate(text1: self.eventStartTimeTextField.text!, text2: self.selectedTime) == false{
                     self.eventEndTimeTextField.text = self.selectedTime
                     self.selectedTime = ""
                 } else {
@@ -410,20 +409,20 @@ extension ViewEventScreenViewController:UITextFieldDelegate{
         }
 
         self.allFieldsRequiredValidation(textField: textField, duplicateError: duplicateError)
-         validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil,email: nil,password: nil)
+         ValidationManager.shared.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil,email: nil,password: nil)
     }
 }
 
 extension ViewEventScreenViewController:UITextViewDelegate{
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        self.validation.requiredValidation(textView: textView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address required.")
-        validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil,email: nil,password: nil)
+        ValidationManager.shared.requiredValidation(textView: textView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address required.")
+       ValidationManager.shared.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil,email: nil,password: nil)
         return true
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        self.validation.requiredValidation(textView: textView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address required.")
+        ValidationManager.shared.requiredValidation(textView: textView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address required.")
     }
     
 }

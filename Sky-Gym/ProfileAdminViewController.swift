@@ -91,52 +91,67 @@ class ProfileAdminViewController: UIViewController {
     @IBOutlet weak var weekDaysListView: UIView!
     @IBOutlet weak var weekDaysListTable: UITableView!
     
-    var imagePicker = UIImagePickerController()
+    
+    private lazy var imagePicker:UIImagePickerController = {
+        return UIImagePickerController()
+    }()
+    
+    private lazy var datePicker:UIDatePicker = {
+        return UIDatePicker()
+    }()
+    
+    private lazy var timePicker :UIDatePicker = {
+        return UIDatePicker()
+    }()
+    
+    private lazy var genderPickerView:UIPickerView = {
+        return UIPickerView()
+    }()
+
     var isProfileImgSelected:Bool = false
     var isEdit:Bool = false
-    var datePicker = UIDatePicker()
-    var timePicker = UIDatePicker()
-    let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+    var toolBar:UIToolbar? = nil
     var selectedDate:String = ""
     var selectedTime:String = ""
     var forNonEditLabelArray:[UILabel] = []
     var defaultLabelArray:[UILabel] = []
     var textFieldsArray:[UITextField] = []
     var errorLabelArray:[UILabel] = []
-    let validation = ValidationManager.shared
-    var actualPassword:UILabel = UILabel()
+    var actualPassword:UILabel? = nil
     var duplicateError:String = ""
-    var weekdayArray:[String] = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+    var weekdayArray:[String] = []
     var imageName = ""
     var selectedWeekdaysArray:[Int] = []
     var isAlreadyExistsEmail:Bool = false
     var adminEmail:String = ""
-    let genderPickerView = UIPickerView()
-    let genderArray = ["Male","Female","Other"]
-    
+    var genderArray:[String] = []
+
     override func viewDidLoad() {
-        super.viewDidLoad()
+      //  self.imagePicker = UIImagePickerController()
+        SVProgressHUD.show()
+        self.toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
+        self.weekdayArray = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+        self.genderArray = ["Male","Female","Other"]
+        self.actualPassword = UILabel()
+        self.addClickToDismissGymWeekDaysList()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.addClickToDismissGymWeekDaysList()
-        if AppManager.shared.loggedInRole == LoggedInRole.Admin {
-            self.fetchAdminDetailBy(id: AppManager.shared.adminID)
-            self.setAdminProfileView()
-        }
+        self.setAdminProfileView()
+        self.fetchAdminDetailBy(id: AppManager.shared.adminID)
+        
     }
 
     @IBAction func updateBtnAction(_ sender: Any) {
         let adminID = AppManager.shared.adminID
         SVProgressHUD.show()
-        if self.validation.isAllFieldsRequiredValidated(textFieldArray: self.textFieldsArray, phoneNumberTextField: self.phoneNoTextField) == true && self.validation.isEmailValid(email: self.emailTextField.text!) == true && self.validation.isPasswordValid(password: self.passwordTextField.text!) == true && self.isAlreadyExistsEmail == false {
+        if ValidationManager.shared.isAllFieldsRequiredValidated(textFieldArray: self.textFieldsArray, phoneNumberTextField: self.phoneNoTextField) == true && ValidationManager.shared.isEmailValid(email: self.emailTextField.text!) == true && ValidationManager.shared.isPasswordValid(password: self.passwordTextField.text!) == true && self.isAlreadyExistsEmail == false {
             if self.isProfileImgSelected == true {
                 FireStoreManager.shared.uploadUserImg(imgData: (self.adminProfileImg.image?.pngData())!, id: AppManager.shared.adminID, completion: {
                     err in
                     SVProgressHUD.dismiss()
                     if err != nil {
-                        self.showAdminProfileAlert(title: "Error", message: "Error in uploading the user profile image, Please try again.")
+                      //  self.showAdminProfileAlert(title: "Error", message: "Error in uploading the user profile image, Please try again.")
                     } else {
                         FireStoreManager.shared.updateAdminDetail(id: adminID,adminDetail: self.getAdminDetailForUpdate(), result: {
                             (err) in
@@ -170,21 +185,22 @@ class ProfileAdminViewController: UIViewController {
             self.updateBtn.isEnabled = false
             self.updateBtn.alpha = 0.4
         }
-        
+
     }
     
     @IBAction func gymDaysListBtnAction(_ sender: Any) {
         self.weekDaysListView.isHidden = !self.weekDaysListView.isHidden
         self.weekDaysListView.alpha = self.weekDaysListView.isHidden == true ? 0.0 : 1.0
-        
+
         if self.weekDaysListView.isHidden == true {
-            self.setGymDaysFieldData()
+          //  self.setGymDaysFieldData()
         }
     }
+    
 }
 
 extension ProfileAdminViewController {
- 
+
     func setAdminProfileView() {
         self.setAdminProfileNavigationBar()
         self.setTextFields()
@@ -198,14 +214,15 @@ extension ProfileAdminViewController {
         self.weekDaysListTable.isMultipleTouchEnabled = true
         self.genderPickerView.dataSource = self
         self.genderPickerView.delegate = self
+
         self.forNonEditLabelArray = [self.gymNameForNonEditLabel,self.gymIDForNonEditLabel,self.gymAddressForNonEditLabel,self.firstNameForNonEditLabel,self.lastNameForNonEditLabel,self.emailForNonEditLabel,self.phoneNoForNonEditLabel,self.dobForNonEditLabel,self.genderForNonEditLabel,self.passwordForNonEditLabel,self.openningTimeForNonEditLabel,self.closingTimeForNonEditLabel,self.gymDaysForNonEditLabel]
-        
+
         self.defaultLabelArray = [self.gymName,self.gymID,self.gymAddress,self.firstName,self.lastName,self.email,self.genderLabel,self.password,self.phoneNo,self.dob,self.openningTimeLabel,self.closingTimeLabel,self.gymDays]
-        
+
         self.textFieldsArray = [self.gymNameTextField,self.gymIDTextField,self.firstNameTextField,self.lastNameTextField,self.genderTextField,self.phoneNoTextField,self.dobTextField,self.openningTimeTextField,self.closingTimeTextField,self.gymDaysTextField]
-        
+
         self.errorLabelArray = [self.gymNameErrorLabel,self.gymIDErrorLabel,self.gymAddressErrorLabel,self.firstNameErrorLabel,self.lastNameErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.emailErrorLabel,self.phoneNoErrorLabel,self.dobErrorLabel,self.openningTimeErrorLabel,self.closingTimeErrorLabel,self.gymDaysErrorLabel]
-        
+
         self.adminProfileImg.makeRounded()
         AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
@@ -228,7 +245,7 @@ extension ProfileAdminViewController {
         self.view.isUserInteractionEnabled = true
         self.view.addGestureRecognizer(tapRecognizer)
     }
-    
+
     @objc func dismissGymWeekDaysList(_ gesture : UITapGestureRecognizer) {
         self.view.endEditing(true)
         self.weekDaysListView.isHidden = true
@@ -244,7 +261,7 @@ extension ProfileAdminViewController {
         self.adminProfileNavigationBar.editBtn.alpha = 1.0
         self.adminProfileNavigationBar.editBtn.addTarget(self, action: #selector(editAdmin), for: .touchUpInside)
     }
-    
+
     func setGymDaysFieldData() {
         let selectedWeekdayArray = AppManager.shared.getSelectedWeekdays(selectedArray: self.selectedWeekdaysArray.sorted(), defaultArray: self.weekdayArray)
         var str:String = ""
@@ -257,7 +274,7 @@ extension ProfileAdminViewController {
         }
         self.gymDaysTextField.text = str
     }
-    
+
     @objc func editAdmin() {
         if self.isEdit == true {
             AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  false)
@@ -279,13 +296,13 @@ extension ProfileAdminViewController {
                 self.gymIDTextField.layer.opacity = 0.4
                 self.addressTextView.isHidden = false
                 self.addressTextView.alpha = 1.0
-            AppManager.shared.hidePasswordTextField(hide: false,passwordTextField:self.passwordTextField,passwordLabel: self.passworNonEditLabel)
+                AppManager.shared.hidePasswordTextField(hide: false,passwordTextField:self.passwordTextField,passwordLabel: self.passworNonEditLabel)
                 self.gymAddressNonEditLabel.isHidden = true
                 self.updateBtn.isHidden = false
                 self.updateBtn.isEnabled = true
                 self.gymIDTextField.isEnabled = false
                 self.adminProfileImg.isUserInteractionEnabled = true
-                self.passwordTextField.text = self.actualPassword.text
+            self.passwordTextField.text = self.actualPassword?.text
         }
          }
 
@@ -311,7 +328,7 @@ extension ProfileAdminViewController {
                       $0?.alpha = alpha
                   }
               }
-    
+
     func setTextFields() {
         [self.gymNameTextField,self.gymIDTextField,self.firstNameTextField,self.lastNameTextField,self.genderTextField,self.dobTextField,self.phoneNoTextField,self.passwordTextField,self.emailTextField,self.gymDaysTextField,self.openningTimeTextField,self.closingTimeTextField].forEach{
             self.addPaddingToTextField(textField: $0!)
@@ -326,7 +343,7 @@ extension ProfileAdminViewController {
         self.weekDaysListView.layer.cornerRadius = 12.0
         self.weekDaysListView.layer.borderColor = UIColor.gray.cgColor
         self.weekDaysListView.layer.borderWidth = 0.7
-        
+
         self.updateBtn.layer.cornerRadius = 12.0
         self.updateBtn.layer.borderColor = UIColor.black.cgColor
         self.updateBtn.layer.borderWidth = 0.7
@@ -338,18 +355,18 @@ extension ProfileAdminViewController {
         self.addressTextView.clipsToBounds = true
         self.datePicker.datePickerMode = .date
         self.timePicker.datePickerMode = .time
-        toolBar.barStyle = .default
+        toolBar?.barStyle = .default
         let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
-        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
-        toolBar.sizeToFit()
+        toolBar?.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar?.sizeToFit()
     }
-    
+
     @objc func cancelTextField()  {
              self.view.endEditing(true)
          }
-      
+
     @objc func doneTextField()  {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "h:mm a"
@@ -362,33 +379,33 @@ extension ProfileAdminViewController {
     @objc func checkProfileValidation(_ textField:UITextField) {
         self.allProfileFieldsRequiredValidation(textField: textField)
       //  self.updateProfileBtnEnabler(textFieldArray: self.textFieldsArray)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
     }
-    
+
     func allProfileFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {
         case 1:
-            validation.requiredValidation(textField: textField, errorLabel: self.gymNameErrorLabel, errorMessage: "Gym name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.gymNameErrorLabel, errorMessage: "Gym name required.")
         case 3:
-            validation.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
         case 4:
-            validation.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last Name required." )
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last Name required." )
         case 5:
-            validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Gender required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Gender required.")
         case 6:
-            validation.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 character.")
+            ValidationManager.shared.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 character.")
         case 7:
-            validation.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid Email.")
+           ValidationManager.shared.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid Email.")
         case 8:
-            validation.phoneNumberValidation(textField: textField, errorLabel: self.phoneNoErrorLabel, errorMessage: "Phone number must be 10 digits only.")
+           ValidationManager.shared.phoneNumberValidation(textField: textField, errorLabel: self.phoneNoErrorLabel, errorMessage: "Phone number must be 10 digits only.")
         case 9:
-            validation.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required." )
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required." )
         case 10:
-            validation.requiredValidation(textField: textField, errorLabel: self.openningTimeErrorLabel, errorMessage: "Gym open time required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.openningTimeErrorLabel, errorMessage: "Gym open time required.")
         case 11:
-            validation.requiredValidation(textField: textField, errorLabel: self.closingTimeErrorLabel, errorMessage: self.duplicateError.count > 1 ? duplicateError : "Gym close time required.")
+           ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.closingTimeErrorLabel, errorMessage: self.duplicateError.count > 1 ? duplicateError : "Gym close time required.")
         case 12:
-            validation.requiredValidation(textField: textField, errorLabel: self.gymDaysErrorLabel, errorMessage:  "Gym days required.")
+           ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.gymDaysErrorLabel, errorMessage:  "Gym days required.")
         default:
             break
         }
@@ -400,22 +417,17 @@ extension ProfileAdminViewController {
                 textField.backgroundColor = UIColor.white
                 textField.textColor = UIColor.black
             }
-    
+
     func fetchAdminDetailBy(id:String) {
-        SVProgressHUD.show()
-        
         FireStoreManager.shared.getAdminDetailBy(id: AppManager.shared.adminID, result: {
             (data,err) in
-           
+
             if err != nil {
                 print("Error in fetching the admin details.")
             }else{
                 let adminDetail = data?["adminDetail"] as! Dictionary<String,Any>
-                DispatchQueue.main.async {
-                    self.fillAdminDetail(adminDetail: AppManager.shared.getAdminProfile(adminDetails: adminDetail ))
-                }
-               
-
+                let adminDetails = AppManager.shared.getAdminProfile(adminDetails: adminDetail)
+                self.fillAdminDetail(adminDetail: adminDetails)
                 FireStoreManager.shared.downloadUserImg(id: AppManager.shared.adminID, result: {
                     (url,err) in
                      SVProgressHUD.dismiss()
@@ -433,16 +445,21 @@ extension ProfileAdminViewController {
             }
         })
     }
-    
+
     func fillAdminDetail(adminDetail:AdminProfile) {
+        DispatchQueue.main.async {
+             self.actualPassword?.text = ValidationManager.shared.decryption(hash: adminDetail.password)
+            self.passworNonEditLabel.text = AppManager.shared.getSecureTextFor(text: (self.actualPassword?.text ?? ""))
+            self.passwordTextField.text = self.actualPassword?.text
+        }
+        
         self.gymNameNonEditLabel.text = adminDetail.gymName
         self.gymIDNonEditLabel.text = adminDetail.gymID
         self.gymAddressNonEditLabel.text = adminDetail.gymAddress
         self.firstNameNonEditLabel.text = adminDetail.firstName
         self.lastNameNonEditLabel.text = adminDetail.lastName
         self.genderNonEditLabel.text = adminDetail.gender
-        self.actualPassword.text = adminDetail.password
-        self.passworNonEditLabel.text = AppManager.shared.getSecureTextFor(text: adminDetail.password)
+        
         self.emailNonEditLabel.text = adminDetail.email
         self.phoneNoNonEditLabel.text = adminDetail.phoneNO
         self.dobNonEditLabel.text = adminDetail.dob
@@ -450,14 +467,14 @@ extension ProfileAdminViewController {
         self.closingTimeNonEditLabel.text = adminDetail.gymClosingTime
         self.gymDaysNonEditLabel.text = adminDetail.gymDays
         self.adminEmail = adminDetail.email
-        
+
         self.gymNameTextField.text = adminDetail.gymName
         self.gymIDTextField.text = adminDetail.gymID
         self.addressTextView.text = adminDetail.gymAddress
         self.firstNameTextField.text = adminDetail.firstName
         self.lastNameTextField.text = adminDetail.lastName
         self.genderTextField.text = adminDetail.gender
-        self.passwordTextField.text = adminDetail.password
+       
         self.emailTextField.text = adminDetail.email
         self.phoneNoTextField.text = adminDetail.phoneNO
         self.dobTextField.text = adminDetail.dob
@@ -467,7 +484,7 @@ extension ProfileAdminViewController {
         self.selectedWeekdaysArray = adminDetail.gymDyasArrayIndexs
         self.weekDaysListTable.reloadData()
     }
-    
+
     func getAdminDetailForUpdate() -> Dictionary<String,Any> {
         let admin:Dictionary<String,Any> = [
             "dob":self.dobTextField.text!,
@@ -487,7 +504,7 @@ extension ProfileAdminViewController {
         ]
         return admin
     }
-    
+
     func showAdminProfileAlert(title:String,message:String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAlertAction = UIAlertAction(title: "Ok", style: .default, handler:{
@@ -499,25 +516,25 @@ extension ProfileAdminViewController {
          alertController.addAction(okAlertAction)
         present(alertController, animated: true, completion: nil)
     }
-    
+
     @objc func showPicker(){
         self.isProfileImgSelected = true
         self.imagePicker.allowsEditing = true
         self.imagePicker.sourceType = .photoLibrary
-        self.imagePicker.modalPresentationStyle = .fullScreen
+        self.imagePicker.modalPresentationStyle = .overCurrentContext
         present(self.imagePicker, animated: true, completion: nil)
     }
 }
 
 extension ProfileAdminViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
+
         if let img:UIImage = info[.editedImage] as? UIImage{
             self.adminProfileImg.image = img
             dismiss(animated: true, completion: nil)
         }
     }
-    
+
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
@@ -530,7 +547,7 @@ extension ProfileAdminViewController : UITextFieldDelegate{
             return true
         }
     }
-    
+
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if self.weekDaysListView.isHidden == false && textField.tag != 12  {
             self.weekDaysListView.isHidden = true
@@ -540,7 +557,7 @@ extension ProfileAdminViewController : UITextFieldDelegate{
         case 5:
             textField.inputView = self.genderPickerView
             break
-            
+
         case 9:
             textField.inputView = self.datePicker
             textField.inputAccessoryView = self.toolBar
@@ -550,7 +567,7 @@ extension ProfileAdminViewController : UITextFieldDelegate{
                 self.datePicker.date = df.date(from: textField.text!)!
             }
             break
-            
+
         case 10  :
             textField.inputView = self.timePicker
             textField.inputAccessoryView = self.toolBar
@@ -569,21 +586,21 @@ extension ProfileAdminViewController : UITextFieldDelegate{
                 self.timePicker.date = df.date(from: textField.text!)!
             }
             break
-            
+
         default:
             break
         }
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
-        
+
         switch textField.tag {
         case 5 :
             if textField.text == "" {
                 textField.text = self.genderArray.first
             }
             break
-            
+
         case 7:
             let email = textField.text!
             if self.adminEmail != email {
@@ -604,37 +621,37 @@ extension ProfileAdminViewController : UITextFieldDelegate{
                                 self.updateBtn.isEnabled = false
                                 self.updateBtn.alpha = 0.4
                             }
-                            
+
                         case .failure(_):
                             break
                         }
                     }
-                    
+
                 }
             }else {
                 self.isAlreadyExistsEmail = false
-                
+
             }
             break
-            
+
         case 9:
             if self.selectedDate != "" {
                 textField.text = self.selectedDate
                 self.selectedDate = ""
             }
             break
-            
+
         case 10 :
             if  self.selectedTime.count > 1 {
                 textField.text = self.selectedTime
                 self.selectedTime = ""
             }
             break
-            
+
         case 11:
 
             if self.selectedTime.count > 1 {
-                if validation.isDuplicate(text1: self.openningTimeTextField.text!, text2: self.selectedTime) == false{
+                if ValidationManager.shared.isDuplicate(text1: self.openningTimeTextField.text!, text2: self.selectedTime) == false{
                     self.closingTimeTextField.text = self.selectedTime
                     self.selectedTime = ""
                 } else {
@@ -642,26 +659,24 @@ extension ProfileAdminViewController : UITextFieldDelegate{
                     duplicateError = "Start time and end time can not be same."
                     self.selectedTime = ""
                 }
-                
-
             }
             break
-            
+
         default:
             break
         }
-        
+
         self.allProfileFieldsRequiredValidation(textField: textField)
-        validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
     }
     }
     
 
-extension ProfileAdminViewController:UITableViewDataSource{
+ extension ProfileAdminViewController:UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
        return  self.weekdayArray.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "weekDaysCell", for: indexPath) as! WeekDayTableCell
         cell.weekDayLabel.text = self.weekdayArray[indexPath.row]
@@ -674,12 +689,12 @@ extension ProfileAdminViewController:UITableViewDataSource{
         cell.checkBtn.setImage(UIImage(named: self.imageName), for: .normal)
         return cell
     }
-}
+ }
 
 extension ProfileAdminViewController : UITableViewDelegate{
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+
         if self.selectedWeekdaysArray.contains(indexPath.row){
             self.selectedWeekdaysArray.remove(at: self.selectedWeekdaysArray.firstIndex(of: indexPath.row)!)
         }else{
@@ -689,7 +704,6 @@ extension ProfileAdminViewController : UITableViewDelegate{
         self.weekDaysListTable.reloadData()
     }
 }
-
 
 extension ProfileAdminViewController :UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
@@ -703,21 +717,18 @@ extension ProfileAdminViewController :UIGestureRecognizerDelegate {
     }
 }
 
-
 extension ProfileAdminViewController : UIPickerViewDataSource{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    
+
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return self.genderArray.count
     }
-    
+
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return self.genderArray[row]
     }
-    
-    
 }
 
 extension ProfileAdminViewController:UIPickerViewDelegate{
@@ -725,10 +736,11 @@ extension ProfileAdminViewController:UIPickerViewDelegate{
         self.genderTextField.text = self.genderArray[row]
         DispatchQueue.main.async {
             self.allProfileFieldsRequiredValidation(textField: self.genderTextField)
-            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+            ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
         }
     }
 }
+
 class WeekDayTableCell: UITableViewCell {
     @IBOutlet weak var checkBtn: UIButton!
     @IBOutlet weak var weekDayLabel: UILabel!

@@ -28,7 +28,7 @@ class PurchaseViewController: BaseViewController {
     
     var purchaseArray:[PurchaseMembershipPlan] = []
     var todayDate:Date = Date()
-    var memberDetail:MemberDetailStructure? = nil
+    var memberDetail:MemberFullNameAndPhone? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,6 +57,13 @@ extension PurchaseViewController {
        tableCellView.layer.borderWidth = 1.0
        tableCellView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
         tableCellView.clipsToBounds = true
+        tableCellView.isUserInteractionEnabled = true
+        tableCellView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(moveToMembershipDetail(_:))))
+    }
+    
+    @objc func moveToMembershipDetail(_ gesture:UITapGestureRecognizer){
+        let singleMembership = self.purchaseArray[gesture.view!.tag]
+        performSegue(withIdentifier: "membershipDetailSegue", sender: singleMembership.membershipID)
     }
     
     func getMembershipPlans(id:String)  {
@@ -69,7 +76,7 @@ extension PurchaseViewController {
                 self.retryMembershipPlansAlert()
             } else {
                 SVProgressHUD.dismiss()
-                self.memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String,String>)
+                self.memberDetail = AppManager.shared.getMemberNameAndPhone(memberDetail: docSnapshot?["memberDetail"] as! Dictionary<String,String>)
                 let memberships = docSnapshot?["memberships"] as! Array<Dictionary<String,String>>
                 if memberships.count > 0 {
                     self.noPurchaseHistoryLabel.isHidden = true
@@ -110,7 +117,7 @@ extension PurchaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "membershipDetailSegue" {
             let destinationVC = segue.destination as! CurrentMembershipDetailViewController
-            destinationVC.memberDetail = self.memberDetail
+           destinationVC.memberDetail = self.memberDetail
             destinationVC.purchasedMembershipID = sender as! String
         }
     }
@@ -126,6 +133,7 @@ extension PurchaseViewController :UITableViewDataSource {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "purchaseCell") as! PuchaseTableViewCell
         let singleMembership = self.purchaseArray[indexPath.row]
+        cell.purchaseTableCellView.tag = indexPath.row
         self.setTableCellView(tableCellView: cell.purchaseTableCellView)
         cell.activePurchaseLabel.layer.cornerRadius = 10.0
         let endDate = AppManager.shared.getDate(date:singleMembership.expireDate)
@@ -155,8 +163,8 @@ extension PurchaseViewController :UITableViewDataSource {
 
 
 extension PurchaseViewController : UITableViewDelegate{
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-         let singleMembership = self.purchaseArray[indexPath.row]
-        performSegue(withIdentifier: "membershipDetailSegue", sender: singleMembership.membershipID)
-    }
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//         let singleMembership = self.purchaseArray[indexPath.row]
+//        performSegue(withIdentifier: "membershipDetailSegue", sender: singleMembership.membershipID)
+//    }
 }

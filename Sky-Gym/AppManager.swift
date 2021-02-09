@@ -246,6 +246,12 @@ class AppManager: NSObject {
           return member
       }
     
+    func getMemberNameAndPhone(memberDetail:Dictionary<String,String>) -> MemberFullNameAndPhone {
+        let fullName = "\(memberDetail["firstName"] ?? "" ) \(memberDetail["lastName"] ?? "")"
+        let member = MemberFullNameAndPhone(memberID: memberDetail["memberID"] ?? "", userName: fullName , phoneNo: memberDetail["phoneNo"] ?? "" )
+        return member
+    }
+    
     func getListOfMembersDetailStr(memberDetail:Dictionary<String,String>,membershipArray:Array<Dictionary<String,String>>) -> ListOfMemberStr {
         let userName = "\(memberDetail["firstName"] ?? "") \(memberDetail["lastName"] ?? "")"
         var membership:MembershipDetailStructure? = nil
@@ -363,9 +369,7 @@ class AppManager: NSObject {
     }
 
     func getAdminProfile(adminDetails:[String:Any]) -> AdminProfile {
-        let decryptedPassword = AppManager.shared.decryption(cipherText: adminDetails["password"] as! String)
-        
-        let adminProfile = AdminProfile(gymName: adminDetails["gymName"] as! String, gymID: adminDetails["gymID"] as! String, gymAddress: adminDetails["gymAddress"] as! String, firstName: adminDetails["firstName"] as! String, lastName: adminDetails["lastName"] as! String, gender: adminDetails["gender"] as! String, password:decryptedPassword, email: adminDetails["email"] as! String, phoneNO: adminDetails["mobileNo"] as! String, dob: adminDetails["dob"] as! String,gymOpenningTime: adminDetails["gymOpenningTime"] as! String,gymClosingTime: adminDetails["gymClosingTime"] as! String,gymDays: adminDetails["gymDays"] as! String, gymDyasArrayIndexs: adminDetails["gymDaysArrayIndexs"] as! [Int])
+    let adminProfile = AdminProfile(gymName: adminDetails["gymName"] as! String, gymID: adminDetails["gymID"] as! String, gymAddress: adminDetails["gymAddress"] as! String, firstName: adminDetails["firstName"] as! String, lastName: adminDetails["lastName"] as! String, gender: adminDetails["gender"] as! String, password:adminDetails["password"] as! String, email: adminDetails["email"] as! String, phoneNO: adminDetails["mobileNo"] as! String, dob: adminDetails["dob"] as! String,gymOpenningTime: adminDetails["gymOpenningTime"] as! String,gymClosingTime: adminDetails["gymClosingTime"] as! String,gymDays: adminDetails["gymDays"] as! String, gymDyasArrayIndexs: adminDetails["gymDaysArrayIndexs"] as! [Int])
         
         return adminProfile
     }
