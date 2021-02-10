@@ -82,15 +82,25 @@ class AddMemberViewController: BaseViewController {
     @IBOutlet weak var personalTypeLabel: UILabel!
     @IBOutlet weak var trainerListView: UIView!
     @IBOutlet weak var trainerListTable: UITableView!
+    
 
-    let imagePicker = UIImagePickerController()
+    private lazy var imagePicker:UIImagePickerController = {
+        return UIImagePickerController()
+    }()
+    
+    private lazy var datePicker:UIDatePicker = {
+        return UIDatePicker()
+    }()
+    
+    private lazy var genderPickerView:UIPickerView = {
+        return UIPickerView()
+    }()
+    
     var imgUrl:URL? = nil
     var isNewMember:Bool = false
     var visitorID:String = ""
     var memberhsipPlanArray:[Memberhisp] = []
-    var datePicker = UIDatePicker()
-    let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
-    let borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0).cgColor
+    var toolBar:UIToolbar? = nil
     var selectedDate:Date? = nil
     var membershipDuration:Int = 0
     var isRenewMembership:Bool = false
@@ -98,7 +108,6 @@ class AddMemberViewController: BaseViewController {
     var renewingMembershipID:String = ""
     var renewingMembershipDuration:String = ""
     var visitorProfileImgData:Data? = nil
-    let validation = ValidationManager.shared
     var errorLabelArray:[UILabel] = []
     var memberProfileFieldArray :[UITextField] = []
     var completeMemberProfileFieldArray :[UITextField] = []
@@ -110,28 +119,19 @@ class AddMemberViewController: BaseViewController {
     var listOfTrainers:[TrainerDataStructure] = []
     var trainerID:String = ""
     var isAlreadyExistsEmail:Bool = false
-    let genderPickerView = UIPickerView()
     let genderArray  = ["Male","Female","Other"]
     var visitorEmail:String = ""
     var visitorProfileImageExists = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.addClickToDismissMembershipList()
         self.setCompleteView()
-        
-        self.myScrollView.shouldIgnoreScrollingAdjustment = true
-        if #available(iOS 13.0, *) {
-            self.myScrollView.automaticallyAdjustsScrollIndicatorInsets = false
-        } else {
-            // Fallback on earlier versions
-        }
-        self.myScrollView.contentInsetAdjustmentBehavior = .never
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        addClickToDismissMembershipList()
-        self.memberIDTextField.text = "\(Int.random(in: 1..<100000))" 
+        self.memberIDTextField.text = "\(Int.random(in: 1..<100000))"
         self.memberIDTextField.isEnabled = false
         self.memberIDTextField.alpha = 0.4
         self.endDateTextField.isEnabled = false
@@ -199,9 +199,8 @@ class AddMemberViewController: BaseViewController {
     }
     
     @IBAction func updateBtnAction(_ sender: Any) {
-
         self.membershipValidation()
-        if self.validation.isMembershipFieldsValidated(textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView) == true {
+        if ValidationManager.shared.isMembershipFieldsValidated(textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView) == true {
             SVProgressHUD.show()
             if self.isNewMember == true {
                 if self.visitorID != "" {
@@ -260,10 +259,7 @@ class AddMemberViewController: BaseViewController {
         self.membershipDetailTextView.isEditable = false
         self.membershipDetailTextView.alpha = 0.4
     }
-}
 
-extension AddMemberViewController{
-    
     func fetchTrainersByCategory(category:TrainerType) {
         DispatchQueue.global(qos: .background).async {
             let result = FireStoreManager.shared.getTrainerByCategory(category: category)
@@ -279,16 +275,15 @@ extension AddMemberViewController{
                 }
             }
         }
-       
     }
     
     func memberValidation() {
         for textField in self.completeMemberProfileFieldArray {
             self.allNewMemberFieldsRequiredValidation(textField: textField)
         }
-        self.validation.requiredValidation(textView: self.addressTextView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
+        ValidationManager.shared.requiredValidation(textView: self.addressTextView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
         
-        if self.validation.isMemberProfileValidated(textFieldArray: self.completeMemberProfileFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) ==  true {
+        if ValidationManager.shared.isMemberProfileValidated(textFieldArray: self.completeMemberProfileFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!) ==  true {
             self.showMembershipScreen()
         }
     }
@@ -297,59 +292,59 @@ extension AddMemberViewController{
         for textField in self.membershipFieldArray  {
             self.allNewMemberFieldsRequiredValidation(textField: textField)
         }
-        self.validation.requiredValidation(textView: self.membershipDetailTextView, errorLabel: self.membershipDetailErrorLabel, errorMessage: "Membership Detail required.")
+        ValidationManager.shared.requiredValidation(textView: self.membershipDetailTextView, errorLabel: self.membershipDetailErrorLabel, errorMessage: "Membership Detail required.")
     }
     
     
     func allNewMemberFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {
         case 1:
-            validation.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
         case 2:
-            validation.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last Name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last Name required.")
         case 3:
-            validation.requiredValidation(textField: textField, errorLabel: self.memberIDErrorLabel, errorMessage: "Member ID required." )
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.memberIDErrorLabel, errorMessage: "Member ID required." )
         case 4:
-            validation.requiredValidation(textField: textField, errorLabel: self.dateOfJoinErrorLabel, errorMessage: "Date of join required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dateOfJoinErrorLabel, errorMessage: "Date of join required.")
         case 5:
-            validation.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Member's gender required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Member's gender required.")
         case 6:
-            validation.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 character.")
+            ValidationManager.shared.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 character.")
         case 7:
-            validation.requiredValidation(textField: textField, errorLabel: self.trainerNameErrorLabel, errorMessage: "Trainer's name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.trainerNameErrorLabel, errorMessage: "Trainer's name required.")
         case 8:
-                validation.requiredValidation(textField: textField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required." )
+                ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required." )
         case 9:
-            validation.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid Email.")
+            ValidationManager.shared.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid Email.")
         case 10:
-                validation.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
+                ValidationManager.shared.phoneNumberValidation(textField: textField, errorLabel: self.phoneNumberErrorLabel, errorMessage: "Phone number must be 10 digits only.")
             
         case 11:
-            validation.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required.")
             
         case 12:
-            validation.requiredValidation(textField: textField, errorLabel: self.membershipPlanErrorLabel, errorMessage: "Please select membership plan.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.membershipPlanErrorLabel, errorMessage: "Please select membership plan.")
             
         case 13:
-            validation.requiredValidation(textField: textField, errorLabel: self.amountErrorLabel, errorMessage: "Membership amount required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.amountErrorLabel, errorMessage: "Membership amount required.")
             
         case 14:
-            validation.requiredValidation(textField: textField, errorLabel: self.startDateErrorLabel, errorMessage: "Start date require." )
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.startDateErrorLabel, errorMessage: "Start date require." )
             
         case 15:
-                validation.requiredValidation(textField: textField, errorLabel: self.endDateErrorLabel, errorMessage: "End date require." )
+                ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.endDateErrorLabel, errorMessage: "End date require." )
             
         case 16:
-            validation.requiredValidation(textField: textField, errorLabel: self.totalAmountErrorLabel, errorMessage: "Enter Paying amount." )
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.totalAmountErrorLabel, errorMessage: "Enter Paying amount." )
             
         case 17:
-            validation.requiredValidation(textField: textField, errorLabel: self.discountErrorLabel, errorMessage: "Enter discount amount or 0." )
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.discountErrorLabel, errorMessage: "Enter discount amount or 0." )
             
         case 18:
-            validation.requiredValidation(textField: textField, errorLabel: self.paymentErrorLabel, errorMessage: "Payment type required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.paymentErrorLabel, errorMessage: "Payment type required.")
             
         case 19:
-            validation.requiredValidation(textField: textField, errorLabel: self.dueAmountErrorLabel, errorMessage: "Enter due amount or 0." )
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dueAmountErrorLabel, errorMessage: "Enter due amount or 0." )
 
         default:
             break
@@ -439,9 +434,9 @@ extension AddMemberViewController{
     @objc func errorValidator(_ textField:UITextField) {
         self.allNewMemberFieldsRequiredValidation(textField: textField)
         if self.isNewMember == true {
-            self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+            ValidationManager.shared.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
         } else {
-            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
+            ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
         }
     }
     
@@ -725,6 +720,7 @@ extension AddMemberViewController{
     }
 
     func setCompleteView() {
+        self.toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
         self.setNavigationBar()
         self.addTopAndBottomBorders(toView: profileAndMembershipBarView)
         self.addRightView(toTextField: self.uploadIDTextField, imageName: "cam.png")
@@ -768,12 +764,12 @@ extension AddMemberViewController{
         
         self.datePicker.datePickerMode = .date
         self.datePicker.date = Date()
-        toolBar.barStyle = .default
+        toolBar?.barStyle = .default
         let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
-        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
-        toolBar.sizeToFit()
+        toolBar?.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar?.sizeToFit()
         
         self.genderPickerView.delegate = self
         self.genderPickerView.dataSource = self
@@ -934,11 +930,11 @@ extension AddMemberViewController: UIImagePickerControllerDelegate,UINavigationC
             self.uploadIDTextField.text = imgaeName
             picker.dismiss(animated: true, completion: nil)
         }
-        self.validation.requiredValidation(textField: self.uploadIDTextField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required.")
+        ValidationManager.shared.requiredValidation(textField: self.uploadIDTextField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required.")
     }
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
-        self.validation.requiredValidation(textField: self.uploadIDTextField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required.")
+       ValidationManager.shared.requiredValidation(textField: self.uploadIDTextField, errorLabel: self.uploadIDErrorLabel, errorMessage: "Upload ID required.")
     }
 }
 
@@ -987,113 +983,110 @@ extension AddMemberViewController:UITextFieldDelegate{
     func textFieldDidEndEditing(_ textField: UITextField) {
         if self.selectedDate != nil  {
             switch textField.tag {
-                              case 4:
-                                self.dateOfJoiningTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
-                              case 11:
-                                self.dobTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
-                              case 14:
-                                if self.isRenewMembership == true {
-                                    self.membershipDuration = Int(self.renewingMembershipDuration)!
-                                }
-                                self.startDateTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
-                                let endDate = AppManager.shared.getMembershipEndDate(startDate:self.selectedDate!, duration: self.membershipDuration)
-                                let endDateFormatted = AppManager.shared.dateWithMonthName(date: endDate)
-                                self.endDateTextField.text =  endDateFormatted
-                                self.validation.requiredValidation(textField: self.endDateTextField, errorLabel: self.endDateErrorLabel, errorMessage: "End Date require.")
-
-                              default:
-                                  break
-                              }
-        }
-        
-        if textField.tag == 16 {
-            let referenceAmount = self.previousDueAmount > 0  ? self.previousDueAmount : Int(self.amountTextField.text!) ?? 0
-            var referenceText = self.previousDueAmount > 0 ? "Amount is greater than due amount." :  "Amount is greater than membership amount."
-            let calculatedTotalAmount = self.getTotalAmount()
-            let amountInTotalTextField = Int(self.totalAmountTextField.text!) ?? 0
-            
-            if amountInTotalTextField <= referenceAmount && amountInTotalTextField <= calculatedTotalAmount  {
-                self.dueAmountTextField.text = "\(self.getDueAmount())"
-               self.totalAmountErrorLabel.text = ""
-               textField.borderStyle = .none
-               textField.layer.borderColor = UIColor.clear.cgColor
-               textField.layer.borderWidth = 0.0
-               self.updateBtn.isEnabled = true
-               self.updateBtn.alpha = 1.0
-            } else {
-                DispatchQueue.main.async {
-                    referenceText = amountInTotalTextField >= calculatedTotalAmount ? "Amount is larger than actual payable amount." : referenceText
-                    self.totalAmountErrorLabel.text = "\(referenceText)"
-                    self.dueAmountTextField.text = "\(self.previousDueAmount)"
-                    textField.layer.borderColor = UIColor.red.cgColor
-                    textField.layer.borderWidth = 1.0
-                    self.updateBtn.isEnabled = false
-                    self.updateBtn.alpha = 0.4
+            case 4:
+                self.dateOfJoiningTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
+                
+            case 5 :
+                if textField.text == "" {
+                    textField.text = self.genderArray.first
                 }
-            }
-        }
-        
-        if textField.tag == 17 {
-            let discoutAmount = self.getDiscountAmount()
-            if self.previousDiscount != discoutAmount || self.previousDueAmount == 0 {
-                let membershipAmount = Int(self.amountTextField.text!) ?? 0
-                self.totalAmountTextField.text = "\(membershipAmount - discoutAmount)"
-                self.dueAmountTextField.text = "0"
-            }
-        }
-        
-        if textField.tag == 5 {
-            if textField.text == "" {
-                 textField.text = self.genderArray.first
+                
+            case 9:
+                let email = textField.text!
+                if self.visitorID == "" || self.visitorEmail != email {
+                    DispatchQueue.global(qos: .background).async {
+                        let result = FireStoreManager.shared.isUserExists(email: email)
+                        
+                        DispatchQueue.main.async {
+                            switch result {
+                            case let .success(flag):
+                                if flag == false {
+                                    self.isAlreadyExistsEmail = false
+                                    self.nextBtn.isEnabled = true
+                                    self.nextBtn.alpha = 1.0
+                                    self.profileAndMembershipBarView.isUserInteractionEnabled = true
+                                    self.profileAndMembershipBarView.alpha = 1.0
+                                }else {
+                                    textField.layer.borderColor = UIColor.red.cgColor
+                                    textField.layer.borderWidth = 1.0
+                                    self.emailErrorLabel.text = "Email already exists."
+                                    self.isAlreadyExistsEmail = true
+                                    self.nextBtn.isEnabled = false
+                                    self.nextBtn.alpha = 0.4
+                                    self.profileAndMembershipBarView.isUserInteractionEnabled = false
+                                    self.profileAndMembershipBarView.alpha = 0.4
+                                }
+                            case .failure(_):
+                                break
+                            }
+                        }
+                    }
+                }else {
+                    self.isAlreadyExistsEmail = false
+                    self.nextBtn.isEnabled = true
+                    self.nextBtn.alpha = 1.0
+                    self.profileAndMembershipBarView.isUserInteractionEnabled = true
+                    self.profileAndMembershipBarView.alpha = 1.0
+                }
+                
+            case 11:
+                self.dobTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
+                
+            case 14:
+                if self.isRenewMembership == true {
+                    self.membershipDuration = Int(self.renewingMembershipDuration)!
+                }
+                self.startDateTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
+                let endDate = AppManager.shared.getMembershipEndDate(startDate:self.selectedDate!, duration: self.membershipDuration)
+                let endDateFormatted = AppManager.shared.dateWithMonthName(date: endDate)
+                self.endDateTextField.text =  endDateFormatted
+                ValidationManager.shared.requiredValidation(textField: self.endDateTextField, errorLabel: self.endDateErrorLabel, errorMessage: "End Date require.")
+                
+            case 16:
+                let referenceAmount = self.previousDueAmount > 0  ? self.previousDueAmount : Int(self.amountTextField.text!) ?? 0
+                var referenceText = self.previousDueAmount > 0 ? "Amount is greater than due amount." :  "Amount is greater than membership amount."
+                let calculatedTotalAmount = self.getTotalAmount()
+                let amountInTotalTextField = Int(self.totalAmountTextField.text!) ?? 0
+                
+                if amountInTotalTextField <= referenceAmount && amountInTotalTextField <= calculatedTotalAmount  {
+                    self.dueAmountTextField.text = "\(self.getDueAmount())"
+                    self.totalAmountErrorLabel.text = ""
+                    textField.borderStyle = .none
+                    textField.layer.borderColor = UIColor.clear.cgColor
+                    textField.layer.borderWidth = 0.0
+                    self.updateBtn.isEnabled = true
+                    self.updateBtn.alpha = 1.0
+                } else {
+                    DispatchQueue.main.async {
+                        referenceText = amountInTotalTextField >= calculatedTotalAmount ? "Amount is larger than actual payable amount." : referenceText
+                        self.totalAmountErrorLabel.text = "\(referenceText)"
+                        self.dueAmountTextField.text = "\(self.previousDueAmount)"
+                        textField.layer.borderColor = UIColor.red.cgColor
+                        textField.layer.borderWidth = 1.0
+                        self.updateBtn.isEnabled = false
+                        self.updateBtn.alpha = 0.4
+                    }
+                }
+                
+            case 17:
+                let discoutAmount = self.getDiscountAmount()
+                if self.previousDiscount != discoutAmount || self.previousDueAmount == 0 {
+                    let membershipAmount = Int(self.amountTextField.text!) ?? 0
+                    self.totalAmountTextField.text = "\(membershipAmount - discoutAmount)"
+                    self.dueAmountTextField.text = "0"
+                }
+                
+            default:
+                break
             }
         }
         
         self.allNewMemberFieldsRequiredValidation(textField: textField)
         if self.isNewMember == true {
-            self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+            ValidationManager.shared.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
         } else {
-            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
+            ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
         }
-        
-        if textField.tag == 9 {
-            let email = textField.text!
-            if self.visitorID == "" || self.visitorEmail != email {
-                DispatchQueue.global(qos: .background).async {
-                    let result = FireStoreManager.shared.isUserExists(email: email)
-                    
-                    DispatchQueue.main.async {
-                        switch result {
-                        case let .success(flag):
-                            if flag == false {
-                                self.isAlreadyExistsEmail = false
-                                self.nextBtn.isEnabled = true
-                                self.nextBtn.alpha = 1.0
-                                self.profileAndMembershipBarView.isUserInteractionEnabled = true
-                                self.profileAndMembershipBarView.alpha = 1.0
-                            }else {
-                                textField.layer.borderColor = UIColor.red.cgColor
-                                textField.layer.borderWidth = 1.0
-                                self.emailErrorLabel.text = "Email already exists."
-                                self.isAlreadyExistsEmail = true
-                                self.nextBtn.isEnabled = false
-                                self.nextBtn.alpha = 0.4
-                                self.profileAndMembershipBarView.isUserInteractionEnabled = false
-                                self.profileAndMembershipBarView.alpha = 0.4
-                            }
-                        case .failure(_):
-                            break
-                        }
-                    }
-                }
-            }else {
-                self.isAlreadyExistsEmail = false
-                self.nextBtn.isEnabled = true
-                self.nextBtn.alpha = 1.0
-                self.profileAndMembershipBarView.isUserInteractionEnabled = true
-                self.profileAndMembershipBarView.alpha = 1.0
-            }
-        }
-
     }
 }
 
@@ -1101,7 +1094,7 @@ extension AddMemberViewController:UITextViewDelegate {
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if memberProfileView.isHidden == false {
-            self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
+            ValidationManager.shared.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
         }
         if textView.tag == 2 {
             return false
@@ -1111,11 +1104,11 @@ extension AddMemberViewController:UITextViewDelegate {
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        self.validation.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
+       ValidationManager.shared.requiredValidation(textView: textView, errorLabel: self.addressErrorLabel, errorMessage: "Member's address required.")
         if self.isNewMember == true {
-            self.validation.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
+            ValidationManager.shared.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
         } else {
-            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
+            ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
         }
     
     }
@@ -1168,9 +1161,9 @@ extension AddMemberViewController:UITableViewDelegate {
                 self.membershipDetailTextView.text = membership.detail
                 self.amountTextField.text = membership.amount
                 self.membershipDuration = Int(membership.duration)!
-                self.validation.requiredValidation(textField: self.membershipPlanTextField, errorLabel: self.membershipPlanErrorLabel, errorMessage: "Please select a membership plan.")
-                self.validation.requiredValidation(textField: self.amountTextField, errorLabel: self.amountErrorLabel, errorMessage: "Amount required.")
-                self.validation.requiredValidation(textView: self.membershipDetailTextView, errorLabel: self.membershipDetailErrorLabel, errorMessage: "Membership Detail Required.")
+               ValidationManager.shared.requiredValidation(textField: self.membershipPlanTextField, errorLabel: self.membershipPlanErrorLabel, errorMessage: "Please select a membership plan.")
+                ValidationManager.shared.requiredValidation(textField: self.amountTextField, errorLabel: self.amountErrorLabel, errorMessage: "Amount required.")
+                ValidationManager.shared.requiredValidation(textView: self.membershipDetailTextView, errorLabel: self.membershipDetailErrorLabel, errorMessage: "Membership Detail Required.")
             })
             self.membershipPlanView.isHidden = true
         }
@@ -1197,7 +1190,7 @@ extension AddMemberViewController:UIPickerViewDelegate {
         self.genderTextField.text = self.genderArray[row]
         DispatchQueue.main.async {
             self.allNewMemberFieldsRequiredValidation(textField: self.genderTextField)
-            self.validation.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+            ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
         }
     }
 }

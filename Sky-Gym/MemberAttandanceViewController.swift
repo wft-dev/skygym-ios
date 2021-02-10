@@ -115,9 +115,6 @@ class MemberAttandanceViewController: BaseViewController {
     @objc  func backBtnAction() {
         dismiss(animated: true, completion: nil)
     }
-}
-
-extension MemberAttandanceViewController {
 
  @objc  func nextWeekAttendence() {
     let nextStartDateStr = AppManager.shared.getNextDayDate(startDate: AppManager.shared.getDate(date: self.startDateLabel.text!))

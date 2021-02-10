@@ -122,9 +122,6 @@ class ListOfTrainersViewController: BaseViewController {
     @IBAction func addNewTrainerBtnAction(_ sender: Any) {
         performSegue(withIdentifier: "visitorDetailSegue", sender:true)
     }
-}
-
-extension ListOfTrainersViewController {
     
     @objc func trainerLeftSwipeAction(_ gesture:UIGestureRecognizer){
         UIView.animate(withDuration: 0.4, animations: {
@@ -215,13 +212,6 @@ extension ListOfTrainersViewController {
         deleteView.tag = 11
         cellView.addGestureRecognizer(leftSwipeGesture)
         cellView.addGestureRecognizer(rightSwipGesture)
-        cellView.backgroundColor = .white
-        cell.contentView.backgroundColor = .white
-        cellView.layer.cornerRadius = 20
-        cellView.layer.cornerRadius = 15.0
-        cellView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
-        cellView.layer.borderWidth = 1.0
-        
         deleteView.superview?.sendSubviewToBack(deleteView)
     }
     

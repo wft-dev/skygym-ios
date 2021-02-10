@@ -23,8 +23,7 @@ class ForgotPasswordViewController: BaseViewController {
     @IBOutlet weak var confirmPasswordErrorLabel: UILabel!
     @IBOutlet weak var resetPassword: UIButton!
     @IBOutlet weak var emailErrorLabel: UILabel!
-    
-    let validator = ValidationManager.shared
+
     var ID:String = ""
     var email:String = ""
     
@@ -32,6 +31,8 @@ class ForgotPasswordViewController: BaseViewController {
         super.viewDidLoad()
         assignbackground()
         setForgotPasswordView()
+        self.newPasswordTextField.isSecureTextEntry = true
+        self.confirmPasswordTextField.isSecureTextEntry = true
     }
     
     override func assignbackground(){
@@ -51,6 +52,7 @@ class ForgotPasswordViewController: BaseViewController {
     }
     
     @IBAction func verifyEmailBtnAction(_ sender: Any) {
+        self.view.endEditing(true)
         SVProgressHUD.show()
         self.email = self.emailTextField.text!
         
@@ -126,11 +128,10 @@ class ForgotPasswordViewController: BaseViewController {
                 SVProgressHUD.dismiss()
             }
         })
-
     }
     
     func allFieldsValid() -> Bool {
-        if  validator.isAllFieldsRequiredValidated(textFieldArray: [newPasswordTextField,confirmPasswordTextField], phoneNumberTextField: nil) == true && validator.isDuplicate(text1: self.newPasswordTextField.text!, text2: self.confirmPasswordTextField.text!) == true {
+        if  ValidationManager.shared.isAllFieldsRequiredValidated(textFieldArray: [newPasswordTextField,confirmPasswordTextField], phoneNumberTextField: nil) == true && ValidationManager.shared.isDuplicate(text1: self.newPasswordTextField.text!, text2: self.confirmPasswordTextField.text!) == true {
             return true
         }else {
             return false
@@ -160,7 +161,6 @@ class ForgotPasswordViewController: BaseViewController {
         present(alertController, animated: true, completion: nil)
     }
     
-    
     func hideNewPasswordContent(hide:Bool) {
         [newPasswordLabel,confirmaPasswordLabel,confirmPasswordErrorLabel,newPasswordErrorLabel].forEach{
             $0?.isHidden = hide
@@ -171,7 +171,7 @@ class ForgotPasswordViewController: BaseViewController {
         self.confirmPasswordTextField.isHidden = hide
         self.confirmPasswordTextField.alpha = hide == false ? 1.0 : 0.0
         self.resetPassword.isHidden = hide
-        self.resetPassword.alpha = hide == false ? 1.0 : 0.0
+        self.resetPassword.alpha = hide == false ? 0.4 : 0.0
     }
 
     func setForgotPasswordView() {
@@ -180,12 +180,14 @@ class ForgotPasswordViewController: BaseViewController {
             $0?.borderStyle = .none
             $0?.addPaddingToTextField()
             $0?.backgroundColor = .white
-             $0?.addTarget(self, action: #selector(errorChecker(_:)), for: .editingChanged)
+            $0?.addTarget(self, action: #selector(errorChecker(_:)), for: .editingChanged)
         }
         
         [verifyEmailBtn,resetPassword].forEach{
             $0?.layer.cornerRadius = 15.0
             $0?.clipsToBounds = true
+            $0?.isEnabled = false
+            $0?.alpha = 0.4
         }
     }
     
@@ -196,42 +198,46 @@ class ForgotPasswordViewController: BaseViewController {
     func allFieldsValidation(textField:UITextField) {
         switch textField.tag {
         case 1:
-            validator.emailValidation(textField: textField, errorLabel: emailErrorLabel, errorMessage: "Invalid Email.")
+            ValidationManager.shared.emailValidation(textField: textField, errorLabel: emailErrorLabel, errorMessage: "Invalid Email.")
             break
         case 2:
-            validator.passwordValidation(textField: textField, errorLabel: newPasswordErrorLabel, errorMessage: "Password must be greater than 8 characters.")
+            ValidationManager.shared.passwordValidation(textField: textField, errorLabel: newPasswordErrorLabel, errorMessage: "Password must be greater than 8 characters.")
             break
         case 3:
-            if  validator.isDuplicate(text1: self.newPasswordTextField.text!, text2: textField.text!) == false {
+            if  ValidationManager.shared.isDuplicate(text1: self.newPasswordTextField.text!, text2: textField.text!) == false {
                 confirmPasswordErrorLabel.text = "Password did not matched."
                 textField.layer.borderColor = UIColor.red.cgColor
                 textField.layer.borderWidth = 1.0
                 resetPassword.isEnabled = false
                 resetPassword.alpha = 0.4
             }else {
-                confirmPasswordErrorLabel.text = "Password  matched."
-                textField.layer.borderColor = UIColor.green.cgColor
-                textField.layer.borderWidth = 1.0
+                self.confirmPasswordErrorLabel.text = ""
+                textField.borderStyle = .none
+                textField.layer.borderColor = UIColor.clear.cgColor
+                textField.layer.borderWidth = 0.0
                 resetPassword.isEnabled = true
                 resetPassword.alpha = 1.0
-                UITextField.animate(withDuration: 1.0, animations: {
-                    self.confirmPasswordErrorLabel.text = ""
-                    textField.borderStyle = .none
-                    textField.layer.borderColor = UIColor.clear.cgColor
-                    textField.layer.borderWidth = 0.0
-                })
             }
         default:
             break
+        }
+        
+        if textField.tag == 1 {
+            if ValidationManager.shared.isEmailValid(email: textField.text!) {
+                self.verifyEmailBtn.isEnabled = true
+                self.verifyEmailBtn.alpha = 1.0
+            }else {
+                self.verifyEmailBtn.isEnabled = false
+                self.verifyEmailBtn.alpha = 0.4
+            }
         }
     }
     
 }
 
-
 extension ForgotPasswordViewController : UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         self.allFieldsValidation(textField: textField)
-        self.validator.loginBtnValidator(loginBtn: self.resetPassword, textFieldArray: [newPasswordTextField,confirmPasswordTextField], phoneNumberTextField: nil, email: nil, password: self.newPasswordTextField.text!)
+        ValidationManager.shared.loginBtnValidator(loginBtn: self.resetPassword, textFieldArray: [newPasswordTextField,confirmPasswordTextField], phoneNumberTextField: nil, email: nil, password: self.newPasswordTextField.text!)
     }
 }

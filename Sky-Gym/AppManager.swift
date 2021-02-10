@@ -240,7 +240,7 @@ class AppManager: NSObject {
     }
     
     func getMemberDetailStr(memberDetail:Dictionary<String,String>) -> MemberDetailStructure {
-        let decryptedPassword = AppManager.shared.decryption(cipherText: memberDetail["password"]!)
+       let decryptedPassword = AppManager.shared.decryption(cipherText: memberDetail["password"]!)
         let member:MemberDetailStructure = MemberDetailStructure(firstName:memberDetail["firstName"]!,lastName: memberDetail["lastName"]! ,memberID: memberDetail["memberID"]!, dateOfJoining: memberDetail["dateOfJoining"]!, gender: memberDetail["gender"]!, password: decryptedPassword, type: memberDetail["type"]!, trainerName: memberDetail["trainerName"]!, trainerID: memberDetail["trainerID"]!, uploadIDName: memberDetail["uploadIDName"]!, email: memberDetail["email"]!, address: memberDetail["address"]!, phoneNo: memberDetail["phoneNo"]!, dob: memberDetail["dob"]!)
           
           return member

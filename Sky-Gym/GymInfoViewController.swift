@@ -49,7 +49,6 @@ class GymInfoViewController: UIViewController {
     
     func setGymInfo(gymDetail:GymDetail) {
         self.gymNameLabel.text = gymDetail.gymName
-       // self.gymIDLabel.text = gymDetail.gymID
         self.gymTimingLabel.text = "\(gymDetail.gymOpeningTime)/\(gymDetail.gymClosingTime)"
         self.gymDaysLabel.text  = "\(gymDetail.gymDays) days"
         self.gymAddressLabel.text  = gymDetail.gymAddress

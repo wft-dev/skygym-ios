@@ -87,9 +87,6 @@ class ViewEventScreenViewController: BaseViewController {
         }
         ValidationManager.shared.requiredValidation(textView: self.addressTextView, errorLabel: self.eventAddressErrorTextLabel, errorMessage: "Event address require.")
     }
-}
-
-extension ViewEventScreenViewController {
 
     func initialEventSetup() {
         self.forNonEditLabelArray = [self.addressForNonEditLabel,self.eventDateForNonEditLabel,self.eventEndTimeForNontEditLabel,self.eventNameForNonEditLabel,self.eventStartTimeForNonEditLabel]

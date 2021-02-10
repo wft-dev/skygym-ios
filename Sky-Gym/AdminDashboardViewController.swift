@@ -42,12 +42,6 @@ class AdminDashboardViewController: BaseViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
             self.setDashboardValues()
         })
-        
-//        let encrypted = ValidationManager.shared.encryption(text: "Member1@1212")
-//        print("ENCRYPTED MESSAGE IS : \(encrypted)")
-//
-//        let decrypted = ValidationManager.shared.decryption(hash: encrypted)
-//         print("DECRYPTED MESSAGE IS : \(decrypted)")
     }
     
     override func viewWillAppear(_ animated: Bool) {

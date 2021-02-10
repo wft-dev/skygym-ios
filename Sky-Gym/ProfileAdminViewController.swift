@@ -127,7 +127,6 @@ class ProfileAdminViewController: UIViewController {
     var genderArray:[String] = []
 
     override func viewDidLoad() {
-      //  self.imagePicker = UIImagePickerController()
         SVProgressHUD.show()
         self.toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
         self.weekdayArray = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
@@ -196,10 +195,6 @@ class ProfileAdminViewController: UIViewController {
           //  self.setGymDaysFieldData()
         }
     }
-    
-}
-
-extension ProfileAdminViewController {
 
     func setAdminProfileView() {
         self.setAdminProfileNavigationBar()

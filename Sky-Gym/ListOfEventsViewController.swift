@@ -64,9 +64,6 @@ class ListOfEventsViewController: BaseViewController {
             destinationVC.eventID = (sender as! Bool) == false ? AppManager.shared.eventID : ""
         }
     }
-}
-
-extension ListOfEventsViewController {
     
     func setTrainerLayout() {
         switch AppManager.shared.loggedInRole {

@@ -116,10 +116,6 @@ class MembershipViewScreenViewController: BaseViewController {
         
     }
     
-}
-
-extension  MembershipViewScreenViewController {
-    
     func membershipValidation()  {
         
         for textField in self.textFieldArray {

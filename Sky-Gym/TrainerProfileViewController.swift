@@ -52,29 +52,45 @@ class TrainerProfileViewController: BaseViewController {
     @IBOutlet weak var dobForNonEditLabel: UILabel!
     @IBOutlet weak var trainerProfileImg: UIImageView!
     
+    
+    private lazy var imagePicker:UIImagePickerController = {
+        return UIImagePickerController()
+    }()
+    
+    private lazy var  genderPickerView:UIPickerView = {
+       return UIPickerView()
+    }()
+    
+    private lazy var datePicker:UIDatePicker = {
+        return UIDatePicker()
+    }()
+    
     var editMode:Bool = false
     var textFieldArray:[UITextField] = []
     var nonEditLabelArray:[UILabel] = []
     var defaultLabelArray:[UILabel] = []
     var forNonEditLabelArray:[UILabel] = []
     var errorLabelsArray:[UILabel] = []
-    let imagePicker = UIImagePickerController()
     var isUserProfileUpdated:Bool = false
-    let validator = ValidationManager.shared
-    var datePicker = UIDatePicker()
-    let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+    var toolBar:UIToolbar? = nil
     var selectedDate:String = ""
-    var actuallPassword:UILabel = UILabel()
+    var actuallPassword:UILabel? = nil
     var trainerEmail:String = ""
     var isAlreadyExistsEmail:Bool = false
-    let genderPickerView = UIPickerView()
     let genderArray = ["Male","Female","Other"]
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.assignbackground()
         self.genderPickerView.dataSource = self
         self.genderPickerView.delegate = self
+        self.toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
+        self.actuallPassword = UILabel()
         self.trainerProfileCustomNavigationView.navigationTitleLabel.text = "Profile"
         self.trainerProfileCustomNavigationView.searchBtn.isHidden = true
         self.trainerProfileCustomNavigationView.searchBtn.alpha = 0.0
@@ -97,8 +113,6 @@ class TrainerProfileViewController: BaseViewController {
         }
         self.updateBtn.layer.cornerRadius = 15.0
         self.updateBtn.addTarget(self, action: #selector(updateTrainerInfo), for: .touchUpInside)
-        self.fetchTrainerProfile(id: AppManager.shared.trainerID)
-        
         AppManager.shared.performEditAction(dataFields: self.dataFieldsDir(), edit: false)
         self.hideHrLine(hide: false)
         self.labelColor(color: .lightGray)
@@ -112,12 +126,13 @@ class TrainerProfileViewController: BaseViewController {
         self.trainerProfileImg.makeRounded()
         
         self.datePicker.datePickerMode = .date
-        toolBar.barStyle = .default
+        toolBar?.barStyle = .default
         let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
-        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
-        toolBar.sizeToFit()
+        toolBar?.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar?.sizeToFit()
+        self.fetchTrainerProfile(id: AppManager.shared.trainerID)
     }
     
     func addPaddingToTextField(textField:UITextField) {
@@ -207,25 +222,25 @@ class TrainerProfileViewController: BaseViewController {
             }
         }
         self.allTrainerFieldValidation(textField: textField)
-        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
     
     func allTrainerFieldValidation(textField:UITextField) {
         switch textField.tag {
         case 1:
-            validator.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First name required.")
         case 2 :
-            validator.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last name required.")
         case 3 :
-            validator.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Trainer's gender required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "Trainer's gender required.")
         case 4 :
-            validator.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 characters.")
+            ValidationManager.shared.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 characters.")
         case 5:
-            validator.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid Email.")
+            ValidationManager.shared.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid Email.")
         case 6 :
-            validator.phoneNumberValidation(textField: textField, errorLabel: self.phoneNoErrorLabel, errorMessage: "Phone Number must be 10 digits only.")
+            ValidationManager.shared.phoneNumberValidation(textField: textField, errorLabel: self.phoneNoErrorLabel, errorMessage: "Phone Number must be 10 digits only.")
         case 7:
-            validator.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required.")
         default:
             break
         }
@@ -273,8 +288,8 @@ class TrainerProfileViewController: BaseViewController {
         self.trainerFirstNameNonEditLabel.text = trainerDetail.firstName
         self.trainerLastNameNonEditLabel.text = trainerDetail.lastName
         self.genderNonEditLabel.text = trainerDetail.gender
-        self.actuallPassword.text = ""
-        self.actuallPassword.text = trainerDetail.password
+        self.actuallPassword?.text = ""
+        self.actuallPassword?.text = trainerDetail.password
         self.passwordNonEditLabel.text = AppManager.shared.getSecureTextFor(text: trainerDetail.password)
         self.emailNonEditLabel.text = trainerDetail.email
         self.phoneNoNonEditLabel.text = trainerDetail.phoneNo
@@ -284,7 +299,7 @@ class TrainerProfileViewController: BaseViewController {
         self.trainerFirstNameTextField.text = trainerDetail.firstName
         self.trainerLastNameTextField.text = trainerDetail.lastName
         self.genderTextField.text = trainerDetail.gender
-        self.passwordTextField.text = self.actuallPassword.text
+        self.passwordTextField.text = self.actuallPassword?.text
         self.emailTextField.text = trainerDetail.email
         self.phoneNoTextField.text = trainerDetail.phoneNo
         self.dobTextField.text = trainerDetail.dob
@@ -292,7 +307,7 @@ class TrainerProfileViewController: BaseViewController {
     
     func allFieldsValid() -> Bool {
         var flag:Bool = false
-        if  self.validator.isAllFieldsRequiredValidated(textFieldArray: self.textFieldArray, phoneNumberTextField: self.phoneNoTextField) == true && self.validator.isEmailValid(email: self.emailTextField.text!) == true  && self.validator.isPasswordValid(password: self.passwordTextField.text!) == true {
+        if  ValidationManager.shared.isAllFieldsRequiredValidated(textFieldArray: self.textFieldArray, phoneNumberTextField: self.phoneNoTextField) == true && ValidationManager.shared.isEmailValid(email: self.emailTextField.text!) == true  && ValidationManager.shared.isPasswordValid(password: self.passwordTextField.text!) == true {
             flag = true
         }else {
             flag = false
@@ -305,7 +320,7 @@ class TrainerProfileViewController: BaseViewController {
             self.trainerFirstNameTextField! : self.trainerFirstNameNonEditLabel!,
             self.trainerLastNameTextField! : self.trainerLastNameNonEditLabel!,
             self.genderTextField! : self.genderNonEditLabel!,
-            self.passwordTextField! : self.actuallPassword,
+            self.passwordTextField! : self.actuallPassword!,
             self.emailTextField! : self.emailNonEditLabel! ,
             self.dobTextField! : self.dobNonEditLabel!,
             self.phoneNoTextField! : self.phoneNoNonEditLabel!
@@ -419,9 +434,6 @@ extension TrainerProfileViewController:UITextFieldDelegate {
         if textField.tag == 3 {
             textField.inputView = self.genderPickerView
         }
-        
-//        self.allTrainerFieldValidation(textField: textField)
-//        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -469,7 +481,7 @@ extension TrainerProfileViewController:UITextFieldDelegate {
         }
         
         self.allTrainerFieldValidation(textField: textField)
-        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
         
         DispatchQueue.main.async {
             if self.isAlreadyExistsEmail == true {
@@ -505,7 +517,7 @@ extension TrainerProfileViewController: UIPickerViewDelegate {
         
         DispatchQueue.main.async {
             self.allTrainerFieldValidation(textField: self.genderTextField)
-            self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+            ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
         }
         
     }

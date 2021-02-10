@@ -51,7 +51,7 @@ class CustomNavigationBar: UIView {
        }
        @objc func menuToggle(){
         appDelegate.swRevealVC.revealToggle(animated: true)
-        appDelegate.swRevealVC.panGestureRecognizer()
+       // appDelegate.swRevealVC.panGestureRecognizer()
        }
       
  

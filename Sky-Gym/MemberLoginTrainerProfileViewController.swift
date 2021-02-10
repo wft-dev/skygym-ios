@@ -15,10 +15,8 @@ class MemberLoginTrainerProfileViewController: UIViewController {
     @IBOutlet weak var trainerDetailView: UIView!
     @IBOutlet weak var trainerProfileImg: UIImageView!
     @IBOutlet weak var trainerName: UILabel!
-   // @IBOutlet weak var trainerIDLabel: UILabel!
     @IBOutlet weak var trainerDateOfJoiningLabel: UILabel!
     @IBOutlet weak var trainerGenderLabel: UILabel!
-   // @IBOutlet weak var trainerPasswordLabel: UILabel!
     @IBOutlet weak var trainerEmailLabel: UILabel!
     @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var dobLabel: UILabel!
@@ -30,7 +28,6 @@ class MemberLoginTrainerProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setMemberLoginTrainerProfileCustomNavigationbar()
-
         self.getTrainerIDFromMemberById(memberID: AppManager.shared.memberID)
     }
     
@@ -96,23 +93,18 @@ class MemberLoginTrainerProfileViewController: UIViewController {
     
     func setTrainerDetail(trainerDetail:TrainerDataStructure) {
         self.trainerName.text = "\(trainerDetail.firstName) \(trainerDetail.lastName)"
-      //  self.trainerIDLabel.text = AppManager.shared.getSecureTextFor(text: trainerDetail.trainerID)
         self.trainerDateOfJoiningLabel.text = trainerDetail.dateOfJoining
         self.trainerGenderLabel.text = trainerDetail.gender
-      //  self.trainerPasswordLabel.text = AppManager.shared.getSecureTextFor(text: trainerDetail.password)
         self.trainerEmailLabel.text = trainerDetail.email
         self.addressLabel.text = trainerDetail.address
         self.dobLabel.text = trainerDetail.dob
         self.phoneNoLabel.text = trainerDetail.phoneNo
         self.trainerShiftTimingsLabel.text = trainerDetail.shiftTimings
         self.trainerShiftDaysLabel.text = "\(self.getShiftDaysCount(days: trainerDetail.shiftDays))"
-        
     }
     
     func getShiftDaysCount(days:String) -> Int {
         let daysArray =  days.split(separator: ",")
         return daysArray.count
     }
-
-    
 }

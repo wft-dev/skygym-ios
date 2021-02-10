@@ -219,10 +219,6 @@ class MemberViewController: BaseViewController {
         self.listOfTrainerView.alpha = self.listOfTrainerView.isHidden == true ? 0.0 : 1.0
     }
 
-}
-
-extension MemberViewController{
-
     func fetchListOfTrainer(category:TrainerType) {
         DispatchQueue.global(qos: .background).async {
             let result = FireStoreManager.shared.getTrainerByCategory(category: category)

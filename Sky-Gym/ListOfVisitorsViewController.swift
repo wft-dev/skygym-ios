@@ -56,7 +56,6 @@ class ListOfVisitorsViewController: BaseViewController {
         self.refreshControl.tintColor = .black
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Visitor List")
         self.refreshControl.addTarget(self, action: #selector(refreshVisitorList), for: .valueChanged)
-        self.fetchVisitors()
         self.visitorsTable.refreshControl = self.refreshControl
         self.visitorsTable.rowHeight = UITableView.automaticDimension
         self.visitorsTable.estimatedRowHeight = UITableView.automaticDimension
@@ -90,9 +89,6 @@ class ListOfVisitorsViewController: BaseViewController {
             destinationVC.visitorProfileImgData = self.visitorProfileImage?.pngData()
         }
     }
-}
-
-extension ListOfVisitorsViewController {
 
     @objc func visitorLeftSwipeAction(_ gesture:UIGestureRecognizer){
         UIView.animate(withDuration: 0.4, animations: {
@@ -265,6 +261,7 @@ extension ListOfVisitorsViewController {
        }
     
     func setTrainerNameAndType(trainerID:String,cell:VisitorTableCell) {
+        print("trainerID : \(trainerID)")
         if trainerID != "" && self.trainerDic != nil {
             let trainerDetail = self.trainerDic?["\(trainerID)"]
             cell.trainerNameLabel.text = trainerDetail?.trainerName
@@ -272,6 +269,8 @@ extension ListOfVisitorsViewController {
         }else {
             trainerName = "  --"
             trainerType  = " --"
+            cell.trainerNameLabel.text = "  --"
+            cell.trainerTypeLabel.text = "  --"
         }
     
     }
@@ -302,7 +301,7 @@ extension ListOfVisitorsViewController {
                         switch result {
                         case let .success(dicValue):
                             self.trainerDic = dicValue
-                            print("\(self.trainerDic)")
+                           // print("\(self.trainerDic)")
                             self.visitorsTable.reloadData()
                         case .failure(_):
                             break
@@ -333,31 +332,7 @@ extension ListOfVisitorsViewController {
               }
           })
       }
-    
-//    func adjustFontSizeForVisitorLabel(label:UILabel) {
-//                  let deviceType = UIDevice.current.deviceType
-//                  switch deviceType {
-//
-//                  case .iPhone4_4S:
-//                    label.font = UIFont.boldSystemFont(ofSize: 6)
-//
-//                  case .iPhones_5_5s_5c_SE:
-//                    label.font = UIFont.boldSystemFont(ofSize: 6)
-//
-//                  case .iPhones_6_6s_7_8:
-//              label.font = UIFont.systemFont(ofSize: 8)
-//
-//                  case .iPhones_6Plus_6sPlus_7Plus_8Plus:
-//                    label.font = UIFont.systemFont(ofSize: 8)
-//
-//                  case .iPhoneX:
-//                    label.font = UIFont.systemFont(ofSize: 8)
-//
-//                  default:
-//                    label.font = UIFont.systemFont(ofSize: 8)
-//                  }
-//              }
-    
+
     func showVisitorAlert(title:String,message:String)  {
            let alertController = UIAlertController(title:title, message: message, preferredStyle: .alert)
            let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
@@ -397,17 +372,11 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
         cell.dateOfVisitLabel.text = singleVisitor.dateOfVisit
         self.getVisitorProfileImage(id: singleVisitor.visitorID, imgView: cell.visitorProfileImg)
         cell.delegate = self
-//        self.adjustFontSizeForVisitorLabel(label: cell.dateOfJoinLabel)
-//        self.adjustFontSizeForVisitorLabel(label: cell.dateOfVisitLabel)
-//        self.adjustFontSizeForVisitorLabel(label:cell.trainerNameLabel)
-//        self.adjustFontSizeForVisitorLabel(label: cell.trainerTypeLabel)
         cell.memberBtn.tag = Int(singleVisitor.visitorID)!
         cell.selectionStyle = .none
         cell.visitorCellView.tag = Int(singleVisitor.visitorID)!
         self.addVisitorCustomSwipe(cellView: cell.visitorCellView, cell: cell)
         self.setTrainerNameAndType(trainerID: singleVisitor.trainerID, cell: cell)
-       // cell.trainerNameLabel.text =
-       // cell.trainerTypeLabel.text =
 
         return cell
     }

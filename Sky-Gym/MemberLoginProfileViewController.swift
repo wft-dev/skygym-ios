@@ -12,7 +12,6 @@ import SVProgressHUD
 class MemberLoginProfileViewController: UIViewController {
     
     @IBOutlet weak var memberLoginProfileCustomNavigationbarView: CustomNavigationBar!
-    
     @IBOutlet weak var memberProfileImg: UIImageView!
     @IBOutlet weak var firstNameTextField: UITextField!
     @IBOutlet weak var lastNameTextField: UITextField!
@@ -21,7 +20,6 @@ class MemberLoginProfileViewController: UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var phoneNumberTextField: UITextField!
     @IBOutlet weak var dobTextField: UITextField!
-    
     @IBOutlet weak var firstNameErrorLabel: UILabel!
     @IBOutlet weak var lastNameErrorLabel: UILabel!
     @IBOutlet weak var genderErrorLabel: UILabel!
@@ -60,27 +58,37 @@ class MemberLoginProfileViewController: UIViewController {
     @IBOutlet weak var phoneNoForNonEditLabel: UILabel!
     @IBOutlet weak var dobForNonEditLabel: UILabel!
     
+    private lazy var imagePicker:UIImagePickerController = {
+        return UIImagePickerController()
+    }()
+    
+    private lazy var datePicker:UIDatePicker = {
+        return UIDatePicker()
+    }()
+    
+    private lazy var genderPickerView:UIPickerView = {
+        return UIPickerView()
+    }()
+    
     var textFieldArray:[UITextField] = []
     var errorLabelsArray:[UILabel] = []
     var hrLineViewArray:[UIView] = []
     var defaultLabelArray:[UILabel] = []
     var forNonEditLabelArray:[UILabel] = []
-    let validator = ValidationManager.shared
     var isEditable:Bool = false
     var isUserProfileUpdated = false
     var actualPasswordLabel:UILabel = UILabel()
     var selectedDate:String = ""
-    let imagePicker = UIImagePickerController()
-    var datePicker = UIDatePicker()
-    let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+    var toolBar:UIToolbar? = nil
     var isAlreadyExistsEmail:Bool = false
     var memberLoginProfileEmail:String = ""
     var memberPassword:String = ""
-    let genderPickerView = UIPickerView()
     let genderArray = ["Male","Female","Other"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
+        
         self.textFieldArray = [ self.firstNameTextField,self.lastNameTextField,self.genderTextField,self.passwordTextField,self.emailTextField,self.phoneNumberTextField,self.dobTextField ]
         self.errorLabelsArray = [ self.firstNameErrorLabel,self.lastNameErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.emailErrorLabel,self.phoneNoErrorLabel,self.dobErrorLabel ]
         self.hrLineViewArray = [ self.firstNameHrLineView,self.genderHrLineView,self.emailHrLineView,self.phoneNoHrLineView ]
@@ -105,10 +113,7 @@ class MemberLoginProfileViewController: UIViewController {
         self.memberProfileImg.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openImgPicker)))
         self.fetchMemberDetailBy(id: AppManager.shared.memberID)
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
+
     
     @objc func openImgPicker() {
         self.imagePicker.sourceType = .photoLibrary
@@ -119,7 +124,7 @@ class MemberLoginProfileViewController: UIViewController {
     }
     
     func isAllFieldsValid() -> Bool {
-      if  self.validator.isAllFieldsRequiredValidated(textFieldArray: self.textFieldArray, phoneNumberTextField: self.phoneNumberTextField) == true && self.validator.isEmailValid(email: self.emailTextField.text!) == true && self.validator.isPasswordValid(password: self.passwordTextField.text!) == true {
+        if  ValidationManager.shared.isAllFieldsRequiredValidated(textFieldArray: self.textFieldArray, phoneNumberTextField: self.phoneNumberTextField) == true && ValidationManager.shared.isEmailValid(email: self.emailTextField.text!) == true && ValidationManager.shared.isPasswordValid(password: self.passwordTextField.text!) == true {
             return true
         } else {
             return false
@@ -259,12 +264,12 @@ class MemberLoginProfileViewController: UIViewController {
         self.updateBtn.clipsToBounds = true
         
         self.datePicker.datePickerMode = .date
-        toolBar.barStyle = .default
+        toolBar?.barStyle = .default
         let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
-        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
-        toolBar.sizeToFit()
+        toolBar?.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar?.sizeToFit()
     }
     
     @objc func cancelTextField()  {
@@ -293,29 +298,29 @@ class MemberLoginProfileViewController: UIViewController {
     func allMemberFieldValidation(textField:UITextField) {
         switch textField.tag {
         case 1:
-            self.validator.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.firstNameErrorLabel, errorMessage: "First Name required.")
             break
         case 2:
-            self.validator.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last Name required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.lastNameErrorLabel, errorMessage: "Last Name required.")
             break
         case 3:
-            self.validator.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "gender required.")
+       ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.genderErrorLabel, errorMessage: "gender required.")
             break
         case 4:
-            self.validator.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 characters.")
+            ValidationManager.shared.passwordValidation(textField: textField, errorLabel: self.passwordErrorLabel, errorMessage: "Password must be greater than 8 characters.")
             break
         case 5:
-            self.validator.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid Email")
+          ValidationManager.shared.emailValidation(textField: textField, errorLabel: self.emailErrorLabel, errorMessage: "Invalid Email")
             break
         case 6:
-            self.validator.phoneNumberValidation(textField: textField, errorLabel: self.phoneNoErrorLabel, errorMessage: "Phone number must be 10 digits only.")
+           ValidationManager.shared.phoneNumberValidation(textField: textField, errorLabel: self.phoneNoErrorLabel, errorMessage: "Phone number must be 10 digits only.")
         case 7 :
-            self.validator.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required.")
+           ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dobErrorLabel, errorMessage: "D.O.B. required.")
         default:
             break
         }
         
-        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
 
     
@@ -448,7 +453,7 @@ extension MemberLoginProfileViewController:UITextFieldDelegate {
         }
         
         self.allMemberFieldValidation(textField: textField)
-        self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
         
         DispatchQueue.main.async {
             if self.isAlreadyExistsEmail == true {
@@ -502,7 +507,7 @@ extension MemberLoginProfileViewController : UIPickerViewDelegate{
         self.genderTextField.text = self.genderArray[row]
         DispatchQueue.main.async {
             self.allMemberFieldValidation(textField: self.genderTextField)
-            self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text)
+            ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text)
         }
     }
     

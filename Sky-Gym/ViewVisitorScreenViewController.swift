@@ -163,9 +163,6 @@ class ViewVisitorScreenViewController: BaseViewController {
         }
         ValidationManager.shared.requiredValidation(textView: self.visitorDetailTextView, errorLabel: self.addressErrorLabel, errorMessage: "Visitor address require.")
     }
-}
-
-extension ViewVisitorScreenViewController {
 
     func allVisitorFieldsRequiredValidation(textField:UITextField)  {
         switch textField.tag {

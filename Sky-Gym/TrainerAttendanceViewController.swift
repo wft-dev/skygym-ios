@@ -108,16 +108,11 @@ class TrainerAttendanceViewController: BaseViewController {
     @IBAction func nextWeekTrainerAttendenceAction(_ sender: Any) {
         self.nextWeekTrainerAttendence()
     }
-}
-
-extension TrainerAttendanceViewController{
     
     @objc  func previousWeekTrainerAttendence() {
         let previousStartDate = AppManager.shared.getPreviousDayDate(startDate: AppManager.shared.getDate(date: self.attendenceStartDateLabel.text!))
         let previousEndDate = AppManager.shared.getNext7DaysDate(startDate: AppManager.shared.getDate(date: previousStartDate))
-            
-        //    AppManager.shared.getPreviousDayDate(startDate: AppManager.shared.getDate(date: self.attendenceEndDateLabel.text!))
-            
+
         self.fetchTrainerAttendenceFrom(startDate: previousStartDate, endDate:previousEndDate)
         self.attendenceStartDateLabel.text = previousStartDate
         self.attendenceEndDateLabel.text = previousEndDate
@@ -127,8 +122,6 @@ extension TrainerAttendanceViewController{
         let nextStartDateStr = AppManager.shared.getNextDayDate(startDate: AppManager.shared.getDate(date: self.attendenceStartDateLabel.text!))
         
         let nextEndDateStr = AppManager.shared.getNext7DaysDate(startDate: AppManager.shared.getDate(date: nextStartDateStr))
-        
-     //   AppManager.shared.getNextDayDate(startDate: AppManager.shared.getDate(date: self.attendenceEndDateLabel.text!))
         
         self.fetchTrainerAttendenceFrom(startDate: nextStartDateStr, endDate: nextEndDateStr)
         self.attendenceStartDateLabel.text = nextStartDateStr

@@ -258,9 +258,6 @@ class TrainerEditScreenViewController: BaseViewController{
             }
         }
     }
-}
-
-extension TrainerEditScreenViewController {
 
     private func addClickToDismissWeekDaysList() {
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissWeekDaysList(_:)))

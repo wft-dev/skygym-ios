@@ -42,9 +42,7 @@ class PurchaseViewController: BaseViewController {
         super.viewWillAppear(animated)
         self.getMembershipPlans(id: AppManager.shared.memberID)
     }
-}
 
-extension PurchaseViewController {
     func setPurchaseNavigationBar() {
         self.purchaseNavigationBar.navigationTitleLabel.text = "Membership Plan"
         self.purchaseNavigationBar.menuBtn.isHidden = true

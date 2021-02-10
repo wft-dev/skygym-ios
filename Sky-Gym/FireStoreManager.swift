@@ -45,11 +45,11 @@ class FireStoreManager: NSObject {
     
     //FOR ADMIN LOGIN
     func isAdminLogin(email:String,password:String,result:@escaping (Bool,Error?)->Void) {
-        let decryptedPassword = AppManager.shared.encryption(plainText: password)
+       
        
         self.fireDB.collection("Admin")
             .whereField("email", isEqualTo: email)
-            .whereField("password", isEqualTo: decryptedPassword)
+            .whereField("password", isEqualTo: password)
             .getDocuments(completion: {
             (querySnapshot,err) in
             if err != nil {
@@ -1426,7 +1426,7 @@ class FireStoreManager: NSObject {
                         result = .success(["ID":data["id"]!,"exists":true])
                         break
                     }else {
-                        result = .success(nil)
+                        result = .success(["ID":"","exists":false])
                     }
                 }
                 seamphores.signal()

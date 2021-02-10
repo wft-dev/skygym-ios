@@ -189,7 +189,7 @@ class ListOfMembersViewController: BaseViewController {
         self.grayView.isHidden = true
         self.grayView.alpha = 0
         self.addBtn.isHidden = false
-        AppManager.shared.setStatusBarBackgroundColor(color: .white, alpha: 1.0)
+        AppManager.shared.setStatusBarBackgroundColor(color: .clear, alpha: 1.0)
     }
     func showFilterView() {
         self.filterView.isHidden = false
@@ -213,12 +213,9 @@ extension ListOfMembersViewController : UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
       
         let cell = tableView.dequeueReusableCell(withIdentifier: "listOfMemberCell", for: indexPath) as! ListOfMembersTableCell
-        cell.contentView.layer.cornerRadius = 15.0
-        cell.contentView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
-        cell.contentView.layer.borderWidth = 1.0
-        cell.listOfmemberTCView.layer.cornerRadius = 15.0
-        cell.listOfmemberTCView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
-        cell.listOfmemberTCView.layer.borderWidth = 1.0
+        cell.layer.cornerRadius = 20.0
+        cell.layer.borderWidth = 1.0
+        cell.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
         self.adjustFontSizeForRenewPackageLabel(label: cell.renewPackageLabel)
         let singleMember = self.filteredMemberArray.count > 0 ? self.filteredMemberArray[indexPath.section] : self.listOfMemberArray[indexPath.section]
         self.getMemberProfileImage(id: singleMember.memberID, imageName:singleMember.uploadName, imgView: cell.userImag)
@@ -228,7 +225,6 @@ extension ListOfMembersViewController : UITableViewDataSource{
         cell.dateOfExpiry.text = singleMember.dateOfExp
         cell.dueAmount.text = singleMember.dueAmount
         cell.btnsStackView.tag =  Int(singleMember.memberID)!
-       // print("\(cell.btnsStackView.tag)")
         cell.customCellDelegate = self
         cell.selectionStyle = .none
         self.setCellAttendeneBtn(memberCell: cell, memberID: singleMember.memberID)
@@ -257,9 +253,6 @@ extension ListOfMembersViewController : UITableViewDelegate{
             self.performSegue(withIdentifier: "memberDetailSegue", sender:nil)
         }
     }
-}
-
-extension ListOfMembersViewController{
     
     @objc func deleteMember(_ gesture:UIGestureRecognizer) {
         let alertController = UIAlertController(title: "Attention", message: "Do you want to remove this member.", preferredStyle: .alert)
@@ -341,11 +334,10 @@ extension ListOfMembersViewController{
         cellView.addGestureRecognizer(rightSwipGesture)
         cellView.isUserInteractionEnabled = true
         deleteView.tag = 11
-        cell.contentView.backgroundColor = .white
-        cell.layer.cornerRadius = 20
-        cellView.layer.cornerRadius = 20
-        cellView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
+        cellView.layer.cornerRadius = 20.0
         cellView.layer.borderWidth = 1.0
+        cellView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
+
         deleteView.superview?.sendSubviewToBack(deleteView)
     }
     

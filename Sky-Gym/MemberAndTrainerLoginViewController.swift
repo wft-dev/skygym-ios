@@ -19,15 +19,11 @@ class MemberAndTrainerLoginViewController: UIViewController {
     @IBOutlet weak var passwordErrorText: UILabel?
     @IBOutlet weak var loginBtn: UIButton?
     
-    
-    
-    let validator = ValidationManager.shared
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         gymIDTextField?.text = "1221"
-        emailTextField?.text = "visitor2@gmail.com"
-        passwordTextField?.text = "visitor@012340"
+        emailTextField?.text = "trainer2@gmail.com"
+        passwordTextField?.text = ""
         
         self.assignbackground()
         loginBtn?.isEnabled = false
@@ -49,9 +45,7 @@ class MemberAndTrainerLoginViewController: UIViewController {
     @IBAction func forgotPasswordAction(_ sender: Any) {
         performSegue(withIdentifier: "forgotPasswordSegue", sender: nil)
     }
-}
 
-extension MemberAndTrainerLoginViewController {
     func assignbackground(){
               let background = UIImage(named: "Bg_yel.png")
               var imageView : UIImageView!
@@ -67,15 +61,15 @@ extension MemberAndTrainerLoginViewController {
     @objc func fieldErrorChecker(_ textField:UITextField) {
         switch textField.tag {
         case 1:
-            validator.requiredValidation(textField: textField, errorLabel: self.gymIDErrroText!, errorMessage: "Gym ID required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.gymIDErrroText!, errorMessage: "Gym ID required.")
         case 2:
-            validator.emailValidation(textField: textField, errorLabel: self.emailErrorText!, errorMessage: "Invalid email address.")
+            ValidationManager.shared.emailValidation(textField: textField, errorLabel: self.emailErrorText!, errorMessage: "Invalid email address.")
         case 3:
-            validator.passwordValidation(textField: textField, errorLabel: self.passwordErrorText!, errorMessage: "Password must be greater than 8 characters.")
+            ValidationManager.shared.passwordValidation(textField: textField, errorLabel: self.passwordErrorText!, errorMessage: "Password must be greater than 8 characters.")
         default:
             break
         }
-        self.validator.loginBtnValidator(loginBtn: self.loginBtn!, textFieldArray: [self.gymIDTextField!], phoneNumberTextField: nil, email: self.emailTextField?.text!, password: self.passwordTextField?.text!)
+        ValidationManager.shared.loginBtnValidator(loginBtn: self.loginBtn!, textFieldArray: [self.gymIDTextField!], phoneNumberTextField: nil, email: self.emailTextField?.text!, password: self.passwordTextField?.text!)
     }
     
     @objc  func loginAction()  {
@@ -128,6 +122,6 @@ extension MemberAndTrainerLoginViewController {
 extension MemberAndTrainerLoginViewController : UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         self.fieldErrorChecker(textField)
-        self.validator.loginBtnValidator(loginBtn: self.loginBtn!, textFieldArray: [self.gymIDTextField!], phoneNumberTextField: nil, email: self.emailTextField?.text!, password: self.passwordTextField?.text!)
+        ValidationManager.shared.loginBtnValidator(loginBtn: self.loginBtn!, textFieldArray: [self.gymIDTextField!], phoneNumberTextField: nil, email: self.emailTextField?.text!, password: self.passwordTextField?.text!)
     }
 }

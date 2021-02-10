@@ -23,6 +23,15 @@ class AdminRegistrationSecondViewController: UIViewController {
     @IBOutlet weak var passwordErrorText: UILabel?
     @IBOutlet weak var dobErrortext: UILabel?
     
+    
+    private lazy  var datePicker:UIDatePicker = {
+        return UIDatePicker()
+    }()
+    
+    private lazy var genderPickerView:UIPickerView = {
+        return UIPickerView()
+    }()
+    
     var gymName:String = ""
     var gymID:String = ""
     var gymAddress:String = ""
@@ -31,17 +40,14 @@ class AdminRegistrationSecondViewController: UIViewController {
     var id:String = ""
     var appDelegate :AppDelegate? = nil
     var selectedDate:Date? = nil
-    var datePicker = UIDatePicker()
-    var toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+    var toolBar:UIToolbar? = nil
     var isAlreadyExistsEmail:Bool = false
     var textFieldArray:[UITextField] = []
-    let validator = ValidationManager.shared
-    let genderPickerView = UIPickerView()
     let genderArray = ["Male","Female","Other"]
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
         self.genderPickerView.delegate = self
         self.genderPickerView.dataSource = self
         self.textFieldArray = [self.genderTextField!,self.emailTextField!,self.mobileNumberTextField!,self.passwordTextField!,self.dobTextField!]
@@ -59,7 +65,7 @@ class AdminRegistrationSecondViewController: UIViewController {
     
     func allDataValid() -> Bool {
         
-        if validator.isAllFieldsRequiredValidated(textFieldArray: self.textFieldArray, phoneNumberTextField: self.mobileNumberTextField) == true && validator.isEmailValid(email: (self.emailTextField?.text)!) == true && validator.isPasswordValid(password: (self.passwordTextField?.text)!) == true {
+        if ValidationManager.shared.isAllFieldsRequiredValidated(textFieldArray: self.textFieldArray, phoneNumberTextField: self.mobileNumberTextField) == true && ValidationManager.shared.isEmailValid(email: (self.emailTextField?.text)!) == true && ValidationManager.shared.isPasswordValid(password: (self.passwordTextField?.text)!) == true {
            
             if self.isAlreadyExistsEmail == true {
                 self.emailTextField?.layer.borderColor = UIColor.red.cgColor
@@ -112,23 +118,20 @@ class AdminRegistrationSecondViewController: UIViewController {
     func allFieldValidation(textField:UITextField) {
         switch textField.tag {
         case 1:
-            validator.requiredValidation(textField: textField, errorLabel: self.genderErrorText!, errorMessage: "Gender required.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.genderErrorText!, errorMessage: "Gender required.")
         case 2:
-            validator.emailValidation(textField: textField, errorLabel: self.emailErrorText!, errorMessage: "Invalid Email.")
+            ValidationManager.shared.emailValidation(textField: textField, errorLabel: self.emailErrorText!, errorMessage: "Invalid Email.")
         case 3:
-            validator.phoneNumberValidation(textField: textField, errorLabel: self.mobileNumberErrorText!, errorMessage: "Phone no must be 10 digit only.")
+            ValidationManager.shared.phoneNumberValidation(textField: textField, errorLabel: self.mobileNumberErrorText!, errorMessage: "Phone no must be 10 digit only.")
         case 4:
-            validator.passwordValidation(textField: textField, errorLabel: self.passwordErrorText!, errorMessage: "Password must be greater than 8 Characters.")
+            ValidationManager.shared.passwordValidation(textField: textField, errorLabel: self.passwordErrorText!, errorMessage: "Password must be greater than 8 Characters.")
         case 5 :
-            validator.requiredValidation(textField: textField, errorLabel: self.dobErrortext!, errorMessage: "D.O.B. reauired.")
+            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dobErrortext!, errorMessage: "D.O.B. reauired.")
         default:
             break
         }
     }
-    
-}
 
-extension AdminRegistrationSecondViewController{
     func assignbackground(){
               let background = UIImage(named: "Bg_yel.png")
               var imageView : UIImageView!
@@ -140,15 +143,16 @@ extension AdminRegistrationSecondViewController{
               view.addSubview(imageView)
               self.view.sendSubviewToBack(imageView)
           }
+    
     func setDatePicker() {
         self.datePicker.datePickerMode = .date
         self.datePicker.date = Date()
-        toolBar.barStyle = .default
+        toolBar?.barStyle = .default
         let cancelToolBarItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTextField))
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let okToolBarItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTextField))
-        toolBar.items = [cancelToolBarItem,space,okToolBarItem]
-        toolBar.sizeToFit()
+        toolBar?.items = [cancelToolBarItem,space,okToolBarItem]
+        toolBar?.sizeToFit()
     }
     
        @objc func cancelTextField()  {
@@ -170,8 +174,10 @@ extension AdminRegistrationSecondViewController{
                 $0?.addPaddingToTextField()
                 $0?.addTarget(self, action: #selector(errorChecker(_:)), for: .editingChanged)
                            }
-               doneBtn?.layer.cornerRadius = 15.0
-               doneBtn?.clipsToBounds = true
+        doneBtn?.layer.cornerRadius = 15.0
+        doneBtn?.clipsToBounds = true
+        doneBtn?.isEnabled = false
+        doneBtn?.alpha = 0.4
     }
     
     func getAdminData() -> [String:Any] {
@@ -253,7 +259,7 @@ extension AdminRegistrationSecondViewController : UITextFieldDelegate {
             }
         }
         
-        self.validator.updateBtnValidator(updateBtn: self.doneBtn!, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.mobileNumberTextField, email: self.emailTextField?.text, password: self.passwordTextField?.text)
+        ValidationManager.shared.updateBtnValidator(updateBtn: self.doneBtn!, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.mobileNumberTextField, email: self.emailTextField?.text, password: self.passwordTextField?.text)
         
         DispatchQueue.main.async {
             if self.isAlreadyExistsEmail == true {
@@ -267,7 +273,6 @@ extension AdminRegistrationSecondViewController : UITextFieldDelegate {
         
     }
     
-    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if textField.tag == 5 || textField.tag == 1 {
             return false
@@ -278,18 +283,18 @@ extension AdminRegistrationSecondViewController : UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         
-        if textField.tag == 5 {
+        switch textField.tag {
+        case 1:
+            textField.inputView = self.genderPickerView
+        case 5:
             textField.inputAccessoryView = self.toolBar
             textField.inputView = datePicker
-        }
-        
-        if textField.tag == 1{
-            textField.inputView = self.genderPickerView
+        default:
+            break
         }
         
     }
 }
-
 
 extension AdminRegistrationSecondViewController:UIPickerViewDataSource{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -305,7 +310,6 @@ extension AdminRegistrationSecondViewController:UIPickerViewDataSource{
     
 }
 
-
 extension AdminRegistrationSecondViewController:UIPickerViewDelegate{
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.genderTextField?.text = self.genderArray[row]
@@ -313,6 +317,6 @@ extension AdminRegistrationSecondViewController:UIPickerViewDelegate{
         DispatchQueue.main.async {
             self.allFieldValidation(textField: self.genderTextField!)
         }
-        
     }
+    
 }

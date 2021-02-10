@@ -76,7 +76,8 @@ class ViewController: UIViewController {
     
     @IBAction func loginBtnAction(_ sender: Any) {
         SVProgressHUD.show()
-        FireStoreManager.shared.isAdminLogin(email: (self.emailTextField?.text)!, password:self.passwordTextField!.text! , result: {
+         let decryptedPassword = AppManager.shared.encryption(plainText: self.passwordTextField!.text!)
+        FireStoreManager.shared.isAdminLogin(email: (self.emailTextField?.text)!, password:decryptedPassword , result: {
             (loggedIn,err) in
             SVProgressHUD.dismiss()
             if err != nil {
@@ -98,48 +99,13 @@ class ViewController: UIViewController {
     @IBAction func memberLoginBtnAction(_ sender: Any) {
         performSegue(withIdentifier: "memberLoginSegue", sender: nil)
     }
-}
-
-extension UITextField {
-    func addPaddingToTextField() {
-        let paddingView: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-        self.leftView = paddingView;
-        self.leftViewMode = .always;
-        self.rightView = paddingView;
-        self.rightViewMode = .always;
-        self.backgroundColor = UIColor.white
-        self.textColor = UIColor.black
-    }
-    func addPaddingToTextField(height:CGFloat,Width:CGFloat) {
-        let paddingView: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: Width, height: height))
-        self.leftView = paddingView;
-        self.leftViewMode = .always;
-        self.rightView = paddingView;
-        self.rightViewMode = .always;
-        self.backgroundColor = UIColor.white
-        self.textColor = UIColor.black
-    }
-}
-
-extension UITextView{
-    func addPaddingToTextField() {
-       // let paddingView: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-        self.contentInset = UIEdgeInsets(top: 5, left: 15, bottom: 0, right: 15)
-    }
-    func addPaddingToTextView(top:CGFloat,right:CGFloat,bottom:CGFloat,left:CGFloat) {
-          // let paddingView: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-           self.contentInset = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
-       }
-}
-
-extension ViewController {
-       
+    
+      
        func assignbackground(){
              let background = UIImage(named: "Bg_yel.png")
-
              var imageView : UIImageView!
              imageView = UIImageView(frame: view.bounds)
-           imageView.contentMode =  UIView.ContentMode.scaleToFill
+             imageView.contentMode =  UIView.ContentMode.scaleToFill
              imageView.clipsToBounds = true
              imageView.image = background
              imageView.center = view.center
@@ -178,5 +144,37 @@ extension ViewController {
           alertController.addAction(okAlertAction)
          present(alertController, animated: true, completion: nil)
      }
-
 }
+
+extension UITextField {
+
+    func addPaddingToTextField() {
+        let paddingView: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+        self.leftView = paddingView;
+        self.leftViewMode = .always;
+        self.rightView = paddingView;
+        self.rightViewMode = .always;
+        self.backgroundColor = UIColor.white
+        self.textColor = UIColor.black
+    }
+    func addPaddingToTextField(height:CGFloat,Width:CGFloat) {
+        let paddingView: UIView = UIView.init(frame: CGRect(x: 0, y: 0, width: Width, height: height))
+        self.leftView = paddingView;
+        self.leftViewMode = .always;
+        self.rightView = paddingView;
+        self.rightViewMode = .always;
+        self.backgroundColor = UIColor.white
+        self.textColor = UIColor.black
+    }
+}
+
+extension UITextView{
+    func addPaddingToTextField() {
+        self.contentInset = UIEdgeInsets(top: 5, left: 15, bottom: 0, right: 15)
+    }
+    func addPaddingToTextView(top:CGFloat,right:CGFloat,bottom:CGFloat,left:CGFloat) {
+           self.contentInset = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
+       }
+}
+
+

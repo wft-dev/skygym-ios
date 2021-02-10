@@ -57,9 +57,6 @@ class ListOfMembershipViewController: BaseViewController {
             destinationVC.isNewMemberhsip = sender as! Bool
         }
     }
-}
-
-extension ListOfMembershipViewController {
     
     func setMembershipViewForMember() {
         if AppManager.shared.loggedInRole == LoggedInRole.Member {
