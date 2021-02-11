@@ -263,7 +263,7 @@ class AppManager: NSObject {
             membership = currentMembership.first
         }else {
             membership =  membershipArray.count > 0 ? self.getLatestMembership(membershipsArray:  membershipArray) :
-                MembershipDetailStructure(membershipID:memberDetail["memberID"] ?? "", membershipPlan: "--", membershipDetail: "--", amount:"0", startDate: "--", endDate: "--", totalAmount: "0", paidAmount: "0", discount: "0", paymentType: "--", dueAmount: "0", purchaseTime: "--", purchaseDate: "--", membershipDuration: "0")
+                MembershipDetailStructure(membershipID:memberDetail["memberID"] ?? "", membershipPlan: "--", membershipDetail: "--", amount:"0", startDate: "--", endDate: "--", totalAmount: "0", paidAmount: "0", discount: "0", paymentType: "--", dueAmount: "0", purchaseTime: "--", purchaseDate: "--", membershipDuration: "0", purchaseTimeStamp: "")
         }
         
         let member = ListOfMemberStr(memberID: memberDetail["memberID"] ?? "", userImg: UIImage(named: "user1")!, userName: userName, phoneNumber: memberDetail["phoneNo"] ?? "" , dateOfExp: membership?.endDate ?? "", dueAmount: membership?.dueAmount ?? "--" , uploadName: memberDetail["uploadIDName"] ?? "" )
@@ -274,7 +274,7 @@ class AppManager: NSObject {
       
     func getLatestMembership(membershipsArray:Array<Dictionary<String,String>>) -> MembershipDetailStructure{
         let lastMemberhipData = membershipsArray.last!
-        let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"]!, membershipPlan: lastMemberhipData["membershipPlan"]!, membershipDetail: lastMemberhipData["membershipDetail"]!, amount: lastMemberhipData["amount"]!, startDate: lastMemberhipData["startDate"]!, endDate: lastMemberhipData["endDate"]!, totalAmount: lastMemberhipData["totalAmount"]!, paidAmount: lastMemberhipData["paidAmount"]!, discount: lastMemberhipData["discount"]!, paymentType:lastMemberhipData["paymentType"]!, dueAmount: lastMemberhipData["dueAmount"]!,purchaseTime: lastMemberhipData["purchaseTime"]!,purchaseDate: lastMemberhipData["purchaseDate"]!, membershipDuration: lastMemberhipData["membershipDuration"]!)
+        let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"]!, membershipPlan: lastMemberhipData["membershipPlan"]!, membershipDetail: lastMemberhipData["membershipDetail"]!, amount: lastMemberhipData["amount"]!, startDate: lastMemberhipData["startDate"]!, endDate: lastMemberhipData["endDate"]!, totalAmount: lastMemberhipData["totalAmount"]!, paidAmount: lastMemberhipData["paidAmount"]!, discount: lastMemberhipData["discount"]!, paymentType:lastMemberhipData["paymentType"]!, dueAmount: lastMemberhipData["dueAmount"]!,purchaseTime: lastMemberhipData["purchaseTime"]!,purchaseDate: lastMemberhipData["purchaseDate"]!, membershipDuration: lastMemberhipData["membershipDuration"]!, purchaseTimeStamp: lastMemberhipData["purchaseTimeStamp"]!)
         return latestMemberhsip
     }
     
@@ -288,7 +288,7 @@ class AppManager: NSObject {
             
             if endDayDiff >= 0 && startDayDiff <= 0 {
                 let currentMembershipData = singleMembership 
-                let  currentMembership = MembershipDetailStructure(membershipID: currentMembershipData["membershipID"]!, membershipPlan: currentMembershipData["membershipPlan"]!, membershipDetail: currentMembershipData["membershipDetail"]!, amount: currentMembershipData["amount"]!, startDate: currentMembershipData["startDate"]!, endDate: currentMembershipData["endDate"]!, totalAmount: currentMembershipData["totalAmount"]!, paidAmount: currentMembershipData["paidAmount"]!, discount: currentMembershipData["discount"]!, paymentType:currentMembershipData["paymentType"]!, dueAmount: currentMembershipData["dueAmount"]!,purchaseTime: currentMembershipData["purchaseTime"]!, purchaseDate: currentMembershipData["purchaseDate"]!, membershipDuration: currentMembershipData["membershipDuration"]!)
+                let  currentMembership = MembershipDetailStructure(membershipID: currentMembershipData["membershipID"]!, membershipPlan: currentMembershipData["membershipPlan"]!, membershipDetail: currentMembershipData["membershipDetail"]!, amount: currentMembershipData["amount"]!, startDate: currentMembershipData["startDate"]!, endDate: currentMembershipData["endDate"]!, totalAmount: currentMembershipData["totalAmount"]!, paidAmount: currentMembershipData["paidAmount"]!, discount: currentMembershipData["discount"]!, paymentType:currentMembershipData["paymentType"]!, dueAmount: currentMembershipData["dueAmount"]!,purchaseTime: currentMembershipData["purchaseTime"]!, purchaseDate: currentMembershipData["purchaseDate"]!, membershipDuration: currentMembershipData["membershipDuration"]!, purchaseTimeStamp: currentMembershipData["purchaseTimeStamp"]!)
                 currentMembershipDataArray.append(currentMembership)
             }
         }
@@ -358,7 +358,7 @@ class AppManager: NSObject {
     func getListOfVisitor(visitorDetail:Dictionary<String,String>,id:String) -> ListOfVisitor {
         let visitorName = "\(visitorDetail["firstName"] ?? "" ) \(visitorDetail["lastName"] ?? "")"
         let trainerID = visitorDetail["trainerID"] ?? ""
-        let visitor = ListOfVisitor(visitorID: id, visitorName: visitorName, mobileNumber: visitorDetail["phoneNo"] ?? "", dateOfVisit: visitorDetail["dateOfVisit"] ?? "", dateOfJoining: visitorDetail["dateOfJoin"] ?? "", trainerName: "", trainerType: "", noOfVisit: visitorDetail["noOfVisit"] ?? "", trainerID: trainerID ?? "" )
+        let visitor = ListOfVisitor(visitorID: id, visitorName: visitorName, mobileNumber: visitorDetail["phoneNo"] ?? "", dateOfVisit: visitorDetail["dateOfVisit"] ?? "", dateOfJoining: visitorDetail["dateOfJoin"] ?? "", trainerName: "", trainerType: "", noOfVisit: visitorDetail["noOfVisit"] ?? "", trainerID: trainerID )
         return visitor
     }
     
@@ -742,7 +742,7 @@ class AppManager: NSObject {
     }
     
     func getCompleteMembershipDetail(membershipDetail:[String:String]) -> MembershipDetailStructure {
-        let m = MembershipDetailStructure(membershipID: membershipDetail["membershipID"]!, membershipPlan:  membershipDetail["membershipPlan"]!, membershipDetail:  membershipDetail["membershipDetail"]!, amount:  membershipDetail["amount"]!, startDate:  membershipDetail["startDate"]!, endDate:  membershipDetail["endDate"]!, totalAmount:  membershipDetail["totalAmount"]!, paidAmount: membershipDetail["paidAmount"]!, discount:  membershipDetail["discount"]!, paymentType:  membershipDetail["paymentType"]!, dueAmount:  membershipDetail["dueAmount"]!, purchaseTime:  membershipDetail["purchaseTime"]!, purchaseDate:  membershipDetail["purchaseDate"]!, membershipDuration: membershipDetail["membershipDuration"]!)
+        let m = MembershipDetailStructure(membershipID: membershipDetail["membershipID"]!, membershipPlan:  membershipDetail["membershipPlan"]!, membershipDetail:  membershipDetail["membershipDetail"]!, amount:  membershipDetail["amount"]!, startDate:  membershipDetail["startDate"]!, endDate:  membershipDetail["endDate"]!, totalAmount:  membershipDetail["totalAmount"]!, paidAmount: membershipDetail["paidAmount"]!, discount:  membershipDetail["discount"]!, paymentType:  membershipDetail["paymentType"]!, dueAmount:  membershipDetail["dueAmount"]!, purchaseTime:  membershipDetail["purchaseTime"]!, purchaseDate:  membershipDetail["purchaseDate"]!, membershipDuration: membershipDetail["membershipDuration"]!, purchaseTimeStamp:  membershipDetail["purchaseTimeStamp"]!)
         return m
     }
     
@@ -756,7 +756,7 @@ class AppManager: NSObject {
     func getPreviousMembership(membershipArray:Array<Dictionary<String,String>>) -> MembershipDetailStructure {
         
         let lastMemberhipData = membershipArray.last!
-        let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"]!, membershipPlan: lastMemberhipData["membershipPlan"]!, membershipDetail: lastMemberhipData["membershipDetail"]!, amount: lastMemberhipData["amount"]!, startDate: lastMemberhipData["startDate"]!, endDate: lastMemberhipData["endDate"]!, totalAmount: lastMemberhipData["totalAmount"]!, paidAmount: lastMemberhipData["paidAmount"]!, discount: lastMemberhipData["discount"]!, paymentType:lastMemberhipData["paymentType"]! , dueAmount: lastMemberhipData["dueAmount"]!,purchaseTime: lastMemberhipData["purchaseTime"]!,purchaseDate: lastMemberhipData["purchaseDate"]!, membershipDuration: lastMemberhipData["membershipDuration"]!)
+        let latestMemberhsip:MembershipDetailStructure = MembershipDetailStructure(membershipID: lastMemberhipData["membershipID"]!, membershipPlan: lastMemberhipData["membershipPlan"]!, membershipDetail: lastMemberhipData["membershipDetail"]!, amount: lastMemberhipData["amount"]!, startDate: lastMemberhipData["startDate"]!, endDate: lastMemberhipData["endDate"]!, totalAmount: lastMemberhipData["totalAmount"]!, paidAmount: lastMemberhipData["paidAmount"]!, discount: lastMemberhipData["discount"]!, paymentType:lastMemberhipData["paymentType"]! , dueAmount: lastMemberhipData["dueAmount"]!,purchaseTime: lastMemberhipData["purchaseTime"]!,purchaseDate: lastMemberhipData["purchaseDate"]!, membershipDuration: lastMemberhipData["membershipDuration"]!, purchaseTimeStamp:  lastMemberhipData["purchaseTimeStamp"]!)
         return latestMemberhsip
     }
     

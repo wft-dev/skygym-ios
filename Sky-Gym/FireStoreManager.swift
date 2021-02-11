@@ -319,12 +319,12 @@ class FireStoreManager: NSObject {
                 "password":password,
                 "memberDetail":memberDetail,
                 "memberships":memberships,
-                "attendence" :attendence
+                "attendence" :attendence,
+                "timeStamp":Date().timeIntervalSince1970
             ] , completion: {
                 err in
                 handler(err)
         })
-    
     }
     
     func addNewMembeship(memberID:String,membership:[String:String], completion:@escaping (Error?) -> Void) {
@@ -347,8 +347,9 @@ class FireStoreManager: NSObject {
     
     func getAllMembers(completion:@escaping ([[String:Any]]?,Error?)->Void) {
         var dataDirctionary:[[String:Any]] = []
-        // .whereField("adminID", isEqualTo: AppManager.shared.adminID) 
-        fireDB.collection("/Members").getDocuments(completion: {
+        fireDB.collection("/Members")
+        .order(by: "timeStamp", descending: false)
+            .getDocuments(completion: {
             (querySnapshot,err) in
             
             if err != nil {
@@ -797,23 +798,23 @@ class FireStoreManager: NSObject {
     }
     
     
-    func deleteMembershipWith(membershipID:String,memberID:String,completion:@escaping (Error?) -> Void) {  let ref = fireDB.collection("/Members").document("/\(memberID)")
+    func deleteMembershipWith(membershipID:String,memberID:String,membershipTimeStamp:String,completion:@escaping (Error?) -> Void) {  let ref = fireDB.collection("/Members").document("/\(memberID)")
         ref.getDocument(completion: {
             (docSnapshot, err) in
             
             if err == nil{
                 var membershipArray = (docSnapshot?.data())?["memberships"] as! Array<Dictionary<String,String>>
                 for singleMembership in membershipArray {
-                    if singleMembership["membershipID"] == membershipID {
+                    if singleMembership["membershipID"] == membershipID && singleMembership["purchaseTimeStamp"] == membershipTimeStamp {
                         membershipArray.remove(at: membershipArray.firstIndex(of: singleMembership)!)
-                        ref.updateData([
-                            "memberships":membershipArray
-                            ], completion: {
-                                err in
-                                completion(err)
-                        })
                     }
                 }
+                ref.updateData([
+                    "memberships":membershipArray
+                    ], completion: {
+                        err in
+                        completion(err)
+                })
             }
         })
         
@@ -832,7 +833,20 @@ class FireStoreManager: NSObject {
             "password":password,
             "trainerDetail":trainerDetail,
             "trainerPermission":trainerPermission,
-            "attendence":attendence
+            "attendence":attendence,
+            "timeStamp":Date().timeIntervalSince1970
+        ], completion: {
+            err in
+            completion(err)
+        })
+    }
+    
+    func updateTrainer(email:String,password:String,trainerID:String,trainerDetail:[String:Any],trainerPermission:[String:Bool],completion:@escaping (Error?)->Void) {
+        fireDB.collection("/Trainers").document("\(trainerID)").updateData([
+        "email":email,
+        "password":password,
+        "trainerDetail":trainerDetail,
+        "trainerPermission":trainerPermission
         ], completion: {
             err in
             completion(err)
@@ -841,7 +855,9 @@ class FireStoreManager: NSObject {
     
     func getAllTrainers(completion:@escaping ([[String:Any]]?,Error?)->Void) {
          var dataDirctionary:[[String:Any]] = [[:]]
-        fireDB.collection("/Trainers").getDocuments(completion: {
+        fireDB.collection("/Trainers")
+        .order(by: "timeStamp", descending: false)
+            .getDocuments(completion: {
             (querSnapshot,err) in
             if err != nil {
                 completion(nil,err)
@@ -1023,16 +1039,28 @@ class FireStoreManager: NSObject {
         fireDB.collection("/Memberships").document("/\(id)").setData([
             "id":id,
             "parentID":parentID,
-            "membershipDetail":membershipDetail
+            "membershipDetail":membershipDetail,
+            "timeStamp": Date().timeIntervalSince1970
         ], completion: {
             err in
             completion(err)
         })
     }
+    
+    func updateMembership(id:String,membershipDetail:[String:String],completion:@escaping (Error?)->Void)  {
+        fireDB.collection("/Memberships").document("/\(id)").updateData([
+            "membershipDetail" : membershipDetail
+            ], completion: {
+                err in
+                completion(err)
+        })   
+    }
 
     func getAllMembership(result:@escaping ([[String:Any]]?,Error?)->Void) {
         var membershipArray:[[String:Any]] = []
-        fireDB.collection("/Memberships").getDocuments(completion: {
+        fireDB.collection("/Memberships")
+            .order(by: "timeStamp", descending: false)
+            .getDocuments(completion: {
             (querySnapshot,err) in
             
             if err != nil {
@@ -1099,6 +1127,16 @@ class FireStoreManager: NSObject {
         fireDB.collection("/Visitors").document("/\(id)").setData([
             "id":id,
             "parentID":parentID,
+            "visitorDetail":visitorDetail,
+            "timeStamp":Date().timeIntervalSince1970
+            ], completion: {
+                err in
+                completion(err)
+        })
+    }
+    
+    func updateVisitor(id:String,visitorDetail:[String:String],completion:@escaping (Error?)->Void) {
+        fireDB.collection("/Visitors").document("/\(id)").updateData([
             "visitorDetail":visitorDetail
             ], completion: {
                 err in
@@ -1108,7 +1146,9 @@ class FireStoreManager: NSObject {
     
     func getAllVisitors(result:@escaping ([[String:Any]]?,Error?)->Void) {
          var visitorArray:[[String:Any]] = []
-        fireDB.collection("/Visitors").getDocuments(completion: {
+        fireDB.collection("/Visitors")
+        .order(by: "timeStamp", descending: false)
+            .getDocuments(completion: {
             (querySnapshot,err) in
             if err != nil {
                 result(nil,err)
@@ -1146,16 +1186,28 @@ class FireStoreManager: NSObject {
         fireDB.collection("/Events").document("/\(id)").setData([
             "id":id,
             "parentID":parentID,
-            "eventDetail":eventDetail
+            "eventDetail":eventDetail,
+            "timeStamp":Date().timeIntervalSince1970
         ], completion: {
             (err) in
             completion(err)
         })
     }
-   
+
+    func updateEvent(id:String,eventDetail:[String:Any],completion:@escaping (Error?)->Void) {
+        fireDB.collection("/Events").document("/\(id)").updateData([
+            "eventDetail":eventDetail
+            ], completion: {
+                err in
+                completion(err)
+        })
+    }
+    
     func getAllEvents(result:@escaping ([[String:Any]]?,Error?)->Void) {
         var eventArray:[[String:Any]] = []
-        fireDB.collection("/Events").getDocuments(completion: {
+        fireDB.collection("/Events")
+        .order(by: "timeStamp", descending: false)
+        .getDocuments(completion: {
             (querySnapshot,err)in
             if err != nil {
                 result(nil,err)

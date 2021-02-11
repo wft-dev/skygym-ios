@@ -279,8 +279,9 @@ class MembershipViewScreenViewController: BaseViewController {
     }
     
     func registerNewMembership() {
-        self.registerMembership(id:"\(Int.random(in: 1..<1000000))", membershipDetail: self.getMembershipData(), compltion: {
+        FireStoreManager.shared.addMembership(id: "\(Int.random(in: 1..<1000000))", membershipDetail: self.getMembershipData(), completion: {
             err in
+            
             if err != nil {
                 self.showMembershipAlert(title: "Error", message: "Error in adding membership,plese try again.")
             }else {
@@ -290,13 +291,15 @@ class MembershipViewScreenViewController: BaseViewController {
     }
     
     func updateMembership() {
-        self.registerMembership(id:AppManager.shared.membershipID, membershipDetail: self.getMembershipData(), compltion: {
-            err in
+        FireStoreManager.shared.updateMembership(id: AppManager.shared.membershipID, membershipDetail: self.getMembershipData(), completion: {
+            (err) in
+            
             if err != nil {
-                self.showMembershipAlert(title: "Error", message: "Error in updating membership,plese try again.")
+                self.showMembershipAlert(title: "Error", message: "Error in adding membership,plese try again.")
             }else {
                 self.showMembershipAlert(title: "Success", message: "Membership is updated successfully.")
             }
+
         })
     }
     

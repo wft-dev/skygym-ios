@@ -354,18 +354,32 @@ class ViewVisitorScreenViewController: BaseViewController {
                         if err != nil {
                             self.showVisitorAlert(title: "Error", message: "Error in uploading the image, Please try again.")
                         } else {
-                            FireStoreManager.shared.addVisitor(id: id, visitorDetail: visitorDetail, completion: {
-                                (err) in
-                                completion(err)
-                            })
+                            if self.isNewVisitor == true {
+                                FireStoreManager.shared.addVisitor(id: id, visitorDetail: visitorDetail, completion: {
+                                    (err) in
+                                    completion(err)
+                                })
+                            }else{
+                                FireStoreManager.shared.updateVisitor(id: id, visitorDetail: visitorDetail, completion: {
+                                    err in
+                                    completion(err)
+                                })
+                            }
                         }
                         self.isImgPickerOpened = false
                     })
                 } else {
-                    FireStoreManager.shared.addVisitor(id: id, visitorDetail: visitorDetail, completion: {
-                        (err) in
-                        completion(err)
-                    })
+                    if self.isNewVisitor == true {
+                          FireStoreManager.shared.addVisitor(id: id, visitorDetail: visitorDetail, completion: {
+                              (err) in
+                              completion(err)
+                          })
+                      }else{
+                          FireStoreManager.shared.updateVisitor(id: id, visitorDetail: visitorDetail, completion: {
+                              err in
+                              completion(err)
+                          })
+                      }
                 }
             }
         })

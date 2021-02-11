@@ -555,7 +555,7 @@ class TrainerEditScreenViewController: BaseViewController{
     @objc func showPicker(){
         self.isUserImgSelected = false
         self.imagePicker.allowsEditing = true
-        self.imagePicker.modalPresentationStyle = .fullScreen
+        self.imagePicker.modalPresentationStyle = .overCurrentContext
         self.imagePicker.sourceType = .photoLibrary
         present(self.imagePicker, animated: true, completion: nil)
     }
@@ -564,7 +564,7 @@ class TrainerEditScreenViewController: BaseViewController{
         self.isUserImgSelected = true
         self.userImg.tag = 1111
         self.imagePicker.allowsEditing = true
-        self.imagePicker.modalPresentationStyle = .fullScreen
+        self.imagePicker.modalPresentationStyle = .overCurrentContext
         self.imagePicker.sourceType = .photoLibrary
         present(self.imagePicker, animated: true, completion: nil)
       }
@@ -807,7 +807,7 @@ class TrainerEditScreenViewController: BaseViewController{
                                 SVProgressHUD.dismiss()
                                 self.showAlert(title: "Error", message: "Error in uploading changed user profile photo.")
                             } else {
-                                FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
+                                FireStoreManager.shared.updateTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
                                     err in
                                     SVProgressHUD.dismiss()
                                     if err != nil {
@@ -819,7 +819,7 @@ class TrainerEditScreenViewController: BaseViewController{
                             }
                         })
                     } else {
-                        FireStoreManager.shared.addTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
+                        FireStoreManager.shared.updateTrainer(email: email, password: password, trainerID: id, trainerDetail: trainerDetail, trainerPermission: trainerPermission, completion: {
                             err in
                             SVProgressHUD.dismiss()
                             if err != nil {

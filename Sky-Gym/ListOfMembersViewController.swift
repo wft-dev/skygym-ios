@@ -36,7 +36,7 @@ class ListOfMembersTableCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-       attachGestures()
+        attachGestures()
     }
     
     func attachGestures() {
@@ -499,6 +499,7 @@ extension ListOfMembersViewController : UITableViewDelegate{
                     self.listOfMemberTable.alpha = 0.0
                     self.noResultFoundText.isHidden = false
                     self.noResultFoundText.alpha = 1.0
+                    self.view.isUserInteractionEnabled = true
                 }
             }
         })

@@ -284,7 +284,7 @@ class ViewEventScreenViewController: BaseViewController {
     }
     
     func updateEvent() {
-        FireStoreManager.shared.addEvent(id:eventID , eventDetail: self.setEventDetails(), completion: {
+        FireStoreManager.shared.updateEvent(id:eventID , eventDetail: self.setEventDetails(), completion: {
             err in
             SVProgressHUD.dismiss()
             if err != nil {

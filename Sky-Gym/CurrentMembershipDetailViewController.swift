@@ -40,6 +40,7 @@ class CurrentMembershipDetailViewController: BaseViewController {
     var currentMembershipID:String = ""
     var purchasedMembershipID:String = ""
     var memberDetail:MemberFullNameAndPhone? = nil
+    var membershipTimeStamp:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,7 +94,7 @@ class CurrentMembershipDetailViewController: BaseViewController {
         let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
             _ in
 
-            FireStoreManager.shared.deleteMembershipWith(membershipID: deletingMembershipID, memberID:deletingMemberID!, completion: {
+            FireStoreManager.shared.deleteMembershipWith(membershipID: deletingMembershipID, memberID:deletingMemberID!, membershipTimeStamp: self.membershipTimeStamp, completion: {
                 err in
                 if err != nil {
                     self.showAlert(title: "Error", message: "Membership is not deleted.")
@@ -110,16 +111,15 @@ class CurrentMembershipDetailViewController: BaseViewController {
         present(alertController, animated: true, completion: nil)
     }
     
-    
     @IBAction func deletePreviousMembershipBtnAction(_ sender: Any) {
         let deletingMembershipID = self.purchasedMembershipID.count > 0 ? self.purchasedMembershipID : self.currentMembershipID
         let deletingMemberID = self.purchasedMembershipID.count > 0 ? memberDetail?.memberID : AppManager.shared.memberID
         let alertController = UIAlertController(title: "Attention", message: "Do you want to delete the current membership ?", preferredStyle: .alert)
-        
+
         let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
             _ in
-            
-            FireStoreManager.shared.deleteMembershipWith(membershipID: deletingMembershipID, memberID:deletingMemberID!, completion: {
+
+            FireStoreManager.shared.deleteMembershipWith(membershipID: deletingMembershipID, memberID:deletingMemberID!, membershipTimeStamp: self.membershipTimeStamp , completion: {
                 err in
                 if err != nil {
                     self.showAlert(title: "Error", message: "Membership is not deleted.")
@@ -128,7 +128,7 @@ class CurrentMembershipDetailViewController: BaseViewController {
                 }
             })
         })
-        
+
         let cancelAlertAction = UIAlertAction(title: "Cancel", style: .default, handler:nil)
         alertController.addAction(okAlertAction)
         alertController.addAction(cancelAlertAction)
@@ -256,6 +256,7 @@ extension CurrentMembershipDetailViewController {
     }
     
     func setCurrentMembership(memberDetail:MemberFullNameAndPhone,currentMembership:MembershipDetailStructure) {
+        self.membershipTimeStamp = currentMembership.purchaseTimeStamp
         let dueAmount = Int(currentMembership.dueAmount)
         
         if dueAmount! > 0 {

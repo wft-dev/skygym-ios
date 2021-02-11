@@ -83,7 +83,6 @@ class AddMemberViewController: BaseViewController {
     @IBOutlet weak var trainerListView: UIView!
     @IBOutlet weak var trainerListTable: UITableView!
     
-
     private lazy var imagePicker:UIImagePickerController = {
         return UIImagePickerController()
     }()
@@ -182,6 +181,10 @@ class AddMemberViewController: BaseViewController {
         self.memberValidation()
     }
     
+    @IBAction func trainerListBtnAction(_ sender: Any) {
+        self.showTrainerList()
+    }
+        
     @IBAction func generalTypeOpitonBtnAction(_ sender: Any) {
         if  generalTypeOptionBtn.currentImage ==  UIImage(named: "non_selecte") {
             self.generalTypeOptionBtn.setImage(UIImage(named: "selelecte"), for: .normal)
@@ -449,14 +452,16 @@ class AddMemberViewController: BaseViewController {
     }
     
     func showMembershipScreen()  {
+        SVProgressHUD.show()
         DispatchQueue.main.async {
-            self.myScrollView.contentSize.height = 800
+            self.myScrollView.contentSize.height = 850
             self.membershipBtn.backgroundColor = UIColor(red: 236/255, green: 217/255, blue: 72/255, alpha: 1.0)
             self.profileBtn.backgroundColor = .clear
             self.memberProfileView.isHidden = true
             self.memberProfileView.alpha = 0.0
             self.membershipView.isHidden = false
             self.membershipView.alpha = 1.0
+            SVProgressHUD.dismiss()
         }
     }
     
@@ -515,7 +520,8 @@ class AddMemberViewController: BaseViewController {
             "dueAmount":self.dueAmountTextField.text!,
             "purchaseTime": "\(AppManager.shared.getTime(date: Date()))",
             "purchaseDate": AppManager.shared.dateWithMonthName(date: Date()),
-            "membershipDuration" : "\(self.getMembershipDuration())"
+            "membershipDuration" : "\(self.getMembershipDuration())",
+            "purchaseTimeStamp" : "\(Date().timeIntervalSince1970)"
         ]]
         return membership
     }
@@ -810,8 +816,8 @@ class AddMemberViewController: BaseViewController {
         self.trainerListView.layer.borderColor = UIColor.black.cgColor
         self.trainerListView.isHidden = true
         self.trainerListView.alpha = 0.0
-        self.trainerNameTextField.isUserInteractionEnabled = true
-        self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
+        self.trainerNameTextField.isUserInteractionEnabled = false
+
         self.fetchTrainersByCategory(category: .general)
     }
     

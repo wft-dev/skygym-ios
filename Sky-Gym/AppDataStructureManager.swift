@@ -71,20 +71,21 @@ struct MemberDetailStructure {
 }
 
 struct MembershipDetailStructure {
-      var membershipID:String
-      var membershipPlan:String
-      var membershipDetail:String
-      var amount:String
-      var startDate:String
-      var endDate:String
-      var totalAmount:String
-      var paidAmount:String
-      var discount:String
-      var paymentType:String
-      var dueAmount:String
-      var purchaseTime:String
-      var purchaseDate:String
-      var membershipDuration:String
+    var membershipID:String
+    var membershipPlan:String
+    var membershipDetail:String
+    var amount:String
+    var startDate:String
+    var endDate:String
+    var totalAmount:String
+    var paidAmount:String
+    var discount:String
+    var paymentType:String
+    var dueAmount:String
+    var purchaseTime:String
+    var purchaseDate:String
+    var membershipDuration:String
+    var purchaseTimeStamp:String
 }
 
 struct ListOfMemberStr {
