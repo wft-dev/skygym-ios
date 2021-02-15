@@ -9,17 +9,16 @@
 import Foundation
 import MessageUI
 class MessengerManager: NSObject,MFMessageComposeViewControllerDelegate {
-    let textMessageRecipients = ["7015810695"]
-    
+
     func canSendText() -> Bool {
         return MFMessageComposeViewController.canSendText()
     }
     
-    func configuredMessageComposeViewController() -> MFMessageComposeViewController {
+    func configuredMessageComposeViewController(recipients:[String],body:String) -> MFMessageComposeViewController {
         let messageComposeVC = MFMessageComposeViewController()
         messageComposeVC.messageComposeDelegate = self
-        messageComposeVC.recipients = textMessageRecipients
-        messageComposeVC.body = "Just for testing ."
+        messageComposeVC.recipients = recipients
+        messageComposeVC.body = body
         return messageComposeVC
     }
 

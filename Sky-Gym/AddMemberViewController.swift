@@ -126,6 +126,8 @@ class AddMemberViewController: BaseViewController {
         super.viewDidLoad()
         self.addClickToDismissMembershipList()
         self.setCompleteView()
+        self.dueAmountTextField.isEnabled = false
+        self.dueAmountTextField.alpha = 0.4
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -1007,6 +1009,9 @@ extension AddMemberViewController:UITextFieldDelegate{
                             switch result {
                             case let .success(flag):
                                 if flag == false {
+                                    textField.layer.borderColor = .none
+                                    textField.layer.borderWidth = 0.0
+                                    self.emailErrorLabel.text = ""
                                     self.isAlreadyExistsEmail = false
                                     self.nextBtn.isEnabled = true
                                     self.nextBtn.alpha = 1.0

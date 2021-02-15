@@ -8,6 +8,7 @@
 
 import UIKit
 import SVProgressHUD
+import MessageUI
 
 class ListOfTrainersTableCell: UITableViewCell {
     @IBOutlet weak var trainerCellView: UIView!
@@ -27,6 +28,8 @@ class ListOfTrainersTableCell: UITableViewCell {
     @IBOutlet weak var attendLabel: UILabel!
 
     var imageName:String = "Attend"
+    let messenger = MessengerManager()
+    var customDelegate:CustomCellSegue? = nil
     
     override func awakeFromNib() {
         callLabel.isUserInteractionEnabled = true
@@ -42,11 +45,15 @@ class ListOfTrainersTableCell: UITableViewCell {
     }
     
     @objc func callAction()  {
-        print("call")
+        AppManager.shared.callNumber(phoneNumber: "7015810695")
     }
     
     @objc func messageAction()  {
-          print("message")
+        print("message")
+        if messenger.canSendText() {
+            let messangerVC = messenger.configuredMessageComposeViewController(recipients: ["7015810695"], body: "testing visitor .")
+            customDelegate?.showMessage(vc: messangerVC)
+        }
       }
     
    @objc func attendenceAction()  {
@@ -405,6 +412,7 @@ extension ListOfTrainersViewController:UITableViewDataSource{
         cell.selectionStyle = .none
         self.isAttendenceMarkedForTrainer(trainerID: singleTrainer.trainerID, cell: cell)
         self.setNumberOFMembers(trainerID: singleTrainer.trainerID, cell: cell)
+        cell.customDelegate = self
         
         return cell
     }
@@ -442,4 +450,14 @@ extension ListOfTrainersViewController:UISearchBarDelegate{
             self.listOfTrainerTable.reloadData()
         }
     }
+}
+
+
+extension ListOfTrainersViewController:CustomCellSegue{
+    func applySegue(id: String) {}
+    
+    func showMessage(vc: MFMessageComposeViewController) {
+        present(vc, animated: true, completion: nil)
+    }
+    
 }

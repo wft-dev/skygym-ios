@@ -90,6 +90,7 @@ class ProfileAdminViewController: UIViewController {
     @IBOutlet weak var updateBtn: UIButton!
     @IBOutlet weak var weekDaysListView: UIView!
     @IBOutlet weak var weekDaysListTable: UITableView!
+    @IBOutlet weak var weekDaysListBtn: UIButton!
     
     
     private lazy var imagePicker:UIImagePickerController = {
@@ -192,7 +193,7 @@ class ProfileAdminViewController: UIViewController {
         self.weekDaysListView.alpha = self.weekDaysListView.isHidden == true ? 0.0 : 1.0
 
         if self.weekDaysListView.isHidden == true {
-          //  self.setGymDaysFieldData()
+            self.setGymDaysFieldData()
         }
     }
 
@@ -222,6 +223,7 @@ class ProfileAdminViewController: UIViewController {
         AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray, errorLabels: self.errorLabelArray, flag: true)
         self.setHrLineView(isHidden: false, alpha: 1.0)
+        self.weekDaysListBtn.isEnabled = false
         self.addressTextView.isHidden = true
         self.addressTextView.alpha = 0.0
         AppManager.shared.hidePasswordTextField(hide: true,passwordTextField:self.passwordTextField,passwordLabel: self.passworNonEditLabel)
@@ -283,6 +285,7 @@ class ProfileAdminViewController: UIViewController {
             self.gymAddressNonEditLabel.alpha = 1.0
             self.updateBtn.isHidden = true
             self.adminProfileImg.isUserInteractionEnabled = false
+            self.weekDaysListBtn.isEnabled = false
         } else{
                 AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
                 AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray,errorLabels: self.errorLabelArray, flag: false)
@@ -298,6 +301,7 @@ class ProfileAdminViewController: UIViewController {
                 self.gymIDTextField.isEnabled = false
                 self.adminProfileImg.isUserInteractionEnabled = true
             self.passwordTextField.text = self.actualPassword?.text
+            self.weekDaysListBtn.isEnabled = true
         }
          }
 

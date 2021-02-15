@@ -25,14 +25,23 @@ class MemberDetailViewController: BaseViewController {
     @IBOutlet weak var upaidTextLabel: UILabel?
     @IBOutlet weak var memberDetailTable: UITableView!
     @IBOutlet weak var viewForMemberDetail: UIView!
+    @IBOutlet weak var callLabel: UILabel!
+    @IBOutlet weak var msgLabel: UILabel!
     
     var name:String = ""
     var address:String = ""
     var memberDetailOptionArrary:[String] = []
+    let messenger = MessengerManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        self.callLabel.isUserInteractionEnabled = true
+        self.msgLabel.isUserInteractionEnabled = true
+        
+        self.callLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(callAction)))
+        self.msgLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(msgAction)))
+        
         if AppManager.shared.loggedInRole == LoggedInRole.Member {
         memberDetailOptionArrary = ["Current membership details","Purchase","Attendence",""]
         }else {
@@ -59,10 +68,35 @@ class MemberDetailViewController: BaseViewController {
         self.showMemberWithID(id:AppManager.shared.memberID)
         self.memberDetailTable.reloadData()
     }
+    
+    @objc func callAction(){
+        AppManager.shared.callNumber(phoneNumber: "7015810695")
+    }
+    @objc func msgAction(){
+        print("message working.")
+        
+//        if messenger.canSendText() {
+//           let messageVC =  messenger.configuredMessageComposeViewController(recipients: ["7015810695"], body: "This is for testing member detail.")
+//            present(messageVC, animated: true, completion: nil)
+//        }
+        
+    }
 
     @objc func showMemberDetail(){
-        performSegue(withIdentifier: "memberProfileSegue", sender: nil)
+        DispatchQueue.main.async(execute: {
+            self.performSegue(withIdentifier: "memberProfileSegue", sender: nil)
+        })
+       
     }
+    
+    @IBAction func callBtnAction(_ sender: Any) {
+        self.callAction()
+    }
+    
+    @IBAction func msgBtnAction(_ sender: Any) {
+        self.msgAction()
+    }
+    
 }
 
 extension MemberDetailViewController{

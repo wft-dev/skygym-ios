@@ -171,11 +171,7 @@ class TrainerEditScreenViewController: BaseViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.tag = 1010
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-         self.setTrainerEditView()
+        self.setTrainerEditView()
         self.showTrainerBy(id: AppManager.shared.trainerID)
         self.weekDaysListTable.isScrollEnabled = false
         self.isWeekDaysListHidden = self.weekDayListView.isHidden
@@ -397,6 +393,7 @@ class TrainerEditScreenViewController: BaseViewController{
         self.generalTypeLabel.isUserInteractionEnabled = false
         self.personalTypeLabel.isUserInteractionEnabled = false
         self.setNonEditTrainerType(hide: false)
+        self.shiftDaysListBtn.isEnabled = false
         
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
@@ -434,6 +431,7 @@ class TrainerEditScreenViewController: BaseViewController{
         self.generalTypeLabel.isUserInteractionEnabled = true
         self.personalTypeLabel.isUserInteractionEnabled = true
         self.setNonEditTrainerType(hide: true)
+        self.shiftDaysListBtn.isEnabled = true
     }
  
     }
@@ -689,6 +687,7 @@ class TrainerEditScreenViewController: BaseViewController{
             self.setNonEditTrainerType(hide: false)
             self.generalTypeLabel.isUserInteractionEnabled = false
             self.personalTypeForNonEditLabel.isUserInteractionEnabled = false
+            self.shiftDaysListBtn.isEnabled = false
         } else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit:  true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
@@ -719,6 +718,7 @@ class TrainerEditScreenViewController: BaseViewController{
             self.generalTypeLabel.isUserInteractionEnabled = true
             self.personalTypeLabel.isUserInteractionEnabled = true
             self.idTextField.text = "\(Int.random(in: 1..<100000))"
+            self.shiftDaysListBtn.isEnabled = true
         }
 
         self.weekDaysListTable.dataSource = self
@@ -1110,6 +1110,9 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
                         switch result {
                         case let .success(flag):
                             if flag == false {
+                                textField.layer.borderColor = .none
+                                textField.layer.borderWidth = 0.0
+                                self.emailErrorLabel.text = ""
                                 self.isAlreadyExistsEmail = false
                                 self.updateBtn.isEnabled = true
                                 self.updateBtn.alpha = 1.0

@@ -43,7 +43,7 @@ class ListOfEventsViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
          self.fetchEvents()
-        self.setTrainerLayout()
+         self.setTrainerLayout()
     }
     
     @objc func refreshEventList(){

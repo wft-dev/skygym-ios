@@ -462,6 +462,9 @@ extension TrainerProfileViewController:UITextFieldDelegate {
                                 self.isAlreadyExistsEmail = false
                                 self.updateBtn.isEnabled = true
                                 self.updateBtn.alpha = 1.0
+                                textField.layer.borderColor = .none
+                                textField.layer.borderWidth = 0.0
+                                self.emailErrorLabel.text = ""
                             }else {
                                 textField.layer.borderColor = UIColor.red.cgColor
                                 textField.layer.borderWidth = 1.0

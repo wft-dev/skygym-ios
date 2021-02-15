@@ -51,12 +51,12 @@ class ListOfMembersTableCell: UITableViewCell {
     }
 
     @objc func call(_ sender: UITapGestureRecognizer) {
-       callNumber(phoneNumber: "7015810695")
+        AppManager.shared.callNumber(phoneNumber: "7015810695")
     }
 
     @objc func msg(_ sender: UITapGestureRecognizer) {
         if  messenger.canSendText() {
-            customCellDelegate?.showMessage(vc: messenger.configuredMessageComposeViewController())
+            customCellDelegate?.showMessage(vc: messenger.configuredMessageComposeViewController(recipients: ["7015810695"], body: "Testing."))
         }else {
             print("Error in sending message.")
         }
@@ -71,21 +71,7 @@ class ListOfMembersTableCell: UITableViewCell {
             customCellDelegate?.applySegue(id: "\(btnsStackView.tag)")
         }
      }
-    
-    private func callNumber(phoneNumber:String) {
-         if let phoneCallURL = URL(string: "TEL://\(phoneNumber)") {
-             let application:UIApplication = UIApplication.shared
-             if (application.canOpenURL(phoneCallURL)) {
-                 if #available(iOS 10.0, *) {
-                     application.open(phoneCallURL, options: [:], completionHandler: nil)
-                 } else {
-                     // Fallback on earlier versions
-                      application.openURL(phoneCallURL as URL)
-                 }
-             }
-         }
-     }
-    
+
     private func performAttandance(id:String){
         switch self.imageName{
         case "Attend":
@@ -144,11 +130,10 @@ class ListOfMembersViewController: BaseViewController {
         self.refreshControl.tintColor = .black
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Member List")
         self.listOfMemberTable.refreshControl = self.refreshControl
-        self.showMembers()
+        
     }
-
-   @objc func callAction() {
-        print("WORKING CALLING ACTION")
+    override func viewWillAppear(_ animated: Bool) {
+        self.showMembers()
     }
     
     @objc func refreshMembers(){

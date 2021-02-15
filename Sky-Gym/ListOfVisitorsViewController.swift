@@ -21,16 +21,37 @@ class VisitorTableCell: UITableViewCell {
     @IBOutlet weak var dateOfVisitLabel: UILabel!
     @IBOutlet weak var trainerTypeLabel: UILabel!
     @IBOutlet weak var visitorProfileImg: UIImageView!
-    @IBOutlet weak var visitorInfoStackView: UIStackView!
+    @IBOutlet weak var callBtn: UIButton!
+    @IBOutlet weak var callLabel: UILabel!
+    @IBOutlet weak var msgBtn: UIButton!
+    @IBOutlet weak var msgLabel: UILabel!
+    
     var delegate:CustomCellSegue? = nil
+    let messager = MessengerManager()
     
     override func awakeFromNib() {
         memberBtn.addTarget(self, action: #selector(becomeMember), for: .touchUpInside)
+        callBtn.addTarget(self, action: #selector(callAction), for: .touchUpInside)
+        msgBtn.addTarget(self, action: #selector(msgAction), for: .touchUpInside)
+        callLabel.isUserInteractionEnabled = true
+        msgLabel.isUserInteractionEnabled = true
+        callLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(callAction)))
+        msgLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(msgAction)))
     }
     
      @objc private func  becomeMember() {
         delegate?.applySegue(id: "\(memberBtn.tag)")
     }
+    
+     @objc private func  callAction() {
+        AppManager.shared.callNumber(phoneNumber: "7015810695")
+    }
+    
+     @objc private func  msgAction() {
+        let messageVC = messager.configuredMessageComposeViewController(recipients: ["7015810695"], body: "visitor message")
+        delegate?.showMessage(vc: messageVC)
+    }
+    
 }
 
 class ListOfVisitorsViewController: BaseViewController {
@@ -39,6 +60,7 @@ class ListOfVisitorsViewController: BaseViewController {
     @IBOutlet weak var listOfVisitorsNavigationBar: CustomNavigationBar!
     @IBOutlet weak var searchbarView: UIView!
     @IBOutlet weak var customSearchBar: UISearchBar!
+
     var visitorProfileImage:UIImage? = nil
     let refreshControl = UIRefreshControl()
     var visitorsArray:[ListOfVisitor] = []
@@ -48,7 +70,6 @@ class ListOfVisitorsViewController: BaseViewController {
     var trainerDic:Dictionary<String,TrainerNameAndType>? = nil
     
     override func viewDidLoad() {
-        super.viewDidLoad()
         self.setVisitorsNavigationBar()
         self.visitorsTable.separatorStyle = .none
         self.setVisitorSearchBar()
@@ -57,12 +78,9 @@ class ListOfVisitorsViewController: BaseViewController {
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Visitor List")
         self.refreshControl.addTarget(self, action: #selector(refreshVisitorList), for: .valueChanged)
         self.visitorsTable.refreshControl = self.refreshControl
-        self.visitorsTable.rowHeight = UITableView.automaticDimension
-        self.visitorsTable.estimatedRowHeight = UITableView.automaticDimension
     }
     
-    override func viewDidAppear(_ animated: Bool)  {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool)  {
         self.fetchVisitors()
     }
     
@@ -425,6 +443,7 @@ extension ListOfVisitorsViewController:UISearchBarDelegate{
 
 extension ListOfVisitorsViewController:CustomCellSegue{
     func showMessage(vc: MFMessageComposeViewController) {
+        self.present(vc, animated: true, completion: nil)
     }
     
     func applySegue(id: String) {

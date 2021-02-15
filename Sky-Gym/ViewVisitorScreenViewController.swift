@@ -392,7 +392,7 @@ class ViewVisitorScreenViewController: BaseViewController {
                if title == "Success" || title == "Retry"{
                 if message == "Visitor is added successfully." {
                     self.dismiss(animated: true, completion: nil)
-                }else { self.fetchVisitor(id: AppManager.shared.visitorID) }
+                }
                }
            })
            alert.addAction(okAction)
@@ -496,9 +496,13 @@ class ViewVisitorScreenViewController: BaseViewController {
                 switch result {
                 case let .success(flag):
                     if flag == false {
+                        self.visitorEmailTextField.layer.borderColor = .none
+                        self.visitorEmailTextField.layer.borderWidth = 0.0
+                        self.emailErrorLabel.text = ""
                         self.isAlreadyExistsEmail = false
                         self.updateBtn.isEnabled = true
                         self.updateBtn.alpha = 1.0
+
                     }else {
                         self.visitorEmailTextField.layer.borderColor = UIColor.red.cgColor
                         self.visitorEmailTextField.layer.borderWidth = 1.0
