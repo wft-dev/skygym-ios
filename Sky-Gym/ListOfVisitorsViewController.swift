@@ -189,12 +189,13 @@ class ListOfVisitorsViewController: BaseViewController {
              }
          })
         let deleteView = UIView()
-        deleteView.frame = CGRect(x: 0, y: 0, width: cellView.frame.width, height: cellView.frame.height)
+        deleteView.frame = CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height)
+
         let trashImgView = UIImageView(image: UIImage(named: "delete"))
         trashImgView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
         trashImgView.isUserInteractionEnabled = true
         trashImgView.tag = cellView.tag
-        
+        cell.contentView.addSubview(deleteView)
         deleteView.addSubview(trashImgView)
         trashImgView.translatesAutoresizingMaskIntoConstraints = false
         trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
@@ -204,11 +205,12 @@ class ListOfVisitorsViewController: BaseViewController {
         trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
         trashImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(deleteVisitor(_:))))
         deleteView.tag = 11
-        deleteView.heightAnchor.constraint(equalToConstant: cell.frame.height).isActive = true
-        deleteView.widthAnchor.constraint(equalToConstant: self.view.frame.width).isActive = true
+        
+//        deleteView.heightAnchor.constraint(equalToConstant: cell.frame.height).isActive = true
+//        deleteView.widthAnchor.constraint(equalToConstant: cell.frame.width).isActive = true
+
         deleteView.translatesAutoresizingMaskIntoConstraints = true
         deleteView.backgroundColor = .red
-        cell.contentView.addSubview(deleteView)
         
         cellView.addGestureRecognizer(leftSwipeGesture)
         cellView.addGestureRecognizer(rightSwipGesture)
@@ -218,8 +220,16 @@ class ListOfVisitorsViewController: BaseViewController {
         cell.layer.cornerRadius = 20
         cellView.layer.borderColor = UIColor(red: 211/255, green: 211/252, blue: 211/255, alpha: 1.0).cgColor
         cellView.layer.borderWidth = 1.0
+
+        deleteView.topAnchor.constraint(equalTo: cell.topAnchor, constant: 0).isActive = true
+        deleteView.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: 0).isActive = true
+        deleteView.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: 0).isActive = true
+        deleteView.bottomAnchor.constraint(equalTo: cell.bottomAnchor, constant: 0).isActive = true
         
         deleteView.superview?.sendSubviewToBack(deleteView)
+//        deleteView.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: 90).isActive = true
+//        deleteView.topAnchor.constraint(equalTo: cell.topAnchor, constant: 0 ).isActive  = true
+        
     }
 
     func setVisitorsNavigationBar() {
@@ -393,7 +403,9 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
         cell.memberBtn.tag = Int(singleVisitor.visitorID)!
         cell.selectionStyle = .none
         cell.visitorCellView.tag = Int(singleVisitor.visitorID)!
-        self.addVisitorCustomSwipe(cellView: cell.visitorCellView, cell: cell)
+        DispatchQueue.main.async {
+            self.addVisitorCustomSwipe(cellView: cell.visitorCellView, cell: cell)
+        }
         self.setTrainerNameAndType(trainerID: singleVisitor.trainerID, cell: cell)
 
         return cell

@@ -246,11 +246,13 @@ class TrainerEditScreenViewController: BaseViewController{
             self.registerTrainer(email: self.emailTextField.text!, password: password, id: self.idTextField.text!, trainerDetail: self.getTrainerFieldsData(), trainerPermission: self.getTrainerPermissionData())
         }else {
             DispatchQueue.main.async {
-                self.emailTextField.layer.borderColor = UIColor.red.cgColor
-                self.emailTextField.layer.borderWidth = 1.0
-                self.emailErrorLabel.text = "Email already exists."
-                self.updateBtn.isEnabled = false
-                self.updateBtn.alpha = 0.4
+                if ValidationManager.shared.isEmailValid(email: self.emailTextField.text!) {
+                    self.emailTextField.layer.borderColor = UIColor.red.cgColor
+                    self.emailTextField.layer.borderWidth = 1.0
+                    self.emailErrorLabel.text = "Email already exists."
+                    self.updateBtn.isEnabled = false
+                    self.updateBtn.alpha = 0.4
+                }
             }
         }
     }

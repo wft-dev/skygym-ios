@@ -171,29 +171,27 @@ class AppManager: NSObject {
             UserDefaults.standard.set(newValue, forKey: "trainerEventPermission")
         }
     }
-    
-
 
     func setStatusBarBackgroundColor(color: UIColor,alpha:CGFloat) {
         
         if #available(iOS 13.0, *) {
+            let subviews = UIApplication.shared.windows.first?.subviews
+            subviews?.forEach{
+                if $0.tag == 101 {
+                    $0.removeFromSuperview()
+                }
+            }
             let statusBar = UIView(frame: UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.windowScene?.statusBarManager?.statusBarFrame ?? CGRect.zero)
             statusBar.backgroundColor = color
             statusBar.alpha = alpha
+            statusBar.tag = 101
             UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.addSubview(statusBar)
-
         } else {
                 let statusBar = UIApplication.shared.value(forKeyPath: "statusBarWindow.statusBar") as? UIView
                 statusBar?.backgroundColor = color
                 statusBar?.alpha = alpha
             }
         }
-
-//        guard let statusBar = UIApplication.shared.value(forKeyPath: "statusBarWindow.statusBar") as? UIView else { return }
-//        statusBar.backgroundColor = color
-//        statusBar.alpha = alpha
-  //  }
-    
 
     func isEmailValid(email:String) -> Bool {
 //               let emailFormat = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"

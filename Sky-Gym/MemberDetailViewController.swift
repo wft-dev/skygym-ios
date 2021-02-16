@@ -205,6 +205,7 @@ extension MemberDetailViewController:UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "memberDetailCell", for: indexPath) as! MemberDetailTableViewCell
         cell.detailName.text = self.memberDetailOptionArrary[indexPath.row]
+        //cell.sele
         
         if cell.detailName.text == "" {
             cell.detailBtn.isHidden = true

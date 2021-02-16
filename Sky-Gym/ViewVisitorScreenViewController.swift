@@ -149,11 +149,13 @@ class ViewVisitorScreenViewController: BaseViewController {
         if ValidationManager.shared.isVisitorValidated(textFieldArray: self.textFieldArray, textView: self.visitorDetailTextView, phoneNumberTextField: self.visitorPhoneNoTextField, email: self.visitorEmailTextField.text!) == true && self.isAlreadyExistsEmail == false {
           self.isNewVisitor ? self.registerVisitor() : self.updateVisitor()
         }else {
-            self.visitorEmailTextField.layer.borderColor = UIColor.red.cgColor
-            self.visitorEmailTextField.layer.borderWidth = 1.0
-            self.emailErrorLabel.text = "Email already exists."
-            self.updateBtn.isEnabled = false
-            self.updateBtn.alpha = 0.4
+            if ValidationManager.shared.isEmailValid(email: self.visitorEmailTextField.text!) {
+                self.visitorEmailTextField.layer.borderColor = UIColor.red.cgColor
+                self.visitorEmailTextField.layer.borderWidth = 1.0
+                self.emailErrorLabel.text = "Email already exists."
+                self.updateBtn.isEnabled = false
+                self.updateBtn.alpha = 0.4
+            }
         }
     }
     

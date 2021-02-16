@@ -120,6 +120,9 @@ extension AdminRegistrationViewController{
         gymAddressTextView?.addPaddingToTextField()
         self.forwardBtn?.isEnabled = false
         self.forwardBtn?.alpha = 0.5
+        self.gymIDTextField?.isEnabled = false
+        self.gymIDTextField?.alpha = 0.7
+       self.gymIDTextField?.text = "\(Int.random(in: 1..<100000))"
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

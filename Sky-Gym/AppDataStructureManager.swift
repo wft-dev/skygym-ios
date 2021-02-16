@@ -114,6 +114,7 @@ struct PurchaseMembershipPlan {
     var paidAmount:String
     var purchaseDate:String
     var startDate:String
+    var timeStamp:String
 }
 
 struct Attendence {

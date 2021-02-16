@@ -379,6 +379,26 @@ class FireStoreManager: NSObject {
         })
     }
         
+    func getMembershipWithTimeStamp(memberID:String,membershipID:String,purchaseTimeStamp:String,result:@escaping (MembershipDetailStructure?,Error?) -> Void) {
+        fireDB.collection("/Members").document("\(memberID)").getDocument(completion: {
+            (memberDate,err) in
+            if err != nil {
+                result(nil,err)
+            } else {
+                let membershipArray = ((memberDate?.data())! as Dictionary<String,Any>)["memberships"] as! Array<Dictionary<String,Any>>
+                
+                for currentMembership in membershipArray {
+                    let currentMembershipID = currentMembership["membershipID"] as! String
+                    let timestamp = currentMembership["purchaseTimeStamp"] as! String
+                    if currentMembershipID == membershipID && purchaseTimeStamp == timestamp {
+                        result(AppManager.shared.getCompleteMembershipDetail(membershipDetail: currentMembership as! Dictionary<String,String>) , nil)
+                    }
+                }
+            }
+        })
+    }
+    
+    
     func getMembershipWith(memberID:String,membershipID:String,result:@escaping (MembershipDetailStructure?,Error?) -> Void) {
         fireDB.collection("/Members").document("\(memberID)").getDocument(completion: {
             (memberDate,err) in
@@ -389,7 +409,7 @@ class FireStoreManager: NSObject {
                 
                 for currentMembership in membershipArray {
                     let currentMembershipID = currentMembership["membershipID"] as! String
-                    if currentMembershipID == membershipID {
+                    if currentMembershipID == membershipID{
                         result(AppManager.shared.getCompleteMembershipDetail(membershipDetail: currentMembership as! Dictionary<String,String>) , nil)
                     }
                 }

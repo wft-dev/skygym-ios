@@ -142,9 +142,6 @@ class CurrentMembershipDetailViewController: BaseViewController {
             destination.isRenewMembership = true
         }
     }
-}
-
-extension CurrentMembershipDetailViewController {
     
     func showAlert(title:String,message:String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -197,7 +194,7 @@ extension CurrentMembershipDetailViewController {
     
     func getPurchasedMembershipDetail(memberID:String,membershipID:String) {
         SVProgressHUD.show()
-        FireStoreManager.shared.getMembershipWith(memberID: memberID, membershipID: membershipID, result: {
+        FireStoreManager.shared.getMembershipWithTimeStamp(memberID: memberID, membershipID: membershipID, purchaseTimeStamp: self.membershipTimeStamp, result: {
             (membership,err) in
             if err != nil {
                 SVProgressHUD.dismiss()
@@ -273,7 +270,7 @@ extension CurrentMembershipDetailViewController {
         self.mobileNumberLabel.text = memberDetail.phoneNo
         self.membershipPlanLabel.text = currentMembership.membershipPlan
         self.membershipEndDateLabel.text = currentMembership.endDate
-        self.membershipDetailLabel.text = currentMembership.membershipDetail.count > 0 ? "YES" : "NO"
+        self.membershipDetailLabel.text = currentMembership.membershipDetail  // .count > 0 ? "YES" : "NO"
         self.discountLabel.text = currentMembership.discount
         self.amountLabel.text = currentMembership.amount
         self.totalAmountLabel.text = currentMembership.totalAmount

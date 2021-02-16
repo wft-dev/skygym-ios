@@ -148,7 +148,7 @@ class AddMemberViewController: BaseViewController {
             self.profileAndMembershipBarView.isUserInteractionEnabled = false
             self.profileAndMembershipBarView.isHidden = true
             DispatchQueue.main.async {
-                self.topConstraintOfMembershipView.constant = -(self.profileAndMembershipBarView.frame.size.height + 10.0 )
+                self.topConstraintOfMembershipView.constant = -(self.profileAndMembershipBarView.frame.size.height + 20.0 )
                  self.updateBtn.setTitle("U P D A T E", for: .normal)
             }
         }
@@ -348,8 +348,8 @@ class AddMemberViewController: BaseViewController {
         case 18:
             ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.paymentErrorLabel, errorMessage: "Payment type required.")
             
-        case 19:
-            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dueAmountErrorLabel, errorMessage: "Enter due amount or 0." )
+//        case 19:
+//            ValidationManager.shared.requiredValidation(textField: textField, errorLabel: self.dueAmountErrorLabel, errorMessage: "Enter due amount or 0." )
 
         default:
             break
@@ -988,12 +988,14 @@ extension AddMemberViewController:UITextFieldDelegate{
         
     }
     
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if self.selectedDate != nil  {
+        
             switch textField.tag {
             case 4:
+                if self.selectedDate != nil  {
                 self.dateOfJoiningTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
-                
+                }
             case 5 :
                 if textField.text == "" {
                     textField.text = self.genderArray.first
@@ -1065,8 +1067,8 @@ extension AddMemberViewController:UITextFieldDelegate{
                     textField.borderStyle = .none
                     textField.layer.borderColor = UIColor.clear.cgColor
                     textField.layer.borderWidth = 0.0
-                    self.updateBtn.isEnabled = true
-                    self.updateBtn.alpha = 1.0
+                    self.discountTextField.isEnabled = true
+                    self.discountTextField.alpha = 1.0
                 } else {
                     DispatchQueue.main.async {
                         referenceText = amountInTotalTextField >= calculatedTotalAmount ? "Amount is larger than actual payable amount." : referenceText
@@ -1074,8 +1076,9 @@ extension AddMemberViewController:UITextFieldDelegate{
                         self.dueAmountTextField.text = "\(self.previousDueAmount)"
                         textField.layer.borderColor = UIColor.red.cgColor
                         textField.layer.borderWidth = 1.0
-                        self.updateBtn.isEnabled = false
-                        self.updateBtn.alpha = 0.4
+                        self.discountTextField.text = "0"
+                        self.discountTextField.isEnabled = false
+                        self.discountTextField.alpha = 0.4
                     }
                 }
                 
@@ -1090,14 +1093,21 @@ extension AddMemberViewController:UITextFieldDelegate{
             default:
                 break
             }
-        }
-        
+
         self.allNewMemberFieldsRequiredValidation(textField: textField)
         if self.isNewMember == true {
             ValidationManager.shared.updateBtnValidator(updateBtn:self.updateBtn , textFieldArray: self.textFieldArray, textView: self.membershipPlanView.isHidden == true ? self.addressTextView : self.membershipDetailTextView, phoneNumberTextField: self.phoneNumberTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
         } else {
             ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView, phoneNumberTextField: nil, email: nil, password: nil)
         }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2  , execute: {
+            if self.discountTextField.isEnabled == false {
+                    self.updateBtn.isEnabled = false
+                    self.updateBtn.alpha = 0.4
+            }
+
+        })
     }
 }
 

@@ -29,6 +29,7 @@ class PurchaseViewController: BaseViewController {
     var purchaseArray:[PurchaseMembershipPlan] = []
     var todayDate:Date = Date()
     var memberDetail:MemberFullNameAndPhone? = nil
+    var purchaseTimeStamp:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,11 +37,12 @@ class PurchaseViewController: BaseViewController {
         self.purchaseTable.separatorStyle = .none
         setBackAction(toView: self.purchaseNavigationBar)
         self.todayDate = AppManager.shared.getStandardFormatDate(date: Date())
+       
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.getMembershipPlans(id: AppManager.shared.memberID)
+         self.getMembershipPlans(id: AppManager.shared.memberID)
     }
 
     func setPurchaseNavigationBar() {
@@ -52,8 +54,8 @@ class PurchaseViewController: BaseViewController {
     }
     func setTableCellView(tableCellView:UIView)  {
         tableCellView.layer.cornerRadius = 12.0
-       tableCellView.layer.borderWidth = 1.0
-       tableCellView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
+        tableCellView.layer.borderWidth = 1.0
+        tableCellView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
         tableCellView.clipsToBounds = true
         tableCellView.isUserInteractionEnabled = true
         tableCellView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(moveToMembershipDetail(_:))))
@@ -61,6 +63,7 @@ class PurchaseViewController: BaseViewController {
     
     @objc func moveToMembershipDetail(_ gesture:UITapGestureRecognizer){
         let singleMembership = self.purchaseArray[gesture.view!.tag]
+        self.purchaseTimeStamp = singleMembership.timeStamp
         performSegue(withIdentifier: "membershipDetailSegue", sender: singleMembership.membershipID)
     }
     
@@ -85,19 +88,19 @@ class PurchaseViewController: BaseViewController {
                         let singleMembership = self.getPurchaseMemberPlan(membership: membership)
                         self.purchaseArray.append(singleMembership)
                     }
-                    self.purchaseTable.reloadData()
                 }else {
                     self.noPurchaseHistoryLabel.isHidden = false
                     self.noPurchaseHistoryLabel.alpha = 1.0
                     self.purchaseTable.isHidden = true
                     self.purchaseTable.alpha = 0.0
                 }
+                self.purchaseTable.reloadData()
             }
         })
     }
     
     func getPurchaseMemberPlan(membership:Dictionary<String,String>) -> PurchaseMembershipPlan {
-        let purchasePlan = PurchaseMembershipPlan(membershipID: membership["membershipID"]!, membershipPlan: membership["membershipPlan"]!, expireDate: membership["endDate"]!, amount:membership["totalAmount"]! , dueAmount: membership["dueAmount"]!, paidAmount: membership["amount"]!, purchaseDate:membership["purchaseDate"]!, startDate: membership["startDate"]!)
+        let purchasePlan = PurchaseMembershipPlan(membershipID: membership["membershipID"]!, membershipPlan: membership["membershipPlan"]!, expireDate: membership["endDate"]!, amount:membership["totalAmount"]! , dueAmount: membership["dueAmount"]!, paidAmount: membership["amount"]!, purchaseDate:membership["purchaseDate"]!, startDate: membership["startDate"]!, timeStamp: membership["purchaseTimeStamp"]!)
         
         return purchasePlan
     }
@@ -115,8 +118,9 @@ class PurchaseViewController: BaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "membershipDetailSegue" {
             let destinationVC = segue.destination as! CurrentMembershipDetailViewController
-           destinationVC.memberDetail = self.memberDetail
+            destinationVC.memberDetail = self.memberDetail
             destinationVC.purchasedMembershipID = sender as! String
+            destinationVC.membershipTimeStamp = self.purchaseTimeStamp
         }
     }
     
@@ -160,9 +164,10 @@ extension PurchaseViewController :UITableViewDataSource {
 }
 
 
-extension PurchaseViewController : UITableViewDelegate{
+//extension PurchaseViewController:UITableViewDelegate{
 //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//         let singleMembership = self.purchaseArray[indexPath.row]
-//        performSegue(withIdentifier: "membershipDetailSegue", sender: singleMembership.membershipID)
+//        let singleMembership = self.purchaseArray[indexPath.row]
+//
+//        self.performSegue(withIdentifier: "membershipDetailSegue", sender: singleMembership.membershipID)
 //    }
-}
+//}
