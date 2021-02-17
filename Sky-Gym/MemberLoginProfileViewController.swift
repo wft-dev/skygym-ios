@@ -485,8 +485,6 @@ extension MemberLoginProfileViewController : UIImagePickerControllerDelegate,UIN
     }
 }
 
-
-
 extension MemberLoginProfileViewController: UIPickerViewDataSource{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1

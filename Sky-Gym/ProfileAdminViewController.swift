@@ -706,7 +706,7 @@ extension ProfileAdminViewController : UITableViewDelegate{
 
 extension ProfileAdminViewController :UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        view.endEditing(true)
+//        view.endEditing(true)
         if touch.view?.isDescendant(of: self.weekDaysListView) == true ||
         touch.view?.tag == 110 {
             return false

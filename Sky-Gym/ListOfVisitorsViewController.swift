@@ -381,12 +381,12 @@ extension ListOfVisitorsViewController :UITableViewDataSource {
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return self.visitorsArray.count
+        return self.filteredVisitorArray.count > 0 ? self.filteredVisitorArray.count: self.visitorsArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "visitorCell", for: indexPath) as! VisitorTableCell
-        let singleVisitor = self.visitorsArray[indexPath.section]
+        let singleVisitor = self.filteredVisitorArray.count > 0 ? self.filteredVisitorArray[indexPath.section]: self.visitorsArray[indexPath.section]
        
         self.setAttandanceTableCellView(tableCellView: cell.visitorCellView)
         cell.contentView.layer.cornerRadius = 20.0
@@ -436,19 +436,19 @@ extension ListOfVisitorsViewController:UITableViewDelegate{
 extension ListOfVisitorsViewController:UISearchBarDelegate{
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.count > 0 {
+        if searchText.count > 1 {
             self.filteredVisitorArray.removeAll()
             for singleVisitor in self.visitorsArray {
                 let fullName = singleVisitor.visitorName
-                if  fullName.lowercased().contains(searchText.lowercased()) || singleVisitor.mobileNumber.contains(searchText){
+                if  fullName.lowercased().contains(searchText.lowercased()) || singleVisitor.mobileNumber.contains(searchText) {
                     self.filteredVisitorArray.append(singleVisitor)
-                    self.visitorsTable.reloadData()
+                    print("filtered array count : \(self.filteredVisitorArray.count) \(self.filteredVisitorArray)")
                 }
             }
         } else {
             self.filteredVisitorArray.removeAll()
-            self.visitorsTable.reloadData()
         }
+        self.visitorsTable.reloadData()
     }
     
 }

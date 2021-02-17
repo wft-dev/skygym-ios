@@ -231,6 +231,7 @@ class TrainerEditScreenViewController: BaseViewController{
     }
     
     @IBAction func showWeekDaysListBtnAction(_ sender: Any) {
+        self.view.endEditing(true)
         self.weekDayListView.isHidden = !self.weekDayListView.isHidden
         self.weekDayListView.alpha = self.weekDayListView.isHidden == true ? 0.0 : 1.0
  
@@ -267,6 +268,7 @@ class TrainerEditScreenViewController: BaseViewController{
     
     @objc func dismissWeekDaysList(_ gesture : UITapGestureRecognizer) {
         if self.weekDayListView.isHidden == false {
+            self.view.endEditing(true)
             self.weekDayListView.isHidden = true
             self.weekDayListView.alpha = 0.0
             self.isWeekDaysListHidden = true

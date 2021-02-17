@@ -105,19 +105,19 @@ class ListOfTrainersViewController: BaseViewController {
         self.refreshController.attributedTitle = NSAttributedString(string: "Fetching Trainer List")
         self.refreshController.addTarget(self, action: #selector(refreshTrainerList), for: .valueChanged)
         self.listOfTrainerTable.refreshControl = self.refreshController
-         self.fetcthAllTrainer()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         AppManager.shared.trainerID = ""
         FireStoreManager.shared.getAllMembers(completion: {
             (memberData,err) in
             if err == nil {
                 self.membersArray = memberData!
+                self.fetcthAllTrainer()
             }
         })
     }
+
     
   @objc func refreshTrainerList()  {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
@@ -253,21 +253,6 @@ class ListOfTrainersViewController: BaseViewController {
         })
     }
     
-    func setNumberOFMembers(trainerID:String,cell:ListOfTrainersTableCell) {
-        DispatchQueue.global(qos: .background).async {
-            let result = AppManager.shared.getNumberOfMemberAddedByTrainerWith(membersData: self.membersArray, trainerID: trainerID)
-            DispatchQueue.main.async {
-                switch result {
-                    
-                case let .success(count):
-                    cell.numberOfMembersLabel.text = "\(count)"
-                case .failure(_):
-                    cell.numberOfMembersLabel.text = "0"
-                }
-            }
-        }
-    }
-    
     func showAlert(title:String,message:String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAlertAction  = UIAlertAction(title: "OK", style: .default, handler: {
@@ -318,7 +303,6 @@ class ListOfTrainersViewController: BaseViewController {
         tableCellView.layer.cornerRadius = 20.0
         tableCellView.layer.borderWidth = 1.0
         tableCellView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
-
         tableCellView.clipsToBounds = true
     }
     
@@ -406,12 +390,11 @@ extension ListOfTrainersViewController:UITableViewDataSource{
         cell.dateOfJoiningLabel.text = singleTrainer.dateOfJoinging
         cell.trainerLabel.text = singleTrainer.type
         cell.salaryLabel.text = singleTrainer.salary
-        cell.numberOfMembersLabel.text = singleTrainer.members
-        cell.attendenceBtn.tag = Int(singleTrainer.trainerID)!
+        cell.attendenceBtn.tag = Int(singleTrainer.trainerID) ?? 0
         self.addTrainerCustomSwipe(cellView: cell.trainerCellView, cell: cell,id: singleTrainer.trainerID)
         cell.selectionStyle = .none
         self.isAttendenceMarkedForTrainer(trainerID: singleTrainer.trainerID, cell: cell)
-        self.setNumberOFMembers(trainerID: singleTrainer.trainerID, cell: cell)
+        cell.numberOfMembersLabel.text = "\(AppManager.shared.getNumberOfMemberAddedByTrainerWith(membersData: self.membersArray, trainerID: singleTrainer.trainerID))"
         cell.customDelegate = self
         
         return cell
@@ -437,21 +420,20 @@ extension ListOfTrainersViewController:UITableViewDelegate{
 
 extension ListOfTrainersViewController:UISearchBarDelegate{
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.count > 0 {
+        if searchText.count > 2 {
             self.filteredListOfTrainerArray.removeAll()
             for singleTrainer in self.listOfTrainerArray {
-                if  singleTrainer.trainerName.lowercased().contains(searchText.lowercased()){
+                if  singleTrainer.trainerName.lowercased().contains(searchText.lowercased()) == true  ||
+                singleTrainer.trainerPhone.contains(searchText) == true{
                     self.filteredListOfTrainerArray.append(singleTrainer)
-                    self.listOfTrainerTable.reloadData()
                 }
             }
         } else {
             self.filteredListOfTrainerArray.removeAll()
-            self.listOfTrainerTable.reloadData()
         }
+        self.listOfTrainerTable.reloadData()
     }
 }
-
 
 extension ListOfTrainersViewController:CustomCellSegue{
     func applySegue(id: String) {}

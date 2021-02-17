@@ -557,6 +557,7 @@ class AddMemberViewController: BaseViewController {
     func getTotalAmount() -> Int {
         let membershipAmount =  Int(self.amountTextField.text!) ?? 0
         let dueAmount = self.getDueAmount()
+        print("total amount is : \(membershipAmount - (dueAmount + self.getTotalDiscount()))")
         return membershipAmount - (dueAmount + self.getTotalDiscount())
     }
     
@@ -1056,32 +1057,56 @@ extension AddMemberViewController:UITextFieldDelegate{
                 ValidationManager.shared.requiredValidation(textField: self.endDateTextField, errorLabel: self.endDateErrorLabel, errorMessage: "End Date require.")
                 
             case 16:
-                let referenceAmount = self.previousDueAmount > 0  ? self.previousDueAmount : Int(self.amountTextField.text!) ?? 0
-                var referenceText = self.previousDueAmount > 0 ? "Amount is greater than due amount." :  "Amount is greater than membership amount."
-                let calculatedTotalAmount = self.getTotalAmount()
-                let amountInTotalTextField = Int(self.totalAmountTextField.text!) ?? 0
                 
-                if amountInTotalTextField <= referenceAmount && amountInTotalTextField <= calculatedTotalAmount  {
-                    self.dueAmountTextField.text = "\(self.getDueAmount())"
-                    self.totalAmountErrorLabel.text = ""
-                    textField.borderStyle = .none
-                    textField.layer.borderColor = UIColor.clear.cgColor
-                    textField.layer.borderWidth = 0.0
-                    self.discountTextField.isEnabled = true
-                    self.discountTextField.alpha = 1.0
-                } else {
-                    DispatchQueue.main.async {
-                        referenceText = amountInTotalTextField >= calculatedTotalAmount ? "Amount is larger than actual payable amount." : referenceText
-                        self.totalAmountErrorLabel.text = "\(referenceText)"
-                        self.dueAmountTextField.text = "\(self.previousDueAmount)"
-                        textField.layer.borderColor = UIColor.red.cgColor
-                        textField.layer.borderWidth = 1.0
-                        self.discountTextField.text = "0"
-                        self.discountTextField.isEnabled = false
-                        self.discountTextField.alpha = 0.4
+                if self.getDiscountAmount() > 0 {
+                    let amountInTotalTextField = Int(self.totalAmountTextField.text!) ?? 0
+                    let membershipAmount = Int(self.amountTextField.text!) ?? 0
+                    let discountAmount = self.getDiscountAmount()
+                    let calculatedTotalAmount = membershipAmount - discountAmount
+                    if amountInTotalTextField > calculatedTotalAmount {
+                        DispatchQueue.main.async {
+                            self.totalAmountErrorLabel.text = "Amount is larger than actual amount Rs. \(calculatedTotalAmount)"
+                            self.dueAmountTextField.text = "\(self.previousDueAmount)"
+                            textField.layer.borderColor = UIColor.red.cgColor
+                            textField.layer.borderWidth = 1.0
+                            self.discountTextField.isEnabled = false
+                            self.discountTextField.alpha = 0.4
+                        }
+                    }else {
+                        self.totalAmountErrorLabel.text = ""
+                        self.dueAmountTextField.text = "\(self.getDueAmount())"
+                        textField.layer.borderColor = .none
+                        textField.layer.borderWidth = 0.0
+                        self.discountTextField.isEnabled = true
+                        self.discountTextField.alpha = 1.0
+                    }
+                }else {
+                    let referenceAmount = self.previousDueAmount > 0  ? self.previousDueAmount : Int(self.amountTextField.text!) ?? 0
+                    var referenceText = self.previousDueAmount > 0 ? "Amount is greater than due amount." :  "Amount is greater than membership amount."
+                    let calculatedTotalAmount = self.getTotalAmount()
+                    let amountInTotalTextField = Int(self.totalAmountTextField.text!) ?? 0
+                    if amountInTotalTextField <= referenceAmount && amountInTotalTextField <= calculatedTotalAmount  {
+                        self.dueAmountTextField.text = "\(self.getDueAmount())"
+                        self.totalAmountErrorLabel.text = ""
+                        textField.borderStyle = .none
+                        textField.layer.borderColor = UIColor.clear.cgColor
+                        textField.layer.borderWidth = 0.0
+                        self.discountTextField.isEnabled = true
+                        self.discountTextField.alpha = 1.0
+                    } else {
+                        DispatchQueue.main.async {
+                            referenceText = amountInTotalTextField >= calculatedTotalAmount ? "Amount is larger than actual payable amount." : referenceText
+                            self.totalAmountErrorLabel.text = "\(referenceText)"
+                            self.dueAmountTextField.text = "\(self.previousDueAmount)"
+                            textField.layer.borderColor = UIColor.red.cgColor
+                            textField.layer.borderWidth = 1.0
+                            self.discountTextField.text = "0"
+                            self.discountTextField.isEnabled = false
+                            self.discountTextField.alpha = 0.4
+                        }
                     }
                 }
-                
+    
             case 17:
                 let discoutAmount = self.getDiscountAmount()
                 if self.previousDiscount != discoutAmount || self.previousDueAmount == 0 {

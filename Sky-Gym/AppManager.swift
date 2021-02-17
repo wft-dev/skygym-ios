@@ -776,33 +776,24 @@ class AppManager: NSObject {
     }
     
     func getGymDetail(data:Dictionary<String,Any>) -> GymDetail {
-        
+        let ownerName = "\(data["firstName"] as! String) \(data["lastName"] as! String)"
         let gymInfo:[Int] = data["gymDaysArrayIndexs"] as! [Int]
-        let gymDetail = GymDetail(gymName: data["gymName"] as! String, gymID: data["gymID"] as! String, gymOpeningTime:  data["gymOpenningTime"] as! String, gymClosingTime: data["gymClosingTime"] as! String,gymDays:"\(gymInfo.count)" , gymAddress: data["gymAddress"] as! String, gymOwnerName: data["firstName"] as! String, gymOwnerPhoneNumber: data["mobileNo"] as! String, gymOwnerAddress: data["gymAddress"] as! String)
+        let gymDetail = GymDetail(gymName: data["gymName"] as! String, gymID: data["gymID"] as! String, gymOpeningTime:  data["gymOpenningTime"] as! String, gymClosingTime: data["gymClosingTime"] as! String,gymDays:"\(gymInfo.count)" , gymAddress: data["gymAddress"] as! String, gymOwnerName: ownerName, gymOwnerPhoneNumber: data["mobileNo"] as! String, gymOwnerAddress: data["gymAddress"] as! String)
         
         return gymDetail
     }
     
-    
     func getNumberOfMemberAddedByTrainerWith(membersData:[Dictionary<String,Any>],trainerID:String) ->
-        Result<Int,Error> {
-        let semaphores = DispatchSemaphore(value: 0)
-        var result:Result<Int,Error>!
-        var counter:Int = 0
-            
+        Int {
+            var counter:Int = 0
             for member in membersData {
                 let parentID = member["parentID"] as! String
                 if parentID == trainerID {
                     counter += 1
                 }
             }
-            result = .success(counter)
-            semaphores.signal()
-            
-            let _ = semaphores.wait(wallTimeout: .distantFuture)
-            return result
+            return counter
     }
-    
     
     func getSelectedWeekdays(selectedArray:[Int],defaultArray:[String]) -> [String] {
         var array:[String] = []
