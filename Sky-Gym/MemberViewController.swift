@@ -693,6 +693,18 @@ extension MemberViewController:UITextFieldDelegate{
         }
         
         if textField.tag == 3 {
+            var row:Int = 0
+            switch textField.text {
+            case "Male":
+                row = 0
+            case "Female":
+                row = 1
+            case "Others":
+                row = 2
+            default:
+                row = 0
+            }
+            self.genderPickerView.selectRow(row, inComponent: 0, animated: true)
             textField.inputView = self.genderPickerView
         }
     }
@@ -785,8 +797,6 @@ extension MemberViewController:UITextViewDelegate {
                 self.updateBtn.alpha = 1.0
             }
         }
-
-        
     }
 }
 
@@ -817,7 +827,6 @@ extension MemberViewController:UITableViewDelegate {
             self.validator.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
         }
     }
-    
 }
 
 extension MemberViewController:UIPickerViewDataSource{
@@ -849,9 +858,8 @@ extension MemberViewController:UIGestureRecognizerDelegate{
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
          self.view.endEditing(true)
         if touch.view?.isDescendant(of: self.listOfTrainerView) == true ||
-        touch.view?.tag == 110{
+            touch.view?.tag == 110 {
             return false
-            
         }else {
             return true
         }

@@ -45,11 +45,11 @@ class FireStoreManager: NSObject {
     
     //FOR ADMIN LOGIN
     func isAdminLogin(email:String,password:String,result:@escaping (Bool,Error?)->Void) {
-       
-       
+    let decryptedPassword = ValidationManager.shared.encryption(text: password)
+        
         self.fireDB.collection("Admin")
             .whereField("email", isEqualTo: email)
-            .whereField("password", isEqualTo: password)
+            .whereField("password", isEqualTo: decryptedPassword)
             .getDocuments(completion: {
             (querySnapshot,err) in
             if err != nil {
@@ -76,7 +76,6 @@ class FireStoreManager: NSObject {
     
     func trainerOrMemberLogin(collectionPath:String,gymID:String,email:String,password:String,result:@escaping (Bool,Error?) -> Void) {
         let encryptedPassword = AppManager.shared.encryption(plainText: password)
-        print("ENCRYPTED PASSWORD IS : \(encryptedPassword)")
         self.fireDB.collection(collectionPath)
         .whereField("email", isEqualTo: email)
         .whereField("gymID", isEqualTo: gymID)
@@ -94,14 +93,14 @@ class FireStoreManager: NSObject {
                     AppManager.shared.gymID = data?["gymID"] as! String
                     if collectionPath == "Members" {
                         AppManager.shared.adminID = ""
-                        AppManager.shared.memberID = querySnapshot?.documents.first?.documentID as! String
+                        AppManager.shared.memberID = querySnapshot!.documents.first!.documentID
                         AppManager.shared.trainerID = ""
                         AppManager.shared.loggedInRole = LoggedInRole.Member
                         AppManager.shared.trainerName = ""
                         AppManager.shared.trainerType = ""
                     }else {
                         let trainerDetail = data?["trainerDetail"] as! Dictionary<String,Any>
-                        AppManager.shared.trainerID = querySnapshot?.documents.first?.documentID as! String
+                        AppManager.shared.trainerID = querySnapshot!.documents.first!.documentID
                         AppManager.shared.memberID = ""
                         AppManager.shared.adminID = ""
                         AppManager.shared.loggedInRole = LoggedInRole.Trainer
@@ -162,21 +161,26 @@ class FireStoreManager: NSObject {
         let roleStr = AppManager.shared.getRole(role: role)
         let ref = self.fireDB.collection("\(roleStr)").document("\(id)")
         let detail = role == .Member ? "memberDetail" : "trainerDetail"
+      
         
         ref.getDocument(completion: {
             (document,err) in
             if err == nil {
                 let detailData = document?.data()
-                var detailStr = detailData?["\(detail)"] as! Dictionary<String,Any>
-                detailStr.updateValue(password, forKey: "password")
-                
-                ref.updateData([
-                    "password":password,
-                    "\(detail)" : detailStr
-                    ], completion: {
-                        (err) in
-                        handler(err)
-                })
+                if detailData != nil {
+                    var detailStr = detailData?["\(detail)"] as! Dictionary<String,Any>
+                    detailStr.updateValue(password, forKey: "password")
+                    ref.updateData([
+                        "password":password,
+                        "\(detail)" : detailStr
+                        ], completion: {
+                            (err) in
+                            handler(err)
+                    })
+                }else {
+                    let error = NSError(domain: "", code: 401, userInfo: nil)
+                    handler(error)
+                }
             }else {
                 handler(err!)
             }
@@ -1352,8 +1356,8 @@ class FireStoreManager: NSObject {
                 }
                 currentMonth?.remove(at: index)
                 currentMonth?.insert(["\(currentDate)":currentDay], at: index)
-                currentYear?.updateValue(currentMonth, forKey: "\(month)")
-                attandanceDic.updateValue(currentYear, forKey: "\(year)")
+                currentYear?.updateValue(currentMonth!, forKey: "\(month)")
+                attandanceDic.updateValue(currentYear!, forKey: "\(year)")
                 
                 ref.updateData([
                     "attendence" :attandanceDic

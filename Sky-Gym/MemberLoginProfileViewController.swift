@@ -84,6 +84,7 @@ class MemberLoginProfileViewController: UIViewController {
     var memberLoginProfileEmail:String = ""
     var memberPassword:String = ""
     let genderArray = ["Male","Female","Other"]
+   // var isProfileImgSelected:Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -136,7 +137,7 @@ class MemberLoginProfileViewController: UIViewController {
         let memberImgData = self.memberProfileImg.image?.pngData()
         SVProgressHUD.show()
         
-        if isAllFieldsValid() == true && self.isAlreadyExistsEmail == false {
+        if isAllFieldsValid() == true && self.isAlreadyExistsEmail == false  {
             
             FireStoreManager.shared.updateUserCredentials(id: AppManager.shared.memberID, email: self.emailTextField.text!, password: self.memberPassword, handler: {
                 (err ) in
@@ -145,21 +146,28 @@ class MemberLoginProfileViewController: UIViewController {
                     DispatchQueue.global(qos: .background).async {
                         let result = FireStoreManager.shared.updateMemberProfileDetail(id: AppManager.shared.memberID, memberDetail: memberDetail)
                         
-                        switch result {
-                        case .failure(_):
-                            self.showAlert(title: "Error", message: "Error in updating member details.")
-                        case let .success(flag) :
-                            if flag == true {
-                                FireStoreManager.shared.uploadUserImg(imgData: (memberImgData)!, id: AppManager.shared.memberID, completion: {
-                                    (err) in
-                                    SVProgressHUD.dismiss()
-                                    if err == nil {
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .failure(_):
+                                self.showAlert(title: "Error", message: "Error in updating member details.")
+                            case let .success(flag) :
+                                if flag == true {
+                                    if self.isUserProfileUpdated == true {
+                                        FireStoreManager.shared.uploadUserImg(imgData: (memberImgData)!, id: AppManager.shared.memberID, completion: {
+                                            (err) in
+                                            SVProgressHUD.dismiss()
+                                            if err == nil {
+                                                self.showAlert(title: "Success", message: "Member detail is updated successfully.")
+                                            }
+                                        })
+                                    }else {
+                                        SVProgressHUD.dismiss()
                                         self.showAlert(title: "Success", message: "Member detail is updated successfully.")
                                     }
-                                })
-                            }else {
-                                SVProgressHUD.dismiss()
-                                self.showAlert(title: "Error", message: "Error in updating member details.")
+                                }else {
+                                    SVProgressHUD.dismiss()
+                                    self.showAlert(title: "Error", message: "Error in updating member details.")
+                                }
                             }
                         }
                     }
@@ -405,9 +413,20 @@ extension MemberLoginProfileViewController:UITextFieldDelegate {
         }
         
         if textField.tag == 3 {
+            var row:Int = 0
+            switch textField.text {
+            case "Male":
+                row = 0
+            case "Female":
+                row = 1
+            case "Others":
+                row = 2
+            default:
+                row = 0
+            }
+            self.genderPickerView.selectRow(row, inComponent: 0, animated: true)
             textField.inputView = self.genderPickerView
         }
-        
     }
         
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

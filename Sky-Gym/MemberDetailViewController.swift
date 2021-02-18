@@ -113,7 +113,7 @@ extension MemberDetailViewController{
             self.memberDetailsNavigationBar.leftArrowBtn.alpha = 1.0
         }
 
-        self.memberDetailsNavigationBar.navigationTitleLabel.text = "Member detail"
+        self.memberDetailsNavigationBar.navigationTitleLabel.text = AppManager.shared.loggedInRole == LoggedInRole.Member ? "Home" : "Member Detail"
         self.memberDetailsNavigationBar.searchBtn.isHidden = true
     }
     

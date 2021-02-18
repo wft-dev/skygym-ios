@@ -174,26 +174,28 @@ class TrainerProfileViewController: BaseViewController {
                 
                 DispatchQueue.global(qos: .background).async {
                     let result = FireStoreManager.shared.updateTrainerDetailBy(id: AppManager.shared.trainerID, trainerInfo: trainerInfo)
-                    
-                    switch result{
-                    case .failure(_) :
-                        SVProgressHUD.dismiss()
-                        print("Errror")
-                        self.showAlert(title: "Error", message: "Error in updating the trainer detail.")
-                    case .success(_) :
-                        if self.isUserProfileUpdated == true {
-                            FireStoreManager.shared.uploadUserImg(imgData: (trainerImgData)!, id: AppManager.shared.trainerID, completion: {
-                                (err) in
-                                SVProgressHUD.dismiss()
-                                if err == nil {
-                                    self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
-                                }
-                            })
-                        } else {
+                    DispatchQueue.main.async {
+                        switch result{
+                        case .failure(_) :
                             SVProgressHUD.dismiss()
-                            self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+                            print("Errror")
+                            self.showAlert(title: "Error", message: "Error in updating the trainer detail.")
+                        case .success(_) :
+                            if self.isUserProfileUpdated == true {
+                                FireStoreManager.shared.uploadUserImg(imgData: (trainerImgData)!, id: AppManager.shared.trainerID, completion: {
+                                    (err) in
+                                    SVProgressHUD.dismiss()
+                                    if err == nil {
+                                        self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+                                    }
+                                })
+                            } else {
+                                SVProgressHUD.dismiss()
+                                self.showAlert(title: "Success", message: "Trainer detail is updated successfully.")
+                            }
                         }
                     }
+
                 }
             })
         }else {

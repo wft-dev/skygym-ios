@@ -403,7 +403,7 @@ class ViewVisitorScreenViewController: BaseViewController {
     
     func registerVisitor() {
         SVProgressHUD.show()
-        self.register(id: "\(Int.random(in: 1..<100000))" , visitorDetail: self.getVisitorData(), completion: {
+        self.register(id: "\(Int.random(in: 9999..<1000000))", visitorDetail: self.getVisitorData(), completion: {
             err in
             SVProgressHUD.dismiss()
             if err != nil {
@@ -543,6 +543,18 @@ extension ViewVisitorScreenViewController:UITextFieldDelegate {
         }
         
         if textField.tag == 7 {
+            var row:Int = 0
+            switch textField.text {
+            case "Male":
+                row = 0
+            case "Female":
+                row = 1
+            case "Others":
+                row = 2
+            default:
+                row = 0
+            }
+            self.genderPickerView.selectRow(row, inComponent: 0, animated: true)
             textField.inputView = self.genderPickerView
         }
 
@@ -614,6 +626,7 @@ extension ViewVisitorScreenViewController : UIImagePickerControllerDelegate,UINa
         }
     }
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        self.isImgPickerOpened = false
         dismiss(animated: true, completion: nil)
     }
 }

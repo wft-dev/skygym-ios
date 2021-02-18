@@ -437,7 +437,7 @@ class TrainerEditScreenViewController: BaseViewController{
         self.setNonEditTrainerType(hide: true)
         self.shiftDaysListBtn.isEnabled = true
     }
- 
+    
     }
 
     func setHrLineView(isHidden:Bool,alpha:CGFloat) {
@@ -523,7 +523,6 @@ class TrainerEditScreenViewController: BaseViewController{
             $0?.clipsToBounds = true
         }
        
-        
         self.weekDayListView.layer.cornerRadius = 12.0
         self.weekDayListView.layer.borderColor = UIColor.black.cgColor
         self.weekDayListView.layer.borderWidth = 1.0
@@ -721,7 +720,7 @@ class TrainerEditScreenViewController: BaseViewController{
             self.setNonEditTrainerType(hide: true)
             self.generalTypeLabel.isUserInteractionEnabled = true
             self.personalTypeLabel.isUserInteractionEnabled = true
-            self.idTextField.text = "\(Int.random(in: 1..<100000))"
+            self.idTextField.text = "\(Int.random(in: 9999..<1000000))"
             self.shiftDaysListBtn.isEnabled = true
         }
 
@@ -1023,6 +1022,8 @@ extension TrainerEditScreenViewController:UIImagePickerControllerDelegate,UINavi
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        self.isUserImgSelected = false
+        self.userImg.tag = 1010
         dismiss(animated: true, completion: nil)
     }
 }
@@ -1057,6 +1058,18 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
         }
         
         if textField.tag == 7 {
+            var row:Int = 0
+            switch textField.text {
+            case "Male":
+                row = 0
+            case "Female":
+                row = 1
+            case "Others":
+                row = 2
+            default:
+                row = 0
+            }
+            self.genderPickerView.selectRow(row, inComponent: 0, animated: true)
             textField.inputView = self.genderPickerView
         }
         
@@ -1087,7 +1100,6 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
                 self.updateBtn.alpha = 0.4
             }
         }
-        
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -1138,11 +1150,11 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
             }
         }
         
-        if textField.tag == 7 {
-            if textField.text == "" {
-                textField.text = self.genderArray.first
-            }
-        }
+//        if textField.tag == 7 {
+//            if textField.text == "" {
+//                textField.text = self.genderArray.first
+//            }
+//        }
         
         self.allTrainerFieldsRequiredValidation(textField: textField)
        ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
@@ -1200,7 +1212,6 @@ extension TrainerEditScreenViewController:UITableViewDataSource{
     }
 }
 
-
 extension TrainerEditScreenViewController:UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if selectedWeekDayIndexArray.contains(indexPath.row){
@@ -1225,19 +1236,16 @@ extension TrainerEditScreenViewController:UIGestureRecognizerDelegate{
     }
 }
 
-
 extension TrainerEditScreenViewController : UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return self.genderArray.count
     }
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return self.genderArray[row]
     }
-    
 }
 
 extension TrainerEditScreenViewController : UIPickerViewDelegate{
@@ -1248,7 +1256,8 @@ extension TrainerEditScreenViewController : UIPickerViewDelegate{
             ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
         }
     }
-   
+    
+       
 }
 
 

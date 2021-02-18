@@ -20,7 +20,7 @@ class ValidationManager: NSObject {
     private let aesIV = "shraddhaahddarhs"
 
      private override init() {
-        aesKey = try! PKCS5.PBKDF2(password: passwordForKey, salt: saltForKey, iterations: 3000, keyLength: 32, variant: .sha256).calculate()
+        aesKey = try! PKCS5.PBKDF2(password: passwordForKey, salt: saltForKey, iterations: 100, keyLength: 32, variant: .sha256).calculate()
     }
     
     func isTextViewRequiredValid(textView:UITextView) -> Bool {

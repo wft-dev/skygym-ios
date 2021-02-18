@@ -119,7 +119,12 @@ class ForgotPasswordViewController: BaseViewController {
                     (err) in
                     SVProgressHUD.dismiss()
                     if err != nil {
-                        self.showAlert(title: "Error", message: "Password is not reset successfully.")
+                        let nsError = err! as NSError
+                        if nsError.code == 401 {
+                            self.showAlert(title: "Error", message: "Trying to reset password for other.")
+                        }else {
+                          self.showAlert(title: "Error", message: "Password is not reset successfully.")
+                        }
                     }else {
                        self.showAlert(title: "Success", message: "Password is reset successfully.")
                     }

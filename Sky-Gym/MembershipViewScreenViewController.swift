@@ -279,7 +279,7 @@ class MembershipViewScreenViewController: BaseViewController {
     }
     
     func registerNewMembership() {
-        FireStoreManager.shared.addMembership(id: "\(Int.random(in: 1..<1000000))", membershipDetail: self.getMembershipData(), completion: {
+        FireStoreManager.shared.addMembership(id: "\(Int.random(in: 9999..<1000000))", membershipDetail: self.getMembershipData(), completion: {
             err in
             
             if err != nil {

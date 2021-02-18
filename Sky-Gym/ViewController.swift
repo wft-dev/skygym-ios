@@ -74,22 +74,23 @@ class ViewController: UIViewController {
            }
        }
     
-    @IBAction func loginBtnAction(_ sender: Any) {
+    @objc func loginBtnAction() {
         SVProgressHUD.show()
-         let decryptedPassword = AppManager.shared.encryption(plainText: self.passwordTextField!.text!)
-        FireStoreManager.shared.isAdminLogin(email: (self.emailTextField?.text)!, password:decryptedPassword , result: {
-            (loggedIn,err) in
-            SVProgressHUD.dismiss()
-            if err != nil {
-                self.showLoginAlert(title: "Error", message: "Error in logging, due to network.")
-            } else {
-                if loggedIn == true{
-                    AppManager.shared.performLogin()
-                }else {
-                    self.showLoginAlert(title: "Error", message: "Username or password is incorrect.")
+      //  DispatchQueue.main.async {
+            FireStoreManager.shared.isAdminLogin(email: (self.emailTextField?.text)!, password:(self.passwordTextField?.text)! , result: {
+                (loggedIn,err) in
+                SVProgressHUD.dismiss()
+                if err != nil {
+                    self.showLoginAlert(title: "Error", message: "Error in logging, due to network.")
+                } else {
+                    if loggedIn == true{
+                        AppManager.shared.performLogin()
+                    }else {
+                        self.showLoginAlert(title: "Error", message: "Username or password is incorrect.")
+                    }
                 }
-            }
-        })
+            })
+       // }
     }
     
     @IBAction func registrationBtnAction(_ sender: Any) {
@@ -99,7 +100,6 @@ class ViewController: UIViewController {
     @IBAction func memberLoginBtnAction(_ sender: Any) {
         performSegue(withIdentifier: "memberLoginSegue", sender: nil)
     }
-    
       
        func assignbackground(){
              let background = UIImage(named: "Bg_yel.png")
@@ -136,6 +136,7 @@ class ViewController: UIViewController {
         memberLoginBtn?.layer.cornerRadius = 8.0
         memberLoginBtn?.clipsToBounds = true
         setUnderLineText(text: "Registration")
+        loginBtn.addTarget(self, action: #selector(loginBtnAction), for: .touchUpInside)
     }
     
     func showLoginAlert(title:String,message:String) {

@@ -272,7 +272,7 @@ class ViewEventScreenViewController: BaseViewController {
     func addEvent() {
         SVProgressHUD.show()
    
-        FireStoreManager.shared.addEvent(id:"\(Int.random(in: 1..<1000000))", eventDetail: self.setEventDetails(), completion: {
+        FireStoreManager.shared.addEvent(id:"\(Int.random(in: 9999..<1000000))", eventDetail: self.setEventDetails(), completion: {
             err in
             SVProgressHUD.dismiss()
             if err != nil {

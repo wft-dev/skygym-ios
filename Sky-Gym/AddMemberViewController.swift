@@ -132,7 +132,7 @@ class AddMemberViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.memberIDTextField.text = "\(Int.random(in: 1..<100000))"
+        self.memberIDTextField.text = "\(Int.random(in: 9999..<1000000))"
         self.memberIDTextField.isEnabled = false
         self.memberIDTextField.alpha = 0.4
         self.endDateTextField.isEnabled = false
@@ -816,6 +816,8 @@ class AddMemberViewController: BaseViewController {
         }
         self.trainerListView.layer.cornerRadius = 12.0
         self.trainerListView.layer.borderWidth = 1.0
+        self.trainerListTable.layer.cornerRadius = 12.0
+        self.trainerListTable.layer.borderWidth = 1.0
         self.trainerListView.layer.borderColor = UIColor.black.cgColor
         self.trainerListView.isHidden = true
         self.trainerListView.alpha = 0.0
@@ -984,6 +986,18 @@ extension AddMemberViewController:UITextFieldDelegate{
         }
         
         if textField.tag == 5 {
+        var row:Int = 0
+            switch textField.text {
+            case "Male":
+                row = 0
+            case "Female":
+                row = 1
+            case "Others":
+                row = 2
+            default:
+                row = 0
+            }
+            self.genderPickerView.selectRow(row, inComponent: 0, animated: true)
             textField.inputView = self.genderPickerView
         }
         
@@ -1246,8 +1260,8 @@ extension AddMemberViewController:UIPickerViewDelegate {
 extension AddMemberViewController:UIGestureRecognizerDelegate{
  
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        self.view.endEditing(true)
-        if touch.view?.isDescendant(of: self.trainerListView) == true {
+        if touch.view?.isDescendant(of: self.trainerListView) == true ||
+        touch.view?.tag == 110 {
             return false
         }else {
             return true

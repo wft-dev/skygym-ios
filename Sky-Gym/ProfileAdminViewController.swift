@@ -554,6 +554,18 @@ extension ProfileAdminViewController : UITextFieldDelegate{
         }
         switch textField.tag {
         case 5:
+            var row:Int = 0
+            switch textField.text {
+            case "Male":
+                row = 0
+            case "Female":
+                row = 1
+            case "Others":
+                row = 2
+            default:
+                row = 0
+            }
+            self.genderPickerView.selectRow(row, inComponent: 0, animated: true)
             textField.inputView = self.genderPickerView
             break
 

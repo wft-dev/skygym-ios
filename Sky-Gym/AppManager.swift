@@ -13,7 +13,11 @@ import SVProgressHUD
 class AppManager: NSObject {
     static let shared:AppManager = AppManager()
     private override init() {}
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+     lazy var appDelegate:AppDelegate = {
+        let appDelegate:AppDelegate = UIApplication.shared.delegate as! AppDelegate
+        return appDelegate
+    }()
+    // let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var expiredMember:Int = 0
     
     var adminID:String {
