@@ -95,6 +95,10 @@ class AddMemberViewController: BaseViewController {
         return UIPickerView()
     }()
     
+    private lazy var paymentTypePickerView:UIPickerView = {
+        return UIPickerView()
+    }()
+    
     var imgUrl:URL? = nil
     var isNewMember:Bool = false
     var visitorID:String = ""
@@ -119,6 +123,7 @@ class AddMemberViewController: BaseViewController {
     var trainerID:String = ""
     var isAlreadyExistsEmail:Bool = false
     let genderArray  = ["Male","Female","Other"]
+    let paymentTypeArray = ["Cash","Card"]
     var visitorEmail:String = ""
     var visitorProfileImageExists = false
     
@@ -139,7 +144,7 @@ class AddMemberViewController: BaseViewController {
         self.endDateTextField.alpha = 0.4
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
             if self.memberProfileView.isHidden == true{
-               self.myScrollView.contentSize.height = 750
+               self.myScrollView.contentSize.height = 800
             }
         })
         
@@ -557,7 +562,6 @@ class AddMemberViewController: BaseViewController {
     func getTotalAmount() -> Int {
         let membershipAmount =  Int(self.amountTextField.text!) ?? 0
         let dueAmount = self.getDueAmount()
-        print("total amount is : \(membershipAmount - (dueAmount + self.getTotalDiscount()))")
         return membershipAmount - (dueAmount + self.getTotalDiscount())
     }
     
@@ -753,6 +757,10 @@ class AddMemberViewController: BaseViewController {
         self.membershipDetailTextView.alpha = 0.6
         self.amountTextField.isEnabled = false
         self.amountTextField.alpha = 0.6
+        
+        self.paymentTypePickerView.tag = 0101
+        self.paymentTypePickerView.delegate = self
+        self.paymentTypePickerView.dataSource = self
         
         self.errorLabelArray = [self.firstNameErrorLabel,self.lastNameErrorLabel,self.memberIDErrorLabel,self.dateOfJoinErrorLabel,self.genderErrorLabel,self.passwordErrorLabel,self.uploadIDErrorLabel,self.trainerNameErrorLabel,self.emailErrorLabel,self.addressErrorLabel,self.phoneNumberErrorLabel,self.dobErrorLabel,self.membershipPlanErrorLabel,self.amountErrorLabel,self.startDateErrorLabel,self.totalAmountErrorLabel,self.discountErrorLabel,self.paymentErrorLabel,self.discountErrorLabel]
         
@@ -951,7 +959,7 @@ extension AddMemberViewController: UIImagePickerControllerDelegate,UINavigationC
 
 extension AddMemberViewController:UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 4 || textField.tag == 11 || textField.tag == 12  || textField.tag == 13  ||   textField.tag == 14 || textField.tag == 8 || textField.tag == 7  {
+        if textField.tag == 4 || textField.tag == 11 || textField.tag == 12  || textField.tag == 13  ||   textField.tag == 14 || textField.tag == 8 || textField.tag == 7 || textField.tag == 18 {
             return false
         } else {
             return true
@@ -1001,8 +1009,21 @@ extension AddMemberViewController:UITextFieldDelegate{
             textField.inputView = self.genderPickerView
         }
         
+        if textField.tag == 18 {
+            var row:Int = 0
+                switch textField.text {
+                case "Cash":
+                    row = 0
+                case "Card":
+                    row = 1
+                default:
+                    row = 0
+                }
+            textField.inputView = self.paymentTypePickerView
+            self.paymentTypePickerView.selectRow(row, inComponent: 0, animated: true)
+            print("scroll view offset : \(self.myScrollView.contentSize)")
+        }
     }
-    
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         
@@ -1128,6 +1149,14 @@ extension AddMemberViewController:UITextFieldDelegate{
                     self.totalAmountTextField.text = "\(membershipAmount - discoutAmount)"
                     self.dueAmountTextField.text = "0"
                 }
+            case 18:
+                if self.paymentTypeTextField.text == "" {
+                   self.paymentTypeTextField.text = self.paymentTypeArray.first
+                }
+                
+                if self.myScrollView.contentSize.height != 800 {
+                    self.myScrollView.contentSize.height = 820
+                }
                 
             default:
                 break
@@ -1236,26 +1265,31 @@ extension AddMemberViewController:UIPickerViewDataSource{
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return self.genderArray.count
+        return pickerView.tag == 0101 ? self.paymentTypeArray.count : self.genderArray.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return self.genderArray[row]
+        return  pickerView.tag == 0101 ? self.paymentTypeArray[row] : self.genderArray[row]
     }
     
 }
 
 extension AddMemberViewController:UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        self.genderTextField.text = self.genderArray[row]
+
+        if pickerView.tag == 0101 {
+            self.paymentTypeTextField.text = self.paymentTypeArray[row]
+        }else {
+            self.genderTextField.text = self.genderArray[row]
+        }
+        
         DispatchQueue.main.async {
             self.allNewMemberFieldsRequiredValidation(textField: self.genderTextField)
             ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
         }
     }
+    
 }
-
-
 
 extension AddMemberViewController:UIGestureRecognizerDelegate{
  

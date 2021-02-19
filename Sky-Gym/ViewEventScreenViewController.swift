@@ -371,7 +371,7 @@ extension ViewEventScreenViewController:UITextFieldDelegate{
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-    if textField.tag == 3 || textField.tag == 4 {
+        if  textField.tag == 2 || textField.tag == 3 || textField.tag == 4 {
             return false
         } else{
             return true

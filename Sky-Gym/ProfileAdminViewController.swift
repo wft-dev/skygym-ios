@@ -541,7 +541,8 @@ extension ProfileAdminViewController : UIImagePickerControllerDelegate, UINaviga
 
 extension ProfileAdminViewController : UITextFieldDelegate{
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 9 || textField.tag == 10  || textField.tag == 11  || textField.tag == 12 {            return false
+        if textField.tag == 5 || textField.tag == 9 || textField.tag == 10  || textField.tag == 11  || textField.tag == 12 {
+            return false
         }else{
             return true
         }

@@ -524,7 +524,7 @@ class ViewVisitorScreenViewController: BaseViewController {
 
 extension ViewVisitorScreenViewController:UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 4 || textField.tag == 5 {
+        if textField.tag == 4 || textField.tag == 5 || textField.tag == 7  {
             return false
         }else{
             return true

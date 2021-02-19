@@ -122,7 +122,7 @@ extension AdminRegistrationViewController{
         self.forwardBtn?.alpha = 0.5
         self.gymIDTextField?.isEnabled = false
         self.gymIDTextField?.alpha = 0.7
-       self.gymIDTextField?.text = "\(Int.random(in: 9999..<1000000))"
+        self.gymIDTextField?.text = "\(Int.random(in: 9999..<1000000))"
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -137,7 +137,6 @@ extension AdminRegistrationViewController{
             secondRegisterationVC.lastName = self.lastNameTextField?.text ?? ""
             secondRegisterationVC.id = UUID().uuidString
             SVProgressHUD.dismiss()
-
         }
     }
 }

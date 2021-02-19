@@ -434,12 +434,24 @@ extension TrainerProfileViewController:UITextFieldDelegate {
         }
         
         if textField.tag == 3 {
+            var row:Int = 0
+            switch textField.text {
+            case "Male":
+                row = 0
+            case "Female":
+                row = 1
+            case "Others":
+                row = 2
+            default:
+                row = 0
+            }
+            self.genderPickerView.selectRow(row, inComponent: 0, animated: true)
             textField.inputView = self.genderPickerView
         }
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField.tag == 7 {
+        if  textField.tag == 3 || textField.tag == 7 {
             return false
         }else {
           return  true
