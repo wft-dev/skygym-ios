@@ -18,6 +18,7 @@ class PuchaseTableViewCell: UITableViewCell {
     @IBOutlet weak var dueAmountLabel: UILabel!
     @IBOutlet weak var paidAmountLabel: UILabel!
     @IBOutlet weak var purchaseDateLabel: UILabel!
+    @IBOutlet weak var activeLabelHeightConstraint: NSLayoutConstraint!
 }
 
 class PurchaseViewController: BaseViewController {
@@ -142,15 +143,7 @@ extension PurchaseViewController :UITableViewDataSource {
         let startDate = AppManager.shared.getDate(date: singleMembership.startDate)
         let endDayDiff = Calendar.current.dateComponents([.day], from:todayDate , to: endDate).day!
         let startDayDiff = Calendar.current.dateComponents([.day], from:todayDate, to:startDate).day!
-  
-        if endDayDiff >= 0 && startDayDiff <= 0 {
-            cell.activePurchaseLabel.isHidden = false
-            cell.activePurchaseLabel.heightAnchor.constraint(equalToConstant: 25).isActive = true
-        } else {
-           cell.activePurchaseLabel.isHidden = true
-           cell.activePurchaseLabel.heightAnchor.constraint(equalToConstant: 0).isActive = true
-        }
-        
+
         cell.membershipPlanLabel.text = singleMembership.membershipPlan
         cell.membershipEndDateLabel.text = singleMembership.expireDate
         cell.amountLabel.text = singleMembership.amount
@@ -158,6 +151,16 @@ extension PurchaseViewController :UITableViewDataSource {
         cell.paidAmountLabel.text = singleMembership.paidAmount
         cell.purchaseDateLabel.text = singleMembership.purchaseDate
         cell.selectionStyle = .none
+        
+        DispatchQueue.main.async {
+            if endDayDiff >= 0 && startDayDiff <= 0 {
+                cell.activePurchaseLabel.isHidden = false
+                cell.activeLabelHeightConstraint.constant = 25
+            } else {
+                cell.activePurchaseLabel.isHidden = true
+                cell.activeLabelHeightConstraint.constant = 0 
+            }
+        }
         
        return cell
     }

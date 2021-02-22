@@ -658,8 +658,6 @@ extension ListOfMembersViewController : UITableViewDelegate{
                 memberCell.attendenceView?.isUserInteractionEnabled = flag!
                 memberCell.attendenceView?.alpha = flag == true ? 1.0 : 0.4
                 memberCell.attendenceLabel.alpha = flag == true ? 1.0 : 0.4
-              // memberCell.dueAmount.text = 
-              //  memberCell.dateOfExpiry.text = flag == true ? dateOfExpiry : "--"
                 memberCell.renewView?.isUserInteractionEnabled = membershipExists!
                 memberCell.renewView?.alpha = membershipExists == true ? 1.0 : 0.4
                 memberCell.renewView.alpha = membershipExists == true ? 1.0 : 0.4

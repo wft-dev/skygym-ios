@@ -104,7 +104,6 @@ class MemberViewController: BaseViewController {
     var isEdit:Bool = false
     var firstName:String = ""
     var lastName:String = ""
-   // var imgPicker:UIImagePickerController = UIImagePickerController()
     var datePicker = UIDatePicker()
     var toolBar:UIToolbar? = nil
     var imgURL:URL? = nil
@@ -123,12 +122,9 @@ class MemberViewController: BaseViewController {
     var listOfTrainers:[TrainerDataStructure] = []
     var isAlreadyExistsEmail:Bool = false
     var memberEmail:String = ""
-  //  let genderPickerView:UIPickerView = UIPickerView()
     let genderArray = ["Male","Female","Other"]
-   
 
     override func viewDidLoad() {
-      //  super.viewDidLoad()
         self.setMemberProfileCompleteView()
     }
 
@@ -145,7 +141,6 @@ class MemberViewController: BaseViewController {
                 
                 FireStoreManager.shared.updateMemberDetails(id: AppManager.shared.memberID,memberDetail: self.getMemberProfileDetails(), handler: {
                     (err) in
-                  //  SVProgressHUD.dismiss()
                     if err != nil {
                         self.showMemberProfileAlert(title: "Error", message: "Member detail is not updated.")
                     } else {
@@ -264,7 +259,6 @@ class MemberViewController: BaseViewController {
         self.toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
         self.memberNavigationBar()
         setTextFields()
-       // self.toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
         self.updateBtn.layer.cornerRadius = 15.0
         self.updateBtn.isHidden = !self.isImagePickerSelected
         
@@ -314,7 +308,6 @@ class MemberViewController: BaseViewController {
         
         self.trainerNameTextField.isUserInteractionEnabled = false
         self.trainerNameTextField.isEnabled = false
-        //self.trainerNameTextField.addTarget(self, action: #selector(showTrainerList), for: .editingDidBegin)
         self.fetchMemberProfileDetails(id: AppManager.shared.memberID)
         
         self.genderPickerView.delegate = self

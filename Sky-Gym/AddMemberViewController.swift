@@ -1021,7 +1021,6 @@ extension AddMemberViewController:UITextFieldDelegate{
                 }
             textField.inputView = self.paymentTypePickerView
             self.paymentTypePickerView.selectRow(row, inComponent: 0, animated: true)
-            print("scroll view offset : \(self.myScrollView.contentSize)")
         }
     }
     

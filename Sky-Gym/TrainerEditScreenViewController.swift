@@ -1150,11 +1150,11 @@ extension TrainerEditScreenViewController:UITextFieldDelegate{
             }
         }
         
-//        if textField.tag == 7 {
-//            if textField.text == "" {
-//                textField.text = self.genderArray.first
-//            }
-//        }
+        if textField.tag == 7 {
+            if textField.text == "" {
+                textField.text = self.genderArray.first
+            }
+        }
         
         self.allTrainerFieldsRequiredValidation(textField: textField)
        ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
@@ -1256,7 +1256,6 @@ extension TrainerEditScreenViewController : UIPickerViewDelegate{
             ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: self.addressView, phoneNumberTextField: self.phoneNoTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
         }
     }
-    
        
 }
 

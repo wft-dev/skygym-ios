@@ -76,7 +76,6 @@ class ViewController: UIViewController {
     
     @objc func loginBtnAction() {
         SVProgressHUD.show()
-      //  DispatchQueue.main.async {
             FireStoreManager.shared.isAdminLogin(email: (self.emailTextField?.text)!, password:(self.passwordTextField?.text)! , result: {
                 (loggedIn,err) in
                 SVProgressHUD.dismiss()
@@ -90,7 +89,6 @@ class ViewController: UIViewController {
                     }
                 }
             })
-       // }
     }
     
     @IBAction func registrationBtnAction(_ sender: Any) {

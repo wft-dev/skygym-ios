@@ -365,15 +365,6 @@ extension MembershipViewScreenViewController :UITextFieldDelegate{
                }
     }
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-//           if textField.tag == 1 {
-//            self.view.endEditing(true)
-//            DispatchQueue.main.async {
-//                self.view.endEditing(true)
-//            }
-//            self.membershipDropDownTitleTextField.showList()
-//           }
-       }
        
     func textFieldDidEndEditing(_ textField: UITextField) {
         self.allMembershipFieldsRequiredValidation(textField: textField, duplicateDateErrorText: duplicateErrorText)

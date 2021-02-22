@@ -205,9 +205,6 @@ class ListOfVisitorsViewController: BaseViewController {
         trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
         trashImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(deleteVisitor(_:))))
         deleteView.tag = 11
-        
-//        deleteView.heightAnchor.constraint(equalToConstant: cell.frame.height).isActive = true
-//        deleteView.widthAnchor.constraint(equalToConstant: cell.frame.width).isActive = true
 
         deleteView.translatesAutoresizingMaskIntoConstraints = true
         deleteView.backgroundColor = .red

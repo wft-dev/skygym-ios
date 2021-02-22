@@ -212,10 +212,8 @@ class ValidationManager: NSObject {
                     updateBtn.alpha = 1.0
                 }
             } else {
-               // DispatchQueue.main.async {
                     updateBtn.isEnabled = false
                     updateBtn.alpha = 0.4
-             //   }
             }
         }
     }
@@ -280,9 +278,7 @@ class ValidationManager: NSObject {
         }
         return flag
     }
-    
-    
-    
+ 
     func isTrainerProfileValidated(textFieldArray:[UITextField],textView:UITextView,phoneNumberTextField:UITextField?,email:String?,password:String?) -> Bool {
         var flag:Bool = false
         
