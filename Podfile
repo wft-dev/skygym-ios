@@ -18,4 +18,7 @@ target 'Sky-Gym' do
         pod 'iOSDropDown', '~> 0.3'
         pod 'CryptoSwift', '~> 1.3'
 	pod 'IQKeyboardManagerSwift', '~> 6.0.4'
+	pod 'MessageKit', '~> 3.3.0'
+	pod 'SDWebImage'
+
 end
