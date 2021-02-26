@@ -438,6 +438,8 @@ extension ListOfTrainersViewController:UISearchBarDelegate{
 extension ListOfTrainersViewController:CustomCellSegue{
     func applySegue(id: String) {}
     
+    func applySegueToChat(id: String, memberName: String) {}
+    
     func showMessage(vc: MFMessageComposeViewController) {
         present(vc, animated: true, completion: nil)
     }

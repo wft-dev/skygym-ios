@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 import MessageUI
+import Firebase
+import MessageKit
 
 enum Role:String {
     case Admin
@@ -126,6 +128,7 @@ struct Attendence {
  
 protocol CustomCellSegue {
     func applySegue(id:String)
+    func applySegueToChat(id:String,memberName:String)
     func showMessage(vc:MFMessageComposeViewController)
 }
 
@@ -220,5 +223,111 @@ struct Event {
     var eventEndTime:String
 }
 
+
+// CHAT SYSTEM STRUCTURE
+
+struct Chat {
+    var users:[String]
+    
+    var dic:[String:Any] {
+        return ["users":users]
+    }
+}
+
+extension Chat {
+    init?(dictionary:[String:Any]) {
+        guard let chatUsers = dictionary["users"] as? [String] else {
+            return nil
+        }
+        self.init(users: chatUsers)
+    }
+}
+
+struct Message {
+    var id :String
+    var content : String
+    var created:Timestamp
+    var senderDescription:SenderDecription
+    var imgURLStr :String
+    var imageMessage:ImageMessage?
+    var dictionary:[String:Any] {
+        return [
+            "id":id,
+            "created":created,
+            "content":content,
+            "senderID":senderDescription.senderId,
+            "senderName":senderDescription.displayName,
+            "imgURLStr":imgURLStr
+        ]
+    }
+}
+
+extension Message {
+    init?(dictionary:[String:Any]) {
+        guard let id = dictionary["id"] as? String,
+        let content = dictionary["content"] as? String ,
+        let created = dictionary["created"] as? Timestamp,
+        let senderID = dictionary["senderID"] as? String,
+        let senderName = dictionary["senderName"] as? String,
+        let imgUrlStr = dictionary["imgURLStr"] as? String
+            else {
+            return nil
+        }
+        self.init(id: id, content: content, created: created, senderDescription: SenderDecription(senderId: senderID, displayName: senderName), imgURLStr: imgUrlStr, imageMessage: nil)
+    }
+
+}
+
+// Structure for sending image as message
+struct ImageMessage:MediaItem {
+    var url: URL?
+    var image: UIImage?
+    var placeholderImage: UIImage
+    var size: CGSize
+    
+    init(image:UIImage) {
+        self.image = image
+        self.size = CGSize(width: 240, height: 240)
+        self.placeholderImage = UIImage()
+    }
+}
+
+//Sender type structre
+struct SenderDecription:SenderType {
+    var senderId: String
+    var displayName: String
+}
+
+
+extension Message : MessageType {
+    var sender: SenderType {
+        return senderDescription
+    }
+    var messageId: String {
+        return id
+    }
+    
+    var sentDate: Date {
+        return created.dateValue()
+    }
+    
+    var kind: MessageKind {
+        if self.imgURLStr == "" {
+            return .text(content)
+        }else {
+            return .photo(imageMessage ?? ImageMessage(image: UIImage(named: "photo")!))
+        }
+    }
+
+}
+
+// Chat usesr
+
+struct  ChatUsers {
+    var messageSenderID :String
+    var messageReceiverID :String
+    var messageSenderName:String
+    var messageReceiverName:String
+}
 
 

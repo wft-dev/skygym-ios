@@ -53,7 +53,5 @@ class CustomNavigationBar: UIView {
         appDelegate.swRevealVC.revealToggle(animated: true)
        // appDelegate.swRevealVC.panGestureRecognizer()
        }
-      
- 
-    
+  
 }

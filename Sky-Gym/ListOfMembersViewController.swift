@@ -55,11 +55,17 @@ class ListOfMembersTableCell: UITableViewCell {
     }
 
     @objc func msg(_ sender: UITapGestureRecognizer) {
-        if  messenger.canSendText() {
-            customCellDelegate?.showMessage(vc: messenger.configuredMessageComposeViewController(recipients: ["7015810695"], body: "Testing."))
-        }else {
-            print("Error in sending message.")
-        }
+        
+        customCellDelegate?.applySegueToChat(id: "\(btnsStackView.tag)", memberName: userName.text!)
+        
+//        if  messenger.canSendText() {
+//           // customCellDelegate?.showMessage(vc: messenger.configuredMessageComposeViewController(recipients: ["7015810695"], body: "Testing."))
+//
+//
+//        }else {
+//            print("Error in sending message.")
+//        }
+  
      }
     
     @objc func attendance(_ sender: UITapGestureRecognizer) {
@@ -554,6 +560,16 @@ extension ListOfMembersViewController : UITableViewDelegate{
             destinationVC.isNewMember = sender as! Bool
             destinationVC.isRenewMembership = !(sender as! Bool)
         }
+        
+        if segue.identifier == "chatSegue" {
+            let senderID = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminID : AppManager.shared.trainerID
+            let senderName = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminName : AppManager.shared.trainerName
+            let receiver = sender as! [String]
+            
+            let destinationVC = segue.destination as! ChatViewController
+            destinationVC.chatUsers = ChatUsers(messageSenderID: senderID, messageReceiverID: receiver.first!, messageSenderName: senderName, messageReceiverName: receiver.last!)
+        }
+        
     }
     
     func setUpFilterView()  {
@@ -685,6 +701,10 @@ extension ListOfMembersViewController:UISearchBarDelegate{
 }
 
 extension ListOfMembersViewController:CustomCellSegue{
+    func applySegueToChat(id: String, memberName: String) {
+         performSegue(withIdentifier: "chatSegue", sender: [id,memberName])
+    }
+
     func showMessage(vc: MFMessageComposeViewController) {
         present(vc, animated: true, completion: nil)
     }
@@ -693,5 +713,6 @@ extension ListOfMembersViewController:CustomCellSegue{
            AppManager.shared.memberID = id
         performSegue(withIdentifier: "addMemberSegue", sender: false)
     }
+    
 }
 

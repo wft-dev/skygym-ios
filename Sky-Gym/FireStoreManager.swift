@@ -61,9 +61,11 @@ class FireStoreManager: NSObject {
                         result(false,nil)
                     }
                     else{
-                        let adminData = querySnapshot?.documents.first?.data()
-                        AppManager.shared.adminID = adminData?["adminID"] as! String
-                        AppManager.shared.gymID = (adminData?["gymID"] as! String)
+                        let adminData = querySnapshot!.documents.first!.data()
+                        let adminDetail = adminData["adminDetail"] as! Dictionary<String,Any>
+                        AppManager.shared.adminID = adminData["adminID"] as! String
+                        AppManager.shared.gymID = (adminData["gymID"] as! String)
+                        AppManager.shared.adminName = "\(adminDetail["firstName"]!) \(adminDetail["lastName"]!)"
                         AppManager.shared.loggedInRole = LoggedInRole.Admin
                         result(true,nil)
                     }
@@ -1533,7 +1535,22 @@ class FireStoreManager: NSObject {
         })
     }
     
+    func getMessageCollection(doc:DocumentReference , handler:@escaping ([QueryDocumentSnapshot]) -> Void ) {
+        doc.collection("thread")
+            .order(by: "created", descending: false)
+            .getDocuments(completion: {
+            (querySnapshot,err) in
+            if err == nil {
+                handler(querySnapshot!.documents)
+            }
+        })
+
+    }
+  
 }
+
+
+
 
 
  

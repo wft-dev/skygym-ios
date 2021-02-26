@@ -454,6 +454,7 @@ extension ListOfVisitorsViewController:CustomCellSegue{
     func showMessage(vc: MFMessageComposeViewController) {
         self.present(vc, animated: true, completion: nil)
     }
+    func applySegueToChat(id: String, memberName: String) {}
     
     func applySegue(id: String) {
         self.performSegue(withIdentifier: "visitorMemberSegue", sender: id)

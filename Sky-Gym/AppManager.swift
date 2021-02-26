@@ -29,6 +29,15 @@ class AppManager: NSObject {
         }
     }
     
+    var adminName:String {
+        get {
+            UserDefaults.standard.string(forKey: "adminName")!
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "adminName")
+        }
+    }
+    
     var gymID:String {
            get {
                UserDefaults.standard.string(forKey: "gymID")!
@@ -175,7 +184,9 @@ class AppManager: NSObject {
             UserDefaults.standard.set(newValue, forKey: "trainerEventPermission")
         }
     }
-
+    
+    var chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
+    
     func setStatusBarBackgroundColor(color: UIColor,alpha:CGFloat) {
         
         if #available(iOS 13.0, *) {
