@@ -15,7 +15,7 @@ class ListOfTrainerTableCell: UITableViewCell {
 }
 
 class MemberViewController: BaseViewController {
-    @IBOutlet weak var memberNaviagationBar: CustomNavigationBar!
+    
     @IBOutlet weak var dateOfJoiningTextField: UITextField!
     @IBOutlet weak var memberIDTextField: UITextField!
     @IBOutlet weak var genderTextField: UITextField!
@@ -126,6 +126,7 @@ class MemberViewController: BaseViewController {
 
     override func viewDidLoad() {
         self.setMemberProfileCompleteView()
+        setMemberViewNavigationView()
     }
 
     func isFieldsDataValid() -> Bool {
@@ -183,6 +184,41 @@ class MemberViewController: BaseViewController {
                 self.updateBtn.alpha = 0.4
             }
         }
+    }
+    
+    func setMemberViewNavigationView() {
+        let title = NSAttributedString(string:"Member", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        self.navigationItem.titleView = titleLabel
+        let backButton = UIButton()
+        let editButton = UIButton()
+        editButton.setImage(UIImage(named: "edit"), for: .normal)
+        editButton.addTarget(self, action: #selector(makeEditable), for: .touchUpInside)
+        editButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        editButton.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        editButton.widthAnchor.constraint(equalToConstant: 18).isActive = true
+        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+        backButton.addTarget(self, action: #selector(memberViewBackBtnAction), for: .touchUpInside)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 15).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 15).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+        let rightStackView = UIStackView(arrangedSubviews: [editButton,spaceBtn])
+        stackView.widthAnchor.constraint(equalToConstant: 25).isActive = true
+        rightStackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        let backBtn = UIBarButtonItem(customView: stackView)
+        let rightEditBtn = UIBarButtonItem(customView: rightStackView)
+        
+        navigationItem.leftBarButtonItem = backBtn
+        navigationItem.rightBarButtonItem = rightEditBtn
+    }
+    
+    @objc  func memberViewBackBtnAction() {
+        self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func generalToggleBtnAction(_ sender: Any) {
@@ -257,7 +293,6 @@ class MemberViewController: BaseViewController {
     func setMemberProfileCompleteView()  {
         SVProgressHUD.show()
         self.toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
-        self.memberNavigationBar()
         setTextFields()
         self.updateBtn.layer.cornerRadius = 15.0
         self.updateBtn.isHidden = !self.isImagePickerSelected
@@ -328,20 +363,6 @@ class MemberViewController: BaseViewController {
         self.selectedDate = dateFormatter.string(from:datePicker.date )
         self.view.endEditing(true)
       }
-    
-    func memberNavigationBar()  {
-        memberNaviagationBar.menuBtn.isHidden = true
-        memberNaviagationBar.leftArrowBtn.isHidden = false
-        memberNaviagationBar.leftArrowBtn.alpha = 1.0
-        memberNaviagationBar.searchBtn.isHidden = true
-        memberNaviagationBar.navigationTitleLabel.text = "Member"
-        self.setBackAction(toView: self.memberNaviagationBar)
-        if AppManager.shared.loggedInRole != LoggedInRole.Member {
-            memberNaviagationBar?.editBtn.isHidden = false
-            memberNaviagationBar?.editBtn.alpha = 1.0
-            memberNaviagationBar?.editBtn.addTarget(self, action: #selector(makeEditable), for: .touchUpInside)
-        }
-    }
     
     private func addClickToDismissTrainerList() {
 

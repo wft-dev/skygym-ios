@@ -29,6 +29,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IQKeyboardManager.shared.layoutIfNeededOnUpdate = true
         //IQKeyboardManagerSwift.IQKeyboardManager.shared.sugge
         
+        
+        
+        
     return true
     }
     
@@ -41,16 +44,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
         }
         let menuItemVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "menuItemVC") as! MenuItemsViewController
-        self.swRevealVC.frontViewController =  dashboardVC
+        self.swRevealVC.frontViewController = UINavigationController(rootViewController: dashboardVC!)
         self.swRevealVC.rearViewController = menuItemVC
         
         if AppManager.shared.isLoggedIn == true {
-            window?.rootViewController = swRevealVC
+            window?.rootViewController =  swRevealVC
         }else {
-            window?.rootViewController = loginVC
+            window?.rootViewController =  loginVC  
         }
         window?.makeKeyAndVisible()
     }
+    
+    func setChatView() {
+        let chatViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
+        let navigationController = UINavigationController(rootViewController: chatViewController)
+        
+        window?.rootViewController = navigationController
+        window?.makeKeyAndVisible()
+    }
+    
+    
     
     // MARK: UISceneSession Lifecycle
 

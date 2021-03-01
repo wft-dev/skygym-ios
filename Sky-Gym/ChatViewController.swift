@@ -12,35 +12,63 @@ import Firebase
 import MessageKit
 import SDWebImage
 import SVProgressHUD
+import IQKeyboardManagerSwift
 
-class ChatViewController: MessagesViewController {
+class ChatViewController: MessagesViewController{
     var currentSenderUser:SenderDecription? = nil
     var chatUsers:ChatUsers? = nil
     var messages:[Message] = []
     var docRef:DocumentReference? = nil
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
+       // IQKeyboardManager.shared.disabledDistanceHandlingClasses.append(ChatViewController.self)
         self.currentSenderUser = SenderDecription(senderId: self.chatUsers!.messageSenderID, displayName: self.chatUsers!.messageSenderName)
-        self.messagesCollectionView.messagesDataSource = self
-        self.messagesCollectionView.messagesDisplayDelegate = self
-        self.messagesCollectionView.messagesLayoutDelegate = self
+        messagesCollectionView.messagesDataSource = self
+        messagesCollectionView.messagesDisplayDelegate = self
+      messagesCollectionView.messagesLayoutDelegate = self
         messageInputBar.delegate = self
         self.loadChat()
-        
-//        let a =  Bundle.main.loadNibNamed("CustomNavigationBar", owner: self, options: nil)?.first as! CustomNavigationBar
-//       // chatNavigationView.backgroundColor = .red
-//
-//        self.messagesCollectionView.addSubview(a)
+        setNavigationBar()
     }
-    
 
   private  func insertNewMessage(message:Message) {
         messages.append(message)
-        messagesCollectionView.reloadData()
+    messagesCollectionView.reloadData()
         DispatchQueue.main.async {
             self.messagesCollectionView.scrollToBottom(animated: true)
         }
+    }
+    
+    func setNavigationBar()  {
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = false
+        let title = NSAttributedString(string:self.chatUsers!.messageReceiverName, attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        self.navigationItem.titleView = titleLabel
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+        backButton.addTarget(self, action: #selector(backBtnAction), for: .touchUpInside)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let backBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = backBtn
+
+        
+        
+    }
+    
+    @objc func backBtnAction(){
+        self.navigationController?.popToRootViewController(animated: true)
     }
     
   private  func saveMessage(message:Message) {
@@ -131,18 +159,13 @@ class ChatViewController: MessagesViewController {
 
 extension ChatViewController:InputBarAccessoryViewDelegate {
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
-       // print("Current user : \(self.currentSenderUser)")
         let msg = Message(id: UUID().uuidString, content: text, created: Timestamp(), senderDescription: self.currentSenderUser!, imgURLStr: "", imageMessage: nil)
         
         insertNewMessage(message: msg)
         saveMessage(message: msg)
         
         inputBar.inputTextView.text = ""
-        
-       // messagesCollectionView.reloadData()
-       // messagesCollectionView.scrollToBottom(animated: true)
         inputBar.inputTextView.resignFirstResponder()
-       
     }
 }
 

@@ -57,7 +57,7 @@ class ListOfMembersTableCell: UITableViewCell {
     @objc func msg(_ sender: UITapGestureRecognizer) {
         
         customCellDelegate?.applySegueToChat(id: "\(btnsStackView.tag)", memberName: userName.text!)
-        
+
 //        if  messenger.canSendText() {
 //           // customCellDelegate?.showMessage(vc: messenger.configuredMessageComposeViewController(recipients: ["7015810695"], body: "Testing."))
 //
@@ -102,7 +102,7 @@ class ListOfMembersTableCell: UITableViewCell {
 }
 
 class ListOfMembersViewController: BaseViewController {
-    @IBOutlet weak var navigationView: CustomNavigationBar!
+    
     @IBOutlet weak var searchFilterView: UIView!
     @IBOutlet weak var listOfMemberTable: UITableView!
     @IBOutlet weak var filterView: UIView!
@@ -121,25 +121,64 @@ class ListOfMembersViewController: BaseViewController {
     @IBOutlet weak var CheckinFilterBtn: UIButton!
     @IBOutlet weak var checkoutFilterBtn: UIButton!
     @IBOutlet weak var noResultFoundText: UILabel!
-        
+    @IBOutlet weak var searchBarTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var searchBarHeightConstraint: NSLayoutConstraint!
+    
     var listOfMemberArray:[ListOfMemberStr] = []
     var filteredMemberArray:[ListOfMemberStr] = []
     var userImg:UIImage? = nil
     var filterationLabel:String = "allMemberFilteration"
     let refreshControl = UIRefreshControl()
+    
+    var reciverName:String = ""
+    var reciverID:String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCompleteListOfMembersView()
         self.setUpFilterView()
+        
         self.refreshControl.addTarget(self, action: #selector(refreshMembers), for: .valueChanged)
         self.refreshControl.tintColor = .black
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Member List")
         self.listOfMemberTable.refreshControl = self.refreshControl
-        
     }
     override func viewWillAppear(_ animated: Bool) {
         self.showMembers()
+        setListOfmembersNavigationBar()
+    }
+    
+    func setListOfmembersNavigationBar() {
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+            let title = NSAttributedString(string: "Member", attributes: [
+                NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+            ])
+            let titleLabel = UILabel()
+            titleLabel.attributedText = title
+            self.navigationController?.navigationBar.topItem?.titleView = titleLabel
+            let menuBtn = UIButton()
+            let searchBtn = UIButton()
+            searchBtn.setImage(UIImage(named:"search-1"), for: .normal)
+            menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+            searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
+            menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+            searchBtn.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+            searchBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+            searchBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+            menuBtn.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+            let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+            stackView.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            let rightspaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let rightstackView = UIStackView(arrangedSubviews: [searchBtn,rightspaceBtn])
+            rightstackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+            self.navigationController?.navigationBar.topItem?.leftBarButtonItem = UIBarButtonItem(customView: stackView)
+            self.navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(customView: rightstackView)
+    }
+    @objc func menuChange(){
+        AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
     }
     
     @objc func refreshMembers(){
@@ -241,7 +280,8 @@ extension ListOfMembersViewController : UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.memberID = self.listOfMemberArray[indexPath.section].memberID
         DispatchQueue.main.async {
-            self.performSegue(withIdentifier: "memberDetailSegue", sender:nil)
+            let memberDetailVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberDetailVC") as! MemberDetailViewController
+            self.navigationController?.pushViewController(memberDetailVC, animated: true)
         }
     }
     
@@ -496,7 +536,6 @@ extension ListOfMembersViewController : UITableViewDelegate{
     }
     
     func setCompleteListOfMembersView() {
-        navigationView.navigationTitleLabel.text = "Member"
         self.searchFilterView.layer.cornerRadius = 16.0
         self.listOfMemberTable.separatorStyle  = .none
         self.filterView.layer.cornerRadius = 15.0
@@ -508,10 +547,10 @@ extension ListOfMembersViewController : UITableViewDelegate{
         }
         self.filterApplyBtn.layer.cornerRadius = 15.0
         self.filterApplyBtn.clipsToBounds = true
-        self.navigationView.searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
         self.setSearchBar()
         addClickToDismissSearchBar()
         self.customSearchBar.delegate = self
+        
     }
     
     @objc func enableSelectionWithFilterView(_ gesture:UITapGestureRecognizer){
@@ -538,17 +577,20 @@ extension ListOfMembersViewController : UITableViewDelegate{
 
     @objc
     private func dismissPresentedView(_ sender: Any?) {
-        self.navigationView.isHidden = false
-        self.navigationView.alpha = 1.0
+        self.navigationController?.navigationBar.isHidden = false
+        self.navigationController?.navigationBar.alpha = 1.0
+        self.searchBarTopConstraint.constant = 0
         self.searchBarView.isHidden = true
-        self.searchBarView.alpha = 0.0
+        self.searchBarHeightConstraint.constant = 0
         self.view.endEditing(true)
     }
 
     @objc  func showSearchBar()  {
         if self.searchBarView.isHidden == true {
-            self.navigationView.isHidden = true
-            self.navigationView.alpha = 0.0
+            self.navigationController?.navigationBar.isHidden = true
+            self.navigationController?.navigationBar.alpha = 0.0
+             self.searchBarTopConstraint.constant = -((self.navigationController!.navigationBar.frame.origin.y/4 ) )
+             self.searchBarHeightConstraint.constant = 60
             self.searchBarView.isHidden = false
             self.searchBarView.alpha = 1.0
         }
@@ -702,7 +744,12 @@ extension ListOfMembersViewController:UISearchBarDelegate{
 
 extension ListOfMembersViewController:CustomCellSegue{
     func applySegueToChat(id: String, memberName: String) {
-         performSegue(withIdentifier: "chatSegue", sender: [id,memberName])
+       //  performSegue(withIdentifier: "chatSegue", sender: [id,memberName])
+        let senderID = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminID : AppManager.shared.trainerID
+        let senderName = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminName : AppManager.shared.trainerName
+        let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
+        chatVC.chatUsers = ChatUsers(messageSenderID: senderID, messageReceiverID: id, messageSenderName: senderName, messageReceiverName: memberName)
+        self.navigationController?.pushViewController(chatVC, animated: true)
     }
 
     func showMessage(vc: MFMessageComposeViewController) {

@@ -31,7 +31,7 @@ class CustomNavigationBar: UIView {
            navigationBarView.translatesAutoresizingMaskIntoConstraints = false
            addSubview(navigationBarView)
            setupLayout()
-        setMenuBtnAction()
+           setMenuBtnAction()
        }
       
        private func setupLayout() {

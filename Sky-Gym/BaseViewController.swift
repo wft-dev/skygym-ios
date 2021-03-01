@@ -17,6 +17,7 @@ class BaseViewController: UIViewController {
         super.viewDidLoad()
        //assignbackground()
         appDelgate = UIApplication.shared.delegate as? AppDelegate
+        
     }
     
     func assignbackground(){
@@ -37,9 +38,6 @@ class BaseViewController: UIViewController {
     @objc func backAction() {
         dismiss(animated: true, completion: nil)
     }
-    
-    
-
         func adjustFontSizeFor(label:UILabel,initialSize:CGFloat,increasingScaleBy:CGFloat, withBold:Bool) {
             let deviceType = UIDevice.current.deviceType
             var  fontSize = initialSize
@@ -90,10 +88,7 @@ class BaseViewController: UIViewController {
        tableCellView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
         //tableCellView.clipsToBounds = true
     }
-    
-  
-    
-    
+   
 }
 
 extension UIDevice {

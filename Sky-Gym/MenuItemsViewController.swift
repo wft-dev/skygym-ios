@@ -96,11 +96,12 @@ extension MenuItemsViewController {
         switch (index) {
         case 0:
             let dashboardVC = self.storyBoard.instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(dashboardVC, animated: true)
+           
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: dashboardVC), animated: true)
             break
         case 1:
             let listOfMemberVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfMemberVC") as! ListOfMembersViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(listOfMemberVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: listOfMemberVC), animated: true)
             break
         case 2:
             let listOfTrainersVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfTrainersVC") as! ListOfTrainersViewController

@@ -185,6 +185,15 @@ class AppManager: NSObject {
         }
     }
     
+    var isChattting:Bool {
+        get{
+            UserDefaults.standard.bool(forKey: "isChattting")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "isChattting")
+        }
+    }
+    
     var chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
     
     func setStatusBarBackgroundColor(color: UIColor,alpha:CGFloat) {

@@ -33,10 +33,18 @@ class ListOfMembershipViewController: BaseViewController {
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Membership List")
         self.refreshControl.addTarget(self, action: #selector(refreshMembershipList), for: .valueChanged)
         self.membershipTable.refreshControl = self.refreshControl
+        DispatchQueue.main.async {
+          //  self.setCustomNavigation(textForTitle: "Members", vc: self)
+            self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+            self.navigationController?.navigationBar.shadowImage = UIImage()
+            self.navigationController?.navigationBar.isTranslucent = true
+            
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+       
          self.showAllMemberships()
     }
     

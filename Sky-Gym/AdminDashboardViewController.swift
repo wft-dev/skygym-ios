@@ -19,11 +19,13 @@ class AdminDashboardViewController: BaseViewController {
     @IBOutlet weak var paidMemberView: MemberAndTrainerDetailView!
     @IBOutlet weak var expiredMemberView: MemberAndTrainerDetailView!
     @IBOutlet weak var trainerDetailView: MemberAndTrainerDetailView!
-    @IBOutlet weak var cutomMenuView: CustomNavigationBar!
     
     let lightGrayColor = UIColor(red: 238/255, green: 238/255, blue: 238/255, alpha: 1.0)
+    var nav:UINavigationBar? = nil
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.nav = self.navigationController?.navigationBar
+        setCustomNavigation(textForTitle: "Dashboard")
         SVProgressHUD.show()
         self.assignbackground()
         self.paidMemberView.paidUserLabel.text = "Paid member"
@@ -37,11 +39,10 @@ class AdminDashboardViewController: BaseViewController {
             self.trainerDetailView.alpha = 1.0
             self.trainerDetailView.paidUserLabel.text = "Trainers"
         }
-        cutomMenuView.searchBtn.isHidden = true
-        cutomMenuView.navigationTitleLabel.text = "Dashboard"
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
             self.setDashboardValues()
         })
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -65,6 +66,33 @@ class AdminDashboardViewController: BaseViewController {
             }
         }
     }
+    
+    
+      func setCustomNavigation(textForTitle:String)  {
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+        self.navigationController?.navigationBar.frame = CGRect(x: 0, y: 10, width: (self.navigationController?.navigationBar.bounds.width)!, height: (self.navigationController?.navigationBar.bounds.height)! + 40 )
+        let title = NSAttributedString(string: textForTitle, attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        self.navigationController?.navigationBar.topItem?.titleView = titleLabel
+        let menuBtn = UIButton()
+        menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+        menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+        menuBtn.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+        stackView.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        self.navigationController?.navigationBar.topItem?.leftBarButtonItem = UIBarButtonItem(customView: stackView)
+    }
+    
+    @objc func menuChange(){
+        AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
+    }
+    
     
     func adjustFonts()  {
         adjustFontSizeFor(label: self.numberOfMembersLabel, initialSize: 40, increasingScaleBy: 4, withBold: true)
