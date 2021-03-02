@@ -23,12 +23,34 @@ class GymInfoViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.gymInfoCutomNavigationBar.navigationTitleLabel.text = "Gym info"
-        self.gymInfoCutomNavigationBar.searchBtn.isHidden = true
-        self.gymInfoCutomNavigationBar.searchBtn.alpha = 0.0
+        setGymInfoNavigationBar()
         self.fetchGymInfo(gymID: AppManager.shared.gymID)
     }
     
+    func setGymInfoNavigationBar()  {
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+        let title = NSAttributedString(string: "Gym Info", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        self.navigationController?.navigationBar.topItem?.titleView = titleLabel
+        let menuBtn = UIButton()
+        menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+        menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+        menuBtn.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+        stackView.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        self.navigationController?.navigationBar.topItem?.leftBarButtonItem = UIBarButtonItem(customView: stackView)
+    }
+    
+    @objc func menuChange(){
+        AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
+    }
+
 
     func fetchGymInfo(gymID:String) {
         SVProgressHUD.show()

@@ -11,7 +11,7 @@ import SVProgressHUD
 
 class CurrentMembershipDetailViewController: BaseViewController {
     
-    @IBOutlet weak var currentMembershipDetailNavigationBar: CustomNavigationBar!
+   // @IBOutlet weak var currentMembershipDetailNavigationBar: CustomNavigationBar!
     @IBOutlet weak var paidStatusView: UIView!
     @IBOutlet weak var memberView: UIView!
     @IBOutlet weak var membershipDateView: UIView!
@@ -36,6 +36,7 @@ class CurrentMembershipDetailViewController: BaseViewController {
     @IBOutlet weak var paymentAmountLabel: UILabel!
     @IBOutlet weak var memberhsipStartDate: UILabel!
     @IBOutlet weak var deleteMembershipView: UIView!
+    @IBOutlet weak var membershipVerticalMenuHeightConstraint: NSLayoutConstraint!
     
     var currentMembershipID:String = ""
     var purchasedMembershipID:String = ""
@@ -52,7 +53,7 @@ class CurrentMembershipDetailViewController: BaseViewController {
         }
      setMembershipVerticalMenu()
      addClickToDismiss()
-     setBackAction(toView: self.currentMembershipDetailNavigationBar)
+    // setBackAction(toView: self.currentMembershipDetailNavigationBar)
      self.setCurrentMembershipDetailNavigationBar()
     }
     
@@ -83,7 +84,12 @@ class CurrentMembershipDetailViewController: BaseViewController {
     }
     
     @IBAction func renewCurrentMembershipBtnAction(_ sender: Any) {
-        performSegue(withIdentifier: "renewMembershipSegue", sender: nil)
+       // performSegue(withIdentifier: "renewMembershipSegue", sender: nil)
+       //
+        let addMemberVc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
+        addMemberVc.renewingMembershipID = self.currentMembershipID
+        addMemberVc.isRenewMembership = true
+        self.navigationController?.pushViewController(addMemberVc, animated: true)
     }
     
     @IBAction func deleteMembershipBtnAction(_ sender: Any) {
@@ -138,8 +144,7 @@ class CurrentMembershipDetailViewController: BaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "renewMembershipSegue" {
             let destination = segue.destination as! AddMemberViewController
-            destination.renewingMembershipID = self.currentMembershipID
-            destination.isRenewMembership = true
+
         }
     }
     
@@ -156,20 +161,55 @@ class CurrentMembershipDetailViewController: BaseViewController {
     }
     
     func setCurrentMembershipDetailNavigationBar()  {
-        self.currentMembershipDetailNavigationBar.navigationTitleLabel.attributedText = NSAttributedString(string: "Membership detail", attributes: [NSAttributedString.Key.font : UIFont(name: "poppins", size: 20)!])
-        self.currentMembershipDetailNavigationBar.menuBtn.isHidden = true
-        self.currentMembershipDetailNavigationBar.leftArrowBtn.isHidden = false
-        self.currentMembershipDetailNavigationBar.leftArrowBtn.alpha = 1.0
-        self.currentMembershipDetailNavigationBar.searchBtn.isHidden = true
+//        self.currentMembershipDetailNavigationBar.navigationTitleLabel.attributedText = NSAttributedString(string: "Membership detail", attributes: [NSAttributedString.Key.font : UIFont(name: "poppins", size: 20)!])
+//        self.currentMembershipDetailNavigationBar.menuBtn.isHidden = true
+//        self.currentMembershipDetailNavigationBar.leftArrowBtn.isHidden = false
+//        self.currentMembershipDetailNavigationBar.leftArrowBtn.alpha = 1.0
+//        self.currentMembershipDetailNavigationBar.searchBtn.isHidden = true
+        let title = NSAttributedString(string: "Membership detail", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+        backButton.addTarget(self, action: #selector(membershipDetailBackBtnAction), for: .touchUpInside)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let backBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = backBtn
         
-        if AppManager.shared.loggedInRole == LoggedInRole.Member {
-            self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = true
-            self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 0.0
-        }else {
-            self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = false
-            self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 1.0
-            self.currentMembershipDetailNavigationBar.verticalMenuBtn.addTarget(self, action: #selector(showMembershipOption), for: .touchUpInside)
+        if AppManager.shared.loggedInRole != LoggedInRole.Member {
+            // self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = true
+            // self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 0.0
+            let verticalMenuBtn = UIButton()
+            verticalMenuBtn.setImage(UIImage(named: "dots"), for: .normal)
+            verticalMenuBtn.addTarget(self, action: #selector(showMembershipOption), for: .touchUpInside)
+            verticalMenuBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            verticalMenuBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            verticalMenuBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let rightStackView = UIStackView(arrangedSubviews: [verticalMenuBtn,rightSpaceBtn])
+            rightStackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+            let verticalBtn = UIBarButtonItem(customView: rightStackView)
+            navigationItem.rightBarButtonItem = verticalBtn
         }
+        
+//        else {
+//            self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = false
+//            self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 1.0
+//            self.currentMembershipDetailNavigationBar.verticalMenuBtn.addTarget(self, action: #selector(showMembershipOption), for: .touchUpInside)
+//        }
+    
+    }
+    
+    @objc func membershipDetailBackBtnAction() {
+        self.navigationController?.popViewController(animated: true)
     }
     
     @objc func showMembershipOption() {
@@ -177,9 +217,11 @@ class CurrentMembershipDetailViewController: BaseViewController {
         self.deleteMembershipView.alpha = self.purchasedMembershipID.count > 0 ? 1.0 : 0.0
         self.membershipVerticalMenuView.isHidden = self.purchasedMembershipID.count > 0 ? true : false
         self.membershipVerticalMenuView.alpha = self.purchasedMembershipID.count > 0 ? 0.0 : 1.0
+        self.membershipVerticalMenuHeightConstraint.constant = -((self.navigationController!.navigationBar.frame.origin.y/4 ))
     }
     
     func setMembershipVerticalMenu()  {
+
         self.membershipVerticalMenuView.tag = 7
         self.membershipVerticalMenuView.layer.shadowColor =  UIColor.darkGray.cgColor
         self.membershipVerticalMenuView.layer.shadowOpacity = 0.3
@@ -244,8 +286,8 @@ class CurrentMembershipDetailViewController: BaseViewController {
                     } else {
                         self.membershipStartDateLabel.text = "--"
                     }
-                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = true
-                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 0.0
+//                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = true
+//                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 0.0
                     SVProgressHUD.dismiss()
                 }
             }

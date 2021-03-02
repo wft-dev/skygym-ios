@@ -11,7 +11,7 @@ import SVProgressHUD
 
 class ViewEventScreenViewController: BaseViewController {
     
-    @IBOutlet weak var viewEventNavigationBar: CustomNavigationBar!
+   // @IBOutlet weak var viewEventNavigationBar: CustomNavigationBar!
     @IBOutlet weak var eventNameTextField: UITextField!
     @IBOutlet weak var eventDateTextField: UITextField!
     @IBOutlet weak var addressTextView: UITextView!
@@ -60,7 +60,7 @@ class ViewEventScreenViewController: BaseViewController {
         super.viewDidLoad()
         self.setViewEventNavigationBar()
         self.setTextFields()
-        setBackAction(toView: self.viewEventNavigationBar)
+        //setBackAction(toView: self.viewEventNavigationBar)
         self.eventUpdateBtn.isHidden = true
          }
     
@@ -159,11 +159,25 @@ class ViewEventScreenViewController: BaseViewController {
     }
     
     func setViewEventNavigationBar() {
-        self.viewEventNavigationBar.menuBtn.isHidden = true
-        self.viewEventNavigationBar.leftArrowBtn.isHidden = false
-        self.viewEventNavigationBar.leftArrowBtn.alpha = 1.0
-        self.viewEventNavigationBar.navigationTitleLabel.text = "Events"
-        self.viewEventNavigationBar.searchBtn.isHidden = true
+        let title = NSAttributedString(string: "Events", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+        backButton.addTarget(self, action: #selector(eventBackBtnAction), for: .touchUpInside)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let backBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = backBtn
+        
+
         
         switch AppManager.shared.loggedInRole {
         case .Trainer:
@@ -177,15 +191,35 @@ class ViewEventScreenViewController: BaseViewController {
         }
     }
     
+    
+    @objc func eventBackBtnAction() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
     func hideEditBtn(hide:Bool) {
-        if hide == true {
-            self.viewEventNavigationBar.editBtn.isHidden = true
-            self.viewEventNavigationBar.editBtn.alpha = 0.0
-        }else {
-            self.viewEventNavigationBar.editBtn.isHidden = false
-            self.viewEventNavigationBar.editBtn.alpha = 1.0
-            self.viewEventNavigationBar.editBtn.addTarget(self, action: #selector(editEvent), for: .touchUpInside)
+//        if hide == true {
+//            self.viewEventNavigationBar.editBtn.isHidden = true
+//            self.viewEventNavigationBar.editBtn.alpha = 0.0
+//        }else {
+//            self.viewEventNavigationBar.editBtn.isHidden = false
+//            self.viewEventNavigationBar.editBtn.alpha = 1.0
+//            self.viewEventNavigationBar.editBtn.addTarget(self, action: #selector(editEvent), for: .touchUpInside)
+//        }
+        
+        if hide == false {
+            let editBtn = UIButton()
+            editBtn.setImage(UIImage(named: "edit"), for: .normal)
+            editBtn.addTarget(self, action: #selector(editEvent), for: .touchUpInside)
+            editBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            editBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            editBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let rightStackView = UIStackView(arrangedSubviews: [editBtn,rightSpaceBtn])
+            rightStackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+            let rightBtn = UIBarButtonItem(customView: rightStackView)
+            navigationItem.rightBarButtonItem = rightBtn
         }
+        
     }
     
     @objc func editEvent() {

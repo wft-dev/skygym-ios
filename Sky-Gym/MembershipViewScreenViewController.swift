@@ -12,7 +12,7 @@ import iOSDropDown
 
 class MembershipViewScreenViewController: BaseViewController {
     
-    @IBOutlet weak var viewMembershipNavigationBar: CustomNavigationBar!
+   // @IBOutlet weak var viewMembershipNavigationBar: CustomNavigationBar!
     @IBOutlet weak var membershipDropDownTitleTextField: DropDown!
     @IBOutlet weak var amountTextField: UITextField!
     @IBOutlet weak var doneBtn: UIButton!
@@ -149,7 +149,7 @@ class MembershipViewScreenViewController: BaseViewController {
         assignbackground()
         self.setTextFields()
         self.doneBtn.layer.cornerRadius = 15.0
-        setBackAction(toView: self.viewMembershipNavigationBar)
+       // setBackAction(toView: self.viewMembershipNavigationBar)
         self.isNewMemberhsip ? self.clearMembershipFields() : self.fetchMembersipBy(id: AppManager.shared.membershipID)
         self.membershipDropDownTitleTextField.listWillAppear {
             self.membershipDropDownTitleTextField.text =  self.titleNonEditLabel.text!.count > 0 ? self.titleNonEditLabel.text : self.selectedOption
@@ -169,11 +169,23 @@ class MembershipViewScreenViewController: BaseViewController {
     }
 
     func setMembershipViewScreenNavigationBar() {
-        self.viewMembershipNavigationBar.menuBtn.isHidden = true
-        self.viewMembershipNavigationBar.leftArrowBtn.isHidden = false
-        self.viewMembershipNavigationBar.leftArrowBtn.alpha = 1.0
-        self.viewMembershipNavigationBar.searchBtn.isHidden = true
-        self.viewMembershipNavigationBar.navigationTitleLabel.text = "Membership"
+        let title = NSAttributedString(string: "Membership", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+        backButton.addTarget(self, action: #selector(membershipBackBtnAction), for: .touchUpInside)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let backBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = backBtn
         
         if AppManager.shared.loggedInRole == LoggedInRole.Member {
             self.hideMemberhsipEditBtn(hide: true)
@@ -182,15 +194,24 @@ class MembershipViewScreenViewController: BaseViewController {
         }
     }
     
+    @objc func membershipBackBtnAction() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
     func hideMemberhsipEditBtn(hide:Bool) {
-        if hide == true {
-            self.viewMembershipNavigationBar.editBtn.isHidden = true
-            self.viewMembershipNavigationBar.editBtn.alpha = 0.0
-        }else {
-            self.viewMembershipNavigationBar.editBtn.isHidden = false
-            self.viewMembershipNavigationBar.editBtn.alpha = 1.0
-            self.viewMembershipNavigationBar.editBtn.addTarget(self, action: #selector(editMembership), for: .touchUpInside)
-        }
+        if hide == false {
+            let editBtn = UIButton()
+            editBtn.setImage(UIImage(named: "edit"), for: .normal)
+            editBtn.addTarget(self, action: #selector(editMembership), for: .touchUpInside)
+            editBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            editBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            editBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let rightStackView = UIStackView(arrangedSubviews: [editBtn,rightSpaceBtn])
+            rightStackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+            let rightBtn = UIBarButtonItem(customView: rightStackView)
+            navigationItem.rightBarButtonItem = rightBtn
+        }        
     }
     
     @objc func editMembership() {

@@ -20,7 +20,6 @@ class MemberDetailViewController: BaseViewController {
     @IBOutlet weak var memberName: UILabel?
     @IBOutlet weak var memberPhoneNumber: UILabel?
     @IBOutlet weak var memberDateOfJoin: UILabel!
-    @IBOutlet weak var memberDetailsNavigationBar: CustomNavigationBar!
     @IBOutlet weak var paidTextLabel: UILabel?
     @IBOutlet weak var upaidTextLabel: UILabel?
     @IBOutlet weak var memberDetailTable: UITableView!
@@ -54,7 +53,6 @@ class MemberDetailViewController: BaseViewController {
         }
         self.memberDetailTable.separatorStyle  = .none
         self.memberDetailTable.isScrollEnabled = false
-        setBackAction(toView: self.memberDetailsNavigationBar)
         self.memberImg?.makeRounded()
         self.memberImg?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showMemberDetail)))
         self.memberImg?.isUserInteractionEnabled =  true
@@ -71,24 +69,50 @@ class MemberDetailViewController: BaseViewController {
     }
     
     func setCustomMemberDetailNavigation()  {
-        let title = NSAttributedString(string: "Member Detail", attributes: [
+        let s = AppManager.shared.loggedInRole == LoggedInRole.Member ? "Home" : "Member Detail"
+        let title = NSAttributedString(string: s, attributes: [
             NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
         ])
         let titleLabel = UILabel()
         titleLabel.attributedText = title
-        self.navigationController?.navigationBar.topItem?.titleView = titleLabel
-        let backButton = UIButton()
-        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
-        backButton.addTarget(self, action: #selector(backBtnAction), for: .touchUpInside)
-        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
-        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
-        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        let backBtn = UIBarButtonItem(customView: stackView)
-        navigationItem.leftBarButtonItem = backBtn
+        //self.navigationController?.navigationBar.topItem?.titleView = titleLabel
+        navigationItem.titleView = titleLabel
+        
+        if  AppManager.shared.loggedInRole == LoggedInRole.Member {
+            self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+            self.navigationController?.navigationBar.shadowImage = UIImage()
+            self.navigationController?.navigationBar.isTranslucent = true
+            
+            let menuBtn = UIButton()
+            menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+            menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+            menuBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            menuBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            menuBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+            stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+            let leftBtn = UIBarButtonItem(customView: stackView)
+            navigationItem.leftBarButtonItem = leftBtn
+            
+        }else {
+            let backButton = UIButton()
+            backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+            backButton.addTarget(self, action: #selector(backBtnAction), for: .touchUpInside)
+            backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+            stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+            let backBtn = UIBarButtonItem(customView: stackView)
+            navigationItem.leftBarButtonItem = backBtn
+        }
     }
+    
+    @objc func menuChange(){
+          AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
+      }
     
     @objc func backBtnAction(){
         self.navigationController?.popToRootViewController(animated: true)
@@ -99,7 +123,6 @@ class MemberDetailViewController: BaseViewController {
     }
     @objc func msgAction(){
         print("message working.")
-        
 //        if messenger.canSendText() {
 //           let messageVC =  messenger.configuredMessageComposeViewController(recipients: ["7015810695"], body: "This is for testing member detail.")
 //            present(messageVC, animated: true, completion: nil)
@@ -108,10 +131,9 @@ class MemberDetailViewController: BaseViewController {
     }
 
     @objc func showMemberDetail(){
-        DispatchQueue.main.async(execute: {
-            self.performSegue(withIdentifier: "memberProfileSegue", sender: nil)
-        })
-       
+        let memberDetailVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberVC") as! MemberViewController
+        memberDetailVC.img = self.memberImg?.image
+        self.navigationController?.pushViewController(memberDetailVC, animated: true)
     }
     
     @IBAction func callBtnAction(_ sender: Any) {
@@ -126,20 +148,7 @@ class MemberDetailViewController: BaseViewController {
 
 extension MemberDetailViewController{
     func setMemberDetailNavigationBar()  {
-        if  AppManager.shared.loggedInRole == LoggedInRole.Member {
-            self.memberDetailsNavigationBar.menuBtn.isHidden = false
-            self.memberDetailsNavigationBar.menuBtn.alpha = 1.0
-            self.memberDetailsNavigationBar.leftArrowBtn.isHidden = true
-            self.memberDetailsNavigationBar.leftArrowBtn.alpha = 0.0
-        }else {
-            self.memberDetailsNavigationBar.menuBtn.isHidden = true
-            self.memberDetailsNavigationBar.menuBtn.alpha = 0.0
-            self.memberDetailsNavigationBar.leftArrowBtn.isHidden = false
-            self.memberDetailsNavigationBar.leftArrowBtn.alpha = 1.0
-        }
 
-        self.memberDetailsNavigationBar.navigationTitleLabel.text = AppManager.shared.loggedInRole == LoggedInRole.Member ? "Home" : "Member Detail"
-        self.memberDetailsNavigationBar.searchBtn.isHidden = true
     }
     
     func showMemberWithID(id:String) {
@@ -208,11 +217,14 @@ extension MemberDetailViewController{
             destinationVC.isNewMember = sender as! Bool
         }
         
+//        let addMemberVc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
+//        addMemberVc.renewingMembershipID = self.currentMembershipID
+//        addMemberVc.isRenewMembership = true
+//        self.navigationController?.pushViewController(addMemberVc, animated: true)
+        
         if segue.identifier == "attendanceDetailSegue" {
             let destinationVC = segue.destination as! MemberAttandanceViewController
-            destinationVC.memberName = self.name
-            destinationVC.memberAddress = self.address
-            destinationVC.memberUserImgData = self.memberImg?.image?.pngData()
+
         }
          
         if segue.identifier == "memberProfileSegue" {
@@ -243,13 +255,30 @@ extension MemberDetailViewController:UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 11 : 0 :
-            performSegue(withIdentifier: "addNewMembershipSegue", sender: false)
+          //  performSegue(withIdentifier: "addNewMembershipSegue", sender: false)
+            let addNewMemberShipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
+            addNewMemberShipVC.isNewMember = false
+            self.navigationController?.pushViewController(addNewMemberShipVC, animated: true)
+            
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 0 : 1 :
-            performSegue(withIdentifier: "currentMembershipDetailSegue", sender: nil)
+          //  performSegue(withIdentifier: "currentMembershipDetailSegue", sender: nil)
+            let currentMembershipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "currentMembershipDetailVC") as! CurrentMembershipDetailViewController
+            self.navigationController?.pushViewController(currentMembershipVC, animated: true)
+            
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 1 : 2 :
-            performSegue(withIdentifier: "purchaseDetailSegue", sender: nil)
+           // performSegue(withIdentifier: "purchaseDetailSegue", sender: nil)
+            let purchaseVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "purchaseVC") as! PurchaseViewController
+            self.navigationController?.pushViewController(purchaseVC, animated: true)
+          
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 2 : 3  :
-            performSegue(withIdentifier: "attendanceDetailSegue", sender: nil)
+           // performSegue(withIdentifier: "attendanceDetailSegue", sender: nil)
+
+            let attendenceVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberAttendanceVC") as! MemberAttandanceViewController
+            attendenceVC.memberName = self.name
+            attendenceVC.memberAddress = self.address
+            attendenceVC.memberUserImgData = self.memberImg?.image?.pngData()
+            self.navigationController?.pushViewController(attendenceVC, animated: true)
+            
         default:
             break
         }

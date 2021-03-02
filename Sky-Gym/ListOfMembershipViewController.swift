@@ -56,7 +56,10 @@ class ListOfMembershipViewController: BaseViewController {
     }
     
     @IBAction func addNewMembershipAction(_ sender: Any) {
-        performSegue(withIdentifier: "addMembershipSegue", sender: true)
+       // performSegue(withIdentifier: "addMembershipSegue", sender: true)
+        let membershipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "membershipViewVC") as! MembershipViewScreenViewController
+        membershipVC.isNewMemberhsip = true
+        self.navigationController?.pushViewController(membershipVC, animated: true)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -154,9 +157,32 @@ class ListOfMembershipViewController: BaseViewController {
     }
 
     func setMembershipNavigation() {
-        self.membershipNavigationBar.navigationTitleLabel.text = "Membership"
-        self.membershipNavigationBar.searchBtn.isHidden = true
+//        self.membershipNavigationBar.navigationTitleLabel.text = "Membership"
+//        self.membershipNavigationBar.searchBtn.isHidden = true
+        
+        let title = NSAttributedString(string: "Membership", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+        backButton.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let backBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = backBtn
     }
+    
+    @objc func menuChange() {
+        AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
+    }
+    
     
     func showAllMemberships() {
         SVProgressHUD.show()
@@ -225,7 +251,10 @@ extension ListOfMembershipViewController:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.membershipID = self.membershipDetailArray[indexPath.section].membershipID
-            self.performSegue(withIdentifier: "addMembershipSegue", sender: false)
+        // self.performSegue(withIdentifier: "addMembershipSegue", sender: false)
+        let membershipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "membershipViewVC") as! MembershipViewScreenViewController
+        membershipVC.isNewMemberhsip = false
+        self.navigationController?.pushViewController(membershipVC, animated: true)
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

@@ -10,8 +10,6 @@ import UIKit
 import SVProgressHUD
 
 class MemberLoginProfileViewController: UIViewController {
-    
-    @IBOutlet weak var memberLoginProfileCustomNavigationbarView: CustomNavigationBar!
     @IBOutlet weak var memberProfileImg: UIImageView!
     @IBOutlet weak var firstNameTextField: UITextField!
     @IBOutlet weak var lastNameTextField: UITextField!
@@ -184,13 +182,52 @@ class MemberLoginProfileViewController: UIViewController {
     }
 
     func setMemberLoginProfileCustomNavigationbar() {
-        self.memberLoginProfileCustomNavigationbarView.navigationTitleLabel.text = "Profile"
-        self.memberLoginProfileCustomNavigationbarView.searchBtn.isHidden = true
-        self.memberLoginProfileCustomNavigationbarView.searchBtn.alpha = 0.0
-        self.memberLoginProfileCustomNavigationbarView.editBtn.isHidden = false
-        self.memberLoginProfileCustomNavigationbarView.editBtn.alpha = 1.0
-        self.memberLoginProfileCustomNavigationbarView.editBtn.addTarget(self, action: #selector(makeProfileEditable), for: .touchUpInside)
+//        self.memberLoginProfileCustomNavigationbarView.navigationTitleLabel.text = "Profile"
+//        self.memberLoginProfileCustomNavigationbarView.searchBtn.isHidden = true
+//        self.memberLoginProfileCustomNavigationbarView.searchBtn.alpha = 0.0
+//        self.memberLoginProfileCustomNavigationbarView.editBtn.isHidden = false
+//        self.memberLoginProfileCustomNavigationbarView.editBtn.alpha = 1.0
+//        self.memberLoginProfileCustomNavigationbarView.editBtn.addTarget(self, action: #selector(makeProfileEditable), for: .touchUpInside)
+        
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+        
+        let title = NSAttributedString(string: "Profile", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let menuBtn = UIButton()
+        menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+        menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+        menuBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        menuBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        menuBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let leftBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = leftBtn
+        
+        let editBtn = UIButton()
+        editBtn.setImage(UIImage(named: "edit"), for: .normal)
+        editBtn.addTarget(self, action: #selector(makeProfileEditable), for: .touchUpInside)
+        editBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        editBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        editBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+        let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let rightStackView = UIStackView(arrangedSubviews: [editBtn,rightSpaceBtn])
+        rightStackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        let rightBtn = UIBarButtonItem(customView: rightStackView)
+        navigationItem.rightBarButtonItem = rightBtn
+        
     }
+    
+    @objc func menuChange(){
+         AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
+     }
     
     @objc func makeProfileEditable(){
         self.isEditable = !self.isEditable

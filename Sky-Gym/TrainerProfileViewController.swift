@@ -11,7 +11,6 @@ import SVProgressHUD
 
 class TrainerProfileViewController: BaseViewController {
     
-    @IBOutlet weak var trainerProfileCustomNavigationView: CustomNavigationBar!
     @IBOutlet weak var trainerFirstNameTextField: UITextField!
     @IBOutlet weak var trainerLastNameTextField: UITextField!
     @IBOutlet weak var genderTextField: UITextField!
@@ -81,7 +80,7 @@ class TrainerProfileViewController: BaseViewController {
     
     
     override func viewWillAppear(_ animated: Bool) {
-
+        self.trainerProfileNavigationBar()
     }
     
     override func viewDidLoad() {
@@ -91,12 +90,6 @@ class TrainerProfileViewController: BaseViewController {
         self.genderPickerView.delegate = self
         self.toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
         self.actuallPassword = UILabel()
-        self.trainerProfileCustomNavigationView.navigationTitleLabel.text = "Profile"
-        self.trainerProfileCustomNavigationView.searchBtn.isHidden = true
-        self.trainerProfileCustomNavigationView.searchBtn.alpha = 0.0
-        self.trainerProfileCustomNavigationView.editBtn.isHidden = false
-        self.trainerProfileCustomNavigationView.editBtn.alpha = 1.0
-        self.trainerProfileCustomNavigationView.editBtn.addTarget(self, action: #selector(makeProfileEditable), for: .touchUpInside)
         self.textFieldArray = [self.trainerFirstNameTextField,self.trainerLastNameTextField,self.genderTextField,self.passwordTextField,self.emailTextField,self.phoneNoTextField,self.dobTextField]
         self.nonEditLabelArray = [self.trainerFirstNameNonEditLabel,self.trainerLastNameNonEditLabel,self.genderNonEditLabel,self.passwordNonEditLabel,self.emailNonEditLabel,self.phoneNoNonEditLabel,self.dobNonEditLabel]
         self.defaultLabelArray = [self.genderLabel,self.passwordLabel,self.emailLabel,self.dobLabel,self.phoneNoLabel]
@@ -142,6 +135,47 @@ class TrainerProfileViewController: BaseViewController {
         textField.backgroundColor = UIColor.white
         textField.textColor = UIColor.black
     }
+    
+    func trainerProfileNavigationBar() {
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+        
+        let title = NSAttributedString(string: "Profile", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let menuBtn = UIButton()
+        menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+        menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+        menuBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        menuBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        menuBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let leftBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = leftBtn
+        
+        let editBtn = UIButton()
+        editBtn.setImage(UIImage(named: "edit"), for: .normal)
+        editBtn.addTarget(self, action: #selector(makeProfileEditable), for: .touchUpInside)
+        editBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        editBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        editBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+        let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let rightStackView = UIStackView(arrangedSubviews: [editBtn,rightSpaceBtn])
+        rightStackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        let rightBtn = UIBarButtonItem(customView: rightStackView)
+        navigationItem.rightBarButtonItem = rightBtn
+        
+    }
+    
+    @objc func menuChange(){
+          AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
+      }
     
     @objc func cancelTextField()  {
            self.view.endEditing(true)

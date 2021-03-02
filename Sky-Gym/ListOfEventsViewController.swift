@@ -21,11 +21,14 @@ class EventCellClass: UITableViewCell {
 
 class ListOfEventsViewController: BaseViewController {
 
-    @IBOutlet weak var eventsNavigationBar: CustomNavigationBar!
+   // @IBOutlet weak var eventsNavigationBar: CustomNavigationBar!
     @IBOutlet weak var listOfEventsTable: UITableView!
     @IBOutlet weak var searchView: UIView!
     @IBOutlet weak var customSearchBar: UISearchBar!
     @IBOutlet weak var addEventBtn: UIButton!
+    @IBOutlet weak var searchBarHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var searchBarTopConstraint: NSLayoutConstraint!
+    
     var eventsArray:[Event] = []
     var filteredEventArray:[Event] = []
     let refreshControl = UIRefreshControl()
@@ -54,7 +57,11 @@ class ListOfEventsViewController: BaseViewController {
     }
     
     @IBAction func addNewEventAction(_ sender: Any) {
-        performSegue(withIdentifier: "viewEventScreenSegue", sender: true)
+        //performSegue(withIdentifier: "viewEventScreenSegue", sender: true)
+        let eventViewVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "eventViewVC") as! ViewEventScreenViewController
+        eventViewVC.isNewEvent = true
+        eventViewVC.eventID =  ""
+        self.navigationController?.pushViewController(eventViewVC, animated: true)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -166,13 +173,43 @@ class ListOfEventsViewController: BaseViewController {
     }
     
     func setEventsNavigationBar()  {
-        self.eventsNavigationBar.navigationTitleLabel.text = "Events"
-        self.eventsNavigationBar.searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
         self.setSearchBar()
         self.addClickToDismissSearchBar()
         self.customSearchBar.delegate = self
+        
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+            let title = NSAttributedString(string: "Events", attributes: [
+                NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+            ])
+            let titleLabel = UILabel()
+            titleLabel.attributedText = title
+            navigationItem.titleView = titleLabel
+            let menuBtn = UIButton()
+            let searchBtn = UIButton()
+            searchBtn.setImage(UIImage(named:"search-1"), for: .normal)
+            menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+            searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
+            menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+            searchBtn.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+            searchBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+            searchBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+            menuBtn.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+            let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+            stackView.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            let rightspaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let rightstackView = UIStackView(arrangedSubviews: [searchBtn,rightspaceBtn])
+            rightstackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+            self.navigationController?.navigationBar.topItem?.leftBarButtonItem = UIBarButtonItem(customView: stackView)
+            self.navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(customView: rightstackView)
     }
     
+    @objc func menuChange(){
+           AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
+       }
+
     func showEventAlert(title:String,message:String)  {
            let alertController = UIAlertController(title:title, message: message, preferredStyle: .alert)
            let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
@@ -232,26 +269,28 @@ class ListOfEventsViewController: BaseViewController {
     
     @objc  func showSearchBar()  {
            if self.searchView.isHidden == true {
-               self.eventsNavigationBar.isHidden = true
-               self.eventsNavigationBar.alpha = 0.0
-               self.searchView.isHidden = false
-               self.searchView.alpha = 1.0
+            self.navigationController?.navigationBar.isHidden = true
+            self.navigationController?.navigationBar.alpha = 0.0
+            self.searchBarTopConstraint.constant = -((self.navigationController!.navigationBar.frame.origin.y/4 ) )
+            self.searchBarHeightConstraint.constant = 60
+            self.searchView.isHidden = false
+            self.searchView.alpha = 1.0
            }
        }
     private func addClickToDismissSearchBar() {
-
-           let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissPresentedView(_:)))
-           tapRecognizer.cancelsTouchesInView = false
-           self.view.isUserInteractionEnabled = true
-           self.view.addGestureRecognizer(tapRecognizer)
-       }
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissPresentedView(_:)))
+        tapRecognizer.cancelsTouchesInView = false
+        self.view.isUserInteractionEnabled = true
+        self.view.addGestureRecognizer(tapRecognizer)
+    }
 
        @objc
        private func dismissPresentedView(_ sender: Any?) {
-           self.eventsNavigationBar.isHidden = false
-           self.eventsNavigationBar.alpha = 1.0
-           self.searchView.isHidden = true
-           self.searchView.alpha = 0.0
+        self.navigationController?.navigationBar.isHidden = false
+        self.navigationController?.navigationBar.alpha = 1.0
+        self.searchBarHeightConstraint.constant = 0
+        self.searchView.isHidden = true
+        self.searchView.alpha = 0.0
         self.view.endEditing(true)
        }
 }
@@ -309,7 +348,11 @@ extension ListOfEventsViewController:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.eventID = self.eventsArray[indexPath.section].eventID
-        performSegue(withIdentifier: "viewEventScreenSegue", sender: false)
+        // performSegue(withIdentifier: "viewEventScreenSegue", sender: false)
+        let eventViewVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "eventViewVC") as! ViewEventScreenViewController
+        eventViewVC.isNewEvent = false
+        eventViewVC.eventID =  AppManager.shared.eventID
+        self.navigationController?.pushViewController(eventViewVC, animated: true)
     }
 }
 

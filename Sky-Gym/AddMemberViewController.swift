@@ -21,7 +21,6 @@ class AddMemberViewController: BaseViewController {
     
     @IBOutlet weak var myScrollView: UIScrollView!
     @IBOutlet weak var mainView: UIView!
-    @IBOutlet weak var addMemberNavigationBar: CustomNavigationBar!
     @IBOutlet weak var profileAndMembershipBarView: UIView!
     @IBOutlet weak var profileBtn: UIButton!
     @IBOutlet weak var membershipBtn: UIButton!
@@ -485,12 +484,30 @@ class AddMemberViewController: BaseViewController {
     }
     
     func setNavigationBar() {
-        addMemberNavigationBar.navigationTitleLabel.text = self.isNewMember == true ? "Member" : "Membership"
-        addMemberNavigationBar.menuBtn.isHidden = true
-        addMemberNavigationBar.leftArrowBtn.isHidden = false
-        addMemberNavigationBar.leftArrowBtn.alpha = 1.0
-        addMemberNavigationBar.searchBtn.isHidden = true
+        let str = self.isNewMember == true ? "Member" : "Membership"
+        let title = NSAttributedString(string: str, attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+        backButton.addTarget(self, action: #selector(addMemberBackBtnAction), for: .touchUpInside)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let backBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = backBtn
     }
+    
+    @objc func  addMemberBackBtnAction() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
     
     func getMemberDetails() -> [String:String] {
         let memberDetail:[String:String] = [
@@ -739,7 +756,6 @@ class AddMemberViewController: BaseViewController {
         self.addRightView(toTextField: self.uploadIDTextField, imageName: "cam.png")
         self.addRightView(toTextField: self.membershipPlanTextField, imageName: "arrow-down.png")
         self.setTextFields()
-        setBackAction(toView: self.addMemberNavigationBar)
         self.generalTypeOptionBtn.setImage(UIImage(named: "selelecte"), for: .normal)
         self.personalTypeOptionBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         imagePicker.delegate = self

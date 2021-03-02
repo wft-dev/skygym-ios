@@ -24,7 +24,6 @@ class PuchaseTableViewCell: UITableViewCell {
 class PurchaseViewController: BaseViewController {
 
     @IBOutlet weak var purchaseTable: UITableView!
-    @IBOutlet weak var purchaseNavigationBar: CustomNavigationBar!
     @IBOutlet weak var noPurchaseHistoryLabel: UILabel!
     
     var purchaseArray:[PurchaseMembershipPlan] = []
@@ -36,7 +35,7 @@ class PurchaseViewController: BaseViewController {
         super.viewDidLoad()
         self.setPurchaseNavigationBar()
         self.purchaseTable.separatorStyle = .none
-        setBackAction(toView: self.purchaseNavigationBar)
+        //setBackAction(toView: self.purchaseNavigationBar)
         self.todayDate = AppManager.shared.getStandardFormatDate(date: Date())
        
     }
@@ -47,12 +46,35 @@ class PurchaseViewController: BaseViewController {
     }
 
     func setPurchaseNavigationBar() {
-        self.purchaseNavigationBar.navigationTitleLabel.text = "Membership Plan"
-        self.purchaseNavigationBar.menuBtn.isHidden = true
-        self.purchaseNavigationBar.leftArrowBtn.isHidden = false
-        self.purchaseNavigationBar.leftArrowBtn.alpha = 1.0
-        self.purchaseNavigationBar.searchBtn.isHidden = true
+//        self.purchaseNavigationBar.navigationTitleLabel.text = "Membership Plan"
+//        self.purchaseNavigationBar.menuBtn.isHidden = true
+//        self.purchaseNavigationBar.leftArrowBtn.isHidden = false
+//        self.purchaseNavigationBar.leftArrowBtn.alpha = 1.0
+//        self.purchaseNavigationBar.searchBtn.isHidden = true
+        
+        let title = NSAttributedString(string: "Membership Plan", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+        backButton.addTarget(self, action: #selector(membershipPlanBackBtnAction), for: .touchUpInside)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let backBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = backBtn
     }
+    
+    @objc func  membershipPlanBackBtnAction() {
+        self.navigationController?.popViewController(animated: true)
+    }
+
     func setTableCellView(tableCellView:UIView)  {
         tableCellView.layer.cornerRadius = 12.0
         tableCellView.layer.borderWidth = 1.0
@@ -64,8 +86,12 @@ class PurchaseViewController: BaseViewController {
     
     @objc func moveToMembershipDetail(_ gesture:UITapGestureRecognizer){
         let singleMembership = self.purchaseArray[gesture.view!.tag]
-        self.purchaseTimeStamp = singleMembership.timeStamp
-        performSegue(withIdentifier: "membershipDetailSegue", sender: singleMembership.membershipID)
+        let currentMembershipDetailVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "currentMembershipDetailVC") as! CurrentMembershipDetailViewController
+        currentMembershipDetailVC.memberDetail = self.memberDetail
+        currentMembershipDetailVC.purchasedMembershipID = singleMembership.membershipID
+        currentMembershipDetailVC.membershipTimeStamp = singleMembership.timeStamp
+        self.navigationController?.pushViewController(currentMembershipDetailVC, animated: true)
+        
     }
     
     func getMembershipPlans(id:String)  {
@@ -119,9 +145,7 @@ class PurchaseViewController: BaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "membershipDetailSegue" {
             let destinationVC = segue.destination as! CurrentMembershipDetailViewController
-            destinationVC.memberDetail = self.memberDetail
-            destinationVC.purchasedMembershipID = sender as! String
-            destinationVC.membershipTimeStamp = self.purchaseTimeStamp
+
         }
     }
     

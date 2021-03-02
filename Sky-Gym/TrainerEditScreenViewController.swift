@@ -17,7 +17,7 @@ class WeekDayForTrainerTableCell: UITableViewCell {
 
 class TrainerEditScreenViewController: BaseViewController{
     
-    @IBOutlet weak var trainerEditScreenNavigationBar: CustomNavigationBar!
+   // @IBOutlet weak var trainerEditScreenNavigationBar: CustomNavigationBar!
     @IBOutlet weak var firstNameTextField: UITextField!
     @IBOutlet weak var secondNameTextField: UITextField!
     @IBOutlet weak var idTextField: UITextField!
@@ -178,7 +178,14 @@ class TrainerEditScreenViewController: BaseViewController{
     }
 
     @IBAction func trainerAttendanceAction(_ sender: Any) {
-        performSegue(withIdentifier: "trainerAttendanceSegue", sender: nil)
+        // performSegue(withIdentifier: "trainerAttendanceSegue", sender: nil)
+        let trainerAttendenceVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "trainerAttendanceVC") as! TrainerAttendanceViewController
+        trainerAttendenceVC.trainerName = self.name
+        trainerAttendenceVC.trainerAddress = self.addressStr
+        if self.userImg.tag != 1010 {
+            trainerAttendenceVC.trainerImgData = self.userImg.image?.pngData()
+        }
+        self.navigationController?.pushViewController(trainerAttendenceVC, animated: true)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -335,37 +342,71 @@ class TrainerEditScreenViewController: BaseViewController{
     }
 
     func setTrainerEditScreenNavigationBar()  {
-        let navigationBar  = self.trainerEditScreenNavigationBar
-        navigationBar?.navigationTitleLabel.text = "Trainer"
-        navigationBar?.searchBtn.isHidden = true
-        
-        if AppManager.shared.loggedInRole == LoggedInRole.Admin{
-            navigationBar?.menuBtn.isHidden = true
-            navigationBar?.leftArrowBtn.isHidden = false
-            navigationBar?.leftArrowBtn.alpha = 1.0
-        }else {
-            navigationBar?.menuBtn.isHidden = false
-            navigationBar?.menuBtn.alpha = 1.0
-            navigationBar?.leftArrowBtn.isHidden = true
-            navigationBar?.leftArrowBtn.alpha = 0.0
-        }
+
+        let title = NSAttributedString(string: "Trainer", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+          let titleLabel = UILabel()
+          titleLabel.attributedText = title
+          navigationItem.titleView = titleLabel
         
         switch AppManager.shared.loggedInRole {
         case .Trainer:
-           navigationBar?.editBtn.isHidden = true
-           navigationBar?.editBtn.alpha = 0.0
-            break
+            self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+            self.navigationController?.navigationBar.shadowImage = UIImage()
+            self.navigationController?.navigationBar.isTranslucent = true
+
+            let menuBtn = UIButton()
+            menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+            menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+            menuBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            menuBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+            menuBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+            let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+            stackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: stackView)
+            
         case .Admin :
+  
+            let backBtn = UIButton()
+            backBtn.setImage(UIImage(named: "left-arrow"), for: .normal)
+            backBtn.addTarget(self, action: #selector(trainerEditBackBtnAction), for: .touchUpInside)
+            backBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            backBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+            backBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+            let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let stackView = UIStackView(arrangedSubviews: [spaceBtn,backBtn])
+            stackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: stackView)
+            
             if self.isNewTrainer == false {
-                navigationBar?.editBtn.isHidden = false
-                navigationBar?.editBtn.alpha = 1.0
-                navigationBar?.editBtn.addTarget(self, action: #selector(makeEditable), for: .touchUpInside)
+                let editBtn = UIButton()
+                editBtn.setImage(UIImage(named:"edit"), for: .normal)
+                editBtn.addTarget(self, action: #selector(makeEditable), for: .touchUpInside)
+                editBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+                editBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+                editBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+                let rightspaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+                let rightstackView = UIStackView(arrangedSubviews: [editBtn,rightspaceBtn])
+                rightstackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+                navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rightstackView)
             }
             break
         default:
             break
         }
     }
+    
+    @objc func menuChange(){
+          AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
+      }
+
+   
+    @objc func trainerEditBackBtnAction() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
 
    @objc func makeEditable() {
     if self.isEdit == true {
@@ -631,7 +672,7 @@ class TrainerEditScreenViewController: BaseViewController{
         self.setTrainerEditScreenNavigationBar()
         self.setTrainerEditScreenTextFields()
         self.addRightViewToMemberShipField(imageName: "cam.png")
-        setBackAction(toView: self.trainerEditScreenNavigationBar)
+        //setBackAction(toView: self.trainerEditScreenNavigationBar)
         self.generalTypeBtn.setImage(UIImage(named: "selelecte"), for: .normal)
         self.personalTypeBtn.setImage(UIImage(named: "non_selecte"), for: .normal)
         self.imagePicker.delegate = self

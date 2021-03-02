@@ -210,7 +210,11 @@ class ListOfMembersViewController: BaseViewController {
             }
         
     @IBAction func addNewMemberBtnAction(_ sender: Any) {
-        performSegue(withIdentifier: "addMemberSegue", sender: true)
+     //   performSegue(withIdentifier: "addMemberSegue", sender: true)
+        let addMemberVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
+        addMemberVC.isNewMember = true
+        addMemberVC.isRenewMembership = false
+        self.navigationController?.pushViewController(addMemberVC, animated: true)
     }
     
     func hideFilterView() {
@@ -219,6 +223,8 @@ class ListOfMembersViewController: BaseViewController {
         self.grayView.isHidden = true
         self.grayView.alpha = 0
         self.addBtn.isHidden = false
+        self.navigationController?.navigationBar.backgroundColor = UIColor.white
+        self.navigationController?.navigationBar.alpha = 1.0
         AppManager.shared.setStatusBarBackgroundColor(color: .clear, alpha: 1.0)
     }
     func showFilterView() {
@@ -228,6 +234,8 @@ class ListOfMembersViewController: BaseViewController {
         self.grayView.alpha = 0.4
         self.grayView.backgroundColor = UIColor.darkGray
         self.addBtn.isHidden = true
+        self.navigationController?.navigationBar.backgroundColor = UIColor.darkGray
+        self.navigationController?.navigationBar.alpha = 0.4
         AppManager.shared.setStatusBarBackgroundColor(color: .gray, alpha: 0.4)
     }
 }
@@ -758,7 +766,13 @@ extension ListOfMembersViewController:CustomCellSegue{
 
     func applySegue(id: String) {
            AppManager.shared.memberID = id
-        performSegue(withIdentifier: "addMemberSegue", sender: false)
+        //
+     //   performSegue(withIdentifier: "addMemberSegue", sender: false)
+        
+        let addMemberVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
+        addMemberVC.isNewMember = false
+        addMemberVC.isRenewMembership = true
+        self.navigationController?.pushViewController(addMemberVC, animated: true)
     }
     
 }

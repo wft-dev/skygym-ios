@@ -10,8 +10,6 @@ import UIKit
 import SVProgressHUD
 
 class MemberLoginTrainerProfileViewController: UIViewController {
-    
-    @IBOutlet weak var memberLoginTrainerProfileCustomNavigationbarView: CustomNavigationBar!
     @IBOutlet weak var trainerDetailView: UIView!
     @IBOutlet weak var trainerProfileImg: UIImageView!
     @IBOutlet weak var trainerName: UILabel!
@@ -56,11 +54,35 @@ class MemberLoginTrainerProfileViewController: UIViewController {
     }
     
     func setMemberLoginTrainerProfileCustomNavigationbar()  {
-        self.memberLoginTrainerProfileCustomNavigationbarView.navigationTitleLabel.text = "Trainer"
-        self.memberLoginTrainerProfileCustomNavigationbarView.searchBtn.isHidden = true
-        self.memberLoginTrainerProfileCustomNavigationbarView.searchBtn.alpha = 0.0
+//        self.memberLoginTrainerProfileCustomNavigationbarView.navigationTitleLabel.text = "Trainer"
+//        self.memberLoginTrainerProfileCustomNavigationbarView.searchBtn.isHidden = true
+//        self.memberLoginTrainerProfileCustomNavigationbarView.searchBtn.alpha = 0.0
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+        
+        let title = NSAttributedString(string: "Trainer", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let menuBtn = UIButton()
+        menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+        menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+        menuBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        menuBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        menuBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let leftBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = leftBtn
     }
     
+    @objc func menuChange(){
+         AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
+     }
     
     func fetchTrainerDetail(id:String) {
 

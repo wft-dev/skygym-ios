@@ -194,27 +194,30 @@ class MemberViewController: BaseViewController {
         titleLabel.attributedText = title
         self.navigationItem.titleView = titleLabel
         let backButton = UIButton()
-        let editButton = UIButton()
-        editButton.setImage(UIImage(named: "edit"), for: .normal)
-        editButton.addTarget(self, action: #selector(makeEditable), for: .touchUpInside)
-        editButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-        editButton.heightAnchor.constraint(equalToConstant: 18).isActive = true
-        editButton.widthAnchor.constraint(equalToConstant: 18).isActive = true
         backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
         backButton.addTarget(self, action: #selector(memberViewBackBtnAction), for: .touchUpInside)
         backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-        backButton.heightAnchor.constraint(equalToConstant: 15).isActive = true
-        backButton.widthAnchor.constraint(equalToConstant: 15).isActive = true
+        backButton.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 18).isActive = true
         let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
-        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
-        let rightStackView = UIStackView(arrangedSubviews: [editButton,spaceBtn])
-        stackView.widthAnchor.constraint(equalToConstant: 25).isActive = true
-        rightStackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        let leftSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [leftSpaceBtn,backButton])
+        stackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
         let backBtn = UIBarButtonItem(customView: stackView)
-        let rightEditBtn = UIBarButtonItem(customView: rightStackView)
-        
         navigationItem.leftBarButtonItem = backBtn
-        navigationItem.rightBarButtonItem = rightEditBtn
+        
+        if AppManager.shared.loggedInRole != LoggedInRole.Member{
+            let editButton = UIButton()
+            editButton.setImage(UIImage(named: "edit"), for: .normal)
+            editButton.addTarget(self, action: #selector(makeEditable), for: .touchUpInside)
+            editButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            editButton.heightAnchor.constraint(equalToConstant: 18).isActive = true
+            editButton.widthAnchor.constraint(equalToConstant: 18).isActive = true
+            let rightStackView = UIStackView(arrangedSubviews: [editButton,spaceBtn])
+            rightStackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+            let rightEditBtn = UIBarButtonItem(customView: rightStackView)
+            navigationItem.rightBarButtonItem = rightEditBtn
+        }   
     }
     
     @objc  func memberViewBackBtnAction() {

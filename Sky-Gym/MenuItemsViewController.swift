@@ -105,23 +105,23 @@ extension MenuItemsViewController {
             break
         case 2:
             let listOfTrainersVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfTrainersVC") as! ListOfTrainersViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(listOfTrainersVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: listOfTrainersVC), animated: true)
             break
         case 3:
             let listOfMembershipVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(listOfMembershipVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: listOfMembershipVC), animated: true)
             break
         case 4:
             let listOfVisitorVC = self.storyBoard.instantiateViewController(withIdentifier: "visitorVC") as! ListOfVisitorsViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(listOfVisitorVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: listOfVisitorVC), animated: true)
             break
         case 5 :
             let adminProfileVC = self.storyBoard.instantiateViewController(withIdentifier: "profileAdminVC") as! ProfileAdminViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(adminProfileVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: adminProfileVC), animated: true)
             break
         case 6 :
             let eventVC = self.storyBoard.instantiateViewController(withIdentifier: "eventsVC") as! ListOfEventsViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(eventVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: eventVC), animated: true)
             break
         case 7 :
             self.appDelgate?.swRevealVC.revealToggle(animated: true)
@@ -137,35 +137,35 @@ extension MenuItemsViewController {
         switch (index) {
         case 0:
             let dashboardVC = self.storyBoard.instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(dashboardVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: dashboardVC), animated: true)
             break
         case 1:
             let gymInfoVC = self.storyBoard.instantiateViewController(withIdentifier: "gymInfoVC") as! GymInfoViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(gymInfoVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gymInfoVC), animated: true)
             break
         case 2:
             let trainerEditVC = self.storyBoard.instantiateViewController(withIdentifier: "trainerEditVC") as! TrainerEditScreenViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(trainerEditVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: trainerEditVC), animated: true)
             break
         case memberIndex :
             let listOfMemberVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfMemberVC") as! ListOfMembersViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(listOfMemberVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: listOfMemberVC), animated: true)
             break
         case memberIndex == 3 ? 4 : 3 :
             let listOfMembershipVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(listOfMembershipVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: listOfMembershipVC), animated: true)
             break
         case memberIndex == 3 ? 5 : 4 :
             let trainerProfileVC = self.storyBoard.instantiateViewController(withIdentifier: "trainerProfileVC") as! TrainerProfileViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(trainerProfileVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: trainerProfileVC), animated: true)
             break
         case  memberIndex == 3 ? visitorIndex : visitorIndex == 6 ? 5 : 13 :
             let listOfVisitorVC = self.storyBoard.instantiateViewController(withIdentifier: "visitorVC") as! ListOfVisitorsViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(listOfVisitorVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: listOfVisitorVC), animated: true)
             break
         case  memberIndex == 3 && visitorIndex == 6 ? 7 : visitorIndex == 6 || memberIndex == 3 ? 6: 5:
             let eventVC = self.storyBoard.instantiateViewController(withIdentifier: "eventsVC") as! ListOfEventsViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(eventVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: eventVC), animated: true)
             break
         case   memberIndex == 3 && visitorIndex == 6  ? 8 : visitorIndex == 6 || memberIndex == 3 ? 7 : 6 :
             self.appDelgate?.swRevealVC.revealToggle(animated: true)
@@ -180,27 +180,27 @@ extension MenuItemsViewController {
         switch(index) {
         case 0 :
             let memberDetailVC = self.storyBoard.instantiateViewController(withIdentifier: "memberDetailVC") as! MemberDetailViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(memberDetailVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: memberDetailVC), animated: true)
             break
         case 1 :
             let gymInfoVC = self.storyBoard.instantiateViewController(withIdentifier: "gymInfoVC") as! GymInfoViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(gymInfoVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gymInfoVC), animated: true)
             break
         case 2:
             let membershipPlanVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfMembershipVC") as! ListOfMembershipViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(membershipPlanVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: membershipPlanVC), animated: true)
             break
         case 3:
             let memberLoginProfile = self.storyBoard.instantiateViewController(withIdentifier: "memberLoginProfileVC") as! MemberLoginProfileViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(memberLoginProfile, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: memberLoginProfile), animated: true)
             break
         case 4:
             let memberLoginTrainerProfile = self.storyBoard.instantiateViewController(withIdentifier: "memberLoginTrainerProfileVC") as! MemberLoginTrainerProfileViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(memberLoginTrainerProfile, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: memberLoginTrainerProfile), animated: true)
             break
         case 5 :
             let eventsVC = self.storyBoard.instantiateViewController(withIdentifier: "eventsVC") as! ListOfEventsViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(eventsVC, animated: true)
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: eventsVC), animated: true)
             break
         case 6:
             self.appDelgate?.swRevealVC.revealToggle(animated: true)

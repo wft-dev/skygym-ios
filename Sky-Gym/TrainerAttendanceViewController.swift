@@ -21,7 +21,6 @@ class TrainerAttendanceTableCell: UITableViewCell {
 
 class TrainerAttendanceViewController: BaseViewController {
     @IBOutlet weak var trainerAttendanceTable: UITableView!
-    @IBOutlet weak var trainerNavigationBar: CustomNavigationBar!
     @IBOutlet weak var checkByDateBtn: UIButton!
     @IBOutlet weak var backBtn: UIButton!
     @IBOutlet weak var trainerNameLabel: UILabel!
@@ -46,7 +45,6 @@ class TrainerAttendanceViewController: BaseViewController {
         self.checkByDateBtn.layer.cornerRadius = 18.0
         self.trainerAttendanceTable.separatorStyle = .none
         self.backBtn.layer.cornerRadius = 15.0
-        setBackAction(toView: self.trainerNavigationBar)
         self.trainerNameLabel.text = self.trainerName
         self.trainerAddressLabel.text = self.trainerAddress
         self.checkByDateBtn.addTarget(self, action: #selector(trainerAttendenceFilteration), for: .touchUpInside)
@@ -129,11 +127,27 @@ class TrainerAttendanceViewController: BaseViewController {
     }
 
     func setTrainerNavigationBar() {
-        self.trainerNavigationBar.menuBtn.isHidden = true
-        self.trainerNavigationBar.leftArrowBtn.isHidden = false
-        self.trainerNavigationBar.leftArrowBtn.alpha = 1.0
-        self.trainerNavigationBar.searchBtn.isHidden = true
-        self.trainerNavigationBar.navigationTitleLabel.text = "Attendance"
+        let title = NSAttributedString(string: "Attendance", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+        backButton.addTarget(self, action: #selector(traineAttendenceBackBtnAction), for: .touchUpInside)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let backBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = backBtn
+    }
+    
+    @objc func traineAttendenceBackBtnAction() {
+        self.navigationController?.popViewController(animated: true)
     }
     
     @objc func trainerAttendenceFilteration() {

@@ -57,10 +57,12 @@ class VisitorTableCell: UITableViewCell {
 class ListOfVisitorsViewController: BaseViewController {
 
     @IBOutlet weak var visitorsTable: UITableView!
-    @IBOutlet weak var listOfVisitorsNavigationBar: CustomNavigationBar!
+   // @IBOutlet weak var listOfVisitorsNavigationBar: CustomNavigationBar!
     @IBOutlet weak var searchbarView: UIView!
     @IBOutlet weak var customSearchBar: UISearchBar!
-
+    @IBOutlet weak var searchBarHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var searchBarTopConstraint: NSLayoutConstraint!
+    
     var visitorProfileImage:UIImage? = nil
     let refreshControl = UIRefreshControl()
     var visitorsArray:[ListOfVisitor] = []
@@ -92,7 +94,10 @@ class ListOfVisitorsViewController: BaseViewController {
     }
     
     @IBAction func addNewVisitorAction(_ sender: Any) {
-        performSegue(withIdentifier: "visitorViewSegue", sender: true)
+       // performSegue(withIdentifier: "visitorViewSegue", sender: true)
+        let visitorEditVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "visitorViewVC") as! ViewVisitorScreenViewController
+        visitorEditVC.isNewVisitor = true
+        self.navigationController?.pushViewController(visitorEditVC, animated: true)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -228,11 +233,46 @@ class ListOfVisitorsViewController: BaseViewController {
 //        deleteView.topAnchor.constraint(equalTo: cell.topAnchor, constant: 0 ).isActive  = true
         
     }
-
+    
     func setVisitorsNavigationBar() {
-        self.listOfVisitorsNavigationBar.navigationTitleLabel.text = "Visitor"
-        self.listOfVisitorsNavigationBar.searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
-        self.addClickToDismissSearchBar()
+        addClickToDismissSearchBar()
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+        
+        let title = NSAttributedString(string: "Visitor", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let menuBtn = UIButton()
+        menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+        menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+        menuBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        menuBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        menuBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let leftBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = leftBtn
+        
+        let searchBtn = UIButton()
+        searchBtn.setImage(UIImage(named: "search-1"), for: .normal)
+        searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
+        searchBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        searchBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        searchBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let rightStackView = UIStackView(arrangedSubviews: [searchBtn,rightSpaceBtn])
+        rightStackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let rightBtn = UIBarButtonItem(customView: rightStackView)
+        navigationItem.rightBarButtonItem = rightBtn
+    }
+    
+    @objc func menuChange(){
+        AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
     }
     
     func setVisitorSearchBar()  {
@@ -261,12 +301,14 @@ class ListOfVisitorsViewController: BaseViewController {
     }
     
     @objc  func showSearchBar()  {
-           if self.searchbarView.isHidden == true {
-               self.listOfVisitorsNavigationBar.isHidden = true
-               self.listOfVisitorsNavigationBar.alpha = 0.0
-               self.searchbarView.isHidden = false
-               self.searchbarView.alpha = 1.0
-           }
+        if self.searchbarView.isHidden == true {
+            self.navigationController?.navigationBar.isHidden = true
+            self.navigationController?.navigationBar.alpha = 0.0
+            self.searchBarTopConstraint.constant = -((self.navigationController!.navigationBar.frame.origin.y/4))
+            self.searchBarHeightConstraint.constant = 60
+            self.searchbarView.isHidden = false
+            self.searchbarView.alpha = 1.0
+        }
        }
     
     private func addClickToDismissSearchBar() {
@@ -278,10 +320,13 @@ class ListOfVisitorsViewController: BaseViewController {
 
        @objc
        private func dismissPresentedView(_ sender: Any?) {
-           self.listOfVisitorsNavigationBar.isHidden = false
-           self.listOfVisitorsNavigationBar.alpha = 1.0
-           self.searchbarView.isHidden = true
-           self.searchbarView.alpha = 0.0
+           //self.listOfVisitorsNavigationBar.isHidden = false
+          // self.listOfVisitorsNavigationBar.alpha = 1.0
+           self.navigationController?.navigationBar.isHidden = false
+            self.navigationController?.navigationBar.alpha = 1.0
+            self.searchBarTopConstraint.constant = 0
+            self.searchbarView.isHidden = true
+            self.searchBarHeightConstraint.constant = 0
            self.view.endEditing(true)
        }
     
@@ -426,7 +471,11 @@ extension ListOfVisitorsViewController:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.visitorID = self.visitorsArray[indexPath.section].visitorID
-        performSegue(withIdentifier: "visitorViewSegue", sender: false)
+        //  performSegue(withIdentifier: "visitorViewSegue", sender: false)
+        let visitorEditVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "visitorViewVC") as! ViewVisitorScreenViewController
+        visitorEditVC.isNewVisitor = false
+        self.navigationController?.pushViewController(visitorEditVC, animated: true)
+        
     }
 }
 

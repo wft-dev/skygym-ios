@@ -23,7 +23,7 @@ class AttandanceTableCell: UITableViewCell {
 class MemberAttandanceViewController: BaseViewController {
     
     @IBOutlet weak var memberAttandanceTable: UITableView!
-    @IBOutlet weak var memberAttandanceNavigationBar: CustomNavigationBar!
+   // @IBOutlet weak var memberAttandanceNavigationBar: CustomNavigationBar!
     @IBOutlet weak var checkByDateBtn: UIButton!
     @IBOutlet weak var backBtn: UIButton!
     @IBOutlet weak var memberNameLabel: UILabel!
@@ -51,7 +51,7 @@ class MemberAttandanceViewController: BaseViewController {
         self.backBtn.layer.cornerRadius = 15.0
         self.memberAttandanceTable.separatorStyle = .none
         self.memberAttandanceTable.isScrollEnabled = false
-        setBackAction(toView: self.memberAttandanceNavigationBar)
+        //setBackAction(toView: self.memberAttandanceNavigationBar)
         self.memberNameLabel.text = self.memberName
         self.memberAddressLabel.text = self.memberAddress
         self.checkByDateBtn.addTarget(self, action: #selector(checkByDateAction), for: .touchUpInside)
@@ -134,11 +134,33 @@ class MemberAttandanceViewController: BaseViewController {
     }
 
     func setMemberAttandanceNavigation()  {
-        memberAttandanceNavigationBar.menuBtn.isHidden = true
-        memberAttandanceNavigationBar.leftArrowBtn.isHidden = false
-        memberAttandanceNavigationBar.leftArrowBtn.alpha = 1.0
-        memberAttandanceNavigationBar.navigationTitleLabel.text = "Attendance"
-        memberAttandanceNavigationBar.searchBtn.isHidden = true
+//        memberAttandanceNavigationBar.menuBtn.isHidden = true
+//        memberAttandanceNavigationBar.leftArrowBtn.isHidden = false
+//        memberAttandanceNavigationBar.leftArrowBtn.alpha = 1.0
+//        memberAttandanceNavigationBar.navigationTitleLabel.text = "Attendance"
+//        memberAttandanceNavigationBar.searchBtn.isHidden = true
+        
+        let title = NSAttributedString(string: "Attendence", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+        backButton.addTarget(self, action: #selector(memberAttendenceBackBtnAction), for: .touchUpInside)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let backBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = backBtn
+    }
+    
+    @objc func  memberAttendenceBackBtnAction() {
+        self.navigationController?.popViewController(animated: true)
     }
 
     @objc  func checkByDateAction() {

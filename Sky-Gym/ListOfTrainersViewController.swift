@@ -87,10 +87,13 @@ class ListOfTrainersTableCell: UITableViewCell {
 }
 
 class ListOfTrainersViewController: BaseViewController {
-    @IBOutlet weak var listOfTrainersNavigationBar: CustomNavigationBar!
+   // @IBOutlet weak var listOfTrainersNavigationBar: CustomNavigationBar!
     @IBOutlet weak var listOfTrainerTable: UITableView!
     @IBOutlet weak var searchBarView: UIView!
     @IBOutlet weak var customSearchBar: UISearchBar!
+    @IBOutlet weak var searchBarTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var searchBarHeightConstraint: NSLayoutConstraint!
+    
     var listOfTrainerArray:[ListOfTrainers] = []
     var filteredListOfTrainerArray:[ListOfTrainers] = []
     var membersArray:[Dictionary<String,Any>] = []
@@ -116,6 +119,7 @@ class ListOfTrainersViewController: BaseViewController {
                 self.fetcthAllTrainer()
             }
         })
+        self.searchBarView.isHidden = true
     }
 
     
@@ -127,7 +131,10 @@ class ListOfTrainersViewController: BaseViewController {
     }
     
     @IBAction func addNewTrainerBtnAction(_ sender: Any) {
-        performSegue(withIdentifier: "visitorDetailSegue", sender:true)
+       // performSegue(withIdentifier: "visitorDetailSegue", sender:true)
+        let trainerEditVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "trainerEditVC") as! TrainerEditScreenViewController
+        trainerEditVC.isNewTrainer = true
+        self.navigationController?.pushViewController(trainerEditVC, animated: true)
     }
     
     @objc func trainerLeftSwipeAction(_ gesture:UIGestureRecognizer){
@@ -293,10 +300,41 @@ class ListOfTrainersViewController: BaseViewController {
     }
     
     func setListOfTrainersNavigationSet() {
-        self.listOfTrainersNavigationBar.menuBtn.isHidden = false
-       // self.listOfTrainersNavigationBar.leftArrowBtn.isHidden = false
-        self.listOfTrainersNavigationBar.navigationTitleLabel.text = "Trainer"
-        self.listOfTrainersNavigationBar.searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
+//        self.listOfTrainersNavigationBar.menuBtn.isHidden = false
+//       // self.listOfTrainersNavigationBar.leftArrowBtn.isHidden = false
+//        self.listOfTrainersNavigationBar.navigationTitleLabel.text = "Trainer"
+//        self.listOfTrainersNavigationBar.searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+            let title = NSAttributedString(string: "Trainer", attributes: [
+                NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+            ])
+            let titleLabel = UILabel()
+            titleLabel.attributedText = title
+            self.navigationController?.navigationBar.topItem?.titleView = titleLabel
+            let menuBtn = UIButton()
+            let searchBtn = UIButton()
+            searchBtn.setImage(UIImage(named:"search-1"), for: .normal)
+            menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+            searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
+            menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+            searchBtn.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+            searchBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+            searchBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+            menuBtn.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+            let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+            stackView.widthAnchor.constraint(equalToConstant: 40).isActive = true
+            let rightspaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let rightstackView = UIStackView(arrangedSubviews: [searchBtn,rightspaceBtn])
+            rightstackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+            self.navigationController?.navigationBar.topItem?.leftBarButtonItem = UIBarButtonItem(customView: stackView)
+            self.navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(customView: rightstackView)
+    }
+    
+    @objc func menuChange(){
+        AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
     }
     
     func setTrainerTableCellView(tableCellView:UIView)  {
@@ -340,15 +378,18 @@ class ListOfTrainersViewController: BaseViewController {
     }
     
     @objc  func showSearchBar()  {
-           if self.searchBarView.isHidden == true {
-               self.listOfTrainersNavigationBar.isHidden = true
-               self.listOfTrainersNavigationBar.alpha = 0.0
-               self.searchBarView.isHidden = false
-               self.searchBarView.alpha = 1.0
-           }
+        if self.searchBarView.isHidden == true {
+            //  self.listOfTrainersNavigationBar.isHidden = true
+            // self.listOfTrainersNavigationBar.alpha = 0.0
+            self.navigationController?.navigationBar.isHidden = true
+            self.navigationController?.navigationBar.alpha = 0.0
+            self.searchBarTopConstraint.constant = -((self.navigationController!.navigationBar.frame.origin.y/4 ) )
+            self.searchBarHeightConstraint.constant = 60
+            self.searchBarView.isHidden = false
+            self.searchBarView.alpha = 1.0
+       }
        }
     private func addClickToDismissSearchBar() {
-
            let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissPresentedView(_:)))
            tapRecognizer.cancelsTouchesInView = false
            self.view.isUserInteractionEnabled = true
@@ -356,13 +397,16 @@ class ListOfTrainersViewController: BaseViewController {
        }
 
        @objc
-       private func dismissPresentedView(_ sender: UITapGestureRecognizer?) {
-           self.listOfTrainersNavigationBar.isHidden = false
-           self.listOfTrainersNavigationBar.alpha = 1.0
-           self.searchBarView.isHidden = true
-           self.searchBarView.alpha = 0.0
+    private func dismissPresentedView(_ sender: UITapGestureRecognizer?) {
+        // self.listOfTrainersNavigationBar.isHidden = false
+        //  self.listOfTrainersNavigationBar.alpha = 1.0
+        self.navigationController?.navigationBar.isHidden = false
+        self.navigationController?.navigationBar.alpha = 1.0
+        self.searchBarHeightConstraint.constant = 0
+        self.searchBarView.isHidden = true
+        self.searchBarView.alpha = 0.0
         self.view.endEditing(true)
-       }
+    }
 }
 
 extension ListOfTrainersViewController:UITableViewDataSource{
@@ -414,7 +458,11 @@ extension ListOfTrainersViewController:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.trainerID = self.listOfTrainerArray[indexPath.section].trainerID
-        performSegue(withIdentifier: "visitorDetailSegue", sender: false)
+       // performSegue(withIdentifier: "visitorDetailSegue", sender: false)
+        let trainerEditVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "trainerEditVC") as! TrainerEditScreenViewController
+        trainerEditVC.isNewTrainer = false
+        trainerEditVC.img = self.userImage
+        self.navigationController?.pushViewController(trainerEditVC, animated: true)
     }
 }
 

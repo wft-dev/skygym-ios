@@ -11,7 +11,7 @@ import SVProgressHUD
 
 class ViewVisitorScreenViewController: BaseViewController {
 
-    @IBOutlet weak var visitorViewNavigationBar: CustomNavigationBar!
+  //  @IBOutlet weak var visitorViewNavigationBar: CustomNavigationBar!
     @IBOutlet weak var visitorFirstName: UITextField!
     @IBOutlet weak var visitorLastName: UITextField!
     @IBOutlet weak var visitorEmailTextField: UITextField!
@@ -194,7 +194,7 @@ class ViewVisitorScreenViewController: BaseViewController {
          self.toolBar =  UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
         self.setVisitorViewNavigationBar()
         self.setTextFields()
-        setBackAction(toView: self.visitorViewNavigationBar)
+        //setBackAction(toView: self.visitorViewNavigationBar)
         self.isNewVisitor ? updateBtn.setTitle("A D D", for: .normal) : updateBtn.setTitle("U P D A T E ", for: .normal)
         self.datePicker.datePickerMode = .date
         toolBar!.barStyle = .default
@@ -227,16 +227,52 @@ class ViewVisitorScreenViewController: BaseViewController {
     }
     
     func setVisitorViewNavigationBar() {
-        self.visitorViewNavigationBar.menuBtn.isHidden = true
-        self.visitorViewNavigationBar.leftArrowBtn.isHidden = false
-        self.visitorViewNavigationBar.leftArrowBtn.alpha = 1.0
-        self.visitorViewNavigationBar.searchBtn.isHidden = true
-        self.visitorViewNavigationBar.navigationTitleLabel.text = "Visitor"
+//        self.visitorViewNavigationBar.menuBtn.isHidden = true
+//        self.visitorViewNavigationBar.leftArrowBtn.isHidden = false
+//        self.visitorViewNavigationBar.leftArrowBtn.alpha = 1.0
+//        self.visitorViewNavigationBar.searchBtn.isHidden = true
+//        self.visitorViewNavigationBar.navigationTitleLabel.text = "Visitor"
+        
+        let title = NSAttributedString(string: "Visitor", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+        backButton.addTarget(self, action: #selector(visitorBackBtnAction), for: .touchUpInside)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,backButton])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let backBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = backBtn
+
+        
         if self.isNewVisitor == false {
-            self.visitorViewNavigationBar.editBtn.isHidden = false
-            self.visitorViewNavigationBar.editBtn.alpha = 1.0
-            self.visitorViewNavigationBar.editBtn.addTarget(self, action: #selector(editVisitor), for: .touchUpInside)
+//            self.visitorViewNavigationBar.editBtn.isHidden = false
+//            self.visitorViewNavigationBar.editBtn.alpha = 1.0
+//            self.visitorViewNavigationBar.editBtn.addTarget(self, action: #selector(editVisitor), for: .touchUpInside)
+            
+            let editBtn = UIButton()
+            editBtn.setImage(UIImage(named: "edit"), for: .normal)
+            editBtn.addTarget(self, action: #selector(editVisitor), for: .touchUpInside)
+            editBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            editBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+            editBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+            let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let rightStackView = UIStackView(arrangedSubviews: [editBtn,rightSpaceBtn])
+            rightStackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+            let verticalBtn = UIBarButtonItem(customView: rightStackView)
+            navigationItem.rightBarButtonItem = verticalBtn
         }
+    }
+    
+    @objc func visitorBackBtnAction() {
+        self.navigationController?.popViewController(animated: true)
     }
     
     @objc func editVisitor() {

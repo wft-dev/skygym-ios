@@ -11,7 +11,7 @@ import SVProgressHUD
 
 class ProfileAdminViewController: UIViewController {
     
-    @IBOutlet weak var adminProfileNavigationBar: CustomNavigationBar!
+  //  @IBOutlet weak var adminProfileNavigationBar: CustomNavigationBar!
     @IBOutlet weak var gymNameTextField: UITextField!
     @IBOutlet weak var gymIDTextField: UITextField!
     @IBOutlet weak var addressTextView: UITextView!
@@ -251,13 +251,45 @@ class ProfileAdminViewController: UIViewController {
     }
 
     func setAdminProfileNavigationBar() {
-        self.adminProfileNavigationBar.menuBtn.isHidden = false
-        self.adminProfileNavigationBar.searchBtn.isHidden = true
-        self.adminProfileNavigationBar.navigationTitleLabel.text = "Profile"
-        self.adminProfileNavigationBar.editBtn.isHidden = false
-        self.adminProfileNavigationBar.editBtn.alpha = 1.0
-        self.adminProfileNavigationBar.editBtn.addTarget(self, action: #selector(editAdmin), for: .touchUpInside)
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+        let title = NSAttributedString(string: "Profile", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        let menuBtn = UIButton()
+        menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+        menuBtn.addTarget(self, action: #selector(menuAction), for: .touchUpInside)
+        menuBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        menuBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        menuBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+        stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        let leftBtn = UIBarButtonItem(customView: stackView)
+        navigationItem.leftBarButtonItem = leftBtn
+        
+        let editBtn = UIButton()
+        editBtn.setImage(UIImage(named: "edit"), for: .normal)
+        editBtn.addTarget(self, action: #selector(editAdmin), for: .touchUpInside)
+        editBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        editBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        editBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+        let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let rightStackView = UIStackView(arrangedSubviews: [editBtn,rightSpaceBtn])
+        rightStackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        let rightBtn = UIBarButtonItem(customView: rightStackView)
+        navigationItem.rightBarButtonItem = rightBtn
+        
     }
+    
+    @objc func menuAction(){
+        AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
+    }
+    
 
     func setGymDaysFieldData() {
         let selectedWeekdayArray = AppManager.shared.getSelectedWeekdays(selectedArray: self.selectedWeekdaysArray.sorted(), defaultArray: self.weekdayArray)
