@@ -35,23 +35,15 @@ class PurchaseViewController: BaseViewController {
         super.viewDidLoad()
         self.setPurchaseNavigationBar()
         self.purchaseTable.separatorStyle = .none
-        //setBackAction(toView: self.purchaseNavigationBar)
         self.todayDate = AppManager.shared.getStandardFormatDate(date: Date())
-       
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
          self.getMembershipPlans(id: AppManager.shared.memberID)
     }
-
+    
     func setPurchaseNavigationBar() {
-//        self.purchaseNavigationBar.navigationTitleLabel.text = "Membership Plan"
-//        self.purchaseNavigationBar.menuBtn.isHidden = true
-//        self.purchaseNavigationBar.leftArrowBtn.isHidden = false
-//        self.purchaseNavigationBar.leftArrowBtn.alpha = 1.0
-//        self.purchaseNavigationBar.searchBtn.isHidden = true
-        
         let title = NSAttributedString(string: "Membership Plan", attributes: [
             NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
         ])
@@ -91,7 +83,6 @@ class PurchaseViewController: BaseViewController {
         currentMembershipDetailVC.purchasedMembershipID = singleMembership.membershipID
         currentMembershipDetailVC.membershipTimeStamp = singleMembership.timeStamp
         self.navigationController?.pushViewController(currentMembershipDetailVC, animated: true)
-        
     }
     
     func getMembershipPlans(id:String)  {
@@ -141,14 +132,6 @@ class PurchaseViewController: BaseViewController {
            retryAlertController.addAction(retryAlertBtn)
            present(retryAlertController, animated: true, completion: nil)
        }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "membershipDetailSegue" {
-            let destinationVC = segue.destination as! CurrentMembershipDetailViewController
-
-        }
-    }
-    
 }
 
 extension PurchaseViewController :UITableViewDataSource {
@@ -189,12 +172,3 @@ extension PurchaseViewController :UITableViewDataSource {
        return cell
     }
 }
-
-
-//extension PurchaseViewController:UITableViewDelegate{
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let singleMembership = self.purchaseArray[indexPath.row]
-//
-//        self.performSegue(withIdentifier: "membershipDetailSegue", sender: singleMembership.membershipID)
-//    }
-//}

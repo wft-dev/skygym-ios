@@ -10,8 +10,7 @@ import SVProgressHUD
 
 
 class ProfileAdminViewController: UIViewController {
-    
-  //  @IBOutlet weak var adminProfileNavigationBar: CustomNavigationBar!
+
     @IBOutlet weak var gymNameTextField: UITextField!
     @IBOutlet weak var gymIDTextField: UITextField!
     @IBOutlet weak var addressTextView: UITextView!
@@ -92,7 +91,6 @@ class ProfileAdminViewController: UIViewController {
     @IBOutlet weak var weekDaysListTable: UITableView!
     @IBOutlet weak var weekDaysListBtn: UIButton!
     
-    
     private lazy var imagePicker:UIImagePickerController = {
         return UIImagePickerController()
     }()
@@ -139,7 +137,6 @@ class ProfileAdminViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         self.setAdminProfileView()
         self.fetchAdminDetailBy(id: AppManager.shared.adminID)
-        
     }
 
     @IBAction func updateBtnAction(_ sender: Any) {
@@ -151,7 +148,7 @@ class ProfileAdminViewController: UIViewController {
                     err in
                     SVProgressHUD.dismiss()
                     if err != nil {
-                      //  self.showAdminProfileAlert(title: "Error", message: "Error in uploading the user profile image, Please try again.")
+                        
                     } else {
                         FireStoreManager.shared.updateAdminDetail(id: adminID,adminDetail: self.getAdminDetailForUpdate(), result: {
                             (err) in
@@ -171,7 +168,6 @@ class ProfileAdminViewController: UIViewController {
                     SVProgressHUD.dismiss()
                     if err != nil {
                         self.showAdminProfileAlert(title: "Error", message: "\(err!.localizedDescription)")
-                        //Error in updating admin details, please try again.
                     } else {
                         self.showAdminProfileAlert(title: "Success", message: "Admin details are updated successfully.")
                     }
@@ -185,7 +181,6 @@ class ProfileAdminViewController: UIViewController {
             self.updateBtn.isEnabled = false
             self.updateBtn.alpha = 0.4
         }
-
     }
     
     @IBAction func gymDaysListBtnAction(_ sender: Any) {
@@ -283,13 +278,11 @@ class ProfileAdminViewController: UIViewController {
         rightStackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
         let rightBtn = UIBarButtonItem(customView: rightStackView)
         navigationItem.rightBarButtonItem = rightBtn
-        
     }
     
     @objc func menuAction(){
         AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
     }
-    
 
     func setGymDaysFieldData() {
         let selectedWeekdayArray = AppManager.shared.getSelectedWeekdays(selectedArray: self.selectedWeekdaysArray.sorted(), defaultArray: self.weekdayArray)
@@ -319,23 +312,23 @@ class ProfileAdminViewController: UIViewController {
             self.adminProfileImg.isUserInteractionEnabled = false
             self.weekDaysListBtn.isEnabled = false
         } else{
-                AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
-                AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray,errorLabels: self.errorLabelArray, flag: false)
-                self.isEdit = true
-                self.setHrLineView(isHidden: true, alpha: 0.0)
-                self.gymIDTextField.layer.opacity = 0.4
-                self.addressTextView.isHidden = false
-                self.addressTextView.alpha = 1.0
-                AppManager.shared.hidePasswordTextField(hide: false,passwordTextField:self.passwordTextField,passwordLabel: self.passworNonEditLabel)
-                self.gymAddressNonEditLabel.isHidden = true
-                self.updateBtn.isHidden = false
-                self.updateBtn.isEnabled = true
-                self.gymIDTextField.isEnabled = false
-                self.adminProfileImg.isUserInteractionEnabled = true
+            AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
+            AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultLabelArray,errorLabels: self.errorLabelArray, flag: false)
+            self.isEdit = true
+            self.setHrLineView(isHidden: true, alpha: 0.0)
+            self.gymIDTextField.layer.opacity = 0.4
+            self.addressTextView.isHidden = false
+            self.addressTextView.alpha = 1.0
+            AppManager.shared.hidePasswordTextField(hide: false,passwordTextField:self.passwordTextField,passwordLabel: self.passworNonEditLabel)
+            self.gymAddressNonEditLabel.isHidden = true
+            self.updateBtn.isHidden = false
+            self.updateBtn.isEnabled = true
+            self.gymIDTextField.isEnabled = false
+            self.adminProfileImg.isUserInteractionEnabled = true
             self.passwordTextField.text = self.actualPassword?.text
             self.weekDaysListBtn.isEnabled = true
         }
-         }
+    }
 
     func getFieldsAndLabelDic() -> [UITextField:UILabel] {
                 let dir = [
@@ -366,7 +359,6 @@ class ProfileAdminViewController: UIViewController {
             $0?.layer.cornerRadius = 7.0
             $0?.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
             $0?.clipsToBounds = true
-            //print("text field tag : \()")
             if $0?.tag != 12 {
                 $0?.addTarget(self, action: #selector(checkProfileValidation(_:)), for: .editingChanged)
             }
@@ -409,7 +401,6 @@ class ProfileAdminViewController: UIViewController {
 
     @objc func checkProfileValidation(_ textField:UITextField) {
         self.allProfileFieldsRequiredValidation(textField: textField)
-      //  self.updateProfileBtnEnabler(textFieldArray: self.textFieldsArray)
         ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldsArray, textView: self.addressTextView, phoneNumberTextField: self.phoneNoTextField,email: self.emailTextField.text!,password: self.passwordTextField.text!)
     }
 
@@ -751,7 +742,6 @@ extension ProfileAdminViewController : UITableViewDelegate{
 
 extension ProfileAdminViewController :UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-//        view.endEditing(true)
         if touch.view?.isDescendant(of: self.weekDaysListView) == true ||
         touch.view?.tag == 110 {
             return false

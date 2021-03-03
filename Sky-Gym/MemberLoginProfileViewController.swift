@@ -25,9 +25,7 @@ class MemberLoginProfileViewController: UIViewController {
     @IBOutlet weak var emailErrorLabel: UILabel!
     @IBOutlet weak var phoneNoErrorLabel: UILabel!
     @IBOutlet weak var dobErrorLabel: UILabel!
-    
     @IBOutlet weak var updateBtn: UIButton!
-    
     @IBOutlet weak var firstNameNonEditLabel: UILabel!
     @IBOutlet weak var lastNameNonEditLabel: UILabel!
     @IBOutlet weak var firstNameHrLineView: UIView!
@@ -39,7 +37,6 @@ class MemberLoginProfileViewController: UIViewController {
     @IBOutlet weak var phoneNoNonEditLabel: UILabel!
     @IBOutlet weak var dobNonEditLabel: UILabel!
     @IBOutlet weak var phoneNoHrLineView: UIView!
-    
     @IBOutlet weak var firstNameLabel: UILabel!
     @IBOutlet weak var lastNameLabel: UILabel!
     @IBOutlet weak var genderLabel: UILabel!
@@ -47,7 +44,6 @@ class MemberLoginProfileViewController: UIViewController {
     @IBOutlet weak var emailLabel: UILabel!
     @IBOutlet weak var phoneNoLabel: UILabel!
     @IBOutlet weak var dobLabel: UILabel!
-    
     @IBOutlet weak var firstNameForNonEditLabel: UILabel!
     @IBOutlet weak var lastNameForNonEditLabel: UILabel!
     @IBOutlet weak var genderForNonEditLabel: UILabel!
@@ -82,7 +78,6 @@ class MemberLoginProfileViewController: UIViewController {
     var memberLoginProfileEmail:String = ""
     var memberPassword:String = ""
     let genderArray = ["Male","Female","Other"]
-   // var isProfileImgSelected:Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -182,13 +177,6 @@ class MemberLoginProfileViewController: UIViewController {
     }
 
     func setMemberLoginProfileCustomNavigationbar() {
-//        self.memberLoginProfileCustomNavigationbarView.navigationTitleLabel.text = "Profile"
-//        self.memberLoginProfileCustomNavigationbarView.searchBtn.isHidden = true
-//        self.memberLoginProfileCustomNavigationbarView.searchBtn.alpha = 0.0
-//        self.memberLoginProfileCustomNavigationbarView.editBtn.isHidden = false
-//        self.memberLoginProfileCustomNavigationbarView.editBtn.alpha = 1.0
-//        self.memberLoginProfileCustomNavigationbarView.editBtn.addTarget(self, action: #selector(makeProfileEditable), for: .touchUpInside)
-        
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.isTranslucent = true
@@ -367,7 +355,6 @@ class MemberLoginProfileViewController: UIViewController {
         
         ValidationManager.shared.updateBtnValidator(updateBtn: self.updateBtn, textFieldArray: self.textFieldArray, textView: nil, phoneNumberTextField: self.phoneNumberTextField, email: self.emailTextField.text!, password: self.passwordTextField.text!)
     }
-
     
     func fetchMemberDetailBy(id:String) {
         SVProgressHUD.show()
@@ -467,7 +454,6 @@ extension MemberLoginProfileViewController:UITextFieldDelegate {
     }
         
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        
         return textField.tag == 7 || textField.tag == 3 ? false : true
     }
     
@@ -502,7 +488,7 @@ extension MemberLoginProfileViewController:UITextFieldDelegate {
                             break
                         }
                     }
-
+                    
                 }
             }else {
                 self.isAlreadyExistsEmail = false

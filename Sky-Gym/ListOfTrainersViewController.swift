@@ -49,11 +49,12 @@ class ListOfTrainersTableCell: UITableViewCell {
     }
     
     @objc func messageAction()  {
-        print("message")
-        if messenger.canSendText() {
-            let messangerVC = messenger.configuredMessageComposeViewController(recipients: ["7015810695"], body: "testing visitor .")
-            customDelegate?.showMessage(vc: messangerVC)
-        }
+//        print("message")
+//        if messenger.canSendText() {
+//            let messangerVC = messenger.configuredMessageComposeViewController(recipients: ["7015810695"], body: "testing visitor .")
+//            customDelegate?.showMessage(vc: messangerVC)
+//        }
+        customDelegate?.applySegueToChat(id: "\(attendenceBtn.tag)", memberName: self.trainerNameLabel.text!)
       }
     
    @objc func attendenceAction()  {
@@ -87,7 +88,6 @@ class ListOfTrainersTableCell: UITableViewCell {
 }
 
 class ListOfTrainersViewController: BaseViewController {
-   // @IBOutlet weak var listOfTrainersNavigationBar: CustomNavigationBar!
     @IBOutlet weak var listOfTrainerTable: UITableView!
     @IBOutlet weak var searchBarView: UIView!
     @IBOutlet weak var customSearchBar: UISearchBar!
@@ -99,7 +99,8 @@ class ListOfTrainersViewController: BaseViewController {
     var membersArray:[Dictionary<String,Any>] = []
     var userImage:UIImage? = nil
     let refreshController = UIRefreshControl()
-    
+    var senderName:String = ""
+    var senderID:String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,6 +109,8 @@ class ListOfTrainersViewController: BaseViewController {
         self.refreshController.attributedTitle = NSAttributedString(string: "Fetching Trainer List")
         self.refreshController.addTarget(self, action: #selector(refreshTrainerList), for: .valueChanged)
         self.listOfTrainerTable.refreshControl = self.refreshController
+         senderID = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminID : AppManager.shared.trainerID
+         senderName = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminName : AppManager.shared.trainerName
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -131,7 +134,6 @@ class ListOfTrainersViewController: BaseViewController {
     }
     
     @IBAction func addNewTrainerBtnAction(_ sender: Any) {
-       // performSegue(withIdentifier: "visitorDetailSegue", sender:true)
         let trainerEditVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "trainerEditVC") as! TrainerEditScreenViewController
         trainerEditVC.isNewTrainer = true
         self.navigationController?.pushViewController(trainerEditVC, animated: true)
@@ -300,10 +302,6 @@ class ListOfTrainersViewController: BaseViewController {
     }
     
     func setListOfTrainersNavigationSet() {
-//        self.listOfTrainersNavigationBar.menuBtn.isHidden = false
-//       // self.listOfTrainersNavigationBar.leftArrowBtn.isHidden = false
-//        self.listOfTrainersNavigationBar.navigationTitleLabel.text = "Trainer"
-//        self.listOfTrainersNavigationBar.searchBtn.addTarget(self, action: #selector(showSearchBar), for: .touchUpInside)
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.isTranslucent = true
@@ -344,14 +342,6 @@ class ListOfTrainersViewController: BaseViewController {
         tableCellView.clipsToBounds = true
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "visitorDetailSegue" {
-            let destinationVC = segue.destination as! TrainerEditScreenViewController
-            destinationVC.isNewTrainer = sender as! Bool
-            destinationVC.img = self.userImage
-        }
-    }
-    
     func setSearchBar()  {
         self.customSearchBar.backgroundColor = .clear
         self.customSearchBar.layer.borderColor = .none
@@ -379,8 +369,6 @@ class ListOfTrainersViewController: BaseViewController {
     
     @objc  func showSearchBar()  {
         if self.searchBarView.isHidden == true {
-            //  self.listOfTrainersNavigationBar.isHidden = true
-            // self.listOfTrainersNavigationBar.alpha = 0.0
             self.navigationController?.navigationBar.isHidden = true
             self.navigationController?.navigationBar.alpha = 0.0
             self.searchBarTopConstraint.constant = -((self.navigationController!.navigationBar.frame.origin.y/4 ) )
@@ -398,8 +386,6 @@ class ListOfTrainersViewController: BaseViewController {
 
        @objc
     private func dismissPresentedView(_ sender: UITapGestureRecognizer?) {
-        // self.listOfTrainersNavigationBar.isHidden = false
-        //  self.listOfTrainersNavigationBar.alpha = 1.0
         self.navigationController?.navigationBar.isHidden = false
         self.navigationController?.navigationBar.alpha = 1.0
         self.searchBarHeightConstraint.constant = 0
@@ -458,7 +444,6 @@ extension ListOfTrainersViewController:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.trainerID = self.listOfTrainerArray[indexPath.section].trainerID
-       // performSegue(withIdentifier: "visitorDetailSegue", sender: false)
         let trainerEditVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "trainerEditVC") as! TrainerEditScreenViewController
         trainerEditVC.isNewTrainer = false
         trainerEditVC.img = self.userImage
@@ -484,12 +469,15 @@ extension ListOfTrainersViewController:UISearchBarDelegate{
 }
 
 extension ListOfTrainersViewController:CustomCellSegue{
+    func showMessage(vc: MFMessageComposeViewController) {}
     func applySegue(id: String) {}
     
-    func applySegueToChat(id: String, memberName: String) {}
     
-    func showMessage(vc: MFMessageComposeViewController) {
-        present(vc, animated: true, completion: nil)
+    func applySegueToChat(id: String, memberName: String) {
+        let currentChatUsers = ChatUsers(messageSenderID: self.senderID, messageReceiverID: id, messageSenderName: self.senderName, messageReceiverName: memberName)
+        let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
+        chatVC.chatUsers = currentChatUsers
+        self.navigationController?.pushViewController(chatVC, animated: true)
     }
-    
+
 }

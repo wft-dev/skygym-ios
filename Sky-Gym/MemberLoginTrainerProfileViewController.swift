@@ -54,9 +54,6 @@ class MemberLoginTrainerProfileViewController: UIViewController {
     }
     
     func setMemberLoginTrainerProfileCustomNavigationbar()  {
-//        self.memberLoginTrainerProfileCustomNavigationbarView.navigationTitleLabel.text = "Trainer"
-//        self.memberLoginTrainerProfileCustomNavigationbarView.searchBtn.isHidden = true
-//        self.memberLoginTrainerProfileCustomNavigationbarView.searchBtn.alpha = 0.0
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.isTranslucent = true
@@ -85,16 +82,15 @@ class MemberLoginTrainerProfileViewController: UIViewController {
      }
     
     func fetchTrainerDetail(id:String) {
-
         DispatchQueue.global(qos: .utility).async {
             let result = FireStoreManager.shared.getTrainerDetailBy(id: id)
-        
+            
             DispatchQueue.main.async {
                 switch result {
                 case let .success(trainerDetail):
                     self.setTrainerDetail(trainerDetail: trainerDetail!)
                     FireStoreManager.shared.downloadUserImg(id: id, result: {
-                       (imgUrl,err) in
+                        (imgUrl,err) in
                         if err == nil {
                             do {
                                 let imgData = try Data(contentsOf: imgUrl!)
@@ -104,13 +100,12 @@ class MemberLoginTrainerProfileViewController: UIViewController {
                             } catch _ { }
                         } else {SVProgressHUD.dismiss()  }
                     })
-                   
+                    
                 case .failure(_):
                     break
                 }
             }
         }
-        
     }
     
     func setTrainerDetail(trainerDetail:TrainerDataStructure) {

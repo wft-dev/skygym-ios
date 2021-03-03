@@ -18,26 +18,102 @@ class ChatViewController: MessagesViewController{
     var currentSenderUser:SenderDecription? = nil
     var chatUsers:ChatUsers? = nil
     var messages:[Message] = []
+    var imageMessage:[Message] = []
     var docRef:DocumentReference? = nil
-    
+    var imageData:Data? = nil
+    var imageIndexArray:[Int] = []
+    var imgUrlStrArray:[String] = []
+    var isChatExists:Bool = false
+    private lazy var imagePicker :UIImagePickerController = {
+       return UIImagePickerController()
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-       // IQKeyboardManager.shared.disabledDistanceHandlingClasses.append(ChatViewController.self)
+        navigationItem.largeTitleDisplayMode = .always
+        navigationItem.hidesSearchBarWhenScrolling = false
         self.currentSenderUser = SenderDecription(senderId: self.chatUsers!.messageSenderID, displayName: self.chatUsers!.messageSenderName)
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesDisplayDelegate = self
-      messagesCollectionView.messagesLayoutDelegate = self
+        messagesCollectionView.messagesLayoutDelegate = self
+        messagesCollectionView.messageCellDelegate = self
         messageInputBar.delegate = self
+        self.imagePicker.delegate = self
+        setChatFieldView()
         self.loadChat()
         setNavigationBar()
+    }
+    
+    func enlargeImage(imageView:UIImageView) {
+        let enlargeImageView =  UIImageView(image: imageView.image)
+        enlargeImageView.frame = UIScreen.main.bounds
+        enlargeImageView.backgroundColor = .red
+        enlargeImageView.contentMode = .scaleAspectFit
+        enlargeImageView.isUserInteractionEnabled = true
+        enlargeImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissEnlargedImage(_:))))
+        self.view.addSubview(enlargeImageView)
+        self.navigationController?.isNavigationBarHidden = true
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    @objc func dismissEnlargedImage(_ gesture:UITapGestureRecognizer){
+        self.navigationController?.isNavigationBarHidden = false
+        self.tabBarController?.tabBar.isHidden = false
+        gesture.view?.removeFromSuperview()
+    }
+    
+    func setChatFieldView() {
+        maintainPositionOnKeyboardFrameChanged = true
+        messageInputBar.inputTextView.layer.borderColor = UIColor.lightGray.cgColor
+        messageInputBar.inputTextView.layer.borderWidth = 0.7
+        messageInputBar.inputTextView.layer.cornerRadius = 15.0
+        messageInputBar.sendButton.backgroundColor = UIColor(red: 105/255, green: 142/255, blue: 184/255, alpha: 1.0)
+        messageInputBar.sendButton.layer.cornerRadius = 10.0
+        messageInputBar.sendButton.setAttributedTitle(NSAttributedString(string: "Send", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white]), for: .normal)
+        messageInputBar.inputTextView.textContainerInset = UIEdgeInsets(top: 10, left: 40, bottom: 10, right: 0)
+        let b = InputBarButtonItem(frame: CGRect(x: 5, y: 4, width: 25, height: 25))
+        b.setImage(UIImage(named:"upload-image"), for: .normal)
+        b.addTarget(self, action: #selector(uploadImg), for: .touchUpInside)
+        let v = UIView(frame: b.frame)
+        v.addSubview(b)
+        messageInputBar.inputTextView.addSubview(v)
+    }
+    
+    @objc func uploadImg(){
+        self.imagePicker.allowsEditing = true
+        self.imagePicker.modalPresentationStyle = .fullScreen
+        self.imagePicker.sourceType = .photoLibrary
+        present(self.imagePicker, animated: true, completion: nil)
     }
 
   private  func insertNewMessage(message:Message) {
         messages.append(message)
-    messagesCollectionView.reloadData()
+       
         DispatchQueue.main.async {
+            self.messagesCollectionView.reloadData()
             self.messagesCollectionView.scrollToBottom(animated: true)
+        }
+    }
+    
+    func loadImages() {
+        SVProgressHUD.show()
+        if self.imageMessage.count > 0 {
+            for (index,singleMessage) in self.imageMessage.enumerated(){
+                FireStoreManager.shared.downloadImage(imgUrl: singleMessage.imgURLStr, hadler: {
+                    (imggData,err) in
+                    
+                    let i = self.imageIndexArray[index]
+                    self.messages.remove(at: i)
+                    self.messages.insert(Message(id: UUID().uuidString, content: singleMessage.content, created: Timestamp(), senderDescription: singleMessage.senderDescription, imgURLStr: singleMessage.imgURLStr, imageMessage: ImageMessage(image: UIImage(data: imggData!)!)), at: i)
+                    
+                    if index ==  self.imageMessage.count - 1 {
+                            self.messagesCollectionView.reloadData()
+                            self.messagesCollectionView.scrollToBottom(animated: true)
+                            SVProgressHUD.dismiss()
+                    }
+                })
+            }
+        }else {
+            SVProgressHUD.dismiss()
         }
     }
     
@@ -62,13 +138,10 @@ class ChatViewController: MessagesViewController{
         stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
         let backBtn = UIBarButtonItem(customView: stackView)
         navigationItem.leftBarButtonItem = backBtn
-
-        
-        
     }
     
     @objc func backBtnAction(){
-        self.navigationController?.popToRootViewController(animated: true)
+        self.navigationController?.popViewController(animated: true)
     }
     
   private  func saveMessage(message:Message) {
@@ -80,11 +153,11 @@ class ChatViewController: MessagesViewController{
             "senderName" : message.senderDescription.displayName,
             "imgURLStr" : message.imgURLStr
         ]
-       // print("DOC REF : \(docRef)")
         docRef?.collection("thread").addDocument(data: msgData, completion: {
             (err) in
             
             if err == nil {
+                self.messagesCollectionView.reloadData()
                 self.messagesCollectionView.scrollToBottom(animated: true)
             }else {
                 print("Error in saving message.")
@@ -93,54 +166,68 @@ class ChatViewController: MessagesViewController{
     }
     
     func loadChat(){
+        SVProgressHUD.show()
         let chatRef = Firestore.firestore().collection("Chats")
-            .whereField("users", arrayContains: chatUsers!.messageSenderID)
+            .whereField("users",arrayContains:self.chatUsers!.messageSenderID)
         
         chatRef.getDocuments(completion: {
             (querySnapshot,err) in
             
             if err == nil {
                 guard let queryCount = querySnapshot?.documents.count else {
+                    SVProgressHUD.dismiss()
                     return
                 }
                 if queryCount == 0 { self.createNewChat() }
                     
                 else if queryCount >= 1 {
                     for doc in querySnapshot!.documents  {
-                        let chat = Chat(dictionary: doc.data())
+                       let chat = Chat(dictionary: doc.data())
                         if chat!.users.contains(self.chatUsers!.messageReceiverID){
+                            self.isChatExists = true
                             self.docRef = doc.reference
                             FireStoreManager.shared.getMessageCollection(doc: self.docRef!, handler: {
                                 (documentArray) in
                                 if documentArray.count > 0 {
                                     self.messages.removeAll()
                                     
-                                    for singleDoc in documentArray {
+                                    for (index,singleDoc) in documentArray.enumerated() {
                                         let msg = Message(dictionary: singleDoc.data())
                                         if msg?.imgURLStr == "" {
                                             self.messages.append(msg!)
                                         }else {
-                                            print("image")
+                                            self.imageMessage.append(msg!)
+                                            self.imageIndexArray.append(index)
+                                            let m = Message(id: msg!.id, content:msg!.content, created: Timestamp(), senderDescription:msg!.senderDescription, imgURLStr: msg!.imgURLStr, imageMessage: msg!.imageMessage)
+                                            self.messages.append(m)
                                         }
                                     }
-                                    
                                     if self.messages.count == documentArray.count {
                                         self.messagesCollectionView.reloadData()
                                         self.messagesCollectionView.scrollToBottom(animated: true)
+                                        self.loadImages()
                                     }
+                                    SVProgressHUD.dismiss()
+                                }else {
+                                    SVProgressHUD.dismiss()
                                 }
                             })
+                        }else {
+                            print("chat user not found.")
                         }
                     }
+                    
+                    if self.isChatExists == false {
+                        print("chat created.")
+                        self.createNewChat()
+                    }
                 }
-                
             }
-            
         })
-        
     }
     
     private func createNewChat(){
+        SVProgressHUD.show()
         let users = [self.chatUsers!.messageSenderID,self.chatUsers!.messageReceiverID]
         let data:[String:Any] = ["users":users]
         
@@ -150,20 +237,17 @@ class ChatViewController: MessagesViewController{
             (err) in
             if err == nil {
                 self.loadChat()
+                SVProgressHUD.dismiss()
             }
         })
-        
     }
-    
 }
 
 extension ChatViewController:InputBarAccessoryViewDelegate {
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
         let msg = Message(id: UUID().uuidString, content: text, created: Timestamp(), senderDescription: self.currentSenderUser!, imgURLStr: "", imageMessage: nil)
-        
         insertNewMessage(message: msg)
         saveMessage(message: msg)
-        
         inputBar.inputTextView.text = ""
         inputBar.inputTextView.resignFirstResponder()
     }
@@ -192,11 +276,12 @@ extension ChatViewController:MessagesLayoutDelegate{
     func avatarSize(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGSize {
         return .zero
     }
+    
 }
 
 extension ChatViewController:MessagesDisplayDelegate{
     func backgroundColor(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor {
-        return isFromCurrentSender(message: message) ? .gray : .black
+        return isFromCurrentSender(message: message) ? .gray : .yellow
     }
     
     func messageStyle(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageStyle {
@@ -212,3 +297,55 @@ extension ChatViewController:MessagesDisplayDelegate{
     }
     
 }
+
+extension ChatViewController:MessageCellDelegate{
+    func didTapImage(in cell: MessageCollectionViewCell) {
+//        print("celll  : \(cell)")
+//        print("celll content : \(cell.subviews.first?.subviews)")
+        let subV = cell.subviews.first!.subviews
+        for sub in subV {
+            if sub.isKind(of: UIImageView.self) && sub.subviews.count > 0  {
+                self.enlargeImage(imageView: sub.subviews.first as! UIImageView)
+               // print("image view are : \(sub.subviews)")
+            }
+        }
+    }
+    
+    
+//    func didTapMessage(in cell: MessageCollectionViewCell) {
+//        let subV = cell.subviews.first!.subviews
+//        print("subview : \(subV)")
+////        for sub in subV {
+////            if sub.isKind(of: UIImageView.self) {
+////                //self.enlargeImage(imageView: sub as! UIImageView)
+////
+////            }
+////        }
+//    }
+    
+}
+
+extension ChatViewController : UIImagePickerControllerDelegate,UINavigationControllerDelegate  {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image:UIImage = info[.editedImage] as? UIImage{
+            SVProgressHUD.show()
+            self.imageData = image.jpegData(compressionQuality: 0.5)
+            FireStoreManager.shared.uploadImage(senderID: currentSenderUser!.senderId, imgData: self.imageData!, handler: {
+                (imgUrlStr,err) in
+                if err == nil {
+                    let message = Message(id: UUID().uuidString, content: "", created: Timestamp(), senderDescription: self.currentSenderUser!, imgURLStr: imgUrlStr, imageMessage: nil)
+                    self.insertNewMessage(message: message)
+                    self.saveMessage(message: message)
+                    SVProgressHUD.dismiss()
+                }
+            })
+            dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
+}
+
+

@@ -11,7 +11,6 @@ import SVProgressHUD
 
 class ViewEventScreenViewController: BaseViewController {
     
-   // @IBOutlet weak var viewEventNavigationBar: CustomNavigationBar!
     @IBOutlet weak var eventNameTextField: UITextField!
     @IBOutlet weak var eventDateTextField: UITextField!
     @IBOutlet weak var addressTextView: UITextView!
@@ -60,13 +59,11 @@ class ViewEventScreenViewController: BaseViewController {
         super.viewDidLoad()
         self.setViewEventNavigationBar()
         self.setTextFields()
-        //setBackAction(toView: self.viewEventNavigationBar)
         self.eventUpdateBtn.isHidden = true
          }
     
     @objc func checkValidation(_ textField:UITextField) {
         self.allFieldsRequiredValidation(textField: textField, duplicateError: nil)
-   //     validation.updateBtnValidator(updateBtn: self.eventUpdateBtn, textFieldArray: self.textFieldsArray!, textView: self.addressTextView, phoneNumberTextField: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -176,9 +173,7 @@ class ViewEventScreenViewController: BaseViewController {
         stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
         let backBtn = UIBarButtonItem(customView: stackView)
         navigationItem.leftBarButtonItem = backBtn
-        
 
-        
         switch AppManager.shared.loggedInRole {
         case .Trainer:
            let flag = AppManager.shared.trainerEventPermission == false || self.isNewEvent == true ? true : false
@@ -197,15 +192,6 @@ class ViewEventScreenViewController: BaseViewController {
     }
     
     func hideEditBtn(hide:Bool) {
-//        if hide == true {
-//            self.viewEventNavigationBar.editBtn.isHidden = true
-//            self.viewEventNavigationBar.editBtn.alpha = 0.0
-//        }else {
-//            self.viewEventNavigationBar.editBtn.isHidden = false
-//            self.viewEventNavigationBar.editBtn.alpha = 1.0
-//            self.viewEventNavigationBar.editBtn.addTarget(self, action: #selector(editEvent), for: .touchUpInside)
-//        }
-        
         if hide == false {
             let editBtn = UIButton()
             editBtn.setImage(UIImage(named: "edit"), for: .normal)
@@ -219,7 +205,6 @@ class ViewEventScreenViewController: BaseViewController {
             let rightBtn = UIBarButtonItem(customView: rightStackView)
             navigationItem.rightBarButtonItem = rightBtn
         }
-        
     }
     
     @objc func editEvent() {

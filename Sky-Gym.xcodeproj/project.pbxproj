@@ -53,8 +53,6 @@
 		42D13392252F0ED500BA7EE5 /* TrainerEditScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42D13391252F0ED500BA7EE5 /* TrainerEditScreenViewController.swift */; };
 		42F7DBAF2521A444001F0050 /* MenuItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F7DBAE2521A444001F0050 /* MenuItemsViewController.swift */; };
 		42F7DBB12521E870001F0050 /* AdminDashboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F7DBB02521E870001F0050 /* AdminDashboardViewController.swift */; };
-		42F7DBB32521EBCA001F0050 /* CustomNavigationBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42F7DBB22521EBCA001F0050 /* CustomNavigationBar.xib */; };
-		42F7DBB52521F01E001F0050 /* CustomNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F7DBB42521F01E001F0050 /* CustomNavigationBar.swift */; };
 		42F7DBB72521F790001F0050 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F7DBB62521F790001F0050 /* BaseViewController.swift */; };
 		E8A288FE878FB50B1D6D7901 /* Pods_Sky_Gym.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F84D1FA3B68CE52B796C350 /* Pods_Sky_Gym.framework */; };
 /* End PBXBuildFile section */
@@ -108,8 +106,6 @@
 		42D13391252F0ED500BA7EE5 /* TrainerEditScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerEditScreenViewController.swift; sourceTree = "<group>"; };
 		42F7DBAE2521A444001F0050 /* MenuItemsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemsViewController.swift; sourceTree = "<group>"; };
 		42F7DBB02521E870001F0050 /* AdminDashboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDashboardViewController.swift; sourceTree = "<group>"; };
-		42F7DBB22521EBCA001F0050 /* CustomNavigationBar.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomNavigationBar.xib; sourceTree = "<group>"; };
-		42F7DBB42521F01E001F0050 /* CustomNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationBar.swift; sourceTree = "<group>"; };
 		42F7DBB62521F790001F0050 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		4F84D1FA3B68CE52B796C350 /* Pods_Sky_Gym.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sky_Gym.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		59F5F610B1FD37E8CF655883 /* Pods-Sky-Gym.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sky-Gym.release.xcconfig"; path = "Target Support Files/Pods-Sky-Gym/Pods-Sky-Gym.release.xcconfig"; sourceTree = "<group>"; };
@@ -166,11 +162,9 @@
 				42A407A6251CC6A40087B02F /* MemberAndTrainerLoginViewController.swift */,
 				42F7DBAE2521A444001F0050 /* MenuItemsViewController.swift */,
 				42F7DBB02521E870001F0050 /* AdminDashboardViewController.swift */,
-				42F7DBB42521F01E001F0050 /* CustomNavigationBar.swift */,
 				42F7DBB62521F790001F0050 /* BaseViewController.swift */,
 				4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */,
 				4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */,
-				42F7DBB22521EBCA001F0050 /* CustomNavigationBar.xib */,
 				423F8709252B4846001C30D4 /* MemberDetailViewController.swift */,
 				42CAADF0252C4992006E1D76 /* CurrentMembershipDetailViewController.swift */,
 				42BC9BF7252DCEC200435000 /* MemberViewController.swift */,
@@ -295,7 +289,6 @@
 				42B873AC2536E081004CCD50 /* GoogleService-Info.plist in Resources */,
 				4249C391251B12BD00DC9AE0 /* Main.storyboard in Resources */,
 				4259DC1D252311EF00F08FA6 /* MemberAndTrainerDetailView.xib in Resources */,
-				42F7DBB32521EBCA001F0050 /* CustomNavigationBar.xib in Resources */,
 				4249C3AC251B695300DC9AE0 /* Poppins-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -350,7 +343,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				42CAADF1252C4992006E1D76 /* CurrentMembershipDetailViewController.swift in Sources */,
-				42F7DBB52521F01E001F0050 /* CustomNavigationBar.swift in Sources */,
 				4231BF9A25347328007EFBBF /* ViewEventScreenViewController.swift in Sources */,
 				42A407A5251C78570087B02F /* AppManager.swift in Sources */,
 				4259DC1F2523121C00F08FA6 /* MemberAndTrainerDetailView.swift in Sources */,

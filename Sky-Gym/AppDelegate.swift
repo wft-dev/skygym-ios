@@ -25,23 +25,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         setRoot()
         IQKeyboardManager.shared.enable = true
-        IQKeyboardManager.shared.keyboardDistanceFromTextField = 30
-        IQKeyboardManager.shared.layoutIfNeededOnUpdate = true
-        //IQKeyboardManagerSwift.IQKeyboardManager.shared.sugge
-        
-        
-        
-        
-    return true
+        IQKeyboardManager.shared.disabledDistanceHandlingClasses.append(ChatViewController.self)
+        return true
     }
     
     func setRoot() {
         var dashboardVC:UIViewController? = nil
-       let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginVC") as! ViewController
+        let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginVC") as! ViewController
         if AppManager.shared.loggedInRole == LoggedInRole.Member {
-        dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberDetailVC") as! MemberDetailViewController
+            dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberDetailVC") as! MemberDetailViewController
         }else {
-         dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
+            dashboardVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "dashbaordVC") as! AdminDashboardViewController
         }
         let menuItemVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "menuItemVC") as! MenuItemsViewController
         self.swRevealVC.frontViewController = UINavigationController(rootViewController: dashboardVC!)
@@ -54,16 +48,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         window?.makeKeyAndVisible()
     }
-    
-    func setChatView() {
-        let chatViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
-        let navigationController = UINavigationController(rootViewController: chatViewController)
-        
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
-    }
-    
-    
     
     // MARK: UISceneSession Lifecycle
 

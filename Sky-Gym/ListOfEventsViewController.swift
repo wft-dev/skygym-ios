@@ -21,7 +21,6 @@ class EventCellClass: UITableViewCell {
 
 class ListOfEventsViewController: BaseViewController {
 
-   // @IBOutlet weak var eventsNavigationBar: CustomNavigationBar!
     @IBOutlet weak var listOfEventsTable: UITableView!
     @IBOutlet weak var searchView: UIView!
     @IBOutlet weak var customSearchBar: UISearchBar!
@@ -57,7 +56,6 @@ class ListOfEventsViewController: BaseViewController {
     }
     
     @IBAction func addNewEventAction(_ sender: Any) {
-        //performSegue(withIdentifier: "viewEventScreenSegue", sender: true)
         let eventViewVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "eventViewVC") as! ViewEventScreenViewController
         eventViewVC.isNewEvent = true
         eventViewVC.eventID =  ""
@@ -348,7 +346,6 @@ extension ListOfEventsViewController:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.eventID = self.eventsArray[indexPath.section].eventID
-        // performSegue(withIdentifier: "viewEventScreenSegue", sender: false)
         let eventViewVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "eventViewVC") as! ViewEventScreenViewController
         eventViewVC.isNewEvent = false
         eventViewVC.eventID =  AppManager.shared.eventID

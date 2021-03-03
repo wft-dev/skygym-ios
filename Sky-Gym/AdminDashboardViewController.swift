@@ -67,7 +67,6 @@ class AdminDashboardViewController: BaseViewController {
         }
     }
     
-    
       func setCustomNavigation(textForTitle:String)  {
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()

@@ -18,7 +18,6 @@ class MembershipTableCell: UITableViewCell {
 
 class ListOfMembershipViewController: BaseViewController {
     
-    @IBOutlet weak var membershipNavigationBar: CustomNavigationBar!
     @IBOutlet weak var membershipTable: UITableView!
     @IBOutlet weak var membershipAddBtn: UIButton!
     let refreshControl = UIRefreshControl()
@@ -34,7 +33,6 @@ class ListOfMembershipViewController: BaseViewController {
         self.refreshControl.addTarget(self, action: #selector(refreshMembershipList), for: .valueChanged)
         self.membershipTable.refreshControl = self.refreshControl
         DispatchQueue.main.async {
-          //  self.setCustomNavigation(textForTitle: "Members", vc: self)
             self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
             self.navigationController?.navigationBar.shadowImage = UIImage()
             self.navigationController?.navigationBar.isTranslucent = true
@@ -44,7 +42,6 @@ class ListOfMembershipViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-       
          self.showAllMemberships()
     }
     
@@ -56,19 +53,10 @@ class ListOfMembershipViewController: BaseViewController {
     }
     
     @IBAction func addNewMembershipAction(_ sender: Any) {
-       // performSegue(withIdentifier: "addMembershipSegue", sender: true)
         let membershipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "membershipViewVC") as! MembershipViewScreenViewController
         membershipVC.isNewMemberhsip = true
         self.navigationController?.pushViewController(membershipVC, animated: true)
     }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "addMembershipSegue"{
-            let destinationVC = segue.destination as! MembershipViewScreenViewController
-            destinationVC.isNewMemberhsip = sender as! Bool
-        }
-    }
-    
     func setMembershipViewForMember() {
         if AppManager.shared.loggedInRole == LoggedInRole.Member {
             self.membershipAddBtn.isHidden = true
@@ -157,9 +145,6 @@ class ListOfMembershipViewController: BaseViewController {
     }
 
     func setMembershipNavigation() {
-//        self.membershipNavigationBar.navigationTitleLabel.text = "Membership"
-//        self.membershipNavigationBar.searchBtn.isHidden = true
-        
         let title = NSAttributedString(string: "Membership", attributes: [
             NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
         ])
@@ -237,8 +222,6 @@ extension ListOfMembershipViewController:UITableViewDataSource {
         cell.selectionStyle = .none
         cell.membershipCellView.tag = Int(singleMembership.membershipID)!
         
-      //  print("LOGGED IN ROLE IS : \(AppManager.shared.LoggedInAs)")
-        
         if AppManager.shared.loggedInRole != LoggedInRole.Member {
             self.addMembershipCustomSwipe(cellView: cell.membershipCellView, cell: cell)
         }
@@ -251,7 +234,6 @@ extension ListOfMembershipViewController:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.membershipID = self.membershipDetailArray[indexPath.section].membershipID
-        // self.performSegue(withIdentifier: "addMembershipSegue", sender: false)
         let membershipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "membershipViewVC") as! MembershipViewScreenViewController
         membershipVC.isNewMemberhsip = false
         self.navigationController?.pushViewController(membershipVC, animated: true)

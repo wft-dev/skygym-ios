@@ -96,7 +96,7 @@ class TrainerAttendanceViewController: BaseViewController {
     }
     
     @IBAction func backBtnAction(_ sender: Any) {
-        dismiss(animated: true, completion: nil)
+        self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func previousWeekTrainerAttendenceAction(_ sender: Any) {

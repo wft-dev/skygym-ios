@@ -1538,15 +1538,38 @@ class FireStoreManager: NSObject {
     func getMessageCollection(doc:DocumentReference , handler:@escaping ([QueryDocumentSnapshot]) -> Void ) {
         doc.collection("thread")
             .order(by: "created", descending: false)
-            .getDocuments(completion: {
+            .addSnapshotListener({
             (querySnapshot,err) in
             if err == nil {
                 handler(querySnapshot!.documents)
             }
         })
-
     }
-  
+    
+    func uploadImage(senderID:String,imgData:Data,handler:@escaping (String,Error?)->Void) {
+        let imageRef = fireStorageRef.child("/ChatImages/\(senderID)/\(Date().timeIntervalSince1970)")
+        
+        imageRef.putData(imgData, metadata: nil, completion: {
+            (_,err) in
+            handler(imageRef.fullPath, err)
+        })
+    }
+    
+    func downloadImage(imgUrl:String,hadler:@escaping (Data?,Error?) -> Void) {
+        let imageRef = fireStorageRef.child(imgUrl)
+        imageRef.downloadURL(completion: {
+            (imgUrl,err) in
+
+            if err == nil {
+                do {
+                    let data = try Data(contentsOf: imgUrl!)
+                    hadler(data,nil)
+                } catch let error {
+                    print(error)
+                }
+            }
+        })
+    }  
 }
 
 

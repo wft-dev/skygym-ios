@@ -850,6 +850,11 @@ class AppManager: NSObject {
         }
     }
     
+    func getParentID(data:[String:Any]) -> String {
+        let parentId = data["parentID"] as! String
+        return parentId
+    }
+    
 }
 
 

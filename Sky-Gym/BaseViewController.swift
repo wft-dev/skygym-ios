@@ -15,9 +15,7 @@ class BaseViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       //assignbackground()
         appDelgate = UIApplication.shared.delegate as? AppDelegate
-        
     }
     
     func assignbackground(){
@@ -31,10 +29,7 @@ class BaseViewController: UIViewController {
                 view.addSubview(imageView)
                 self.view.sendSubviewToBack(imageView)
             }
-    
-    func setBackAction(toView:CustomNavigationBar) {
-        toView.leftArrowBtn.addTarget(self, action: #selector(backAction), for: .touchUpInside)
-    }
+
     @objc func backAction() {
         dismiss(animated: true, completion: nil)
     }

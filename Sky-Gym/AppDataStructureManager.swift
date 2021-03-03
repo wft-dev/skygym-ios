@@ -315,7 +315,7 @@ extension Message : MessageType {
         if self.imgURLStr == "" {
             return .text(content)
         }else {
-            return .photo(imageMessage ?? ImageMessage(image: UIImage(named: "photo")!))
+            return .photo(imageMessage ?? ImageMessage(image: UIImage(named: "default-image")!))
         }
     }
 

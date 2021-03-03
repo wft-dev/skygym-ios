@@ -11,7 +11,6 @@ import SVProgressHUD
 
 class ViewVisitorScreenViewController: BaseViewController {
 
-  //  @IBOutlet weak var visitorViewNavigationBar: CustomNavigationBar!
     @IBOutlet weak var visitorFirstName: UITextField!
     @IBOutlet weak var visitorLastName: UITextField!
     @IBOutlet weak var visitorEmailTextField: UITextField!
@@ -67,7 +66,6 @@ class ViewVisitorScreenViewController: BaseViewController {
     @IBOutlet weak var genderErrorLabel: UILabel!
     @IBOutlet weak var phoneNumberErrorLabel: UILabel!
     
-    
     private lazy var imagePicker:UIImagePickerController = {
         return UIImagePickerController()
     }()
@@ -98,7 +96,6 @@ class ViewVisitorScreenViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setVisitorView()
-
         self.genderArr =  ["Male","Female","Other"]
         self.genderPickerView.dataSource = self
         self.genderPickerView.delegate = self
@@ -111,7 +108,6 @@ class ViewVisitorScreenViewController: BaseViewController {
         
         self.errorLabelArray = [self.firstNameErrorLabel,self.secondNameErrorLabel,self.emailErrorLabel,self.addressErrorLabel,self.dateOfJoinErrorLabel,self.dateOfVisitErrorLabel,self.noOfVisitErrorLabel,self.genderErrorLabel,self.phoneNumberErrorLabel]
         
-        
         if self.isNewVisitor == false {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: false)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: true)
@@ -122,7 +118,6 @@ class ViewVisitorScreenViewController: BaseViewController {
             self.addressNonEditLabel.alpha = 1.0
             self.updateBtn.isHidden = true
             self.userImg.isUserInteractionEnabled = false
-
         }else {
             AppManager.shared.performEditAction(dataFields: self.getFieldsAndLabelDic(), edit: true)
             AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray!, defaultLabels: self.defaultLabelArray!, errorLabels: self.errorLabelArray, flag: false)
@@ -194,7 +189,6 @@ class ViewVisitorScreenViewController: BaseViewController {
          self.toolBar =  UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
         self.setVisitorViewNavigationBar()
         self.setTextFields()
-        //setBackAction(toView: self.visitorViewNavigationBar)
         self.isNewVisitor ? updateBtn.setTitle("A D D", for: .normal) : updateBtn.setTitle("U P D A T E ", for: .normal)
         self.datePicker.datePickerMode = .date
         toolBar!.barStyle = .default
@@ -250,13 +244,8 @@ class ViewVisitorScreenViewController: BaseViewController {
         stackView.widthAnchor.constraint(equalToConstant: 30).isActive = true
         let backBtn = UIBarButtonItem(customView: stackView)
         navigationItem.leftBarButtonItem = backBtn
-
         
         if self.isNewVisitor == false {
-//            self.visitorViewNavigationBar.editBtn.isHidden = false
-//            self.visitorViewNavigationBar.editBtn.alpha = 1.0
-//            self.visitorViewNavigationBar.editBtn.addTarget(self, action: #selector(editVisitor), for: .touchUpInside)
-            
             let editBtn = UIButton()
             editBtn.setImage(UIImage(named: "edit"), for: .normal)
             editBtn.addTarget(self, action: #selector(editVisitor), for: .touchUpInside)

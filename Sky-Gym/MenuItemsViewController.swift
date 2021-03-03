@@ -11,7 +11,6 @@ import SWRevealViewController
 
 
 class MyMenuItemTableCell: UITableViewCell {
-    
     @IBOutlet weak var menuItemLabel: UILabel!
     @IBOutlet weak var borderView: UIView!
 }
@@ -24,19 +23,14 @@ class MenuItemsViewController: UIViewController {
     var trainerEventPermission:Bool = false
     var trainerVisitorPermission:Bool = false
     let storyBoard:UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-  //  var adminProfileVC:AdminProfileViewController? = nil
     var sw:SWRevealViewController? = nil
-    
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
-       assignbackground()
+        assignbackground()
         self.menuItemTable.tableFooterView = UIView(frame: .zero)
         self.menuItemTable.separatorStyle = .none
         appDelgate = UIApplication.shared.delegate as? AppDelegate
-//        self.adminProfileVC = self.storyBoard.instantiateViewController(withIdentifier: "adminProfileVC") as? AdminProfileViewController
-//        adminProfileVC?.loadViewIfNeeded()
         self.sw = storyBoard.instantiateViewController(withIdentifier: "swRevealVC") as? SWRevealViewController
     }
     

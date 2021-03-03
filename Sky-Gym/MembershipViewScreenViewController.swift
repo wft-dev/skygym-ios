@@ -11,8 +11,7 @@ import SVProgressHUD
 import iOSDropDown
 
 class MembershipViewScreenViewController: BaseViewController {
-    
-   // @IBOutlet weak var viewMembershipNavigationBar: CustomNavigationBar!
+   
     @IBOutlet weak var membershipDropDownTitleTextField: DropDown!
     @IBOutlet weak var amountTextField: UITextField!
     @IBOutlet weak var doneBtn: UIButton!

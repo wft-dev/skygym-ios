@@ -31,13 +31,17 @@ class MemberDetailViewController: BaseViewController {
     var address:String = ""
     var memberDetailOptionArrary:[String] = []
     let messenger = MessengerManager()
+    var receiverID:String = ""
+    var receiverName:String = ""
+    var senderID:String = ""
+    var senderName:String = ""
     
     override func viewDidLoad() {
        super.viewDidLoad()
-        setCustomMemberDetailNavigation()
+       
         self.callLabel.isUserInteractionEnabled = true
         self.msgLabel.isUserInteractionEnabled = true
-        
+
         self.callLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(callAction)))
         self.msgLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(msgAction)))
         
@@ -46,7 +50,7 @@ class MemberDetailViewController: BaseViewController {
         }else {
           memberDetailOptionArrary = ["Add new Membership","Current membership details","Purchase","Attendence",""]
         }
-        self.setMemberDetailNavigationBar()
+        
         [self.paidTextLabel,self.upaidTextLabel].forEach{
             $0?.layer.cornerRadius = 7.0
             $0?.clipsToBounds = true
@@ -58,6 +62,7 @@ class MemberDetailViewController: BaseViewController {
         self.memberImg?.isUserInteractionEnabled =  true
         self.viewForMemberDetail.isUserInteractionEnabled = true
         self.viewForMemberDetail.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showMemberDetail)))
+        self.setCustomMemberDetailNavigation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -65,7 +70,6 @@ class MemberDetailViewController: BaseViewController {
         SVProgressHUD.show()
         self.showMemberWithID(id:AppManager.shared.memberID)
         self.memberDetailTable.reloadData()
-        
     }
     
     func setCustomMemberDetailNavigation()  {
@@ -75,7 +79,6 @@ class MemberDetailViewController: BaseViewController {
         ])
         let titleLabel = UILabel()
         titleLabel.attributedText = title
-        //self.navigationController?.navigationBar.topItem?.titleView = titleLabel
         navigationItem.titleView = titleLabel
         
         if  AppManager.shared.loggedInRole == LoggedInRole.Member {
@@ -122,12 +125,15 @@ class MemberDetailViewController: BaseViewController {
         AppManager.shared.callNumber(phoneNumber: "7015810695")
     }
     @objc func msgAction(){
-        print("message working.")
+        //print("message working.")
 //        if messenger.canSendText() {
 //           let messageVC =  messenger.configuredMessageComposeViewController(recipients: ["7015810695"], body: "This is for testing member detail.")
 //            present(messageVC, animated: true, completion: nil)
 //        }
         
+        let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
+        chatVC.chatUsers = ChatUsers(messageSenderID: self.senderID, messageReceiverID: self.receiverID, messageSenderName: self.senderName, messageReceiverName: self.receiverName)
+        self.navigationController?.pushViewController(chatVC, animated: true)
     }
 
     @objc func showMemberDetail(){
@@ -147,10 +153,6 @@ class MemberDetailViewController: BaseViewController {
 }
 
 extension MemberDetailViewController{
-    func setMemberDetailNavigationBar()  {
-
-    }
-    
     func showMemberWithID(id:String) {
         SVProgressHUD.show()
         FireStoreManager.shared.getMemberByID(id: id, completion: {
@@ -159,14 +161,28 @@ extension MemberDetailViewController{
                 SVProgressHUD.dismiss()
                 self.retryAlert()
             } else {
+                
                 let memberships = singleMemberData?["memberships"] as! Array<Dictionary<String,String>>
                 let memberDetail = singleMemberData?["memberDetail"] as! [String:String]
                 self.memberName?.text = String(describing:"\(memberDetail["firstName"] ?? "") \(memberDetail["lastName"] ?? "")")
+
+                if AppManager.shared.loggedInRole == LoggedInRole.Member {
+                    self.receiverID = AppManager.shared.getParentID(data: singleMemberData!)
+                    self.receiverName = "Admin"
+                    self.senderID = AppManager.shared.memberID
+                    self.senderName = self.memberName!.text!
+                }else {
+                    self.receiverID = AppManager.shared.memberID
+                    self.receiverName = self.memberName!.text!
+                    self.senderID = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminID : AppManager.shared.trainerID
+                    self.senderName = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminName : AppManager.shared.trainerName
+
+                }
+                
                 self.name = "\(memberDetail["firstName"] ?? "" ) \(memberDetail["lastName"] ?? "" )"
                 self.address = memberDetail["address"]!
                 self.memberPhoneNumber?.text = memberDetail["phoneNo"]
                 let lastMembership = memberships.count > 0 ? AppManager.shared.getLatestMembership(membershipsArray: memberships) : MembershipDetailStructure(membershipID: "__", membershipPlan: "__", membershipDetail: "--", amount: "--", startDate: "--", endDate: "--", totalAmount: "--", paidAmount: "--", discount: "--", paymentType: "--", dueAmount: "--", purchaseTime: "--", purchaseDate: "--", membershipDuration: "--", purchaseTimeStamp: "")
-                
                 self.memberDateOfJoin.text = memberDetail["dateOfJoining"]
                 if lastMembership.dueAmount == "--"{
                     self.paidTextLabel?.isHidden = true
@@ -210,28 +226,6 @@ extension MemberDetailViewController{
         retryAlertController.addAction(retryAlertBtn)
         present(retryAlertController, animated: true, completion: nil)
     }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "addNewMembershipSegue" {
-            let destinationVC = segue.destination as! AddMemberViewController
-            destinationVC.isNewMember = sender as! Bool
-        }
-        
-//        let addMemberVc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
-//        addMemberVc.renewingMembershipID = self.currentMembershipID
-//        addMemberVc.isRenewMembership = true
-//        self.navigationController?.pushViewController(addMemberVc, animated: true)
-        
-        if segue.identifier == "attendanceDetailSegue" {
-            let destinationVC = segue.destination as! MemberAttandanceViewController
-
-        }
-         
-        if segue.identifier == "memberProfileSegue" {
-            let destinationVC = segue.destination as! MemberViewController
-            destinationVC.img = self.memberImg?.image
-        }
-    }
 }
 
 extension MemberDetailViewController:UITableViewDataSource{
@@ -255,24 +249,19 @@ extension MemberDetailViewController:UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 11 : 0 :
-          //  performSegue(withIdentifier: "addNewMembershipSegue", sender: false)
             let addNewMemberShipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
             addNewMemberShipVC.isNewMember = false
             self.navigationController?.pushViewController(addNewMemberShipVC, animated: true)
             
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 0 : 1 :
-          //  performSegue(withIdentifier: "currentMembershipDetailSegue", sender: nil)
             let currentMembershipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "currentMembershipDetailVC") as! CurrentMembershipDetailViewController
             self.navigationController?.pushViewController(currentMembershipVC, animated: true)
             
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 1 : 2 :
-           // performSegue(withIdentifier: "purchaseDetailSegue", sender: nil)
             let purchaseVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "purchaseVC") as! PurchaseViewController
             self.navigationController?.pushViewController(purchaseVC, animated: true)
-          
+            
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 2 : 3  :
-           // performSegue(withIdentifier: "attendanceDetailSegue", sender: nil)
-
             let attendenceVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberAttendanceVC") as! MemberAttandanceViewController
             attendenceVC.memberName = self.name
             attendenceVC.memberAddress = self.address

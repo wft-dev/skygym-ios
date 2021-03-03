@@ -48,16 +48,16 @@ class VisitorTableCell: UITableViewCell {
     }
     
      @objc private func  msgAction() {
-        let messageVC = messager.configuredMessageComposeViewController(recipients: ["7015810695"], body: "visitor message")
-        delegate?.showMessage(vc: messageVC)
+//        let messageVC = messager.configuredMessageComposeViewController(recipients: ["7015810695"], body: "visitor message")
+//        delegate?.showMessage(vc: messageVC)
+         delegate?.applySegueToChat(id: "\(memberBtn.tag)", memberName: self.visitorNameLabel.text!)
     }
-    
+   
 }
 
 class ListOfVisitorsViewController: BaseViewController {
 
     @IBOutlet weak var visitorsTable: UITableView!
-   // @IBOutlet weak var listOfVisitorsNavigationBar: CustomNavigationBar!
     @IBOutlet weak var searchbarView: UIView!
     @IBOutlet weak var customSearchBar: UISearchBar!
     @IBOutlet weak var searchBarHeightConstraint: NSLayoutConstraint!
@@ -70,6 +70,8 @@ class ListOfVisitorsViewController: BaseViewController {
     var trainerName:String = ""
     var trainerType:String = ""
     var trainerDic:Dictionary<String,TrainerNameAndType>? = nil
+    var senderID:String = ""
+    var senderName:String = ""
     
     override func viewDidLoad() {
         self.setVisitorsNavigationBar()
@@ -80,6 +82,8 @@ class ListOfVisitorsViewController: BaseViewController {
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Visitor List")
         self.refreshControl.addTarget(self, action: #selector(refreshVisitorList), for: .valueChanged)
         self.visitorsTable.refreshControl = self.refreshControl
+        senderID = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminID : AppManager.shared.trainerID
+        senderName = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminName : AppManager.shared.trainerName
     }
     
     override func viewWillAppear(_ animated: Bool)  {
@@ -94,23 +98,9 @@ class ListOfVisitorsViewController: BaseViewController {
     }
     
     @IBAction func addNewVisitorAction(_ sender: Any) {
-       // performSegue(withIdentifier: "visitorViewSegue", sender: true)
         let visitorEditVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "visitorViewVC") as! ViewVisitorScreenViewController
         visitorEditVC.isNewVisitor = true
         self.navigationController?.pushViewController(visitorEditVC, animated: true)
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "visitorViewSegue" {
-            let destinationVC = segue.destination as! ViewVisitorScreenViewController
-            destinationVC.isNewVisitor = sender as! Bool
-        }
-        if segue.identifier == "visitorMemberSegue" {
-            let destinationVC = segue.destination as! AddMemberViewController
-            destinationVC.isNewMember = true
-            destinationVC.visitorID = sender as! String
-            destinationVC.visitorProfileImgData = self.visitorProfileImage?.pngData()
-        }
     }
 
     @objc func visitorLeftSwipeAction(_ gesture:UIGestureRecognizer){
@@ -204,7 +194,6 @@ class ListOfVisitorsViewController: BaseViewController {
         deleteView.addSubview(trashImgView)
         trashImgView.translatesAutoresizingMaskIntoConstraints = false
         trashImgView.centerYAnchor.constraint(equalTo: deleteView.centerYAnchor, constant: 0).isActive = true
-      //  trashImgView.topAnchor.constraint(equalTo: deleteView.topAnchor, constant: cellView.frame.height/3 + 5 ).isActive = true
         trashImgView.trailingAnchor.constraint(equalTo: deleteView.trailingAnchor, constant: -(cell.frame.width/3)).isActive = true
         trashImgView.heightAnchor.constraint(equalToConstant: 25).isActive = true
         trashImgView.widthAnchor.constraint(equalToConstant: 20).isActive = true
@@ -229,9 +218,6 @@ class ListOfVisitorsViewController: BaseViewController {
         deleteView.bottomAnchor.constraint(equalTo: cell.bottomAnchor, constant: 0).isActive = true
         
         deleteView.superview?.sendSubviewToBack(deleteView)
-//        deleteView.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: 90).isActive = true
-//        deleteView.topAnchor.constraint(equalTo: cell.topAnchor, constant: 0 ).isActive  = true
-        
     }
     
     func setVisitorsNavigationBar() {
@@ -318,17 +304,15 @@ class ListOfVisitorsViewController: BaseViewController {
            self.view.addGestureRecognizer(tapRecognizer)
        }
 
-       @objc
-       private func dismissPresentedView(_ sender: Any?) {
-           //self.listOfVisitorsNavigationBar.isHidden = false
-          // self.listOfVisitorsNavigationBar.alpha = 1.0
-           self.navigationController?.navigationBar.isHidden = false
-            self.navigationController?.navigationBar.alpha = 1.0
-            self.searchBarTopConstraint.constant = 0
-            self.searchbarView.isHidden = true
-            self.searchBarHeightConstraint.constant = 0
-           self.view.endEditing(true)
-       }
+    @objc
+    private func dismissPresentedView(_ sender: Any?) {
+        self.navigationController?.navigationBar.isHidden = false
+        self.navigationController?.navigationBar.alpha = 1.0
+        self.searchBarTopConstraint.constant = 0
+        self.searchbarView.isHidden = true
+        self.searchBarHeightConstraint.constant = 0
+        self.view.endEditing(true)
+    }
     
     func setTrainerNameAndType(trainerID:String,cell:VisitorTableCell) {
         print("trainerID : \(trainerID)")
@@ -471,7 +455,6 @@ extension ListOfVisitorsViewController:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AppManager.shared.visitorID = self.visitorsArray[indexPath.section].visitorID
-        //  performSegue(withIdentifier: "visitorViewSegue", sender: false)
         let visitorEditVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "visitorViewVC") as! ViewVisitorScreenViewController
         visitorEditVC.isNewVisitor = false
         self.navigationController?.pushViewController(visitorEditVC, animated: true)
@@ -488,7 +471,6 @@ extension ListOfVisitorsViewController:UISearchBarDelegate{
                 let fullName = singleVisitor.visitorName
                 if  fullName.lowercased().contains(searchText.lowercased()) || singleVisitor.mobileNumber.contains(searchText) {
                     self.filteredVisitorArray.append(singleVisitor)
-                    print("filtered array count : \(self.filteredVisitorArray.count) \(self.filteredVisitorArray)")
                 }
             }
         } else {
@@ -503,10 +485,19 @@ extension ListOfVisitorsViewController:CustomCellSegue{
     func showMessage(vc: MFMessageComposeViewController) {
         self.present(vc, animated: true, completion: nil)
     }
-    func applySegueToChat(id: String, memberName: String) {}
+    func applySegueToChat(id: String, memberName: String) {
+        let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
+        let currentChatUser = ChatUsers(messageSenderID: self.senderID, messageReceiverID: id, messageSenderName: self.senderName, messageReceiverName: memberName)
+        chatVC.chatUsers = currentChatUser
+        self.navigationController?.pushViewController(chatVC, animated: true)
+    }
     
     func applySegue(id: String) {
-        self.performSegue(withIdentifier: "visitorMemberSegue", sender: id)
+        let addMemberVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
+        addMemberVC.isNewMember = true
+        addMemberVC.visitorID = id
+        addMemberVC.visitorProfileImgData = self.visitorProfileImage?.pngData()
+        self.navigationController?.pushViewController(addMemberVC, animated: true)
     }
 
 }

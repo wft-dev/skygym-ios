@@ -23,9 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.window = self.window
         appDelegate.setRoot()
-        
     }
-    
 
     @available(iOS 13.0, *)
     func sceneDidDisconnect(_ scene: UIScene) {

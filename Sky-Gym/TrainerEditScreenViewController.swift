@@ -16,8 +16,7 @@ class WeekDayForTrainerTableCell: UITableViewCell {
 }
 
 class TrainerEditScreenViewController: BaseViewController{
-    
-   // @IBOutlet weak var trainerEditScreenNavigationBar: CustomNavigationBar!
+
     @IBOutlet weak var firstNameTextField: UITextField!
     @IBOutlet weak var secondNameTextField: UITextField!
     @IBOutlet weak var idTextField: UITextField!
@@ -133,7 +132,6 @@ class TrainerEditScreenViewController: BaseViewController{
     @IBOutlet weak var trainerEditScrollView: UIScrollView!
     @IBOutlet weak var shiftDaysListBtn: UIButton!
     
-    
     private lazy var imagePicker:UIImagePickerController = {
         return UIImagePickerController()
     }()
@@ -167,6 +165,8 @@ class TrainerEditScreenViewController: BaseViewController{
     var isWeekDaysListHidden:Bool = false
     var datePicker:UIDatePicker? = nil
     var toolBar:UIToolbar? = nil
+    var recieverID:String = ""
+    var recieverName:String = "Admin"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -178,7 +178,6 @@ class TrainerEditScreenViewController: BaseViewController{
     }
 
     @IBAction func trainerAttendanceAction(_ sender: Any) {
-        // performSegue(withIdentifier: "trainerAttendanceSegue", sender: nil)
         let trainerAttendenceVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "trainerAttendanceVC") as! TrainerAttendanceViewController
         trainerAttendenceVC.trainerName = self.name
         trainerAttendenceVC.trainerAddress = self.addressStr
@@ -186,17 +185,6 @@ class TrainerEditScreenViewController: BaseViewController{
             trainerAttendenceVC.trainerImgData = self.userImg.image?.pngData()
         }
         self.navigationController?.pushViewController(trainerAttendenceVC, animated: true)
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "trainerAttendanceSegue" {
-            let destinationVC = segue.destination as! TrainerAttendanceViewController
-            destinationVC.trainerName = self.name
-            destinationVC.trainerAddress = self.addressStr
-            if self.userImg.tag != 1010 {
-                destinationVC.trainerImgData = self.userImg.image?.pngData()
-            }
-        }
     }
 
     @IBAction func generalTypeBtnAction(_ sender: Any) {
@@ -367,6 +355,18 @@ class TrainerEditScreenViewController: BaseViewController{
             stackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: stackView)
             
+            let chatBtn = UIButton()
+            chatBtn.setImage(UIImage(named:"msg"), for: .normal)
+            chatBtn.addTarget(self, action: #selector(trainerChatBtnAction), for: .touchUpInside)
+            chatBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            chatBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+            chatBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+            let rightspaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+            let rightstackView = UIStackView(arrangedSubviews: [chatBtn,rightspaceBtn])
+            rightstackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
+            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rightstackView)
+            
+            
         case .Admin :
   
             let backBtn = UIButton()
@@ -407,6 +407,14 @@ class TrainerEditScreenViewController: BaseViewController{
         self.navigationController?.popViewController(animated: true)
     }
     
+    @objc func trainerChatBtnAction() {
+        let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
+        let trainerName = "\(self.firstNameNonEditableLabel.text!) \(self.lastNameNonEditableLabel.text!)"
+        let currentChatUsers = ChatUsers(messageSenderID: AppManager.shared.trainerID, messageReceiverID: self.recieverID, messageSenderName: trainerName, messageReceiverName:self.recieverName)
+        chatVC.chatUsers = currentChatUsers
+        self.navigationController?.pushViewController(chatVC, animated: true)
+    }
+    
 
    @objc func makeEditable() {
     if self.isEdit == true {
@@ -439,7 +447,6 @@ class TrainerEditScreenViewController: BaseViewController{
         self.personalTypeLabel.isUserInteractionEnabled = false
         self.setNonEditTrainerType(hide: false)
         self.shiftDaysListBtn.isEnabled = false
-        
     } else{
         AppManager.shared.performEditAction(dataFields:self.getFieldsAndLabelDic(), edit:  true)
         AppManager.shared.setLabel(nonEditLabels: self.forNonEditLabelArray, defaultLabels: self.defaultArray, errorLabels: self.errorLabelArray, flag: false)
@@ -809,6 +816,8 @@ class TrainerEditScreenViewController: BaseViewController{
                 if err != nil {
                     self.retryAlert()
                 } else {
+                    self.recieverID = AppManager.shared.getParentID(data: data!)
+                    print("Parent id is : \(self.recieverID)")
                     self.setTrainerDataToFields(trainerDetails: AppManager.shared.getTrainerDetailS(trainerDetail: data?["trainerDetail"] as! [String : Any]), trainerPermissions:AppManager.shared.getTrainerPermissionS(trainerPermission: data?["trainerPermission"] as! [String:Bool]) )
                     
                     FireStoreManager.shared.downloadUserImg(id: id, result: {
@@ -990,7 +999,7 @@ class TrainerEditScreenViewController: BaseViewController{
         self.dobTextField.text = trainerDetails.dob
         self.selectedWeekDayIndexArray = trainerDetails.shiftDaysIndexArray
         
-    self.weekDaysListTable.reloadData()
+        self.weekDaysListTable.reloadData()
 
         self.setTrainerType(type:trainerDetails.type,generalBtn:self.generalBtnForNonEditLabel,personalBtn: self.personalBtnForNonEditLabel )
         self.setTrainerPermission(memberPermissionBtn: self.memberPermissionNonEditBtn, visitorPermissionBtn: self.visitorPermissionNonEditBtn, eventPermissionBtn: self.eventPermissionNonEditBtn,memberPermission: trainerPermissions.canAddMember, visitorPermission: trainerPermissions.canAddVisitor, eventPermission:trainerPermissions.canAddEvent)

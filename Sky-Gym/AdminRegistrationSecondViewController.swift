@@ -23,7 +23,6 @@ class AdminRegistrationSecondViewController: UIViewController {
     @IBOutlet weak var passwordErrorText: UILabel?
     @IBOutlet weak var dobErrortext: UILabel?
     
-    
     private lazy  var datePicker:UIDatePicker = {
         return UIDatePicker()
     }()
@@ -165,15 +164,14 @@ class AdminRegistrationSecondViewController: UIViewController {
     }
     
     func setTextFields() {
-         assignbackground()
-               
-               [genderTextField,emailTextField,mobileNumberTextField,passwordTextField,dobTextField].forEach{
-                $0?.layer.cornerRadius = 15.0
-                $0?.borderStyle = .none
-                $0?.clipsToBounds = true
-                $0?.addPaddingToTextField()
-                $0?.addTarget(self, action: #selector(errorChecker(_:)), for: .editingChanged)
-                           }
+        assignbackground()
+        [genderTextField,emailTextField,mobileNumberTextField,passwordTextField,dobTextField].forEach{
+            $0?.layer.cornerRadius = 15.0
+            $0?.borderStyle = .none
+            $0?.clipsToBounds = true
+            $0?.addPaddingToTextField()
+            $0?.addTarget(self, action: #selector(errorChecker(_:)), for: .editingChanged)
+        }
         doneBtn?.layer.cornerRadius = 15.0
         doneBtn?.clipsToBounds = true
         doneBtn?.isEnabled = false
@@ -313,7 +311,6 @@ extension AdminRegistrationSecondViewController:UIPickerViewDataSource{
 extension AdminRegistrationSecondViewController:UIPickerViewDelegate{
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.genderTextField?.text = self.genderArray[row]
-        
         DispatchQueue.main.async {
             self.allFieldValidation(textField: self.genderTextField!)
         }

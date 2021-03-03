@@ -23,7 +23,6 @@ class AttandanceTableCell: UITableViewCell {
 class MemberAttandanceViewController: BaseViewController {
     
     @IBOutlet weak var memberAttandanceTable: UITableView!
-   // @IBOutlet weak var memberAttandanceNavigationBar: CustomNavigationBar!
     @IBOutlet weak var checkByDateBtn: UIButton!
     @IBOutlet weak var backBtn: UIButton!
     @IBOutlet weak var memberNameLabel: UILabel!
@@ -51,7 +50,6 @@ class MemberAttandanceViewController: BaseViewController {
         self.backBtn.layer.cornerRadius = 15.0
         self.memberAttandanceTable.separatorStyle = .none
         self.memberAttandanceTable.isScrollEnabled = false
-        //setBackAction(toView: self.memberAttandanceNavigationBar)
         self.memberNameLabel.text = self.memberName
         self.memberAddressLabel.text = self.memberAddress
         self.checkByDateBtn.addTarget(self, action: #selector(checkByDateAction), for: .touchUpInside)
@@ -113,7 +111,7 @@ class MemberAttandanceViewController: BaseViewController {
         self.nextWeekAttendence()
     }
     @objc  func backBtnAction() {
-        dismiss(animated: true, completion: nil)
+        self.navigationController?.popViewController(animated: true)
     }
 
  @objc  func nextWeekAttendence() {
@@ -134,12 +132,6 @@ class MemberAttandanceViewController: BaseViewController {
     }
 
     func setMemberAttandanceNavigation()  {
-//        memberAttandanceNavigationBar.menuBtn.isHidden = true
-//        memberAttandanceNavigationBar.leftArrowBtn.isHidden = false
-//        memberAttandanceNavigationBar.leftArrowBtn.alpha = 1.0
-//        memberAttandanceNavigationBar.navigationTitleLabel.text = "Attendance"
-//        memberAttandanceNavigationBar.searchBtn.isHidden = true
-        
         let title = NSAttributedString(string: "Attendence", attributes: [
             NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
         ])

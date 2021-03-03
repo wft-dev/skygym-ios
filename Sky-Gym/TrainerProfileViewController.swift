@@ -51,7 +51,6 @@ class TrainerProfileViewController: BaseViewController {
     @IBOutlet weak var dobForNonEditLabel: UILabel!
     @IBOutlet weak var trainerProfileImg: UIImageView!
     
-    
     private lazy var imagePicker:UIImagePickerController = {
         return UIImagePickerController()
     }()
@@ -77,8 +76,7 @@ class TrainerProfileViewController: BaseViewController {
     var trainerEmail:String = ""
     var isAlreadyExistsEmail:Bool = false
     let genderArray = ["Male","Female","Other"]
-    
-    
+
     override func viewWillAppear(_ animated: Bool) {
         self.trainerProfileNavigationBar()
     }
@@ -182,11 +180,11 @@ class TrainerProfileViewController: BaseViewController {
        }
     
     @objc func doneTextField()  {
-           let dateFormatter = DateFormatter()
-           dateFormatter.dateFormat =  "dd-MMM-YYYY"
-         selectedDate = dateFormatter.string(from: datePicker.date)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat =  "dd-MMM-YYYY"
+        selectedDate = dateFormatter.string(from: datePicker.date)
         self.view.endEditing(true)
-     }
+    }
 
     @objc func openImagePicker() {
         self.isUserProfileUpdated = true
@@ -544,9 +542,7 @@ extension TrainerProfileViewController:UITextFieldDelegate {
             }
         }
     }
-    
 }
-
 
 extension TrainerProfileViewController : UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {

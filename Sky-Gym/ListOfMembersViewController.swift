@@ -132,12 +132,16 @@ class ListOfMembersViewController: BaseViewController {
     
     var reciverName:String = ""
     var reciverID:String = ""
+    
+    var senderID:String = ""
+    var senderName:String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setCompleteListOfMembersView()
         self.setUpFilterView()
-        
+        senderID = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminID : AppManager.shared.trainerID
+        senderName = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminName : AppManager.shared.trainerName
         self.refreshControl.addTarget(self, action: #selector(refreshMembers), for: .valueChanged)
         self.refreshControl.tintColor = .black
         self.refreshControl.attributedTitle = NSAttributedString(string: "Fetching Member List")
@@ -210,7 +214,6 @@ class ListOfMembersViewController: BaseViewController {
             }
         
     @IBAction func addNewMemberBtnAction(_ sender: Any) {
-     //   performSegue(withIdentifier: "addMemberSegue", sender: true)
         let addMemberVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
         addMemberVC.isNewMember = true
         addMemberVC.isRenewMembership = false
@@ -604,24 +607,6 @@ extension ListOfMembersViewController : UITableViewDelegate{
         }
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "addMemberSegue"{
-            let destinationVC = segue.destination as! AddMemberViewController
-            destinationVC.isNewMember = sender as! Bool
-            destinationVC.isRenewMembership = !(sender as! Bool)
-        }
-        
-        if segue.identifier == "chatSegue" {
-            let senderID = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminID : AppManager.shared.trainerID
-            let senderName = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminName : AppManager.shared.trainerName
-            let receiver = sender as! [String]
-            
-            let destinationVC = segue.destination as! ChatViewController
-            destinationVC.chatUsers = ChatUsers(messageSenderID: senderID, messageReceiverID: receiver.first!, messageSenderName: senderName, messageReceiverName: receiver.last!)
-        }
-        
-    }
-    
     func setUpFilterView()  {
         [self.allMemberFilterBtn,self.expiredMembersFilterBtn,self.CheckinFilterBtn,self.checkoutFilterBtn].forEach{
             $0.setImage(UIImage(named: "non_selecte"), for: .normal)
@@ -752,9 +737,6 @@ extension ListOfMembersViewController:UISearchBarDelegate{
 
 extension ListOfMembersViewController:CustomCellSegue{
     func applySegueToChat(id: String, memberName: String) {
-       //  performSegue(withIdentifier: "chatSegue", sender: [id,memberName])
-        let senderID = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminID : AppManager.shared.trainerID
-        let senderName = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminName : AppManager.shared.trainerName
         let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
         chatVC.chatUsers = ChatUsers(messageSenderID: senderID, messageReceiverID: id, messageSenderName: senderName, messageReceiverName: memberName)
         self.navigationController?.pushViewController(chatVC, animated: true)
@@ -765,10 +747,7 @@ extension ListOfMembersViewController:CustomCellSegue{
     }
 
     func applySegue(id: String) {
-           AppManager.shared.memberID = id
-        //
-     //   performSegue(withIdentifier: "addMemberSegue", sender: false)
-        
+        AppManager.shared.memberID = id
         let addMemberVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
         addMemberVC.isNewMember = false
         addMemberVC.isRenewMembership = true

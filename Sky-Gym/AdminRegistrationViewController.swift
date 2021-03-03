@@ -35,7 +35,6 @@ class AdminRegistrationViewController: UIViewController {
     @IBAction func backBtnAction(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
-
     
     @IBAction func forwardBtnAction(_ sender: Any) {
        performSegue(withIdentifier: "forwardSegue", sender: nil)
@@ -160,13 +159,11 @@ extension AdminRegistrationViewController:UITextViewDelegate{
     }
     
     func textViewDidChange(_ textView: UITextView) {
-            if (self.gymAddressTextView?.text.count)! < 1 {
+        if (self.gymAddressTextView?.text.count)! < 1 {
             self.gymAddressErrorText?.text = "Gym Address should be there."
         } else {
             self.gymAddressErrorText?.text = ""
         }
-        
         self.isAllTextFieldsValid()
-
     }
 }

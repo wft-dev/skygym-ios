@@ -10,8 +10,7 @@ import UIKit
 import SVProgressHUD
 
 class GymInfoViewController: UIViewController {
-    
-    @IBOutlet weak var gymInfoCutomNavigationBar: CustomNavigationBar!
+
     @IBOutlet weak var gymNameLabel: UILabel!
     @IBOutlet weak var gymTimingLabel: UILabel!
     @IBOutlet weak var gymDaysLabel: UILabel!
@@ -20,7 +19,6 @@ class GymInfoViewController: UIViewController {
     @IBOutlet weak var gymOwnerPhoneNoLabel: UILabel!
     @IBOutlet weak var gymOwnerAddressLabel: UILabel!
   
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setGymInfoNavigationBar()
@@ -50,7 +48,6 @@ class GymInfoViewController: UIViewController {
     @objc func menuChange(){
         AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
     }
-
 
     func fetchGymInfo(gymID:String) {
         SVProgressHUD.show()
