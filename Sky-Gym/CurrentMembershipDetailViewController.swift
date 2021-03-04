@@ -10,8 +10,7 @@ import UIKit
 import SVProgressHUD
 
 class CurrentMembershipDetailViewController: BaseViewController {
-    
-   // @IBOutlet weak var currentMembershipDetailNavigationBar: CustomNavigationBar!
+
     @IBOutlet weak var paidStatusView: UIView!
     @IBOutlet weak var memberView: UIView!
     @IBOutlet weak var membershipDateView: UIView!
@@ -51,10 +50,9 @@ class CurrentMembershipDetailViewController: BaseViewController {
             $0?.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
             $0?.clipsToBounds = true
         }
-     setMembershipVerticalMenu()
-     addClickToDismiss()
-    // setBackAction(toView: self.currentMembershipDetailNavigationBar)
-     self.setCurrentMembershipDetailNavigationBar()
+        setMembershipVerticalMenu()
+        addClickToDismiss()
+        self.setCurrentMembershipDetailNavigationBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -84,8 +82,6 @@ class CurrentMembershipDetailViewController: BaseViewController {
     }
     
     @IBAction func renewCurrentMembershipBtnAction(_ sender: Any) {
-       // performSegue(withIdentifier: "renewMembershipSegue", sender: nil)
-       //
         let addMemberVc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
         addMemberVc.renewingMembershipID = self.currentMembershipID
         addMemberVc.isRenewMembership = true
@@ -141,19 +137,12 @@ class CurrentMembershipDetailViewController: BaseViewController {
         present(alertController, animated: true, completion: nil)
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "renewMembershipSegue" {
-            let destination = segue.destination as! AddMemberViewController
-
-        }
-    }
-    
     func showAlert(title:String,message:String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
             _ in
             if title == "Success" {
-                self.dismiss(animated: true, completion: nil)
+                self.navigationController?.popViewController(animated: true)
             }
         })
         alertController.addAction(okAlertAction)
@@ -161,11 +150,6 @@ class CurrentMembershipDetailViewController: BaseViewController {
     }
     
     func setCurrentMembershipDetailNavigationBar()  {
-//        self.currentMembershipDetailNavigationBar.navigationTitleLabel.attributedText = NSAttributedString(string: "Membership detail", attributes: [NSAttributedString.Key.font : UIFont(name: "poppins", size: 20)!])
-//        self.currentMembershipDetailNavigationBar.menuBtn.isHidden = true
-//        self.currentMembershipDetailNavigationBar.leftArrowBtn.isHidden = false
-//        self.currentMembershipDetailNavigationBar.leftArrowBtn.alpha = 1.0
-//        self.currentMembershipDetailNavigationBar.searchBtn.isHidden = true
         let title = NSAttributedString(string: "Membership detail", attributes: [
             NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
         ])
@@ -185,8 +169,6 @@ class CurrentMembershipDetailViewController: BaseViewController {
         navigationItem.leftBarButtonItem = backBtn
         
         if AppManager.shared.loggedInRole != LoggedInRole.Member {
-            // self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = true
-            // self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 0.0
             let verticalMenuBtn = UIButton()
             verticalMenuBtn.setImage(UIImage(named: "dots"), for: .normal)
             verticalMenuBtn.addTarget(self, action: #selector(showMembershipOption), for: .touchUpInside)
@@ -199,13 +181,6 @@ class CurrentMembershipDetailViewController: BaseViewController {
             let verticalBtn = UIBarButtonItem(customView: rightStackView)
             navigationItem.rightBarButtonItem = verticalBtn
         }
-        
-//        else {
-//            self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = false
-//            self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 1.0
-//            self.currentMembershipDetailNavigationBar.verticalMenuBtn.addTarget(self, action: #selector(showMembershipOption), for: .touchUpInside)
-//        }
-    
     }
     
     @objc func membershipDetailBackBtnAction() {
@@ -286,8 +261,6 @@ class CurrentMembershipDetailViewController: BaseViewController {
                     } else {
                         self.membershipStartDateLabel.text = "--"
                     }
-//                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.isHidden = true
-//                    self.currentMembershipDetailNavigationBar.verticalMenuBtn.alpha = 0.0
                     SVProgressHUD.dismiss()
                 }
             }
@@ -312,7 +285,7 @@ class CurrentMembershipDetailViewController: BaseViewController {
         self.mobileNumberLabel.text = memberDetail.phoneNo
         self.membershipPlanLabel.text = currentMembership.membershipPlan
         self.membershipEndDateLabel.text = currentMembership.endDate
-        self.membershipDetailLabel.text = currentMembership.membershipDetail  // .count > 0 ? "YES" : "NO"
+        self.membershipDetailLabel.text = currentMembership.membershipDetail
         self.discountLabel.text = currentMembership.discount
         self.amountLabel.text = currentMembership.amount
         self.totalAmountLabel.text = currentMembership.totalAmount

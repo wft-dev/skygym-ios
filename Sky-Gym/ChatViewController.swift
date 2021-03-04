@@ -27,7 +27,9 @@ class ChatViewController: MessagesViewController{
     private lazy var imagePicker :UIImagePickerController = {
        return UIImagePickerController()
     }()
-
+    
+    let blackView = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .always
@@ -42,22 +44,25 @@ class ChatViewController: MessagesViewController{
         setChatFieldView()
         self.loadChat()
         setNavigationBar()
+        blackView.backgroundColor = .black
     }
     
     func enlargeImage(imageView:UIImageView) {
         let enlargeImageView =  UIImageView(image: imageView.image)
         enlargeImageView.frame = UIScreen.main.bounds
-        enlargeImageView.backgroundColor = .red
+        enlargeImageView.backgroundColor = .black
         enlargeImageView.contentMode = .scaleAspectFit
         enlargeImageView.isUserInteractionEnabled = true
         enlargeImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissEnlargedImage(_:))))
-        self.view.addSubview(enlargeImageView)
         self.navigationController?.isNavigationBarHidden = true
-        self.tabBarController?.tabBar.isHidden = true
+        blackView.frame = messageInputBar.frame
+        self.messageInputBar.addSubview(self.blackView)
+        self.view.addSubview(enlargeImageView)
     }
+    
     @objc func dismissEnlargedImage(_ gesture:UITapGestureRecognizer){
         self.navigationController?.isNavigationBarHidden = false
-        self.tabBarController?.tabBar.isHidden = false
+        self.blackView.removeFromSuperview()
         gesture.view?.removeFromSuperview()
     }
     
@@ -87,7 +92,6 @@ class ChatViewController: MessagesViewController{
 
   private  func insertNewMessage(message:Message) {
         messages.append(message)
-       
         DispatchQueue.main.async {
             self.messagesCollectionView.reloadData()
             self.messagesCollectionView.scrollToBottom(animated: true)
@@ -218,7 +222,6 @@ class ChatViewController: MessagesViewController{
                     }
                     
                     if self.isChatExists == false {
-                        print("chat created.")
                         self.createNewChat()
                     }
                 }
@@ -276,7 +279,6 @@ extension ChatViewController:MessagesLayoutDelegate{
     func avatarSize(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGSize {
         return .zero
     }
-    
 }
 
 extension ChatViewController:MessagesDisplayDelegate{
@@ -300,8 +302,6 @@ extension ChatViewController:MessagesDisplayDelegate{
 
 extension ChatViewController:MessageCellDelegate{
     func didTapImage(in cell: MessageCollectionViewCell) {
-//        print("celll  : \(cell)")
-//        print("celll content : \(cell.subviews.first?.subviews)")
         let subV = cell.subviews.first!.subviews
         for sub in subV {
             if sub.isKind(of: UIImageView.self) && sub.subviews.count > 0  {
@@ -310,19 +310,6 @@ extension ChatViewController:MessageCellDelegate{
             }
         }
     }
-    
-    
-//    func didTapMessage(in cell: MessageCollectionViewCell) {
-//        let subV = cell.subviews.first!.subviews
-//        print("subview : \(subV)")
-////        for sub in subV {
-////            if sub.isKind(of: UIImageView.self) {
-////                //self.enlargeImage(imageView: sub as! UIImageView)
-////
-////            }
-////        }
-//    }
-    
 }
 
 extension ChatViewController : UIImagePickerControllerDelegate,UINavigationControllerDelegate  {

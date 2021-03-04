@@ -159,7 +159,7 @@ class ForgotPasswordViewController: BaseViewController {
         let alertAction = UIAlertAction(title: "OK", style: .default, handler: {
         _ in
             if title == "Success" {
-                self.dismiss(animated: true, completion: nil)
+                self.navigationController?.popViewController(animated: true)
             }
         })
         alertController.addAction(alertAction)

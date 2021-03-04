@@ -418,7 +418,7 @@ class ViewVisitorScreenViewController: BaseViewController {
                _ in
                if title == "Success" || title == "Retry"{
                 if message == "Visitor is added successfully." {
-                    self.dismiss(animated: true, completion: nil)
+                    self.navigationController?.popViewController(animated: true)
                 }
                }
            })

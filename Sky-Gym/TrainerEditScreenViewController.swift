@@ -946,7 +946,7 @@ class TrainerEditScreenViewController: BaseViewController{
         let okAction = UIAlertAction(title: "OK", style: .default, handler:{
             _ in
             if title == "Success" && self.isNewTrainer == true {
-                self.dismiss(animated: true, completion: nil)
+                self.navigationController?.popViewController(animated: true)
             }else {
                 self.showTrainerBy(id: AppManager.shared.trainerID)
             }

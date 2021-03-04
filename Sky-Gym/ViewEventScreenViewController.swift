@@ -186,7 +186,6 @@ class ViewEventScreenViewController: BaseViewController {
         }
     }
     
-    
     @objc func eventBackBtnAction() {
         self.navigationController?.popViewController(animated: true)
     }
@@ -332,7 +331,7 @@ class ViewEventScreenViewController: BaseViewController {
         let okAction = UIAlertAction(title: "OK", style: .default, handler:{
             _ in
             if title == "Success"{
-                self.dismiss(animated: true, completion: nil)
+                self.navigationController?.popViewController(animated: true)
             }
         })
         alert.addAction(okAction)

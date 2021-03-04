@@ -622,7 +622,7 @@ class AddMemberViewController: BaseViewController {
                                                     self.errorAlert(message: "Error in deleting member.")
                                                 }else {
                                                     SVProgressHUD.dismiss()
-                                                    self.dismiss(animated: true, completion: nil)
+                                                    self.navigationController?.popViewController(animated: true)
                                                 }
                                             })
                                         }
@@ -637,7 +637,7 @@ class AddMemberViewController: BaseViewController {
                                     self.errorAlert(message: "Error in deleting member.")
                                 }else {
                                     SVProgressHUD.dismiss()
-                                    self.dismiss(animated: true, completion: nil)
+                                    self.navigationController?.popViewController(animated: true)
                                 }
                             })
 
@@ -646,7 +646,7 @@ class AddMemberViewController: BaseViewController {
                 })
             } else {
                 SVProgressHUD.dismiss()
-                self.dismiss(animated: true, completion: nil)
+                self.navigationController?.popViewController(animated: true)
             }
         })
         alert.addAction(okAlertAction)
@@ -679,7 +679,7 @@ class AddMemberViewController: BaseViewController {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
             (action) in
-            self.dismiss(animated: true, completion: nil)
+            //self.navigationController?.popViewController(animated: true)
         })
         alert.addAction(okAlertAction)
         present(alert, animated: true, completion: nil)
@@ -846,7 +846,6 @@ class AddMemberViewController: BaseViewController {
         self.trainerListView.isHidden = true
         self.trainerListView.alpha = 0.0
         self.trainerNameTextField.isUserInteractionEnabled = false
-
         self.fetchTrainersByCategory(category: .general)
     }
     
