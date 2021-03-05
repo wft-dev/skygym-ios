@@ -12,6 +12,7 @@ import MessageUI
 import Firebase
 import MessageKit
 
+
 enum Role:String {
     case Admin
     case Member
@@ -331,3 +332,8 @@ struct  ChatUsers {
 }
 
 
+// PAYMENT RESULT ENUM
+enum PaymentResult {
+  case success
+  case failure(Error)
+}

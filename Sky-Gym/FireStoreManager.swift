@@ -19,6 +19,7 @@ class FireStoreManager: NSObject {
     private override init() {}
     let fireDB = Firestore.firestore()
     let fireStorageRef = Storage.storage().reference()
+
     
     func getGymInfo(gymID:String) -> Result<GymDetail,Error> {
         var result:Result<GymDetail,Error>!

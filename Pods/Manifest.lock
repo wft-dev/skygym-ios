@@ -212,6 +212,7 @@ PODS:
     - abseil/base/base_internal
     - abseil/base/config
     - abseil/meta/type_traits
+  - Alamofire (5.4.1)
   - BoringSSL-GRPC (0.0.7):
     - BoringSSL-GRPC/Implementation (= 0.0.7)
     - BoringSSL-GRPC/Interface (= 0.0.7)
@@ -335,10 +336,14 @@ PODS:
   - SDWebImage (5.10.4):
     - SDWebImage/Core (= 5.10.4)
   - SDWebImage/Core (5.10.4)
+  - Stripe (21.3.1):
+    - Stripe/Stripe3DS2 (= 21.3.1)
+  - Stripe/Stripe3DS2 (21.3.1)
   - SVProgressHUD (2.2.5)
   - SWRevealViewController (2.3.0)
 
 DEPENDENCIES:
+  - Alamofire (~> 5.4)
   - CryptoSwift (~> 1.3)
   - Firebase
   - FirebaseFirestoreSwift
@@ -347,12 +352,14 @@ DEPENDENCIES:
   - IQKeyboardManagerSwift (~> 6.0.4)
   - MessageKit (~> 3.3.0)
   - SDWebImage
+  - Stripe (~> 21.3)
   - SVProgressHUD
   - SWRevealViewController (~> 2.3)
 
 SPEC REPOS:
   trunk:
     - abseil
+    - Alamofire
     - BoringSSL-GRPC
     - CryptoSwift
     - Firebase
@@ -377,11 +384,13 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - SDWebImage
+    - Stripe
     - SVProgressHUD
     - SWRevealViewController
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
+  Alamofire: 2291f7d21ca607c491dd17642e5d40fdcda0e65c
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   CryptoSwift: 01b0f0cba1d5c212e5a335ff6c054fb75a204f00
   Firebase: c23a36d9e4cdf7877dfcba8dd0c58add66358999
@@ -406,9 +415,10 @@ SPEC CHECKSUMS:
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
   PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f
   SDWebImage: c666b97e1fa9c64b4909816a903322018f0a9c84
+  Stripe: 326a2160ac541eeffafb8b1aa0c9712e3ce8cec7
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   SWRevealViewController: 6d3fd97f70112fd7cef9de14df4260eacce4c63a
 
-PODFILE CHECKSUM: a91822354ca135b2d28b6df7b26a6cb236a2c44b
+PODFILE CHECKSUM: 4a6041ba800cd7c29f14725628f92c6b3cec7d23
 
 COCOAPODS: 1.10.1

@@ -20,5 +20,7 @@ target 'Sky-Gym' do
 	pod 'IQKeyboardManagerSwift', '~> 6.0.4'
 	pod 'MessageKit', '~> 3.3.0'
 	pod 'SDWebImage'
+	pod 'Stripe', '~> 21.3'
+	pod 'Alamofire', '~> 5.4'
 
 end

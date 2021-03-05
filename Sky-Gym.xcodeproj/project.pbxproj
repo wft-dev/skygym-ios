@@ -14,6 +14,8 @@
 		4231BF9A25347328007EFBBF /* ViewEventScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */; };
 		423BB6532594BA8400F5FB45 /* GymInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423BB6522594BA8400F5FB45 /* GymInfoViewController.swift */; };
 		423C02B925E7DAA700F548CD /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423C02B825E7DAA700F548CD /* ChatViewController.swift */; };
+		423EB0DE25F2007A0094AA0B /* StripeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423EB0DD25F2007A0094AA0B /* StripeManager.swift */; };
+		423EB0E025F215530094AA0B /* CardPaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423EB0DF25F215530094AA0B /* CardPaymentViewController.swift */; };
 		423F870A252B4846001C30D4 /* MemberDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423F8709252B4846001C30D4 /* MemberDetailViewController.swift */; };
 		42446A28256FA7AE00F966FD /* Validator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42446A27256FA7AE00F966FD /* Validator.swift */; };
 		424937232526094D0043ADFF /* AddMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424937222526094D0043ADFF /* AddMemberViewController.swift */; };
@@ -65,6 +67,8 @@
 		4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewEventScreenViewController.swift; sourceTree = "<group>"; };
 		423BB6522594BA8400F5FB45 /* GymInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymInfoViewController.swift; sourceTree = "<group>"; };
 		423C02B825E7DAA700F548CD /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
+		423EB0DD25F2007A0094AA0B /* StripeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeManager.swift; sourceTree = "<group>"; };
+		423EB0DF25F215530094AA0B /* CardPaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPaymentViewController.swift; sourceTree = "<group>"; };
 		423F8709252B4846001C30D4 /* MemberDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDetailViewController.swift; sourceTree = "<group>"; };
 		42446A27256FA7AE00F966FD /* Validator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validator.swift; sourceTree = "<group>"; };
 		424937222526094D0043ADFF /* AddMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemberViewController.swift; sourceTree = "<group>"; };
@@ -191,6 +195,8 @@
 				42985EE525B949CE004915E5 /* ForgotPasswordViewController.swift */,
 				424BA43025D121F0000F1B1B /* ProfileAdminViewController.swift */,
 				423C02B825E7DAA700F548CD /* ChatViewController.swift */,
+				423EB0DD25F2007A0094AA0B /* StripeManager.swift */,
+				423EB0DF25F215530094AA0B /* CardPaymentViewController.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -342,6 +348,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				423EB0DE25F2007A0094AA0B /* StripeManager.swift in Sources */,
 				42CAADF1252C4992006E1D76 /* CurrentMembershipDetailViewController.swift in Sources */,
 				4231BF9A25347328007EFBBF /* ViewEventScreenViewController.swift in Sources */,
 				42A407A5251C78570087B02F /* AppManager.swift in Sources */,
@@ -353,6 +360,7 @@
 				4249C38E251B12BD00DC9AE0 /* ViewController.swift in Sources */,
 				4249C38A251B12BD00DC9AE0 /* AppDelegate.swift in Sources */,
 				4249C38C251B12BD00DC9AE0 /* SceneDelegate.swift in Sources */,
+				423EB0E025F215530094AA0B /* CardPaymentViewController.swift in Sources */,
 				42651AD225301FF700539B19 /* TrainerAttendanceViewController.swift in Sources */,
 				42F7DBB72521F790001F0050 /* BaseViewController.swift in Sources */,
 				42BC9BF8252DCEC200435000 /* MemberViewController.swift in Sources */,

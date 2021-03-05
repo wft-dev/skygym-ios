@@ -8,6 +8,7 @@
 
 import UIKit
 import SVProgressHUD
+import Stripe
 
 class MemberhsipPlanTableCell: UITableViewCell {
     @IBOutlet weak var membershipPlanLabel: UILabel!
@@ -132,6 +133,9 @@ class AddMemberViewController: BaseViewController {
         self.setCompleteView()
         self.dueAmountTextField.isEnabled = false
         self.dueAmountTextField.alpha = 0.4
+        self.updateBtn.tag = 0101
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(completePaymentOperation(notification:)), name: NSNotification.Name(rawValue: "paymentSuccess"), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -152,7 +156,7 @@ class AddMemberViewController: BaseViewController {
             self.profileAndMembershipBarView.isUserInteractionEnabled = false
             self.profileAndMembershipBarView.isHidden = true
             DispatchQueue.main.async {
-                self.topConstraintOfMembershipView.constant = -(self.profileAndMembershipBarView.frame.size.height + 20.0 )
+                self.topConstraintOfMembershipView.constant = -(self.profileAndMembershipBarView.frame.size.height - 20)
                  self.updateBtn.setTitle("U P D A T E", for: .normal)
             }
         }
@@ -167,6 +171,15 @@ class AddMemberViewController: BaseViewController {
                 self.clearAllFields()
             }
         }
+    }
+    
+    @objc func completePaymentOperation(notification:Notification) {
+        SVProgressHUD.show()
+        DispatchQueue.main.async {
+               self.cashPaymentUpdateBtnAction()
+            SVProgressHUD.dismiss()
+        }
+     
     }
     
     @objc func showTrainerList() {
@@ -210,30 +223,52 @@ class AddMemberViewController: BaseViewController {
     @IBAction func updateBtnAction(_ sender: Any) {
         self.membershipValidation()
         if ValidationManager.shared.isMembershipFieldsValidated(textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView) == true {
-            SVProgressHUD.show()
-            if self.isNewMember == true {
-                if self.visitorID != "" {
-                    FireStoreManager.shared.uploadUserImg(imgData: self.visitorProfileImgData!, id: self.memberIDTextField.text!, completion: {
-                        (err) in
-                        
-                        if err != nil {
-                            SVProgressHUD.dismiss()
-                            self.errorAlert(message: "Error in registering member,Please try again.")
-                        }else{
-                            self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
-                        }
-                    })
-                } else {
-                    self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
-                }
+            switch self.updateBtn.tag {
+            case 0101:
+                 self.cashPaymentUpdateBtnAction()
+                break
+            case 1011 :
+                self.onlinePaymentUpdateAction()
+                break
+            default:
+                break
             }
-            else if self.isRenewMembership == true {
-                self.updateMembershipBy(memberID: AppManager.shared.memberID, membershipId: self.membershipID)
+        }
+    }
+    
+    func onlinePaymentUpdateAction() {
+        let paymentController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "paymentVC") as! CardPaymentViewController
+        paymentController.membershipPlanStr = self.membershipPlanTextField.text!
+        paymentController.startDateStr = self.startDateTextField.text!
+        paymentController.endDateStr = self.endDateTextField.text!
+        paymentController.amountStr = self.totalAmountTextField.text!
+        self.navigationController?.pushViewController(paymentController, animated: true)
+    }
+    
+    func cashPaymentUpdateBtnAction() {
+        SVProgressHUD.show()
+        if self.isNewMember == true {
+            if self.visitorID != "" {
+                FireStoreManager.shared.uploadUserImg(imgData: self.visitorProfileImgData!, id: self.memberIDTextField.text!, completion: {
+                    (err) in
+                    
+                    if err != nil {
+                        SVProgressHUD.dismiss()
+                        self.errorAlert(message: "Error in registering member,Please try again.")
+                    }else{
+                        self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
+                    }
+                })
+            } else {
+                self.registerMember(memberDetail: self.getMemberDetails(), membershipDetail: self.getMembershipDetails())
             }
-                
-            else{
-                self.addNewMembership(membershipDetail: self.getMembershipDetails())
-            }
+        }
+        else if self.isRenewMembership == true {
+            self.updateMembershipBy(memberID: AppManager.shared.memberID, membershipId: self.membershipID)
+        }
+            
+        else{
+            self.addNewMembership(membershipDetail: self.getMembershipDetails())
         }
     }
     
@@ -483,7 +518,7 @@ class AddMemberViewController: BaseViewController {
         }
     }
     
-    func setNavigationBar() {
+    func setAddMemberNavigationBar() {
         let str = self.isNewMember == true ? "Member" : "Membership"
         let title = NSAttributedString(string: str, attributes: [
             NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
@@ -751,7 +786,7 @@ class AddMemberViewController: BaseViewController {
 
     func setCompleteView() {
         self.toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 50))
-        self.setNavigationBar()
+        self.setAddMemberNavigationBar()
         self.addTopAndBottomBorders(toView: profileAndMembershipBarView)
         self.addRightView(toTextField: self.uploadIDTextField, imageName: "cam.png")
         self.addRightView(toTextField: self.membershipPlanTextField, imageName: "arrow-down.png")
@@ -1293,6 +1328,13 @@ extension AddMemberViewController:UIPickerViewDelegate {
 
         if pickerView.tag == 0101 {
             self.paymentTypeTextField.text = self.paymentTypeArray[row]
+            if self.paymentTypeArray[row] == "Card" {
+                self.updateBtn.tag = 1011
+                self.updateBtn.setTitle("Pay via card", for: .normal)
+            }else {
+                self.updateBtn.tag = 0101
+                self.updateBtn.setTitle("U P D A T E ", for: .normal)
+            }
         }else {
             self.genderTextField.text = self.genderArray[row]
         }
@@ -1314,6 +1356,20 @@ extension AddMemberViewController:UIGestureRecognizerDelegate{
         }else {
             return true
         }
+    }
+    
+}
+
+extension AddMemberViewController:STPAddCardViewControllerDelegate, STPPaymentCardTextFieldDelegate{
+    func addCardViewControllerDidCancel(_ addCardViewController: STPAddCardViewController) {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    func addCardViewController(_ addCardViewController: STPAddCardViewController, didCreatePaymentMethod paymentMethod: STPPaymentMethod, completion: @escaping STPErrorBlock) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+            self.navigationController?.popToRootViewController(animated: true)
+        })
+    
     }
     
 }

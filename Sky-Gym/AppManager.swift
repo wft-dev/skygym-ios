@@ -216,7 +216,29 @@ class AppManager: NSObject {
                 statusBar?.alpha = alpha
             }
         }
-
+    
+    private let publish_key = "pk_test_51HFDLlDKZInJzQGeJosUI2YVjl4TUOGbnyASXnGNQULUwhTsEmyyspA9fikehoRAioVcBQklSYMJg5hqmHN4zKzE00mo9JjM2e"
+    
+    private let baseURLStr = "https://payment-intent-example.herokuapp.com/"
+    private let defaultCurrency = "IND"
+    private let defaultDescription = "Purchase from Sky-Gym "
+    
+    func getPublishKey() -> String {
+        return publish_key
+    }
+    
+    func getBaseURLStr() -> String {
+        return baseURLStr
+    }
+    
+    func getDefaultCurrency() -> String {
+        return defaultCurrency
+    }
+    
+    func getDefaultDescription() -> String {
+        return defaultCurrency
+    }
+    
     func isEmailValid(email:String) -> Bool {
 //               let emailFormat = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
 

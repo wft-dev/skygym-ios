@@ -12,7 +12,7 @@ import SWRevealViewController
 import FirebaseCore
 import FirebaseFirestore
 import IQKeyboardManagerSwift
-
+import Stripe
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,6 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setRoot()
         IQKeyboardManager.shared.enable = true
         IQKeyboardManager.shared.disabledDistanceHandlingClasses.append(ChatViewController.self)
+        StripeAPI.defaultPublishableKey = AppManager.shared.getPublishKey()
         return true
     }
     
