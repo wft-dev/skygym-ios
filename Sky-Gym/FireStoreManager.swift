@@ -609,6 +609,9 @@ class FireStoreManager: NSObject {
             if err != nil {
                 result(false,err)
             }else {
+                if memberID == "837064" {
+                    print("data is : \(docSnapshot?.data() ?? [:])")
+                }
                 let attendenceDictionary = ((docSnapshot?.data())! as Dictionary<String,Any>)["attendence"] as! Dictionary<String,Any>
                 let matchingDateArray = self.getArrayOfOneDayAttendence(trainerORmember: role, id: memberID, attendence: attendenceDictionary, forDate: Date())
                 
@@ -1313,9 +1316,11 @@ class FireStoreManager: NSObject {
                         
                         if diff.day! <= 0 && diff.month! <= 0 && diff.year! <= 0 {
                             AppManager.shared.expiredMember += 1
+                            print("member ship count : \(AppManager.shared.expiredMember)")
                         }
                     } else {
-                        AppManager.shared.expiredMember += 1 
+                        AppManager.shared.expiredMember += 1
+                        print("member ship count : \(AppManager.shared.expiredMember)")
                     }
                 }
                 result = .success(count)
@@ -1570,7 +1575,45 @@ class FireStoreManager: NSObject {
                 }
             }
         })
-    }  
+    }
+    
+    func uploadGallaryImage(imgData:Data,handler:@escaping (Error?) -> Void) {
+        let imgRef = fireStorageRef.child("Gallary/\(Date().timeIntervalSince1970)")
+        imgRef.putData(imgData, metadata: nil, completion: {
+            (_, err) in
+            handler(err)
+        })
+    }
+        
+    
+    func downloadGallaryImage(limit:Int64,handler:@escaping ([URL]) -> Void) {
+        var imgUrls:[URL] = []
+        let imgRef = fireStorageRef.child("Gallary")
+        
+        imgRef.list(withMaxResults: Int64(limit), completion: {
+            (data,err) in
+            
+            if err == nil {
+                for singleDataRef in data.items {
+                    singleDataRef.downloadURL(completion: {
+                        (url,err) in
+                        
+                        if err == nil {
+                            imgUrls.append(url!)
+                            if imgUrls.count == data.items.count {
+                                handler(imgUrls)
+                            }
+                        }
+                    })
+                }
+
+            } else {
+                print("Error is : \(err!)")
+            }
+        })
+    }
+    
+    
 }
 
 

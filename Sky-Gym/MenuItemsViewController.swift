@@ -70,7 +70,7 @@ extension MenuItemsViewController {
         var array:[String] = []
         switch role {
         case .Admin:
-            array = ["Dashboard","Member","Trainer","Membership Plan","Visitors","Profile","Events","Logout"]
+            array = ["Dashboard","Member","Trainer","Membership Plan","Visitors","Profile","Events","Gallary","Logout"]
         case .Trainer :
             array = ["Dashboard","Gym Info","Home", "Member","Membership Plan","Profile","Visitors","Events","Logout"]
             if AppManager.shared.trainerVisitorPermission == false  {
@@ -118,6 +118,10 @@ extension MenuItemsViewController {
             self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: eventVC), animated: true)
             break
         case 7 :
+                let gallaryVC = self.storyBoard.instantiateViewController(withIdentifier: "gallaryVC") as! GallaryViewController
+                self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gallaryVC), animated: true)
+                break
+        case 8 :
             self.appDelgate?.swRevealVC.revealToggle(animated: true)
             self.logOut()
         default:

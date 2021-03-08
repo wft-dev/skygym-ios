@@ -343,8 +343,8 @@ class AppManager: NSObject {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd-MM-yyyy"
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        let dateS = dateFormatter.date(from: date)!
-        return dateS
+        let dateS = dateFormatter.date(from: date)
+        return dateS ?? Date()
     }
     
     func getStandardFormatDate(date:Date) -> Date {

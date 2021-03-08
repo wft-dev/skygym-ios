@@ -5,6 +5,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -3357,7 +3358,7 @@
                                         </connections>
                                     </tableView>
                                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Result Found" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kri-wK-O09">
-                                        <rect key="frame" x="40" y="194.5" width="240" height="28"/>
+                                        <rect key="frame" x="40" y="194.5" width="240" height="23.5"/>
                                         <fontDescription key="fontDescription" name="Poppins-SemiBold" family="Poppins" pointSize="20"/>
                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -4244,6 +4245,10 @@
                                                             <outlet property="delegate" destination="5aj-52-s8i" id="ks2-Nh-qjY"/>
                                                         </connections>
                                                     </textField>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="maR-jz-9D0">
+                                                        <rect key="frame" x="30" y="50.5" width="260" height="48"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    </button>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q77-rx-w7z">
                                                         <rect key="frame" x="30" y="99.5" width="260" height="12"/>
                                                         <constraints>
@@ -4555,11 +4560,13 @@
                                                     <constraint firstItem="frg-2Q-ZRR" firstAttribute="leading" secondItem="tT3-A0-6yI" secondAttribute="leading" id="Uvj-Jq-HwE"/>
                                                     <constraint firstItem="FbI-Bg-td7" firstAttribute="top" secondItem="9Zx-qJ-nxI" secondAttribute="top" constant="25" id="VcE-l9-cNa"/>
                                                     <constraint firstAttribute="trailing" secondItem="wwn-aa-vbp" secondAttribute="trailing" constant="30" id="Vhn-f5-a7u"/>
+                                                    <constraint firstItem="maR-jz-9D0" firstAttribute="leading" secondItem="teB-bg-ymC" secondAttribute="leading" id="WHB-rj-6db"/>
                                                     <constraint firstItem="MGY-LI-5tb" firstAttribute="top" secondItem="DRk-ZO-8cr" secondAttribute="bottom" constant="20" id="WQB-4U-ofg"/>
                                                     <constraint firstItem="7Pi-EX-thc" firstAttribute="trailing" secondItem="tSF-Co-BrF" secondAttribute="trailing" id="WSv-5g-s03"/>
                                                     <constraint firstAttribute="trailing" secondItem="4b5-MI-U59" secondAttribute="trailing" constant="30" id="X0S-f6-TcQ"/>
                                                     <constraint firstItem="nRR-nv-gnT" firstAttribute="trailing" secondItem="wwn-aa-vbp" secondAttribute="trailing" id="XN4-J6-nle"/>
                                                     <constraint firstItem="Q77-rx-w7z" firstAttribute="top" secondItem="teB-bg-ymC" secondAttribute="bottom" constant="1" id="YYv-ph-JHb"/>
+                                                    <constraint firstItem="maR-jz-9D0" firstAttribute="trailing" secondItem="teB-bg-ymC" secondAttribute="trailing" id="ZAu-Ia-qcx"/>
                                                     <constraint firstItem="bg6-hn-LQd" firstAttribute="leading" secondItem="9Zx-qJ-nxI" secondAttribute="leading" constant="30" id="aMF-RS-qrh"/>
                                                     <constraint firstAttribute="trailing" secondItem="BSI-RX-nfF" secondAttribute="trailing" constant="30" id="aWo-9R-tUh"/>
                                                     <constraint firstAttribute="trailing" secondItem="FbI-Bg-td7" secondAttribute="trailing" constant="30" id="ajV-F5-oNI"/>
@@ -4588,6 +4595,7 @@
                                                     <constraint firstItem="tSF-Co-BrF" firstAttribute="height" secondItem="teB-bg-ymC" secondAttribute="height" id="m4O-27-85j"/>
                                                     <constraint firstItem="iB4-Kn-4qj" firstAttribute="top" secondItem="BWp-EC-S1L" secondAttribute="bottom" constant="3" id="mPG-X9-W4P"/>
                                                     <constraint firstItem="B8i-kE-tW8" firstAttribute="trailing" secondItem="k1L-tJ-LRV" secondAttribute="trailing" id="mSx-vW-Xx2"/>
+                                                    <constraint firstItem="maR-jz-9D0" firstAttribute="top" secondItem="teB-bg-ymC" secondAttribute="top" id="mXf-CO-HR0"/>
                                                     <constraint firstItem="4b5-MI-U59" firstAttribute="top" secondItem="ZUu-xp-0ii" secondAttribute="bottom" constant="4" id="myW-Xd-JLa"/>
                                                     <constraint firstItem="0iV-i9-fuf" firstAttribute="top" secondItem="Q77-rx-w7z" secondAttribute="bottom" constant="4" id="nhd-Wg-G3S"/>
                                                     <constraint firstItem="ZUu-xp-0ii" firstAttribute="top" secondItem="tT3-A0-6yI" secondAttribute="bottom" constant="1" id="pry-MV-Dci"/>
@@ -4601,6 +4609,7 @@
                                                     <constraint firstAttribute="trailing" secondItem="BWp-EC-S1L" secondAttribute="trailing" constant="30" id="w58-3i-Dbw"/>
                                                     <constraint firstItem="CfU-Qq-u31" firstAttribute="top" secondItem="pwx-K7-aQP" secondAttribute="bottom" constant="3" id="x27-Ab-Pnb"/>
                                                     <constraint firstItem="7Pi-EX-thc" firstAttribute="leading" secondItem="tSF-Co-BrF" secondAttribute="leading" id="xkS-fY-u3q"/>
+                                                    <constraint firstItem="maR-jz-9D0" firstAttribute="bottom" secondItem="teB-bg-ymC" secondAttribute="bottom" id="xoD-Fq-EGI"/>
                                                     <constraint firstItem="frg-2Q-ZRR" firstAttribute="top" secondItem="Wou-6O-hu3" secondAttribute="bottom" constant="4" id="ylC-OK-gWt"/>
                                                     <constraint firstItem="bg6-hn-LQd" firstAttribute="top" secondItem="Wou-6O-hu3" secondAttribute="bottom" constant="4" id="zKz-s7-u0L"/>
                                                     <constraint firstAttribute="bottom" secondItem="MGY-LI-5tb" secondAttribute="bottom" constant="40" id="zUG-UB-Rdq"/>
@@ -4680,6 +4689,7 @@
                         <outlet property="membershipBtn" destination="g9B-Lh-1pM" id="EdG-SS-K8K"/>
                         <outlet property="membershipDetailErrorLabel" destination="B8i-kE-tW8" id="6Ru-2H-T3N"/>
                         <outlet property="membershipDetailTextView" destination="k1L-tJ-LRV" id="4av-4o-uyM"/>
+                        <outlet property="membershipPlanBtn" destination="maR-jz-9D0" id="IM5-UF-Jyd"/>
                         <outlet property="membershipPlanErrorLabel" destination="Q77-rx-w7z" id="u70-xr-QQ6"/>
                         <outlet property="membershipPlanTable" destination="zbc-7L-8LD" id="MWy-W0-xwP"/>
                         <outlet property="membershipPlanTextField" destination="teB-bg-ymC" id="xaC-pg-mWq"/>
@@ -11799,6 +11809,67 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Eub-VK-1k8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="14852" y="1011"/>
+        </scene>
+        <!--Gallary View Controller-->
+        <scene sceneID="63N-B0-lwa">
+            <objects>
+                <viewController storyboardIdentifier="gallaryVC" id="eKO-s6-ZsP" customClass="GallaryViewController" customModule="Sky_Gym" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="oFx-qH-O7o">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="5Go-o0-RSf">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="jjT-el-5kg">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" reuseIdentifier="gallaryPhotoCell" id="Wd5-EZ-WzN" customClass="GallaryCollectionCell" customModule="Sky_Gym" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="qtC-rM-lwr">
+                                            <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ew0-SB-fOr">
+                                                    <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="Ew0-SB-fOr" secondAttribute="bottom" id="Jgg-aL-iLn"/>
+                                                <constraint firstItem="Ew0-SB-fOr" firstAttribute="leading" secondItem="qtC-rM-lwr" secondAttribute="leading" id="O0l-Xk-ztl"/>
+                                                <constraint firstAttribute="trailing" secondItem="Ew0-SB-fOr" secondAttribute="trailing" id="fzu-Sx-hDa"/>
+                                                <constraint firstItem="Ew0-SB-fOr" firstAttribute="top" secondItem="qtC-rM-lwr" secondAttribute="top" id="hx4-Cx-apv"/>
+                                            </constraints>
+                                        </collectionViewCellContentView>
+                                        <connections>
+                                            <outlet property="gallaryView" destination="Ew0-SB-fOr" id="AqW-Yl-ID5"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="mgs-Nb-g8y" firstAttribute="bottom" secondItem="5Go-o0-RSf" secondAttribute="bottom" id="ETz-Dj-qw1"/>
+                            <constraint firstItem="mgs-Nb-g8y" firstAttribute="trailing" secondItem="5Go-o0-RSf" secondAttribute="trailing" id="GOa-ku-aTX"/>
+                            <constraint firstItem="5Go-o0-RSf" firstAttribute="leading" secondItem="mgs-Nb-g8y" secondAttribute="leading" id="Szp-eS-Y30"/>
+                            <constraint firstItem="5Go-o0-RSf" firstAttribute="top" secondItem="mgs-Nb-g8y" secondAttribute="top" id="Xoj-6Q-NIW"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="mgs-Nb-g8y"/>
+                    </view>
+                    <connections>
+                        <outlet property="gallaryCollectionView" destination="5Go-o0-RSf" id="8L7-qd-da8"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KI6-yp-hvC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="15804" y="1010"/>
         </scene>
         <!--View Event Screen View Controller-->
         <scene sceneID="h0E-MX-AV4">

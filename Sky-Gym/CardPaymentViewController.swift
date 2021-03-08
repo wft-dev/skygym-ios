@@ -36,6 +36,7 @@ class CardPaymentViewController: UIViewController {
         self.startDate.text = startDateStr
         self.endDate.text = endDateStr
         self.amount.text = amountStr
+        self.paymentTextField.delegate = self
     }
 
     func setUpUI()  {
@@ -53,11 +54,11 @@ class CardPaymentViewController: UIViewController {
         paymentTextField.rightAnchor.constraint(equalTo: paymentTextFieldView.rightAnchor, constant: -10).isActive = true
         paymentTextField.bottomAnchor.constraint(equalTo: paymentTextFieldView.bottomAnchor, constant: 0).isActive = true
         payBtn.addTarget(self, action: #selector(completePayment), for: .touchUpInside)
-        
     }
     
     @objc func completePayment(){
         SVProgressHUD.show()
+        self.view.isUserInteractionEnabled = false
         self.cardParams.number = self.paymentTextField.cardNumber
         self.cardParams.cvc = self.paymentTextField.cvc
         self.cardParams.expYear = UInt(self.paymentTextField.expirationYear)
@@ -71,6 +72,7 @@ class CardPaymentViewController: UIViewController {
                 StripeManager.shared.completePayment(token: token!, amount: amount, completion: {
                     result in
                     SVProgressHUD.dismiss()
+                    self.view.isUserInteractionEnabled = true
                     switch result {
                     case .success:
                         NotificationCenter.default.post(name: NSNotification.Name("paymentSuccess"), object: nil)
@@ -137,6 +139,21 @@ class CardPaymentViewController: UIViewController {
     
     @objc func  addMemberBackBtnAction() {
         self.exitAlert()
+    }
+    
+}
+
+
+extension CardPaymentViewController : STPPaymentCardTextFieldDelegate {
+
+    func paymentCardTextFieldDidEndEditing(_ textField: STPPaymentCardTextField) {
+        if textField.isValid == false {
+            self.payBtn.isEnabled = false
+            self.payBtn.alpha = 0.4
+        }else {
+            self.payBtn.isEnabled = true
+            self.payBtn.alpha = 1.0
+        }
     }
     
 }

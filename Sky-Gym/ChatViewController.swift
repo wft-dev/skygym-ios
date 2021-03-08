@@ -216,8 +216,6 @@ class ChatViewController: MessagesViewController{
                                     SVProgressHUD.dismiss()
                                 }
                             })
-                        }else {
-                            print("chat user not found.")
                         }
                     }
                     

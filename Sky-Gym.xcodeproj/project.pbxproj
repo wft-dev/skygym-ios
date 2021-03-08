@@ -17,6 +17,7 @@
 		423EB0DE25F2007A0094AA0B /* StripeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423EB0DD25F2007A0094AA0B /* StripeManager.swift */; };
 		423EB0E025F215530094AA0B /* CardPaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423EB0DF25F215530094AA0B /* CardPaymentViewController.swift */; };
 		423F870A252B4846001C30D4 /* MemberDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423F8709252B4846001C30D4 /* MemberDetailViewController.swift */; };
+		42434EFE25F6295300543396 /* GallaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42434EFD25F6295300543396 /* GallaryViewController.swift */; };
 		42446A28256FA7AE00F966FD /* Validator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42446A27256FA7AE00F966FD /* Validator.swift */; };
 		424937232526094D0043ADFF /* AddMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424937222526094D0043ADFF /* AddMemberViewController.swift */; };
 		4249C38A251B12BD00DC9AE0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249C389251B12BD00DC9AE0 /* AppDelegate.swift */; };
@@ -70,6 +71,7 @@
 		423EB0DD25F2007A0094AA0B /* StripeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeManager.swift; sourceTree = "<group>"; };
 		423EB0DF25F215530094AA0B /* CardPaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPaymentViewController.swift; sourceTree = "<group>"; };
 		423F8709252B4846001C30D4 /* MemberDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDetailViewController.swift; sourceTree = "<group>"; };
+		42434EFD25F6295300543396 /* GallaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GallaryViewController.swift; sourceTree = "<group>"; };
 		42446A27256FA7AE00F966FD /* Validator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validator.swift; sourceTree = "<group>"; };
 		424937222526094D0043ADFF /* AddMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemberViewController.swift; sourceTree = "<group>"; };
 		4249C386251B12BD00DC9AE0 /* Sky-Gym.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sky-Gym.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -197,6 +199,7 @@
 				423C02B825E7DAA700F548CD /* ChatViewController.swift */,
 				423EB0DD25F2007A0094AA0B /* StripeManager.swift */,
 				423EB0DF25F215530094AA0B /* CardPaymentViewController.swift */,
+				42434EFD25F6295300543396 /* GallaryViewController.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -389,6 +392,7 @@
 				42D13390252ECB6E00BA7EE5 /* ListOfTrainersViewController.swift in Sources */,
 				4231BF9425342965007EFBBF /* ViewVisitorScreenViewController.swift in Sources */,
 				42C3F51025386B3C007DBC79 /* AppDataStructureManager.swift in Sources */,
+				42434EFE25F6295300543396 /* GallaryViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -82,6 +82,7 @@ class AddMemberViewController: BaseViewController {
     @IBOutlet weak var personalTypeLabel: UILabel!
     @IBOutlet weak var trainerListView: UIView!
     @IBOutlet weak var trainerListTable: UITableView!
+    @IBOutlet weak var membershipPlanBtn: UIButton!
     
     private lazy var imagePicker:UIImagePickerController = {
         return UIImagePickerController()
@@ -134,8 +135,10 @@ class AddMemberViewController: BaseViewController {
         self.dueAmountTextField.isEnabled = false
         self.dueAmountTextField.alpha = 0.4
         self.updateBtn.tag = 0101
-        
         NotificationCenter.default.addObserver(self, selector: #selector(completePaymentOperation(notification:)), name: NSNotification.Name(rawValue: "paymentSuccess"), object: nil)
+        self.membershipPlanTextField.isUserInteractionEnabled = false
+        self.membershipPlanTextField.isEnabled = false
+        membershipPlanBtn.addTarget(self, action: #selector(showMembershipPlan), for: .touchUpInside)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -174,12 +177,14 @@ class AddMemberViewController: BaseViewController {
     }
     
     @objc func completePaymentOperation(notification:Notification) {
-        SVProgressHUD.show()
-        DispatchQueue.main.async {
-               self.cashPaymentUpdateBtnAction()
-            SVProgressHUD.dismiss()
-        }
-     
+      // DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+             self.cashPaymentUpdateBtnAction()
+        print("User info : \(self.getMemberDetails())")
+        print("Member ship info : \(self.getMembershipDetails())")
+      //  })
+        
+
+        
     }
     
     @objc func showTrainerList() {
@@ -722,20 +727,24 @@ class AddMemberViewController: BaseViewController {
     
     func registerMember(memberDetail:[String:String],membershipDetail:[[String:String]]) {
         SVProgressHUD.show()
-        let encryptedPassword = AppManager.shared.encryption(plainText: self.passwordTextField.text!)
+        let encryptedPassword = memberDetail["password"]
+        let memberID = memberDetail["memberID"]
+        let email = memberDetail["email"]
         if self.isAlreadyExistsEmail == false {
-            FireStoreManager.shared.addNewUserCredentials(id: self.memberIDTextField.text!, email: self.emailTextField.text!, password:encryptedPassword, handler: {
+            print("member id : ++++++++++++ \(self.memberIDTextField.text!)")
+            print("member id : ++++++++++++ \(memberID!)")
+            FireStoreManager.shared.addNewUserCredentials(id: memberID!, email: email!, password:encryptedPassword!, handler: {
                 (err) in
                 
                 if err == nil {
                     DispatchQueue.main.asyncAfter(deadline: .now(), execute: {
-                        FireStoreManager.shared.uploadImg(url:self.imgUrl!, membeID:self.memberIDTextField.text! , imageName: self.imgUrl!.lastPathComponent, completion: {
+                        FireStoreManager.shared.uploadImg(url:self.imgUrl!, membeID:memberID! , imageName: self.imgUrl!.lastPathComponent, completion: {
                             (err) in
                             if err != nil {
                                 SVProgressHUD.dismiss()
                                 self.errorAlert(message: "ID is not uploaded successfully.")
                             } else {
-                                FireStoreManager.shared.addMember(email:self.emailTextField.text!,password: encryptedPassword,memberDetail: memberDetail, memberships: membershipDetail, memberID: self.memberIDTextField.text!, handler: {
+                                FireStoreManager.shared.addMember(email:email!,password: encryptedPassword!,memberDetail: memberDetail, memberships: membershipDetail, memberID: memberID!, handler: {
                                     (err) in
                                     if err != nil {
                                         SVProgressHUD.dismiss()
@@ -1038,10 +1047,10 @@ extension AddMemberViewController:UITextFieldDelegate{
             self.view.endEditing(true)
         }
         
-        if textField.tag == 12  {
-            self.view.endEditing(true)
-            self.showMembershipPlan()
-        }
+//        if textField.tag == 12  {
+//            self.view.endEditing(true)
+//            self.showMembershipPlan()
+//        }
         
         if textField.tag == 5 {
         var row:Int = 0
@@ -1128,14 +1137,14 @@ extension AddMemberViewController:UITextFieldDelegate{
                 }
                 
             case 11:
-                self.dobTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
+                self.dobTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate ?? Date())
                 
             case 14:
                 if self.isRenewMembership == true {
                     self.membershipDuration = Int(self.renewingMembershipDuration)!
                 }
-                self.startDateTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate!)
-                let endDate = AppManager.shared.getMembershipEndDate(startDate:self.selectedDate!, duration: self.membershipDuration)
+                self.startDateTextField.text = AppManager.shared.dateWithMonthName(date: self.selectedDate ?? Date())
+                let endDate = AppManager.shared.getMembershipEndDate(startDate:self.selectedDate ?? Date(), duration: self.membershipDuration)
                 let endDateFormatted = AppManager.shared.dateWithMonthName(date: endDate)
                 self.endDateTextField.text =  endDateFormatted
                 ValidationManager.shared.requiredValidation(textField: self.endDateTextField, errorLabel: self.endDateErrorLabel, errorMessage: "End Date require.")
