@@ -218,7 +218,6 @@ class ChatViewController: MessagesViewController{
                             })
                         }
                     }
-                    
                     if self.isChatExists == false {
                         self.createNewChat()
                     }
@@ -298,7 +297,7 @@ extension ChatViewController:MessagesDisplayDelegate{
     
 }
 
-extension ChatViewController:MessageCellDelegate{
+extension ChatViewController:MessageCellDelegate {
     func didTapImage(in cell: MessageCollectionViewCell) {
         let subV = cell.subviews.first!.subviews
         for sub in subV {

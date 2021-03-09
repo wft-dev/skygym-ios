@@ -248,6 +248,7 @@ class FireStoreManager: NSObject {
             completion(err)
         })
     }
+ 
 
     func uploadImgForTrainer(url:URL,trainerid:String,imageName:String,completion:@escaping (Error?) -> Void) {
         let imgRef = fireStorageRef.child("Images/\(trainerid)/\(imageName)")
@@ -1579,39 +1580,108 @@ class FireStoreManager: NSObject {
     
     func uploadGallaryImage(imgData:Data,handler:@escaping (Error?) -> Void) {
         let imgRef = fireStorageRef.child("Gallary/\(Date().timeIntervalSince1970)")
-        imgRef.putData(imgData, metadata: nil, completion: {
-            (_, err) in
-            handler(err)
-        })
-    }
+        let metaData = StorageMetadata()
+        let imgUrl = imgRef.fullPath
+        metaData.contentType = "content/jpeg"
         
-    
-    func downloadGallaryImage(limit:Int64,handler:@escaping ([URL]) -> Void) {
-        var imgUrls:[URL] = []
-        let imgRef = fireStorageRef.child("Gallary")
-        
-        imgRef.list(withMaxResults: Int64(limit), completion: {
-            (data,err) in
+        uploadGallaryImgUrls(imgUrl: imgUrl, handler: {
+            err in
             
             if err == nil {
-                for singleDataRef in data.items {
-                    singleDataRef.downloadURL(completion: {
-                        (url,err) in
-                        
-                        if err == nil {
-                            imgUrls.append(url!)
-                            if imgUrls.count == data.items.count {
-                                handler(imgUrls)
-                            }
-                        }
-                    })
-                }
-
-            } else {
-                print("Error is : \(err!)")
+                imgRef.putData(imgData, metadata: metaData, completion: {
+                    (_, err) in
+                    handler(err)
+                })
             }
         })
     }
+    
+    private func uploadGallaryImgUrls(imgUrl:String,handler:@escaping (Error?) -> Void ) {
+        fireDB.collection("gallary").addDocument(data: [
+            "imgUrl":imgUrl,
+            "timeStamp":Date().timeIntervalSince1970
+            ], completion: {
+                (err) in
+                handler(err)
+        })
+    }
+    
+func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
+        var imgUrls : [String] = []
+        fireDB.collection("gallary")
+            .order(by: "timeStamp", descending: false)
+            .getDocuments(completion: {
+                (querySnapshot,err) in
+                
+                if err == nil {
+                    for singleDoc in querySnapshot!.documents {
+                        let data = singleDoc.data()
+                        imgUrls.append(data["imgUrl"] as! String)
+                    }
+                    handler(imgUrls,nil)
+                }else {
+                    handler([],err)
+                }
+            })
+    }
+    
+    
+    func downloadGallaryImg(pageToken:String? = nil,handler:@escaping (([URL]) -> Void )) {
+        var imgUrls : [URL] = []
+        let pageHandler :(StorageListResult,Error?) ->Void = {
+            (result,err) in
+            
+            if err == nil{
+                if let token = result.pageToken {
+                    AppManager.shared.pageToken = token
+                }
+                for singleItem in result.items{
+                    singleItem.downloadURL { (imgURL, err) in
+                        if err == nil {
+                            imgUrls.append(imgURL!)
+                            if imgUrls.count == result.items.count {
+                                handler(imgUrls)
+                            }
+                        }
+                    }
+                }
+            }else {
+                handler([])
+            }
+        }
+        if pageToken != nil {
+            fireStorageRef.child("Gallary").list(withMaxResults: 5, pageToken:pageToken!, completion:pageHandler)
+        } else {
+            fireStorageRef.child("Gallary").list(withMaxResults: 5, completion: pageHandler)
+        }
+    }
+    
+    
+//    func listAllPaginated(pageToken: String? = nil) {
+//      let storage = Storage.storage()
+//      let storageReference = storage.reference().child("files/uid")
+//
+//      let pageHandler: (StorageListResult, Error?) -> Void = { (result, error) in
+//        if let error = error {
+//          // ...
+//        }
+//        let prefixes = result.prefixes
+//        let items = result.items
+//
+//        // ...
+//
+//        // Process next page
+//        if let token = result.pageToken {
+//          self.listAllPaginated(pageToken: token)
+//        }
+//      }
+//
+//      if let pageToken = pageToken {
+//        storageReference.list(withMaxResults: 100, pageToken: pageToken, completion: pageHandler)
+//      } else {
+//        storageReference.list(withMaxResults: 100, completion: pageHandler)
+//      }
+//    }
     
     
 }
