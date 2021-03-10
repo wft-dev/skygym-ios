@@ -1597,9 +1597,11 @@ class FireStoreManager: NSObject {
     }
     
     private func uploadGallaryImgUrls(imgUrl:String,handler:@escaping (Error?) -> Void ) {
-        fireDB.collection("gallary").addDocument(data: [
+        let timeStamp = imgUrl.split(separator: "/").last!
+        fireDB.collection("gallary").document("\(timeStamp)")
+            .setData([
             "imgUrl":imgUrl,
-            "timeStamp":Date().timeIntervalSince1970
+            "timeStamp":timeStamp
             ], completion: {
                 (err) in
                 handler(err)
@@ -1625,12 +1627,10 @@ func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
             })
     }
     
-    
     func downloadGallaryImg(pageToken:String? = nil,handler:@escaping (([URL]) -> Void )) {
         var imgUrls : [URL] = []
         let pageHandler :(StorageListResult,Error?) ->Void = {
             (result,err) in
-            
             if err == nil{
                 if let token = result.pageToken {
                     AppManager.shared.pageToken = token
@@ -1656,33 +1656,46 @@ func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
         }
     }
     
+    func deleteGallaryImages(urls:[String],handler:@escaping (Error?) -> Void) {
+       var deletingUrls = urls
+        deleteGallaryImageUrl(urls: urls) { (err) in
+            if err == nil {
+                
+                for singleUrl in deletingUrls {
+                    print(" ===== ===>>>>>  \(singleUrl)")
+                    self.fireStorageRef.child("\(singleUrl)").delete { (err) in
+                        if err == nil {
+                            print("item delete.")
+                            deletingUrls.remove(at: deletingUrls.firstIndex(of: singleUrl)!)
+                            if deletingUrls.count <= 0 {
+                                handler(nil)
+                            }
+                        }else {
+                            handler(err)
+                        }
+                    }
+                }
+                
+            }else { handler(err) }
+        }
+    }
     
-//    func listAllPaginated(pageToken: String? = nil) {
-//      let storage = Storage.storage()
-//      let storageReference = storage.reference().child("files/uid")
-//
-//      let pageHandler: (StorageListResult, Error?) -> Void = { (result, error) in
-//        if let error = error {
-//          // ...
-//        }
-//        let prefixes = result.prefixes
-//        let items = result.items
-//
-//        // ...
-//
-//        // Process next page
-//        if let token = result.pageToken {
-//          self.listAllPaginated(pageToken: token)
-//        }
-//      }
-//
-//      if let pageToken = pageToken {
-//        storageReference.list(withMaxResults: 100, pageToken: pageToken, completion: pageHandler)
-//      } else {
-//        storageReference.list(withMaxResults: 100, completion: pageHandler)
-//      }
-//    }
-    
+ private func deleteGallaryImageUrl(urls:[String],handler:@escaping (Error?) -> Void) {
+        var deletingUrls = urls
+        
+        for singleUrl in deletingUrls {
+            let docUrl = singleUrl.split(separator: "/").last!
+            fireDB.collection("gallary").document("\(docUrl)").delete { (err) in
+                
+                if err == nil {
+                    deletingUrls.remove(at: deletingUrls.firstIndex(of: singleUrl)!)
+                    if deletingUrls.count <= 0 {
+                        handler(err)
+                    }
+                }
+            }
+        }
+    }
     
 }
 

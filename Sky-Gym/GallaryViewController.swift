@@ -28,6 +28,7 @@ class GallaryViewController: UIViewController {
 
     @IBOutlet weak var gallaryCollectionView: UICollectionView!
     var imagesArray:[UIImage?] = []
+    var imgUrlsArray:[String] = []
     private let sectionInsets = UIEdgeInsets(
     top: 35.0,
     left: 20.0,
@@ -36,11 +37,54 @@ class GallaryViewController: UIViewController {
     
     private var imagePicker :UIImagePickerController = {
         return UIImagePickerController()
-        
     }()
     
-    var limit = 5
+    private var menuBtn:UIButton = {
+        let menuBtn = UIButton()
+        menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
+        menuBtn.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+        menuBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        menuBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        return menuBtn
+    }()
+    
+    private var addBtn :UIButton = {
+        let addBtn = UIButton()
+        addBtn.setImage(UIImage(named:"add-image"), for: .normal)
+        addBtn.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+        addBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        addBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+        return addBtn
+    }()
+    
+    private var selectBtn:UIButton = {
+        let selectBtn = UIButton()
+        let selectTitle = NSAttributedString(string: "Select", attributes: [NSAttributedString.Key.foregroundColor:UIColor.blue])
+        selectBtn.setAttributedTitle(selectTitle, for: .normal)
+        selectBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        return selectBtn
+    }()
+    
+    private var cancelBtn:UIButton = {
+        let cancelBtn = UIButton()
+        let cancelTitle = NSAttributedString(string: "Cancel", attributes: [NSAttributedString.Key.foregroundColor:UIColor.blue])
+        cancelBtn.setAttributedTitle(cancelTitle, for: .normal)
+        cancelBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        return cancelBtn
+    }()
+
+    private var deleteBtn:UIButton = {
+        let cancelBtn = UIButton()
+        let cancelTitle = NSAttributedString(string: "Delete", attributes: [NSAttributedString.Key.foregroundColor:UIColor.red])
+        cancelBtn.setAttributedTitle(cancelTitle, for: .normal)
+        cancelBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        return cancelBtn
+    }()
+
     let spinner = UIActivityIndicatorView()
+    var lastElementContentOffsets:CGPoint = CGPoint(x: 0, y: 0)
+    var isDeleteEnable:Bool = false
+    var deleteImgIndex:[Int] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,14 +94,8 @@ class GallaryViewController: UIViewController {
         imagePicker.delegate = self
         gallaryCollectionView.register(FooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "MyFooterView")
         (gallaryCollectionView.collectionViewLayout as! UICollectionViewFlowLayout).footerReferenceSize = CGSize(width: gallaryCollectionView.bounds.width, height: 50)
-        print("ARRAY COUTN : \(self.imagesArray.count)")
         AppManager.shared.pageToken = ""
         self.downloadImg()
-        
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        
     }
 
     func setGallaryNavigationBar()  {
@@ -70,34 +108,67 @@ class GallaryViewController: UIViewController {
         let titleLabel = UILabel()
         titleLabel.attributedText = title
         navigationItem.titleView = titleLabel
-        let menuBtn = UIButton()
-        let searchBtn = UIButton()
-        searchBtn.setImage(UIImage(named:"add-image"), for: .normal)
-        menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
-        searchBtn.addTarget(self, action: #selector(addNewImage), for: .touchUpInside)
+ 
+        addBtn.addTarget(self, action: #selector(addNewImage), for: .touchUpInside)
+        selectBtn.addTarget(self, action: #selector(selectDeleteImg), for: .touchUpInside)
+        cancelBtn.addTarget(self, action: #selector(cancelSelection), for: .touchUpInside)
         menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
-        searchBtn.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
-        searchBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
-        searchBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
-        menuBtn.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        deleteBtn.addTarget(self, action: #selector(deleteImages), for: .touchUpInside)
+
         let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
         let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
         stackView.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        let rightspaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
-        let rightstackView = UIStackView(arrangedSubviews: [searchBtn,rightspaceBtn])
-        rightstackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
-        self.navigationController?.navigationBar.topItem?.leftBarButtonItem = UIBarButtonItem(customView: stackView)
-        self.navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(customView: rightstackView)
+        
+        let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 20, height: 10))
+        let rightstackView = UIStackView(arrangedSubviews: [selectBtn,rightSpaceBtn,addBtn])
+        
+        navigationItem.setRightBarButton(UIBarButtonItem(customView: rightstackView), animated: true)
+        navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView), animated: true)
     }
     
     @objc func menuChange(){
         AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
     }
     
+    @objc func deleteImages(){
+        SVProgressHUD.show()
+        var deletingImgUrlsArray : [String] = []
+        if self.deleteImgIndex.count > 0 {
+            for singleImgIndex in self.deleteImgIndex {
+                deletingImgUrlsArray.append(self.imgUrlsArray[singleImgIndex])
+            }
+            
+            FireStoreManager.shared.deleteGallaryImages(urls: deletingImgUrlsArray) { (err) in
+                SVProgressHUD.dismiss()
+                if err == nil {
+                    print("Success")
+                    AppManager.shared.pageToken = ""
+                    self.imagesArray.removeAll()
+                    self.imgUrlsArray.removeAll()
+                    self.downloadImg()
+                }else {
+                    print("\(err!)")
+                    print("Try again ")
+                }
+            }
+        }
+    }
     
-    @objc func refresh(){
-        self.downloadImg()
-       // refreshController.endRefreshing()
+    @objc func selectDeleteImg(){
+        self.isDeleteEnable = true
+        DispatchQueue.main.async {
+            self.navigationItem.titleView = nil
+            self.navigationItem.setRightBarButton(UIBarButtonItem(customView: self.deleteBtn), animated: true)
+            self.navigationItem.setLeftBarButton(UIBarButtonItem(customView: self.cancelBtn), animated: true)
+        }
+    }
+    
+    @objc func cancelSelection() {
+        self.deleteImgIndex.removeAll()
+        self.gallaryCollectionView.reloadData()
+        DispatchQueue.main.async {
+            self.setGallaryNavigationBar()
+        }
     }
     
     @objc func addNewImage(){
@@ -107,6 +178,37 @@ class GallaryViewController: UIViewController {
         present(imagePicker, animated: true, completion: nil)
     }
     
+    @objc func showEnlargeImageAt(index:Int){
+        let enlargeImageView = UIImageView(image: self.imagesArray[index] )
+        enlargeImageView.contentMode = .scaleAspectFit
+        let enlargeView = UIView()
+        
+        enlargeView.frame = self.view.frame
+        enlargeImageView.frame = enlargeView.frame
+        enlargeView.backgroundColor = .black
+        enlargeView.addSubview(enlargeImageView)
+        
+        enlargeView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissEnlargeView)))
+        self.navigationController?.isNavigationBarHidden = true
+        self.view.addSubview(enlargeView)
+    }
+    
+    @objc func dismissEnlargeView(_ gesture:UITapGestureRecognizer){
+        self.navigationController?.isNavigationBarHidden = false
+        gesture.view?.removeFromSuperview()
+    }
+
+    @objc func performDelete(index:Int){
+        if self.deleteImgIndex.contains(index) {
+            print("remove from delete")
+            self.deleteImgIndex.remove(at: self.deleteImgIndex.firstIndex(of: index)!)
+        }else {
+            print("add to delete")
+            self.deleteImgIndex.append(index)
+        }
+        print("SELECTED ARRAY : \(self.deleteImgIndex)")
+    }
+    
     func uploadImg(img:UIImage) {
         SVProgressHUD.show()
         let imgData = img.jpegData(compressionQuality: 0.5)
@@ -114,7 +216,7 @@ class GallaryViewController: UIViewController {
             err in
             SVProgressHUD.dismiss()
             if err == nil {
-               // self.gallaryCollectionView.reloadData()
+                // self.gallaryCollectionView.reloadData()
                 self.downloadImg()
                 print("Success")
             }else {
@@ -125,35 +227,51 @@ class GallaryViewController: UIViewController {
     
     func  downloadImg() {
         SVProgressHUD.show()
-        //self.imagesArray.removeAll()
-        print("PAGE TOKEN : \(AppManager.shared.pageToken)")
-        FireStoreManager.shared.downloadGallaryImg(pageToken: AppManager.shared.pageToken != "" ? AppManager.shared.pageToken : nil ) { (urlArray) in
-            for singleUrl in urlArray {
-                do {
-                    let imgData = try Data(contentsOf: singleUrl)
-                    self.imagesArray.append(UIImage(data: imgData))
-                }catch {
-                    print("Error in fetching images.")
+        FireStoreManager.shared.downloadGallaryImgUrls { (imgUrlsStr, err) in
+            if err == nil && imgUrlsStr.count > 0  {
+                self.imgUrlsArray = imgUrlsStr
+                print("IMG URLS : \(self.imgUrlsArray)")
+                FireStoreManager.shared.downloadGallaryImg(pageToken: AppManager.shared.pageToken != "" ? AppManager.shared.pageToken : nil ) { (urlArray) in
+                    if urlArray.count > 0 {
+                        for singleUrl in urlArray {
+                            do {
+                                let imgData = try Data(contentsOf: singleUrl)
+                                self.imagesArray.append(UIImage(data: imgData))
+                            }catch {
+                                print("Error in fetching images.")
+                            }
+                            
+                            if self.imagesArray.count >= urlArray.count {
+                                self.gallaryCollectionView.reloadData()
+                            }
+                        }
+                    }
+                    SVProgressHUD.dismiss()
                 }
-                
-                if self.imagesArray.count >= urlArray.count {
-                    self.gallaryCollectionView.reloadData()
-                }
+            }else {
+                SVProgressHUD.dismiss()
             }
-            SVProgressHUD.dismiss()
         }
     }
+    
 }
 
 extension GallaryViewController :UICollectionViewDelegate , UIScrollViewDelegate {
-    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if scrollView.contentOffset.y >= self.lastElementContentOffsets.y/3 {
             spinner.startAnimating()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
                 self.downloadImg()
                 self.spinner.stopAnimating()
             })
-    
+        } else {
+            print("Scrolling offset : \(scrollView.contentOffset.y)")
+            print("element offset : \(self.lastElementContentOffsets.y/2)")
+            print(" Not scrolling. ")
+        }
     }
+    
 }
 
 extension GallaryViewController : UICollectionViewDataSource {
@@ -170,13 +288,16 @@ extension GallaryViewController : UICollectionViewDataSource {
             }
         }
 
-        cell.layer.cornerRadius = 15.0
+        cell.layer.cornerRadius = 10.0
         cell.layer.borderColor = UIColor.lightGray.cgColor
         cell.layer.borderWidth = 0.7
   
         let imageView = UIImageView(image: imagesArray[indexPath.row])
         imageView.contentMode = .scaleAspectFit
+        imageView.alpha = self.deleteImgIndex.contains(indexPath.row) ? 0.5 : 1.0
+        cell.gallaryView.backgroundColor = .black
         cell.gallaryView.addSubview(imageView)
+        
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.topAnchor.constraint(equalTo: cell.gallaryView.topAnchor, constant: 0).isActive = true
         imageView.rightAnchor.constraint(equalTo: cell.gallaryView.rightAnchor, constant: 0).isActive = true
@@ -185,6 +306,18 @@ extension GallaryViewController : UICollectionViewDataSource {
         
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if self.isDeleteEnable == false {
+             self.showEnlargeImageAt(index: indexPath.row)
+        }else {
+            self.performDelete(index:indexPath.row)
+            DispatchQueue.main.async {
+                collectionView.reloadData()
+            }
+        }
+    }
+    
 }
 
 extension GallaryViewController:UICollectionViewDelegateFlowLayout{
@@ -211,9 +344,10 @@ extension GallaryViewController:UICollectionViewDelegateFlowLayout{
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-
+        if indexPath.item == self.imagesArray.count - 1 {
+            self.lastElementContentOffsets = cell.frame.origin
+        }
     }
-    
 }
 
 
