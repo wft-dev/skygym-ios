@@ -1626,7 +1626,7 @@ func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
                 }
             })
     }
-    
+
     func downloadGallaryImg(pageToken:String? = nil,handler:@escaping (([URL]) -> Void )) {
         var imgUrls : [URL] = []
         let pageHandler :(StorageListResult,Error?) ->Void = {
@@ -1650,11 +1650,19 @@ func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
             }
         }
         if pageToken != nil {
-            fireStorageRef.child("Gallary").list(withMaxResults: 5, pageToken:pageToken!, completion:pageHandler)
+            fireStorageRef.child("/Gallary").list(withMaxResults: 5, pageToken:pageToken!, completion:pageHandler)
         } else {
-            fireStorageRef.child("Gallary").list(withMaxResults: 5, completion: pageHandler)
+            fireStorageRef.child("/Gallary").list(withMaxResults: 5, completion: pageHandler)
         }
     }
+    
+//    func downloadGallaryImg(imgUrl:String,handler:@escaping ((URL?) -> Void )) {
+//        fireStorageRef.child(imgUrl).downloadURL { (imgURL, err) in
+//            if err == nil {
+//                handler(imgURL)
+//            }
+//        }
+//    }
     
     func deleteGallaryImages(urls:[String],handler:@escaping (Error?) -> Void) {
        var deletingUrls = urls

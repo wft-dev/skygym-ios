@@ -30,10 +30,10 @@ class GallaryViewController: UIViewController {
     var imagesArray:[UIImage?] = []
     var imgUrlsArray:[String] = []
     private let sectionInsets = UIEdgeInsets(
-    top: 35.0,
-    left: 20.0,
-    bottom: 35.0,
-    right: 20.0)
+    top: 5.0,
+    left: 5.0,
+    bottom: 5.0,
+    right: 5.0)
     
     private var imagePicker :UIImagePickerController = {
         return UIImagePickerController()
@@ -84,7 +84,12 @@ class GallaryViewController: UIViewController {
     let spinner = UIActivityIndicatorView()
     var lastElementContentOffsets:CGPoint = CGPoint(x: 0, y: 0)
     var isDeleteEnable:Bool = false
+    var isImgaeAddedOrDeleted:Bool = false
     var deleteImgIndex:[Int] = []
+    
+    var  imgIndex = 0
+    var  limit = 5
+    var  total = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -95,6 +100,7 @@ class GallaryViewController: UIViewController {
         gallaryCollectionView.register(FooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "MyFooterView")
         (gallaryCollectionView.collectionViewLayout as! UICollectionViewFlowLayout).footerReferenceSize = CGSize(width: gallaryCollectionView.bounds.width, height: 50)
         AppManager.shared.pageToken = ""
+        self.isImgaeAddedOrDeleted = false
         self.downloadImg()
     }
 
@@ -136,6 +142,7 @@ class GallaryViewController: UIViewController {
         if self.deleteImgIndex.count > 0 {
             for singleImgIndex in self.deleteImgIndex {
                 deletingImgUrlsArray.append(self.imgUrlsArray[singleImgIndex])
+                
             }
             
             FireStoreManager.shared.deleteGallaryImages(urls: deletingImgUrlsArray) { (err) in
@@ -145,6 +152,8 @@ class GallaryViewController: UIViewController {
                     AppManager.shared.pageToken = ""
                     self.imagesArray.removeAll()
                     self.imgUrlsArray.removeAll()
+                    self.isImgaeAddedOrDeleted = true
+                    
                     self.downloadImg()
                 }else {
                     print("\(err!)")
@@ -164,6 +173,7 @@ class GallaryViewController: UIViewController {
     }
     
     @objc func cancelSelection() {
+        self.isDeleteEnable = false
         self.deleteImgIndex.removeAll()
         self.gallaryCollectionView.reloadData()
         DispatchQueue.main.async {
@@ -200,13 +210,12 @@ class GallaryViewController: UIViewController {
 
     @objc func performDelete(index:Int){
         if self.deleteImgIndex.contains(index) {
-            print("remove from delete")
             self.deleteImgIndex.remove(at: self.deleteImgIndex.firstIndex(of: index)!)
+            
         }else {
-            print("add to delete")
             self.deleteImgIndex.append(index)
+           // print("DELETING IMAGE NAME : \(self.img [index])")
         }
-        print("SELECTED ARRAY : \(self.deleteImgIndex)")
     }
     
     func uploadImg(img:UIImage) {
@@ -216,7 +225,10 @@ class GallaryViewController: UIViewController {
             err in
             SVProgressHUD.dismiss()
             if err == nil {
-                // self.gallaryCollectionView.reloadData()
+//                AppManager.shared.pageToken = ""
+//                self.imagesArray.removeAll()
+//                self.imgUrlsArray.removeAll()
+                self.isImgaeAddedOrDeleted = true
                 self.downloadImg()
                 print("Success")
             }else {
@@ -226,34 +238,44 @@ class GallaryViewController: UIViewController {
     }
     
     func  downloadImg() {
-        SVProgressHUD.show()
-        FireStoreManager.shared.downloadGallaryImgUrls { (imgUrlsStr, err) in
-            if err == nil && imgUrlsStr.count > 0  {
-                self.imgUrlsArray = imgUrlsStr
-                print("IMG URLS : \(self.imgUrlsArray)")
-                FireStoreManager.shared.downloadGallaryImg(pageToken: AppManager.shared.pageToken != "" ? AppManager.shared.pageToken : nil ) { (urlArray) in
-                    if urlArray.count > 0 {
-                        for singleUrl in urlArray {
-                            do {
-                                let imgData = try Data(contentsOf: singleUrl)
-                                self.imagesArray.append(UIImage(data: imgData))
-                            }catch {
-                                print("Error in fetching images.")
-                            }
-                            
-                            if self.imagesArray.count >= urlArray.count {
-                                self.gallaryCollectionView.reloadData()
+        if self.imagesArray.count < self.imgUrlsArray.count || self.imagesArray.count == 0  || self.isImgaeAddedOrDeleted == true {
+            SVProgressHUD.show()
+            FireStoreManager.shared.downloadGallaryImgUrls { (imgUrlsStr, err) in
+                if err == nil && imgUrlsStr.count > 0  {
+                    self.imgUrlsArray = imgUrlsStr
+                    self.total = imgUrlsStr.count
+                    
+                    print("APP MANAGER : \(AppManager.shared.pageToken)")
+                    
+                    if AppManager.shared.pageToken == "" {
+                        self.imagesArray.removeAll()
+                    }
+                    
+                    FireStoreManager.shared.downloadGallaryImg(pageToken: AppManager.shared.pageToken != "" ? AppManager.shared.pageToken : nil ) { (urlArray) in
+                        if urlArray.count > 0 {
+                            for singleUrl in urlArray {
+                                do {
+                                    let imgData = try Data(contentsOf: singleUrl)
+                                    self.imagesArray.append(UIImage(data: imgData))
+                                }catch {
+                                    print("Error in fetching images.")
+                                }
+                                if self.imagesArray.count >= urlArray.count {
+                                    self.gallaryCollectionView.reloadData()
+                                }
                             }
                         }
+                        print("IMAGE ARRAY COUNT : \(self.imagesArray.count)")
+                         print("APP MANAGER Now : \(AppManager.shared.pageToken) ")
+                        self.isImgaeAddedOrDeleted = false
+                        SVProgressHUD.dismiss()
                     }
+                }else {
                     SVProgressHUD.dismiss()
                 }
-            }else {
-                SVProgressHUD.dismiss()
             }
         }
     }
-    
 }
 
 extension GallaryViewController :UICollectionViewDelegate , UIScrollViewDelegate {
@@ -262,6 +284,10 @@ extension GallaryViewController :UICollectionViewDelegate , UIScrollViewDelegate
         if scrollView.contentOffset.y >= self.lastElementContentOffsets.y/3 {
             spinner.startAnimating()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
+                if self.imgUrlsArray.count < self.total {
+                    self.imgIndex = self.imgUrlsArray.count
+                    self.limit = self.imgIndex + 5
+                }
                 self.downloadImg()
                 self.spinner.stopAnimating()
             })
@@ -288,14 +314,14 @@ extension GallaryViewController : UICollectionViewDataSource {
             }
         }
 
-        cell.layer.cornerRadius = 10.0
-        cell.layer.borderColor = UIColor.lightGray.cgColor
-        cell.layer.borderWidth = 0.7
+//        cell.layer.cornerRadius = 10.0
+//        cell.layer.borderColor = UIColor.lightGray.cgColor
+//        cell.layer.borderWidth = 0.7
   
         let imageView = UIImageView(image: imagesArray[indexPath.row])
         imageView.contentMode = .scaleAspectFit
         imageView.alpha = self.deleteImgIndex.contains(indexPath.row) ? 0.5 : 1.0
-        cell.gallaryView.backgroundColor = .black
+       // cell.gallaryView.backgroundColor = .black
         cell.gallaryView.addSubview(imageView)
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -322,7 +348,7 @@ extension GallaryViewController : UICollectionViewDataSource {
 
 extension GallaryViewController:UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 150, height: 150)
+        return CGSize(width: 100, height: 100)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -332,6 +358,10 @@ extension GallaryViewController:UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return sectionInsets.left
     }
+    
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+//        return sectionInsets.left
+//    }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionFooter {
