@@ -337,3 +337,10 @@ enum PaymentResult {
   case success
   case failure(Error)
 }
+
+
+
+struct GallaryImg {
+    var timeStamp:TimeInterval
+    var url:URL
+}

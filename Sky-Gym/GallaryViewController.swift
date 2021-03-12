@@ -136,25 +136,28 @@ class GallaryViewController: UIViewController {
         AppManager.shared.appDelegate.swRevealVC.revealToggle(self)
     }
     
-    @objc func deleteImages(){
+    @objc func deleteImages() {
         SVProgressHUD.show()
         var deletingImgUrlsArray : [String] = []
         if self.deleteImgIndex.count > 0 {
             for singleImgIndex in self.deleteImgIndex {
                 deletingImgUrlsArray.append(self.imgUrlsArray[singleImgIndex])
-                
             }
             
             FireStoreManager.shared.deleteGallaryImages(urls: deletingImgUrlsArray) { (err) in
                 SVProgressHUD.dismiss()
                 if err == nil {
                     print("Success")
+                    self.isImgaeAddedOrDeleted = false
+                    self.isDeleteEnable = false
                     AppManager.shared.pageToken = ""
                     self.imagesArray.removeAll()
                     self.imgUrlsArray.removeAll()
-                    self.isImgaeAddedOrDeleted = true
-                    
-                    self.downloadImg()
+                    self.deleteImgIndex.removeAll()
+                    DispatchQueue.main.async {
+                        self.setGallaryNavigationBar()
+                        self.downloadImg()
+                    }
                 }else {
                     print("\(err!)")
                     print("Try again ")
@@ -189,7 +192,7 @@ class GallaryViewController: UIViewController {
     }
     
     @objc func showEnlargeImageAt(index:Int){
-        let enlargeImageView = UIImageView(image: self.imagesArray[index] )
+        let enlargeImageView = UIImageView(image: self.imagesArray[index])
         enlargeImageView.contentMode = .scaleAspectFit
         let enlargeView = UIView()
         
@@ -228,6 +231,7 @@ class GallaryViewController: UIViewController {
 //                AppManager.shared.pageToken = ""
 //                self.imagesArray.removeAll()
 //                self.imgUrlsArray.removeAll()
+//                self.deleteImgIndex.removeAll()
                 self.isImgaeAddedOrDeleted = true
                 self.downloadImg()
                 print("Success")
@@ -243,20 +247,18 @@ class GallaryViewController: UIViewController {
             FireStoreManager.shared.downloadGallaryImgUrls { (imgUrlsStr, err) in
                 if err == nil && imgUrlsStr.count > 0  {
                     self.imgUrlsArray = imgUrlsStr
-                    self.total = imgUrlsStr.count
-                    
-                    print("APP MANAGER : \(AppManager.shared.pageToken)")
-                    
                     if AppManager.shared.pageToken == "" {
                         self.imagesArray.removeAll()
                     }
                     
                     FireStoreManager.shared.downloadGallaryImg(pageToken: AppManager.shared.pageToken != "" ? AppManager.shared.pageToken : nil ) { (urlArray) in
+                        
                         if urlArray.count > 0 {
+                           // let uniqueArray = url
                             for singleUrl in urlArray {
                                 do {
-                                    let imgData = try Data(contentsOf: singleUrl)
-                                    self.imagesArray.append(UIImage(data: imgData))
+                                    let imgData = try Data(contentsOf: singleUrl.url)
+                                      self.imagesArray.append(UIImage(data: imgData))
                                 }catch {
                                     print("Error in fetching images.")
                                 }
@@ -265,8 +267,6 @@ class GallaryViewController: UIViewController {
                                 }
                             }
                         }
-                        print("IMAGE ARRAY COUNT : \(self.imagesArray.count)")
-                         print("APP MANAGER Now : \(AppManager.shared.pageToken) ")
                         self.isImgaeAddedOrDeleted = false
                         SVProgressHUD.dismiss()
                     }
@@ -284,16 +284,10 @@ extension GallaryViewController :UICollectionViewDelegate , UIScrollViewDelegate
         if scrollView.contentOffset.y >= self.lastElementContentOffsets.y/3 {
             spinner.startAnimating()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
-                if self.imgUrlsArray.count < self.total {
-                    self.imgIndex = self.imgUrlsArray.count
-                    self.limit = self.imgIndex + 5
-                }
                 self.downloadImg()
                 self.spinner.stopAnimating()
             })
         } else {
-            print("Scrolling offset : \(scrollView.contentOffset.y)")
-            print("element offset : \(self.lastElementContentOffsets.y/2)")
             print(" Not scrolling. ")
         }
     }
@@ -313,15 +307,10 @@ extension GallaryViewController : UICollectionViewDataSource {
                 $0.removeFromSuperview()
             }
         }
-
-//        cell.layer.cornerRadius = 10.0
-//        cell.layer.borderColor = UIColor.lightGray.cgColor
-//        cell.layer.borderWidth = 0.7
-  
+        
         let imageView = UIImageView(image: imagesArray[indexPath.row])
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.alpha = self.deleteImgIndex.contains(indexPath.row) ? 0.5 : 1.0
-       // cell.gallaryView.backgroundColor = .black
         cell.gallaryView.addSubview(imageView)
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -329,7 +318,7 @@ extension GallaryViewController : UICollectionViewDataSource {
         imageView.rightAnchor.constraint(equalTo: cell.gallaryView.rightAnchor, constant: 0).isActive = true
         imageView.bottomAnchor.constraint(equalTo: cell.gallaryView.bottomAnchor, constant: 0).isActive = true
         imageView.leftAnchor.constraint(equalTo: cell.gallaryView.leftAnchor, constant: 0).isActive = true
-        
+
         return cell
     }
     
@@ -348,20 +337,17 @@ extension GallaryViewController : UICollectionViewDataSource {
 
 extension GallaryViewController:UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 100, height: 100)
+        let itemSize  = (view.frame.width-20)/3
+        return CGSize(width: itemSize, height: itemSize)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
      return sectionInsets
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return sectionInsets.left
     }
-    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-//        return sectionInsets.left
-//    }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionFooter {
@@ -378,8 +364,8 @@ extension GallaryViewController:UICollectionViewDelegateFlowLayout{
             self.lastElementContentOffsets = cell.frame.origin
         }
     }
+    
 }
-
 
 extension GallaryViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
