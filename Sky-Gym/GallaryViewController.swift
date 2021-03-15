@@ -29,6 +29,7 @@ class GallaryViewController: UIViewController {
     @IBOutlet weak var gallaryCollectionView: UICollectionView!
     var imagesArray:[UIImage?] = []
     var imgUrlsArray:[String] = []
+    var urlArray:[URL] = []
     private let sectionInsets = UIEdgeInsets(
     top: 5.0,
     left: 5.0,
@@ -257,8 +258,11 @@ class GallaryViewController: UIViewController {
                            // let uniqueArray = url
                             for singleUrl in urlArray {
                                 do {
-                                    let imgData = try Data(contentsOf: singleUrl.url)
-                                      self.imagesArray.append(UIImage(data: imgData))
+                                    if self.urlArray.contains(singleUrl.url) == false {
+                                        let imgData = try Data(contentsOf: singleUrl.url)
+                                          self.imagesArray.append(UIImage(data: imgData))
+                                    }
+
                                 }catch {
                                     print("Error in fetching images.")
                                 }
