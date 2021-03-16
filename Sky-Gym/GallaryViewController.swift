@@ -33,7 +33,7 @@ class GallaryViewController: UIViewController {
     private let sectionInsets = UIEdgeInsets(
     top: 5.0,
     left: 5.0,
-    bottom: 5.0,
+    bottom: 20.0,
     right: 5.0)
     
     private var imagePicker :UIImagePickerController = {
@@ -81,6 +81,12 @@ class GallaryViewController: UIViewController {
         cancelBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         return cancelBtn
     }()
+    
+    private var refreshController:UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.attributedTitle = NSAttributedString(string: "Reloading images", attributes: [NSAttributedString.Key.foregroundColor:UIColor.black])
+        return refreshControl
+    }()
 
     let spinner = UIActivityIndicatorView()
     var lastElementContentOffsets:CGPoint = CGPoint(x: 0, y: 0)
@@ -98,13 +104,22 @@ class GallaryViewController: UIViewController {
         gallaryCollectionView.delegate = self
         gallaryCollectionView.dataSource = self
         imagePicker.delegate = self
+        refreshController.addTarget(self, action: #selector(refresh), for: .valueChanged)
         gallaryCollectionView.register(FooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "MyFooterView")
         (gallaryCollectionView.collectionViewLayout as! UICollectionViewFlowLayout).footerReferenceSize = CGSize(width: gallaryCollectionView.bounds.width, height: 50)
         AppManager.shared.pageToken = ""
         self.isImgaeAddedOrDeleted = false
+        self.gallaryCollectionView.refreshControl = refreshController
         self.downloadImg()
     }
 
+    
+    @objc func refresh() {
+        refreshController.beginRefreshing()
+        self.downloadImg()
+        refreshController.endRefreshing()
+    }
+    
     func setGallaryNavigationBar()  {
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
@@ -129,8 +144,11 @@ class GallaryViewController: UIViewController {
         let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 20, height: 10))
         let rightstackView = UIStackView(arrangedSubviews: [selectBtn,rightSpaceBtn,addBtn])
         
-        navigationItem.setRightBarButton(UIBarButtonItem(customView: rightstackView), animated: true)
-        navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView), animated: true)
+        if AppManager.shared.loggedInRole == LoggedInRole.Admin {
+            navigationItem.setRightBarButton(UIBarButtonItem(customView: rightstackView), animated: true)
+        }
+        
+    	navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView), animated: true)
     }
     
     @objc func menuChange(){
@@ -149,11 +167,17 @@ class GallaryViewController: UIViewController {
                 SVProgressHUD.dismiss()
                 if err == nil {
                     print("Success")
-                    self.isImgaeAddedOrDeleted = false
+                    self.isImgaeAddedOrDeleted = true
                     self.isDeleteEnable = false
-                    AppManager.shared.pageToken = ""
-                    self.imagesArray.removeAll()
-                    self.imgUrlsArray.removeAll()
+                    print("IMAGE COUNT : \(String(describing: self.imagesArray.firstIndex(of: self.imagesArray.last!)))")
+                    
+                    for delImgIndex in self.deleteImgIndex {
+                        print("DELETING IMAGE COUNT : \(delImgIndex)")
+                        self.imagesArray.remove(at: delImgIndex)
+                    }
+//                    AppManager.shared.pageToken = ""
+//                    self.imagesArray.removeAll()
+//                    self.imgUrlsArray.removeAll()
                     self.deleteImgIndex.removeAll()
                     DispatchQueue.main.async {
                         self.setGallaryNavigationBar()
@@ -161,7 +185,7 @@ class GallaryViewController: UIViewController {
                     }
                 }else {
                     print("\(err!)")
-                    print("Try again ")
+                    print("Try again")
                 }
             }
         }
@@ -229,10 +253,10 @@ class GallaryViewController: UIViewController {
             err in
             SVProgressHUD.dismiss()
             if err == nil {
-//                AppManager.shared.pageToken = ""
-//                self.imagesArray.removeAll()
-//                self.imgUrlsArray.removeAll()
-//                self.deleteImgIndex.removeAll()
+//              AppManager.shared.pageToken = ""
+//              self.imagesArray.removeAll()
+                self.imgUrlsArray.removeAll()
+                self.deleteImgIndex.removeAll()
                 self.isImgaeAddedOrDeleted = true
                 self.downloadImg()
                 print("Success")
@@ -255,14 +279,13 @@ class GallaryViewController: UIViewController {
                     FireStoreManager.shared.downloadGallaryImg(pageToken: AppManager.shared.pageToken != "" ? AppManager.shared.pageToken : nil ) { (urlArray) in
                         
                         if urlArray.count > 0 {
-                           // let uniqueArray = url
                             for singleUrl in urlArray {
                                 do {
                                     if self.urlArray.contains(singleUrl.url) == false {
+                                        self.urlArray.append(singleUrl.url)
                                         let imgData = try Data(contentsOf: singleUrl.url)
-                                          self.imagesArray.append(UIImage(data: imgData))
+                                        self.imagesArray.append(UIImage(data: imgData))
                                     }
-
                                 }catch {
                                     print("Error in fetching images.")
                                 }
@@ -270,6 +293,8 @@ class GallaryViewController: UIViewController {
                                     self.gallaryCollectionView.reloadData()
                                 }
                             }
+                        }else {
+                            self.gallaryCollectionView.reloadData()
                         }
                         self.isImgaeAddedOrDeleted = false
                         SVProgressHUD.dismiss()
@@ -306,7 +331,7 @@ extension GallaryViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gallaryPhotoCell", for: indexPath) as! GallaryCollectionCell
         
-         let _ = cell.gallaryView.subviews.map {
+        let _ = cell.gallaryView.subviews.map {
             if $0.isKind(of: UIImageView.self) {
                 $0.removeFromSuperview()
             }

@@ -72,7 +72,7 @@ extension MenuItemsViewController {
         case .Admin:
             array = ["Dashboard","Member","Trainer","Membership Plan","Visitors","Profile","Events","Gallary","Logout"]
         case .Trainer :
-            array = ["Dashboard","Gym Info","Home", "Member","Membership Plan","Profile","Visitors","Events","Logout"]
+            array = ["Dashboard","Gym Info","Home", "Member","Membership Plan","Profile","Visitors","Events","Gallary" ,"Logout"]
             if AppManager.shared.trainerVisitorPermission == false  {
             array.remove(at: 6)
             }
@@ -80,7 +80,7 @@ extension MenuItemsViewController {
                 array.remove(at: 3)
             }
         case .Member :
-            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events","Logout"]
+            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events", "Gallary" ,"Logout"]
         }
         return array
     }
@@ -166,10 +166,12 @@ extension MenuItemsViewController {
             self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: eventVC), animated: true)
             break
         case   memberIndex == 3 && visitorIndex == 6  ? 8 : visitorIndex == 6 || memberIndex == 3 ? 7 : 6 :
-            self.appDelgate?.swRevealVC.revealToggle(animated: true)
-            self.logOut()
+            let gallaryVC = self.storyBoard.instantiateViewController(withIdentifier: "gallaryVC") as! GallaryViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gallaryVC), animated: true)
             break
         default:
+            self.appDelgate?.swRevealVC.revealToggle(animated: true)
+            self.logOut()
             break
         }
     }
@@ -201,10 +203,12 @@ extension MenuItemsViewController {
             self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: eventsVC), animated: true)
             break
         case 6:
+            let gallaryVC = self.storyBoard.instantiateViewController(withIdentifier: "gallaryVC") as! GallaryViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gallaryVC), animated: true)
+            break
+        default:
             self.appDelgate?.swRevealVC.revealToggle(animated: true)
             self.logOut()
-        break
-        default:
             break
         }
     }

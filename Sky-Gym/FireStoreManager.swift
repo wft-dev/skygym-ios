@@ -1633,29 +1633,33 @@ func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
             (result,err) in
             if err == nil{
                 print("RESULT IS : \(result.items.count)")
-               // if let token = result.pageToken {
-                AppManager.shared.pageToken = result.pageToken!
+                if let token = result.pageToken {
+                AppManager.shared.pageToken = token
                 print("token is : \(AppManager.shared.pageToken)")
-              //  }
-                for singleItem in result.items{
-                    singleItem.getMetadata { (metaData, err) in
-                        if err == nil {
-                           let timeStamp = metaData?.timeCreated?.timeIntervalSince1970
-                            //print("createdTimeStamp : \(timeStamp!) , date is : \(metaData?.timeCreated)")
-                            singleItem.downloadURL { (imgURL, err) in
-                                if err == nil {
-                                    imgUrls.append(GallaryImg(timeStamp: timeStamp!, url: imgURL!))
-                                    if imgUrls.count == result.items.count {
-                                       let imgUrlArray =  imgUrls.sorted { (firstImg, secondImg) -> Bool in
-                                        return firstImg.timeStamp < secondImg.timeStamp
+                }
+                if result.items.count > 0 {
+                    for singleItem in result.items{
+                        singleItem.getMetadata { (metaData, err) in
+                            if err == nil {
+                                let timeStamp = metaData?.timeCreated?.timeIntervalSince1970
+                                //print("createdTimeStamp : \(timeStamp!) , date is : \(metaData?.timeCreated)")
+                                singleItem.downloadURL { (imgURL, err) in
+                                    if err == nil {
+                                        imgUrls.append(GallaryImg(timeStamp: timeStamp!, url: imgURL!))
+                                        if imgUrls.count == result.items.count {
+                                            let imgUrlArray =  imgUrls.sorted { (firstImg, secondImg) -> Bool in
+                                                return firstImg.timeStamp < secondImg.timeStamp
+                                            }
+                                            // print("SORTED ARRAY : \(imgUrlArray)")
+                                            handler(imgUrlArray)
                                         }
-                                       // print("SORTED ARRAY : \(imgUrlArray)")
-                                        handler(imgUrlArray)
                                     }
                                 }
                             }
                         }
                     }
+                }else {
+                    handler([])
                 }
             }else {
                 handler([])
@@ -1664,7 +1668,7 @@ func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
         if pageToken != nil {
             fireStorageRef.child("/Gallary").list(withMaxResults: 5, pageToken:pageToken!, completion:pageHandler)
         } else {
-            fireStorageRef.child("/Gallary").list(withMaxResults: 15, completion: pageHandler)
+            fireStorageRef.child("/Gallary").list(withMaxResults: 16, completion: pageHandler)
         }
     }
     
