@@ -23,7 +23,6 @@ class FooterView: UICollectionReusableView {
     }
 }
 
-
 class GallaryViewController: UIViewController {
 
     @IBOutlet weak var gallaryCollectionView: UICollectionView!
@@ -92,6 +91,7 @@ class GallaryViewController: UIViewController {
     var lastElementContentOffsets:CGPoint = CGPoint(x: 0, y: 0)
     var isDeleteEnable:Bool = false
     var isImgaeAddedOrDeleted:Bool = false
+    var isRefreshing:Bool = false
     var deleteImgIndex:[Int] = []
     
     var  imgIndex = 0
@@ -113,8 +113,8 @@ class GallaryViewController: UIViewController {
         self.downloadImg()
     }
 
-    
     @objc func refresh() {
+        self.isRefreshing = true
         refreshController.beginRefreshing()
         self.downloadImg()
         refreshController.endRefreshing()
@@ -147,7 +147,6 @@ class GallaryViewController: UIViewController {
         if AppManager.shared.loggedInRole == LoggedInRole.Admin {
             navigationItem.setRightBarButton(UIBarButtonItem(customView: rightstackView), animated: true)
         }
-        
     	navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView), animated: true)
     }
     
@@ -169,20 +168,14 @@ class GallaryViewController: UIViewController {
                     print("Success")
                     self.isImgaeAddedOrDeleted = true
                     self.isDeleteEnable = false
-                    print("IMAGE COUNT : \(String(describing: self.imagesArray.firstIndex(of: self.imagesArray.last!)))")
+                    print("last image index :  \(self.imagesArray.endIndex)")
                     
-                    for delImgIndex in self.deleteImgIndex {
-                        print("DELETING IMAGE COUNT : \(delImgIndex)")
-                        self.imagesArray.remove(at: delImgIndex)
-                    }
-//                    AppManager.shared.pageToken = ""
-//                    self.imagesArray.removeAll()
-//                    self.imgUrlsArray.removeAll()
+                    self.imagesArray = self.imagesArray.enumerated().filter({ !self.deleteImgIndex.contains($0.0) }).map { $0.1 }
+                    
                     self.deleteImgIndex.removeAll()
-                    DispatchQueue.main.async {
-                        self.setGallaryNavigationBar()
-                        self.downloadImg()
-                    }
+                    self.setGallaryNavigationBar()
+                    self.downloadImg()
+
                 }else {
                     print("\(err!)")
                     print("Try again")
@@ -197,6 +190,8 @@ class GallaryViewController: UIViewController {
             self.navigationItem.titleView = nil
             self.navigationItem.setRightBarButton(UIBarButtonItem(customView: self.deleteBtn), animated: true)
             self.navigationItem.setLeftBarButton(UIBarButtonItem(customView: self.cancelBtn), animated: true)
+            self.deleteBtn.isEnabled = false
+            self.deleteBtn.alpha = 0.4
         }
     }
     
@@ -237,6 +232,7 @@ class GallaryViewController: UIViewController {
     }
 
     @objc func performDelete(index:Int){
+        
         if self.deleteImgIndex.contains(index) {
             self.deleteImgIndex.remove(at: self.deleteImgIndex.firstIndex(of: index)!)
             
@@ -244,6 +240,12 @@ class GallaryViewController: UIViewController {
             self.deleteImgIndex.append(index)
            // print("DELETING IMAGE NAME : \(self.img [index])")
         }
+        
+        let count = self.deleteImgIndex.count
+        
+        self.deleteBtn.isEnabled = count > 0 ? true : false
+        self.deleteBtn.alpha = count > 0 ? 1.0 : 0.4
+        
     }
     
     func uploadImg(img:UIImage) {
@@ -253,8 +255,6 @@ class GallaryViewController: UIViewController {
             err in
             SVProgressHUD.dismiss()
             if err == nil {
-//              AppManager.shared.pageToken = ""
-//              self.imagesArray.removeAll()
                 self.imgUrlsArray.removeAll()
                 self.deleteImgIndex.removeAll()
                 self.isImgaeAddedOrDeleted = true
@@ -272,11 +272,7 @@ class GallaryViewController: UIViewController {
             FireStoreManager.shared.downloadGallaryImgUrls { (imgUrlsStr, err) in
                 if err == nil && imgUrlsStr.count > 0  {
                     self.imgUrlsArray = imgUrlsStr
-                    if AppManager.shared.pageToken == "" {
-                        self.imagesArray.removeAll()
-                    }
-                    
-                    FireStoreManager.shared.downloadGallaryImg(pageToken: AppManager.shared.pageToken != "" ? AppManager.shared.pageToken : nil ) { (urlArray) in
+                    FireStoreManager.shared.downloadGallaryImg(pageToken: AppManager.shared.pageToken != "" ? AppManager.shared.pageToken : nil) { (urlArray) in
                         
                         if urlArray.count > 0 {
                             for singleUrl in urlArray {
@@ -289,8 +285,9 @@ class GallaryViewController: UIViewController {
                                 }catch {
                                     print("Error in fetching images.")
                                 }
-                                if self.imagesArray.count >= urlArray.count {
+                                if self.imagesArray.count >= urlArray.count || self.isRefreshing == true{
                                     self.gallaryCollectionView.reloadData()
+                                    self.isRefreshing = false
                                 }
                             }
                         }else {

@@ -30,6 +30,7 @@
 		4249C3AA251B693800DC9AE0 /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4249C3A9251B693800DC9AE0 /* Poppins-SemiBold.ttf */; };
 		4249C3AC251B695300DC9AE0 /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4249C3AB251B695300DC9AE0 /* Poppins-Medium.ttf */; };
 		4249C3AE251B6BAA00DC9AE0 /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4249C3AD251B6BAA00DC9AE0 /* Poppins-Bold.ttf */; };
+		4249E33826022AAA009BCFD7 /* GymVideosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249E33726022AAA009BCFD7 /* GymVideosViewController.swift */; };
 		424BA43125D121F0000F1B1B /* ProfileAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424BA43025D121F0000F1B1B /* ProfileAdminViewController.swift */; };
 		4259DC1D252311EF00F08FA6 /* MemberAndTrainerDetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */; };
 		4259DC1F2523121C00F08FA6 /* MemberAndTrainerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */; };
@@ -86,6 +87,7 @@
 		4249C3A9251B693800DC9AE0 /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
 		4249C3AB251B695300DC9AE0 /* Poppins-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Medium.ttf"; sourceTree = "<group>"; };
 		4249C3AD251B6BAA00DC9AE0 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Bold.ttf"; sourceTree = "<group>"; };
+		4249E33726022AAA009BCFD7 /* GymVideosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymVideosViewController.swift; sourceTree = "<group>"; };
 		424BA43025D121F0000F1B1B /* ProfileAdminViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileAdminViewController.swift; sourceTree = "<group>"; };
 		4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemberAndTrainerDetailView.xib; sourceTree = "<group>"; };
 		4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAndTrainerDetailView.swift; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 				423EB0DD25F2007A0094AA0B /* StripeManager.swift */,
 				423EB0DF25F215530094AA0B /* CardPaymentViewController.swift */,
 				42434EFD25F6295300543396 /* GallaryViewController.swift */,
+				4249E33726022AAA009BCFD7 /* GymVideosViewController.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -356,6 +359,7 @@
 				4231BF9A25347328007EFBBF /* ViewEventScreenViewController.swift in Sources */,
 				42A407A5251C78570087B02F /* AppManager.swift in Sources */,
 				4259DC1F2523121C00F08FA6 /* MemberAndTrainerDetailView.swift in Sources */,
+				4249E33826022AAA009BCFD7 /* GymVideosViewController.swift in Sources */,
 				425E40D32599F0DB0052401F /* TrainerProfileViewController.swift in Sources */,
 				42D13392252F0ED500BA7EE5 /* TrainerEditScreenViewController.swift in Sources */,
 				4231BF98253458A9007EFBBF /* ListOfEventsViewController.swift in Sources */,

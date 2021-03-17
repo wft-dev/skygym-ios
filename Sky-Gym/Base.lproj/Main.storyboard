@@ -11869,7 +11869,68 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KI6-yp-hvC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="15804" y="1010"/>
+            <point key="canvasLocation" x="15656" y="1010"/>
+        </scene>
+        <!--Gym Videos View Controller-->
+        <scene sceneID="C2D-Tk-V0A">
+            <objects>
+                <viewController storyboardIdentifier="gymVideoVC" id="fkH-WD-RGb" customClass="GymVideosViewController" customModule="Sky_Gym" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wpr-U5-72U">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="uxd-z1-0Bu">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="hgK-UW-s5g">
+                                    <size key="itemSize" width="100" height="100"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="gymVideoCell" id="VZL-iI-mtq" customClass="GymVideoCollectionCell" customModule="Sky_Gym" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="sPm-HV-QtD">
+                                            <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OpP-9L-aqt">
+                                                    <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="OpP-9L-aqt" firstAttribute="top" secondItem="sPm-HV-QtD" secondAttribute="top" id="7Hv-JO-Ajt"/>
+                                                <constraint firstAttribute="trailing" secondItem="OpP-9L-aqt" secondAttribute="trailing" id="DaV-Gb-IF7"/>
+                                                <constraint firstItem="OpP-9L-aqt" firstAttribute="leading" secondItem="sPm-HV-QtD" secondAttribute="leading" id="v5R-Wb-S3D"/>
+                                                <constraint firstAttribute="bottom" secondItem="OpP-9L-aqt" secondAttribute="bottom" id="zkT-OZ-q5G"/>
+                                            </constraints>
+                                        </collectionViewCellContentView>
+                                        <connections>
+                                            <outlet property="gymVideoCellView" destination="OpP-9L-aqt" id="sLu-qk-NQg"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="qta-5E-vCq" firstAttribute="bottom" secondItem="uxd-z1-0Bu" secondAttribute="bottom" id="81F-aa-1F6"/>
+                            <constraint firstItem="uxd-z1-0Bu" firstAttribute="leading" secondItem="qta-5E-vCq" secondAttribute="leading" id="EWC-5N-v2c"/>
+                            <constraint firstItem="qta-5E-vCq" firstAttribute="trailing" secondItem="uxd-z1-0Bu" secondAttribute="trailing" id="i4l-T1-A3L"/>
+                            <constraint firstItem="uxd-z1-0Bu" firstAttribute="top" secondItem="qta-5E-vCq" secondAttribute="top" id="tZp-vk-tS1"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="qta-5E-vCq"/>
+                    </view>
+                    <connections>
+                        <outlet property="gymVideoCollectionView" destination="uxd-z1-0Bu" id="oMx-n5-0XW"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fUD-2m-jRa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="16348" y="1010"/>
         </scene>
         <!--View Event Screen View Controller-->
         <scene sceneID="h0E-MX-AV4">
