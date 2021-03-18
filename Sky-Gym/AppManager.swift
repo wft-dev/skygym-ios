@@ -195,6 +195,7 @@ class AppManager: NSObject {
     }
     
     var pageToken:String = ""
+    var videoPageToken:String = ""
     
     var chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
     

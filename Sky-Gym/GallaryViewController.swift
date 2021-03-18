@@ -317,7 +317,6 @@ extension GallaryViewController :UICollectionViewDelegate , UIScrollViewDelegate
             print(" Not scrolling. ")
         }
     }
-    
 }
 
 extension GallaryViewController : UICollectionViewDataSource {

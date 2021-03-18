@@ -1600,15 +1600,15 @@ class FireStoreManager: NSObject {
         let timeStamp = imgUrl.split(separator: "/").last!
         fireDB.collection("gallary").document("\(timeStamp)")
             .setData([
-            "imgUrl":imgUrl,
-            "timeStamp":timeStamp
-            ], completion: {
-                (err) in
-                handler(err)
-        })
+                "imgUrl":imgUrl,
+                "timeStamp":timeStamp
+                ], completion: {
+                    (err) in
+                    handler(err)
+            })
     }
     
-func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
+    func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
         var imgUrls : [String] = []
         fireDB.collection("gallary")
             .order(by: "timeStamp", descending: false)
@@ -1634,8 +1634,8 @@ func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
             if err == nil{
                 print("RESULT IS : \(result.items.count)")
                 if let token = result.pageToken {
-                AppManager.shared.pageToken = token
-                print("token is : \(AppManager.shared.pageToken)")
+                    AppManager.shared.pageToken = token
+                    print("token is : \(AppManager.shared.pageToken)")
                 }
                 if result.items.count > 0 {
                     for singleItem in result.items{
@@ -1671,31 +1671,7 @@ func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
             fireStorageRef.child("/Gallary").list(withMaxResults: 16, completion: pageHandler)
         }
     }
-    
-//    private func sortImgUrls(urlArray:[URL]) -> [URL] {
-//       // var sortedArray:[URL] =  []
-//        urlArray.sorted{
-//            (firstUrl,secondUrl )in
-//            let firstURLString  = firstUrl.absoluteString
-//            let secondURLString = secondUrl.absoluteString
-//
-//            let firstTimeStampStr = firstURLString.split(separator: "F").last?.split(separator: "?").first
-//            let secondTimeStampStr = secondURLString.split(separator: "F").last?.split(separator: "?").first
-//
-//        }
-//        return []
-//    }
-  
-//    func downloadGallaryImg(imgUrl:String,handler:@escaping ((URL?) -> Void )) {
-//        fireStorageRef.child(imgUrl).downloadURL { (imgURL, err) in
-//            if err == nil {
-//                handler(imgURL)
-//            }
-//    let urlStr = singleURl.absoluteString
-//    let timeStampStr = urlStr.split(separator: "F").last?.split(separator: "?").first
-//        }
-//    }
-    
+
     func deleteGallaryImages(urls:[String],handler:@escaping (Error?) -> Void) {
        var deletingUrls = urls
         deleteGallaryImageUrl(urls: urls) { (err) in
@@ -1734,6 +1710,138 @@ func downloadGallaryImgUrls(handler:@escaping ([String],Error?) -> Void) {
                     }
                 }
             }
+        }
+    }
+
+    func  uploadGymVideo(url:URL,handler:@escaping(Error?) -> Void ) {
+     let VideoRef = fireStorageRef.child("Videos/\(Date().timeIntervalSince1970)")
+     let videoUrl = VideoRef.fullPath
+
+        uploadGallaryVideoUrls(vidUrl: videoUrl) { (err) in
+            if err == nil {
+                VideoRef.putFile(from:url, metadata: nil) { (_, uploadErr) in
+                    if err == nil {
+                        handler(uploadErr)
+                    }
+                }
+            }
+        }
+    }
+        
+    private func uploadGallaryVideoUrls(vidUrl:String,handler:@escaping (Error?) -> Void ) {
+        let timeStamp = vidUrl.split(separator: "/").last!
+        fireDB.collection("videos").document("\(timeStamp)")
+            .setData([
+                "videoUrl":vidUrl,
+                "timeStamp":timeStamp
+                ], completion: {
+                    (err) in
+                    handler(err)
+            })
+    }
+
+    func downloadGymVideosUrls(handler:@escaping ([String],Error?) -> Void) {
+        var imgUrls : [String] = []
+        fireDB.collection("videos")
+            .order(by: "timeStamp", descending: false)
+            .getDocuments(completion: {
+                (querySnapshot,err) in
+                
+                if err == nil {
+                    for singleDoc in querySnapshot!.documents {
+                        let data = singleDoc.data()
+                        imgUrls.append(data["videoUrl"] as! String)
+                    }
+                    handler(imgUrls,nil)
+                }else {
+                    handler([],err)
+                }
+            })
+    }
+    
+    func downloadGymVideo(pageToken:String? = nil,handler:@escaping (([GymVideos]) -> Void )) {
+        var vidUrls : [GymVideos] = []
+        let pageHandler :(StorageListResult,Error?) ->Void = {
+            (result,err) in
+            if err == nil{
+                print("RESULT IS : \(result.items.count)")
+                if let token = result.pageToken {
+                    AppManager.shared.videoPageToken = token
+                    print("token is : \(AppManager.shared.videoPageToken)")
+                }
+                if result.items.count > 0 {
+                    for singleItem in result.items{
+                        singleItem.getMetadata { (metaData, err) in
+                            if err == nil {
+                                let timeStamp = metaData?.timeCreated?.timeIntervalSince1970
+                                //print("createdTimeStamp : \(timeStamp!) , date is : \(metaData?.timeCreated)")
+                                singleItem.downloadURL { (vidURL, err) in
+                                    if err == nil {
+                                        vidUrls.append(GymVideos(timeStamp: timeStamp!, url: vidURL!))
+                                        if vidUrls.count == result.items.count {
+                                            let vidUrlArray =  vidUrls.sorted { (firstVid, secondVid) -> Bool in
+                                                return firstVid.timeStamp < secondVid.timeStamp
+                                            }
+                                            // print("SORTED ARRAY : \(imgUrlArray)")
+                                            handler(vidUrlArray)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }else {
+                    handler([])
+                }
+            }else {
+                handler([])
+            }
+        }
+        if pageToken != nil {
+            fireStorageRef.child("/Videos").list(withMaxResults: 5, pageToken:pageToken!, completion:pageHandler)
+        } else {
+            fireStorageRef.child("/Videos").list(withMaxResults: 5, completion: pageHandler)
+        }
+    }
+    
+    private func deleteVideoUrl(urls:[String],handler:@escaping (Error?) -> Void) {
+        var deletingUrls = urls
+        
+        for singleUrl in deletingUrls {
+            let docUrl = singleUrl.split(separator: "/").last!
+            fireDB.collection("videos").document("\(docUrl)").delete { (err) in
+                
+                if err == nil {
+                    print("video url deleted.")
+                    deletingUrls.remove(at: deletingUrls.firstIndex(of: singleUrl)!)
+                    if deletingUrls.count <= 0 {
+                        handler(err)
+                    }
+                }
+            }
+        }
+    }
+    
+    func deleteVideos(urls:[String],handler:@escaping (Error?) -> Void) {
+        var deletingUrls = urls
+        deleteVideoUrl(urls: urls) { (err) in
+            if err == nil {
+                
+                for (index,singleUrl) in deletingUrls.enumerated() {
+                    print(" ===== ===>>>>>  \(singleUrl)")
+                    self.fireStorageRef.child("\(singleUrl)").delete { (err) in
+                        if err == nil {
+                            print("item delete.")
+                            deletingUrls.remove(at: deletingUrls.firstIndex(of: singleUrl)!)
+                            if deletingUrls.count <= 0 {
+                                handler(nil)
+                            }
+                        }else {
+                            handler(err)
+                        }
+                    }
+                }
+            } else { handler(err) }
         }
     }
     

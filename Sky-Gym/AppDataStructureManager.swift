@@ -344,3 +344,8 @@ struct GallaryImg {
     var timeStamp:TimeInterval
     var url:URL
 }
+
+struct GymVideos {
+    var timeStamp:TimeInterval
+    var url:URL?
+}

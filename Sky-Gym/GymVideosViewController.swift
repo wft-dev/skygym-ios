@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import AVKit
+import SVProgressHUD
+
 
 class GymVideoCollectionCell: UICollectionViewCell {
     @IBOutlet weak var gymVideoCellView: UIView!
@@ -14,9 +17,16 @@ class GymVideoCollectionCell: UICollectionViewCell {
 
 class GymVideosViewController: UIViewController {
     @IBOutlet weak var gymVideoCollectionView: UICollectionView!
-    var videoUrlArray:[Int] = []
+    var videoUrlArray:[UIImage] = []
+    var gymVideoUrlArrayStr:[String] = []
     var deleteVideoIndex:[Int] = []
+    var gymVideoUrlArray:[URL] = []
     var isDeleteEnable :Bool = false
+    var isImgaeAddedOrDeleted: Bool = false
+    var lastElementContentOffsets:CGPoint = .zero
+    var playBtnImg = UIImage(named: "play-button")
+    var playVideoVC = AVPlayerViewController()
+    let spinner = UIActivityIndicatorView()
 
     private let sectionInsets = UIEdgeInsets(
        top: 5.0,
@@ -75,15 +85,52 @@ class GymVideosViewController: UIViewController {
            refreshControl.attributedTitle = NSAttributedString(string: "Reloading images", attributes: [NSAttributedString.Key.foregroundColor:UIColor.black])
            return refreshControl
        }()
-
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setGymVideoNavigationBar()
-        self.videoUrlArray = [1,2,3,4,5,6]
         self.gymVideoCollectionView.dataSource = self
         self.gymVideoCollectionView.delegate = self
+        self.playVideoVC.delegate = self
+        refreshController.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        self.gymVideoCollectionView.refreshControl = self.refreshController
+        AppManager.shared.videoPageToken = ""
+        self.downloadGymVideos()
+    }
+        
+    func downloadGymVideos() {
+        print("video imgs array : \(videoUrlArray.count) , url string array : \(videoUrlArray.count) , url Array : \(gymVideoUrlArray.count)")
+        if self.videoUrlArray.count < self.gymVideoUrlArrayStr.count ||  self.videoUrlArray.count == 0 || self.isImgaeAddedOrDeleted == true {
+            SVProgressHUD.show()
+            FireStoreManager.shared.downloadGymVideosUrls { (vidUrlStr, err) in
+                if err == nil  && vidUrlStr.count  > 0 {
+                    self.gymVideoUrlArrayStr = vidUrlStr
+                    FireStoreManager.shared.downloadGymVideo(pageToken: AppManager.shared.videoPageToken != "" ? AppManager.shared.videoPageToken : nil) { (gymVideos) in
+                        if gymVideos.count > 0 {
+                            for singleGymVideo in gymVideos {
+                                guard let singleVideoUrl = singleGymVideo.url else  { return }
+                                if self.gymVideoUrlArray.contains(singleVideoUrl) == false {
+                                    self.gymVideoUrlArray.append(singleVideoUrl)
+                                    self.videoUrlArray.append(self.createVideoThumbnail(videoUrl: singleVideoUrl)!)
+                                }else {
+                                    SVProgressHUD.dismiss()
+                                }
+                                if self.videoUrlArray.count >= self.gymVideoUrlArrayStr.count {
+                                    self.gymVideoCollectionView.reloadData()
+                                    SVProgressHUD.dismiss()
+                                    self.isImgaeAddedOrDeleted = false
+                                    print("RELOADED")
+                                }
+                            }
+                        }else {
+                            SVProgressHUD.dismiss()
+                        }
+                    }
+                }else {
+                    SVProgressHUD.dismiss()
+                }
+            }
+        }
     }
     
        func setGymVideoNavigationBar()  {
@@ -116,10 +163,17 @@ class GymVideosViewController: UIViewController {
            navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView), animated: true)
        }
     
+    @objc func refresh() {
+        self.downloadGymVideos()
+        self.refreshController.endRefreshing()
+    }
+    
     @objc func addNewVideo() {
         imagePicker.allowsEditing = true
         imagePicker.modalPresentationStyle = .fullScreen
         imagePicker.sourceType = .photoLibrary
+        imagePicker.mediaTypes = ["public.movie"]
+        imagePicker.delegate = self
         present(imagePicker, animated: true, completion: nil)
     }
     
@@ -143,12 +197,85 @@ class GymVideosViewController: UIViewController {
         }
     }
     
-    
     @objc func menuChange() {  AppManager.shared.appDelegate.swRevealVC.revealToggle(self) }
-    
   
     @objc func deleteImages() {
-        print("delete image.")
+        SVProgressHUD.show()
+        var deletingImgUrlsArray : [String] = []
+        if self.deleteVideoIndex.count > 0 {
+            for singleImgIndex in self.deleteVideoIndex {
+                deletingImgUrlsArray.append(self.gymVideoUrlArrayStr[singleImgIndex])
+            }
+            
+            FireStoreManager.shared.deleteVideos(urls: deletingImgUrlsArray) { (err) in
+                SVProgressHUD.dismiss()
+                if err == nil {
+                    print("Success")
+                    self.isImgaeAddedOrDeleted = true
+                    self.isDeleteEnable = false
+                    
+                     print("deleted array count before : \(self.videoUrlArray.count)")
+                    
+                    self.videoUrlArray = self.videoUrlArray.enumerated().filter({ !self.deleteVideoIndex.contains($0.0) }).map { $0.1 }
+                    
+                    print("deleted array count  after: \(self.videoUrlArray.count)")
+                    
+                        self.deleteVideoIndex.removeAll()
+                        self.setGymVideoNavigationBar()
+                        self.downloadGymVideos()
+              
+                }else {
+                    print("\(err!)")
+                    print("Try again")
+                }
+            }
+        }
+    }
+    
+    func addVideoForDelete(index:Int)  {
+        if self.deleteVideoIndex.contains(index) {
+            self.deleteVideoIndex.remove(at: self.deleteVideoIndex.firstIndex(of: index)!)
+        }else {
+            self.deleteVideoIndex.append(index)
+        }
+        let deleteCount = self.deleteVideoIndex.count
+        self.deleteBtn.isEnabled = deleteCount > 0 ? true : false
+        self.deleteBtn.alpha = deleteCount > 0 ? 1.0 : 0.4
+    }
+    
+    func uploadVideo(videoUrl:URL) {
+        SVProgressHUD.show()
+        FireStoreManager.shared.uploadGymVideo(url: videoUrl) { (err) in
+            if err == nil {
+                print("VIDEO IS UPLOADED SUCCESSFULLY.")
+                self.isImgaeAddedOrDeleted = true
+                self.downloadGymVideos()
+                SVProgressHUD.dismiss()
+            }else {
+                SVProgressHUD.dismiss()
+                print("VIDEO IS NOT UPLOADED  SUCCESSFULLY.")
+            }
+        }
+    }
+    
+    func createVideoThumbnail(videoUrl:URL) -> UIImage? {
+        let videoAsset = AVAsset(url: videoUrl)
+        let imageGenerator = AVAssetImageGenerator(asset: videoAsset)
+        imageGenerator.appliesPreferredTrackTransform = true
+        
+        do{
+            let cgImg = try imageGenerator.copyCGImage(at: .zero, actualTime: nil)
+            return UIImage(cgImage: cgImg)
+        }catch {
+            print("ERROR IN CONVERTING THUMBNAIL IMAGE.")
+            return nil
+        }
+    }
+    
+    func playVideo(url:URL)  {
+        let player = AVPlayer(url: url)
+        self.playVideoVC.player = player
+        self.navigationController?.pushViewController(self.playVideoVC, animated: true)
     }
     
   }
@@ -168,11 +295,19 @@ extension GymVideosViewController  : UICollectionViewDataSource {
             }
         }
         
-        let imageView = UIImageView()
+        let imageView = UIImageView(image: self.videoUrlArray[indexPath.row])
         imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = .systemPink
-        //imageView.alpha = self.deleteImgIndex.contains(indexPath.row) ? 0.5 : 1.0
+        imageView.alpha = self.deleteVideoIndex.contains(indexPath.row) ? 0.5 : 1.0
+        let playBtnImgView = UIImageView(image: self.playBtnImg)
+        playBtnImgView.contentMode = .center
+        imageView.addSubview(playBtnImgView)
         cell.gymVideoCellView.addSubview(imageView)
+
+        playBtnImgView.translatesAutoresizingMaskIntoConstraints = false
+        playBtnImgView.topAnchor.constraint(equalTo: imageView.topAnchor, constant: 0).isActive = true
+        playBtnImgView.rightAnchor.constraint(equalTo: imageView.rightAnchor, constant: 0).isActive = true
+        playBtnImgView.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 0).isActive = true
+        playBtnImgView.leftAnchor.constraint(equalTo: imageView.leftAnchor, constant: 0).isActive = true
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.topAnchor.constraint(equalTo: cell.gymVideoCellView.topAnchor, constant: 0).isActive = true
@@ -184,12 +319,31 @@ extension GymVideosViewController  : UICollectionViewDataSource {
     }
 }
 
-extension GymVideosViewController : UICollectionViewDelegate{
+extension GymVideosViewController : UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if self.isDeleteEnable {
+            self.addVideoForDelete(index: indexPath.row)
+            self.gymVideoCollectionView.reloadData()
+        }else {
+             self.playVideo(url:self.gymVideoUrlArray[indexPath.row])
+        }
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if scrollView.contentOffset.y >= self.lastElementContentOffsets.y/3 {
+            spinner.startAnimating()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
+                self.downloadGymVideos()
+                self.spinner.stopAnimating()
+            })
+        } else {
+            print(" Not scrolling. ")
+        }
+    }
     
 }
 
-
-extension GymVideosViewController:UICollectionViewDelegateFlowLayout{
+extension GymVideosViewController:UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let itemSize  = (view.frame.width-20)/3
         return CGSize(width: itemSize, height: itemSize)
@@ -213,15 +367,13 @@ extension GymVideosViewController:UICollectionViewDelegateFlowLayout{
 //        return UICollectionReusableView()
 //    }
     
-//    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-//        if indexPath.item == self.imagesArray.count - 1 {
-//            self.lastElementContentOffsets = cell.frame.origin
-//        }
-//    }
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.item == self.videoUrlArray.count - 1 {
+            self.lastElementContentOffsets = cell.frame.origin
+        }
+    }
     
 }
-
-
 
 extension GymVideosViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -229,10 +381,16 @@ extension GymVideosViewController : UIImagePickerControllerDelegate, UINavigatio
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        guard let selectedImg = info[.editedImage] as? UIImage else {
+        guard let selectedVideoUrl = info[.mediaURL] as? URL else {
+            print("ERROR IN FETCHING VIDEO URL.")
             return
         }
-       // self.uploadImg(img: selectedImg)
+        self.uploadVideo(videoUrl: selectedVideoUrl)
         self.dismiss(animated: true, completion: nil)
     }
+}
+
+
+extension GymVideosViewController : AVPlayerViewControllerDelegate {
+    
 }
