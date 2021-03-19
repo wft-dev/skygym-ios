@@ -349,3 +349,9 @@ struct GymVideos {
     var timeStamp:TimeInterval
     var url:URL?
 }
+
+struct VideoList {
+    var videoImgae:UIImage
+    var ownerName:String
+    var ownerRole:String
+}

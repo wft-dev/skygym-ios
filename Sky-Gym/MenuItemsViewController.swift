@@ -122,7 +122,7 @@ extension MenuItemsViewController {
                 self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gallaryVC), animated: true)
                 break
         case 8 :
-            let gymVideoVC = self.storyBoard.instantiateViewController(withIdentifier: "gymVideoVC") as! GymVideosViewController
+            let gymVideoVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfVideosVC") as! ListOfVideosViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gymVideoVC), animated: true)
             break
         default:

@@ -1713,11 +1713,12 @@ class FireStoreManager: NSObject {
         }
     }
 
-    func  uploadGymVideo(url:URL,handler:@escaping(Error?) -> Void ) {
-     let VideoRef = fireStorageRef.child("Videos/\(Date().timeIntervalSince1970)")
+    func  uploadGymVideo(url:URL,role:Role,handler:@escaping(Error?) -> Void ) {
+        let path = role == .Admin ? "Videos/admin/\(Date().timeIntervalSince1970)" : "Videos/trainers/\(Date().timeIntervalSince1970)"
+     let VideoRef = fireStorageRef.child(path)
      let videoUrl = VideoRef.fullPath
 
-        uploadGallaryVideoUrls(vidUrl: videoUrl) { (err) in
+        uploadGallaryVideoUrls(role: role, vidUrl: videoUrl) { (err) in
             if err == nil {
                 VideoRef.putFile(from:url, metadata: nil) { (_, uploadErr) in
                     if err == nil {
@@ -1728,22 +1729,24 @@ class FireStoreManager: NSObject {
         }
     }
         
-    private func uploadGallaryVideoUrls(vidUrl:String,handler:@escaping (Error?) -> Void ) {
+    private func uploadGallaryVideoUrls(role:Role,vidUrl:String,handler:@escaping (Error?) -> Void ) {
         let timeStamp = vidUrl.split(separator: "/").last!
         fireDB.collection("videos").document("\(timeStamp)")
             .setData([
                 "videoUrl":vidUrl,
-                "timeStamp":timeStamp
+                "timeStamp":timeStamp,
+                "role" : role == .Admin ? "admin" : "trainer"
                 ], completion: {
                     (err) in
                     handler(err)
             })
     }
 
-    func downloadGymVideosUrls(handler:@escaping ([String],Error?) -> Void) {
+    func downloadGymVideosUrls(role:Role,handler:@escaping ([String],Error?) -> Void) {
+        let actualRole = role == .Admin ? "admin" : "trainer"
         var imgUrls : [String] = []
         fireDB.collection("videos")
-            .order(by: "timeStamp", descending: false)
+        .whereField("role", isEqualTo: actualRole)
             .getDocuments(completion: {
                 (querySnapshot,err) in
                 
@@ -1759,7 +1762,10 @@ class FireStoreManager: NSObject {
             })
     }
     
-    func downloadGymVideo(pageToken:String? = nil,handler:@escaping (([GymVideos]) -> Void )) {
+    func downloadGymVideo(pageToken:String? = nil,role:Role,handler:@escaping (([GymVideos]) -> Void )) {
+        
+        let path = role == .Admin ? "/Videos/admin" : "/Videos/trainers"
+        
         var vidUrls : [GymVideos] = []
         let pageHandler :(StorageListResult,Error?) ->Void = {
             (result,err) in
@@ -1798,18 +1804,20 @@ class FireStoreManager: NSObject {
             }
         }
         if pageToken != nil {
-            fireStorageRef.child("/Videos").list(withMaxResults: 5, pageToken:pageToken!, completion:pageHandler)
+            fireStorageRef.child(path).list(withMaxResults: 5, pageToken:pageToken!, completion:pageHandler)
         } else {
-            fireStorageRef.child("/Videos").list(withMaxResults: 5, completion: pageHandler)
+            fireStorageRef.child(path).list(withMaxResults: 5, completion: pageHandler)
         }
     }
     
-    private func deleteVideoUrl(urls:[String],handler:@escaping (Error?) -> Void) {
+    private func deleteVideoUrl(role:Role,urls:[String],handler:@escaping (Error?) -> Void) {
+      
         var deletingUrls = urls
         
         for singleUrl in deletingUrls {
             let docUrl = singleUrl.split(separator: "/").last!
-            fireDB.collection("videos").document("\(docUrl)").delete { (err) in
+            fireDB.collection("videos").document("\(docUrl)")
+                .delete { (err) in
                 
                 if err == nil {
                     print("video url deleted.")
@@ -1822,12 +1830,12 @@ class FireStoreManager: NSObject {
         }
     }
     
-    func deleteVideos(urls:[String],handler:@escaping (Error?) -> Void) {
+    func deleteVideos(role:Role,urls:[String],handler:@escaping (Error?) -> Void) {
         var deletingUrls = urls
-        deleteVideoUrl(urls: urls) { (err) in
+        deleteVideoUrl(role: role, urls: urls) { (err) in
             if err == nil {
                 
-                for (index,singleUrl) in deletingUrls.enumerated() {
+                for singleUrl in deletingUrls {
                     print(" ===== ===>>>>>  \(singleUrl)")
                     self.fireStorageRef.child("\(singleUrl)").delete { (err) in
                         if err == nil {
