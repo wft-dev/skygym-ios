@@ -338,8 +338,6 @@ enum PaymentResult {
   case failure(Error)
 }
 
-
-
 struct GallaryImg {
     var timeStamp:TimeInterval
     var url:URL
@@ -350,8 +348,15 @@ struct GymVideos {
     var url:URL?
 }
 
+struct VideoDocInfo {
+    var url:[String]
+    var role:String
+    var ownerID:String
+}
+
 struct VideoList {
     var videoImgae:UIImage
     var ownerName:String
     var ownerRole:String
+    var ownerID:String
 }

@@ -880,6 +880,10 @@ class AppManager: NSObject {
         return parentId
     }
     
+//    func  getListVideoStr(data:[String:String]) -> VideoList {
+//        return VideoList(videoImgae: UIImage(named: ""), ownerName: data["ownerName"], ownerRole: <#T##String#>, ownerID: <#T##String#>)
+//    }
+    
 }
 
 

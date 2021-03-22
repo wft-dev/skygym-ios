@@ -72,7 +72,8 @@ extension MenuItemsViewController {
         case .Admin:
             array = ["Dashboard","Member","Trainer","Membership Plan","Visitors","Profile","Events","Gallary","Gym Videos","Logout"]
         case .Trainer :
-            array = ["Dashboard","Gym Info","Home", "Member","Membership Plan","Profile","Visitors","Events","Gallary" ,"Logout"]
+            array = ["Dashboard","Gym Info","Home", "Member","Membership Plan","Profile","Visitors","Events","Gallary",
+                "Videos","Logout"]
             if AppManager.shared.trainerVisitorPermission == false  {
             array.remove(at: 6)
             }
@@ -80,7 +81,7 @@ extension MenuItemsViewController {
                 array.remove(at: 3)
             }
         case .Member :
-            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events", "Gallary" ,"Logout"]
+            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events", "Gallary","Videos" ,"Logout"]
         }
         return array
     }
@@ -172,6 +173,12 @@ extension MenuItemsViewController {
             let gallaryVC = self.storyBoard.instantiateViewController(withIdentifier: "gallaryVC") as! GallaryViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gallaryVC), animated: true)
             break
+            
+        case memberIndex == 3 && visitorIndex == 6 ? 9 :visitorIndex == 6 || memberIndex == 3 ? 8 : 7 :
+            let gymVideoVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfVideosVC") as! ListOfVideosViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gymVideoVC), animated: true)
+            break
+            
         default:
             self.appDelgate?.swRevealVC.revealToggle(animated: true)
             self.logOut()
@@ -208,6 +215,10 @@ extension MenuItemsViewController {
         case 6:
             let gallaryVC = self.storyBoard.instantiateViewController(withIdentifier: "gallaryVC") as! GallaryViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gallaryVC), animated: true)
+            break
+        case 7 :
+            let gymVideoVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfVideosVC") as! ListOfVideosViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gymVideoVC), animated: true)
             break
         default:
             self.appDelgate?.swRevealVC.revealToggle(animated: true)

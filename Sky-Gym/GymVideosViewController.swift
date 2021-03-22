@@ -17,7 +17,7 @@ class GymVideoCollectionCell: UICollectionViewCell {
 
 class GymVideosViewController: UIViewController {
     @IBOutlet weak var gymVideoCollectionView: UICollectionView!
-    @IBOutlet weak var videoSegment: UISegmentedControl!
+   // @IBOutlet weak var videoSegment: UISegmentedControl!
     
     var videoUrlArray:[UIImage] = []
     var gymVideoUrlArrayStr:[String] = []
@@ -31,7 +31,11 @@ class GymVideosViewController: UIViewController {
     let spinner = UIActivityIndicatorView()
     let bottomBarView = UIView()
     var bottomBarWidth:CGFloat = .zero
-    var  videoForRole : Role = .Admin
+    var videoForRole : Role = .Admin
+    var ownerId:String = ""
+    var ownerName:String  = ""
+    var role:String = ""
+    var loggedInID:String = ""
 
     private let sectionInsets = UIEdgeInsets(
        top: 5.0,
@@ -43,13 +47,13 @@ class GymVideosViewController: UIViewController {
            return UIImagePickerController()
        }()
        
-       private var menuBtn:UIButton = {
-           let menuBtn = UIButton()
-           menuBtn.setImage(UIImage(named: "icons8-menu-24"), for: .normal)
-           menuBtn.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
-           menuBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
-           menuBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
-           return menuBtn
+       private var leftBtn:UIButton = {
+           let leftBtn = UIButton()
+           leftBtn.setImage(UIImage(named: "left-arrow"), for: .normal)
+           leftBtn.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+           leftBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+           leftBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
+           return leftBtn
        }()
        
        private var addBtn :UIButton = {
@@ -93,67 +97,34 @@ class GymVideosViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.loggedInID = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminID : AppManager.shared.trainerID
         setGymVideoNavigationBar()
-        setVideoSegment()
         self.gymVideoCollectionView.dataSource = self
         self.gymVideoCollectionView.delegate = self
         self.playVideoVC.delegate = self
         refreshController.addTarget(self, action: #selector(refresh), for: .valueChanged)
         self.gymVideoCollectionView.refreshControl = self.refreshController
         AppManager.shared.videoPageToken = ""
-        self.downloadGymVideos(role: self.videoForRole)
+        self.videoForRole = self.role == "Admin" ? .Admin : .Trainer
+        self.downloadGymVideos(role: self.videoForRole, id:self.ownerId)
+        
     }
     
-    func setVideoSegment()  {
-        videoSegment.setTitle("Admin", forSegmentAt: 0)
-        videoSegment.setTitle("Trainers", forSegmentAt: 1)
-
-        if #available(iOS 13.0, *) {
-            videoSegment.setBackgroundImage(UIImage(), for: .normal, barMetrics: UIBarMetrics.default)
-            videoSegment.setDividerImage(UIImage(), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: UIBarMetrics.default)
-            videoSegment.selectedSegmentTintColor = .clear
-        } else {
-            videoSegment.backgroundColor = .clear
-            videoSegment.tintColor = .clear
-        }
-
-        videoSegment.setTitleTextAttributes([
-            NSAttributedString.Key.foregroundColor:UIColor.black,
-            NSAttributedString.Key.font:UIFont(name: "Poppins-Medium", size: 20)!
-        ], for: .normal)
-        videoSegment.setTitleTextAttributes([
-            NSAttributedString.Key.foregroundColor:UIColor(red: 204/255, green: 204/255, blue: 0/255, alpha: 1.0),
-            NSAttributedString.Key.font:UIFont(name: "Poppins-Medium", size: 20)!
-        ], for: .selected)
-        bottomBarWidth = videoSegment.frame.width / CGFloat(videoSegment.numberOfSegments)
-        bottomBarView.backgroundColor = UIColor(red: 204/255, green: 204/255, blue: 0/255, alpha: 1.0)
-        view.addSubview(bottomBarView)
-        bottomBarView.translatesAutoresizingMaskIntoConstraints = false
-        
-        bottomBarView.topAnchor.constraint(equalTo: videoSegment.bottomAnchor, constant: 0).isActive = true
-        bottomBarView.heightAnchor.constraint(equalToConstant: 5).isActive = true
-        bottomBarView.leftAnchor.constraint(equalTo: videoSegment.leftAnchor, constant: 0).isActive = true
-       // bottomBarView.widthAnchor.constraint(equalToConstant: bottomBarWidth).isActive = true
-        bottomBarView.widthAnchor.constraint(equalTo: videoSegment.widthAnchor, multiplier: 1 / CGFloat(videoSegment.numberOfSegments)).isActive = true
-
-       // videoSegment.
-        videoSegment.addTarget(self, action: #selector(changeVideos), for: .valueChanged)
-    }
-        
-    func downloadGymVideos(role:Role) {
+    func downloadGymVideos(role:Role,id:String) {
         if self.videoUrlArray.count < self.gymVideoUrlArrayStr.count ||  self.videoUrlArray.count == 0 ||  self.isImgaeAddedOrDeleted == true {
             SVProgressHUD.show()
-            FireStoreManager.shared.downloadGymVideosUrls(role: self.videoForRole) { (vidUrlStr, err) in
+            FireStoreManager.shared.downloadGymVideosUrls(id:self.ownerId) { (vidUrlStr, err) in
                 if err == nil  && vidUrlStr.count  > 0 {
                     self.gymVideoUrlArrayStr = vidUrlStr
-                    FireStoreManager.shared.downloadGymVideo(pageToken: AppManager.shared.videoPageToken != "" ? AppManager.shared.videoPageToken : nil, role: self.videoSegment.selectedSegmentIndex == 0 ? .Admin : .Trainer) { (gymVideos) in
+                    FireStoreManager.shared.downloadGymVideo(id: id, pageToken: AppManager.shared.videoPageToken != "" ? AppManager.shared.videoPageToken : nil, role:self.videoForRole) { (gymVideos) in
                         if gymVideos.count > 0 {
                             for singleGymVideo in gymVideos {
                                 guard let singleVideoUrl = singleGymVideo.url else  { return }
                                 if self.gymVideoUrlArray.contains(singleVideoUrl) == false {
                                     print("SINGLE VIDEO URL IS : \(singleVideoUrl)")
                                     self.gymVideoUrlArray.append(singleVideoUrl)
-                                    self.videoUrlArray.append(self.createVideoThumbnail(videoUrl: singleVideoUrl)!)
+                                    let image = self.createVideoThumbnail(videoUrl: singleVideoUrl)
+                                    if image != nil { self.videoUrlArray.append(image!) }
                                 }
                             }
                             if self.videoUrlArray.count >= self.gymVideoUrlArray.count || self.isImgaeAddedOrDeleted == true {
@@ -168,61 +139,49 @@ class GymVideosViewController: UIViewController {
                     }
                 } else {
                     self.videoUrlArray.removeAll()
-                     self.gymVideoCollectionView.reloadData()
+                    self.gymVideoCollectionView.reloadData()
                     SVProgressHUD.dismiss()
                 }
             }
         }
     }
     
-       func setGymVideoNavigationBar()  {
-           self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-           self.navigationController?.navigationBar.shadowImage = UIImage()
-           self.navigationController?.navigationBar.isTranslucent = true
-           let title = NSAttributedString(string: "Videos", attributes: [
-               NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
-           ])
-           let titleLabel = UILabel()
-           titleLabel.attributedText = title
-           navigationItem.titleView = titleLabel
-    
-           addBtn.addTarget(self, action: #selector(addNewVideo), for: .touchUpInside)
-           selectBtn.addTarget(self, action: #selector(selectDeleteVideo), for: .touchUpInside)
-           cancelBtn.addTarget(self, action: #selector(cancelSelection), for: .touchUpInside)
-           menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
-           deleteBtn.addTarget(self, action: #selector(deleteImages), for: .touchUpInside)
-
-           let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
-           let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
-           stackView.widthAnchor.constraint(equalToConstant: 40).isActive = true
-           
-           let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 20, height: 10))
-           let rightstackView = UIStackView(arrangedSubviews: [selectBtn,rightSpaceBtn,addBtn])
-           
-           if AppManager.shared.loggedInRole == LoggedInRole.Admin {
-               navigationItem.setRightBarButton(UIBarButtonItem(customView: rightstackView), animated: true)
-           }
-           navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView), animated: true)
-       }
-    
-    @objc func changeVideos() {
-        UIView.animate(withDuration: 0.3, animations: {
-            print("BOTTOM WIDTH : \(self.bottomBarWidth)")
-            let movement = (self.view.bounds.width / CGFloat(self.videoSegment.numberOfSegments)) * CGFloat(self.videoSegment.selectedSegmentIndex)
-            print("MOVEMENT IS : \(movement)")
-            self.bottomBarView.frame.origin.x = movement == 0.0 ? 40 : movement
-        })
-        self.videoForRole = self.videoSegment.selectedSegmentIndex == 0 ? .Admin : .Trainer
-        self.videoUrlArray.removeAll()
-        self.gymVideoUrlArray.removeAll()
-        DispatchQueue.main.async {
-        self.downloadGymVideos(role: self.videoForRole)
+    func setGymVideoNavigationBar()  {
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = true
+        let title = NSAttributedString(string: "Videos", attributes: [
+            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+        ])
+        let titleLabel = UILabel()
+        titleLabel.attributedText = title
+        navigationItem.titleView = titleLabel
+        
+        addBtn.addTarget(self, action: #selector(addNewVideo), for: .touchUpInside)
+        selectBtn.addTarget(self, action: #selector(selectDeleteVideo), for: .touchUpInside)
+        cancelBtn.addTarget(self, action: #selector(cancelSelection), for: .touchUpInside)
+        leftBtn.addTarget(self, action: #selector(backAction), for: .touchUpInside)
+        deleteBtn.addTarget(self, action: #selector(deleteImages), for: .touchUpInside)
+        
+        let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+        let stackView = UIStackView(arrangedSubviews: [spaceBtn,leftBtn])
+        stackView.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 20, height: 10))
+        let rightstackView = UIStackView(arrangedSubviews: [selectBtn,rightSpaceBtn,addBtn])
+     
+        if AppManager.shared.loggedInRole == LoggedInRole.Admin {
+            navigationItem.setRightBarButton(UIBarButtonItem(customView: rightstackView), animated: true)
+        } else {
+            if self.ownerId == self.loggedInID {
+                navigationItem.setRightBarButton(UIBarButtonItem(customView: rightstackView), animated: true)
+            }
         }
-       
+        navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView), animated: true)
     }
     
     @objc func refresh() {
-        self.downloadGymVideos(role: self.videoForRole)
+        self.downloadGymVideos(role: self.videoForRole, id: self.ownerId)
         self.refreshController.endRefreshing()
     }
     
@@ -255,7 +214,7 @@ class GymVideosViewController: UIViewController {
         }
     }
     
-    @objc func menuChange() {  AppManager.shared.appDelegate.swRevealVC.revealToggle(self) }
+    @objc func backAction() {  self.navigationController?.popViewController(animated: true) }
   
     @objc func deleteImages() {
         SVProgressHUD.show()
@@ -265,23 +224,16 @@ class GymVideosViewController: UIViewController {
                 deletingImgUrlsArray.append(self.gymVideoUrlArrayStr[singleImgIndex])
             }
             
-            FireStoreManager.shared.deleteVideos(role: self.videoForRole, urls: deletingImgUrlsArray) { (err) in
+            FireStoreManager.shared.deleteVideos(id: self.ownerId , urls: deletingImgUrlsArray) { (err) in
                 SVProgressHUD.dismiss()
                 if err == nil {
                     print("Success")
                     self.isImgaeAddedOrDeleted = true
                     self.isDeleteEnable = false
-                    
-                     print("deleted array count before : \(self.videoUrlArray.count)")
-                    
                     self.videoUrlArray = self.videoUrlArray.enumerated().filter({ !self.deleteVideoIndex.contains($0.0) }).map { $0.1 }
-                    
-                    print("deleted array count  after: \(self.videoUrlArray.count)")
-                    
-                        self.deleteVideoIndex.removeAll()
-                        self.setGymVideoNavigationBar()
-                    self.downloadGymVideos(role: self.videoForRole)
-              
+                    self.deleteVideoIndex.removeAll()
+                    self.setGymVideoNavigationBar()
+                     self.downloadGymVideos(role: self.videoForRole, id: self.ownerId)
                 }else {
                     print("\(err!)")
                     print("Try again")
@@ -302,12 +254,14 @@ class GymVideosViewController: UIViewController {
     }
     
     func uploadVideo(videoUrl:URL) {
+        let id = AppManager.shared.loggedInRole == LoggedInRole.Admin ? AppManager.shared.adminID : AppManager.shared.trainerID
+        let role:Role = AppManager.shared.loggedInRole == LoggedInRole.Admin ? .Admin : .Trainer
         SVProgressHUD.show()
-        FireStoreManager.shared.uploadGymVideo(url: videoUrl, role: self.videoSegment.selectedSegmentIndex == 0 ? .Admin : .Trainer) { (err) in
+        FireStoreManager.shared.uploadGymVideo(id: id , url: videoUrl, role: role) { (err) in
             if err == nil {
                 print("VIDEO IS UPLOADED SUCCESSFULLY.")
                 self.isImgaeAddedOrDeleted = true
-                self.downloadGymVideos(role: self.videoForRole)
+                self.downloadGymVideos(role: self.videoForRole, id: self.ownerId)
                 SVProgressHUD.dismiss()
             }else {
                 SVProgressHUD.dismiss()
@@ -391,7 +345,7 @@ extension GymVideosViewController : UICollectionViewDelegate {
         if scrollView.contentOffset.y >= self.lastElementContentOffsets.y/3 {
             spinner.startAnimating()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5 , execute: {
-                self.downloadGymVideos(role: self.videoSegment.selectedSegmentIndex == 0 ? .Admin : .Trainer)
+                self.downloadGymVideos(role: .Admin, id: self.ownerId)
                 self.spinner.stopAnimating()
             })
         } else {

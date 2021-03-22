@@ -77,6 +77,25 @@ class FireStoreManager: NSObject {
         })
     }
     
+    
+    func getAdminNameBy(id:String) -> Result<String,Error> {
+        var result:Result<String,Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        fireDB.collection("Admin").document(id).getDocument { (docSnapshot, err) in
+            if err == nil {
+                let data = docSnapshot?.data()
+                let adminDetail =  data!["adminDetail"] as! [String : Any]
+                let adminName = "\(adminDetail["firstName"]!) \(adminDetail["lastName"]!)"
+                result = .success(adminName)
+                semaphores.signal()
+            }
+        }
+        
+        let _ = semaphores.wait(timeout: .distantFuture)
+        return result
+    }
+    
+    
     func trainerOrMemberLogin(collectionPath:String,gymID:String,email:String,password:String,result:@escaping (Bool,Error?) -> Void) {
         let encryptedPassword = AppManager.shared.encryption(plainText: password)
         self.fireDB.collection(collectionPath)
@@ -940,6 +959,25 @@ class FireStoreManager: NSObject {
          return result
     }
     
+    func getTrainerNameAndTypeBy(id:String) -> Result<[String],Error> {
+        var result:Result<[String],Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        var trainerDetailArr:[String] = []
+        fireDB.collection("Trainers").document(id).getDocument { (docSnapshot, err) in
+            if err == nil {
+                let data = docSnapshot?.data()
+                let trainerDetail =  data!["trainerDetail"] as! [String : Any]
+                let trainerName = "\(trainerDetail["firstName"]!) \(trainerDetail["lastName"]!)"
+                trainerDetailArr.append(trainerName)
+                trainerDetailArr.append(trainerDetail["type"] as! String)
+                result = .success(trainerDetailArr)
+                semaphores.signal()
+            }
+        }
+        let _ = semaphores.wait(timeout: .distantFuture)
+        return result
+    }
+    
     func getAllTrainerTypeAndNameBy() -> Result<Dictionary<String,TrainerNameAndType>?,Error> {
         var result:Result<Dictionary<String,TrainerNameAndType>?,Error>!
         let semaphores = DispatchSemaphore(value: 0)
@@ -1713,12 +1751,12 @@ class FireStoreManager: NSObject {
         }
     }
 
-    func  uploadGymVideo(url:URL,role:Role,handler:@escaping(Error?) -> Void ) {
-        let path = role == .Admin ? "Videos/admin/\(Date().timeIntervalSince1970)" : "Videos/trainers/\(Date().timeIntervalSince1970)"
+    func  uploadGymVideo(id:String,url:URL,role:Role,handler:@escaping(Error?) -> Void) {
+        let path = role == .Admin ? "Videos/admin/\(id)/\(Date().timeIntervalSince1970)" : "Videos/trainers/\(id)/\(Date().timeIntervalSince1970)"
      let VideoRef = fireStorageRef.child(path)
      let videoUrl = VideoRef.fullPath
 
-        uploadGallaryVideoUrls(role: role, vidUrl: videoUrl) { (err) in
+        uploadGallaryVideoUrls(id: id, role: role, vidUrl: videoUrl) { (err) in
             if err == nil {
                 VideoRef.putFile(from:url, metadata: nil) { (_, uploadErr) in
                     if err == nil {
@@ -1729,51 +1767,81 @@ class FireStoreManager: NSObject {
         }
     }
         
-    private func uploadGallaryVideoUrls(role:Role,vidUrl:String,handler:@escaping (Error?) -> Void ) {
-        let timeStamp = vidUrl.split(separator: "/").last!
-        fireDB.collection("videos").document("\(timeStamp)")
-            .setData([
-                "videoUrl":vidUrl,
-                "timeStamp":timeStamp,
-                "role" : role == .Admin ? "admin" : "trainer"
-                ], completion: {
-                    (err) in
-                    handler(err)
-            })
+    private func uploadGallaryVideoUrls(id:String,role:Role,vidUrl:String,handler:@escaping (Error?) -> Void ) {
+        let docRef = fireDB.collection("videos").document("\(id)")
+        var videoUrlArray:[String] = []
+        if videoUrlArray.contains(vidUrl) == false {
+            videoUrlArray.append(vidUrl)
+        }
+        
+        docRef.getDocument { (docSnapshot, err) in
+            if err == nil && docSnapshot?.exists == true {
+                let data = docSnapshot?.data()
+                var videoUrlArr = data!["videoUrlArray"] as! [String]
+                if videoUrlArr.contains(vidUrl) == false {
+                    videoUrlArr.append(vidUrl)
+                    
+                    docRef.updateData( [ "videoUrlArray"  : videoUrlArr ]) { (err) in
+                        handler(err)
+                    }
+                }
+            }else {
+                docRef.setData([
+                    "videoUrlArray":videoUrlArray,
+                    "role" : role == .Admin ? "admin" : "trainer",
+                    "ownerID" : id
+                    ], completion: {
+                        (err) in
+                        handler(err)
+                })
+            }
+        }
     }
 
-    func downloadGymVideosUrls(role:Role,handler:@escaping ([String],Error?) -> Void) {
-        let actualRole = role == .Admin ? "admin" : "trainer"
+    func downloadGymVideosUrls(id:String,handler:@escaping ([String],Error?) -> Void) {
         var imgUrls : [String] = []
-        fireDB.collection("videos")
-        .whereField("role", isEqualTo: actualRole)
-            .getDocuments(completion: {
-                (querySnapshot,err) in
-                
-                if err == nil {
-                    for singleDoc in querySnapshot!.documents {
-                        let data = singleDoc.data()
-                        imgUrls.append(data["videoUrl"] as! String)
-                    }
-                    handler(imgUrls,nil)
-                }else {
-                    handler([],err)
-                }
-            })
+        fireDB.collection("videos").document(id).getDocument(completion: {
+            (docSnapshot,err) in
+            
+            if err == nil &&  docSnapshot?.exists == true {
+                let data = docSnapshot!.data()
+                imgUrls = data!["videoUrlArray"] as! [String]
+                handler(imgUrls,nil)
+            }else {
+                handler([],err)
+            }
+        })
     }
     
-    func downloadGymVideo(pageToken:String? = nil,role:Role,handler:@escaping (([GymVideos]) -> Void )) {
+    func downloadListOfGymVideos(handler:@escaping ([VideoDocInfo]) -> Void ) {
+        var videos:[VideoDocInfo] = []
         
-        let path = role == .Admin ? "/Videos/admin" : "/Videos/trainers"
+        fireDB.collection("/videos").getDocuments { (querySnapshot, err) in
+            if err == nil  {
+                let documentsCount = querySnapshot?.documents.count
+                if (documentsCount)! > 0 {
+                    for singleDoc in querySnapshot!.documents {
+                        let video = singleDoc.data()
+                        videos.append(VideoDocInfo( url: video["videoUrlArray"] as! [String], role: video["role"] as! String, ownerID: video["ownerID"] as! String))
+                    }
+                    if videos.count == documentsCount {
+                        handler(videos)
+                    }
+                }
+            }else { handler(videos) }
+        }
+    }
+    
+    func downloadGymVideo(id:String,pageToken:String? = nil,role:Role,handler:@escaping (([GymVideos]) -> Void )) {
+        
+        let path = role == .Admin ? "/Videos/admin/\(id)" : "/Videos/trainers/\(id)"
         
         var vidUrls : [GymVideos] = []
         let pageHandler :(StorageListResult,Error?) ->Void = {
             (result,err) in
             if err == nil{
-                print("RESULT IS : \(result.items.count)")
                 if let token = result.pageToken {
                     AppManager.shared.videoPageToken = token
-                    print("token is : \(AppManager.shared.videoPageToken)")
                 }
                 if result.items.count > 0 {
                     for singleItem in result.items{
@@ -1810,29 +1878,41 @@ class FireStoreManager: NSObject {
         }
     }
     
-    private func deleteVideoUrl(role:Role,urls:[String],handler:@escaping (Error?) -> Void) {
-      
+    private func deleteVideoUrl(id:String,urls:[String],handler:@escaping (Error?) -> Void) {
         var deletingUrls = urls
+        let docRef = fireDB.collection("videos").document("\(id)")
         
         for singleUrl in deletingUrls {
-            let docUrl = singleUrl.split(separator: "/").last!
-            fireDB.collection("videos").document("\(docUrl)")
-                .delete { (err) in
-                
-                if err == nil {
-                    print("video url deleted.")
-                    deletingUrls.remove(at: deletingUrls.firstIndex(of: singleUrl)!)
-                    if deletingUrls.count <= 0 {
-                        handler(err)
+            docRef.getDocument { (docSnapshot, err) in
+                if err == nil && docSnapshot?.exists  == true {
+                    let data = docSnapshot?.data()
+                    var videoUrlArray = data!["videoUrlArray"] as! [String]
+                    for urlStr in deletingUrls {
+                        if videoUrlArray.contains(urlStr) ==  true {
+                            videoUrlArray.remove(at: videoUrlArray.firstIndex(of: urlStr)!)
+                        }
+                    }
+                    docRef.updateData([
+                        "videoUrlArray":videoUrlArray
+                    ]) { (err) in
+                        if err == nil {
+                            print("video url deleted.")
+                            deletingUrls.remove(at: deletingUrls.firstIndex(of: singleUrl)!)
+                            if deletingUrls.count <= 0 {
+                                handler(err)
+                            }
+                        }
                     }
                 }
             }
         }
+        
+
     }
     
-    func deleteVideos(role:Role,urls:[String],handler:@escaping (Error?) -> Void) {
+    func deleteVideos(id:String,urls:[String],handler:@escaping (Error?) -> Void) {
         var deletingUrls = urls
-        deleteVideoUrl(role: role, urls: urls) { (err) in
+        deleteVideoUrl(id: id, urls: urls) { (err) in
             if err == nil {
                 
                 for singleUrl in deletingUrls {
