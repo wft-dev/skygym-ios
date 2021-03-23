@@ -40,6 +40,12 @@ class ListOfVideosViewController: UIViewController {
         return UIImagePickerController()
     }()
     
+    private var refreshControl:UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.attributedTitle = NSAttributedString(string: "Reloading", attributes: [NSAttributedString.Key.foregroundColor:UIColor.black])
+        return refreshControl
+    }()
+    
     var isImgaeAddedOrDeleted:Bool = false
 
     @IBOutlet weak var listOfVideosTable: UITableView!
@@ -49,6 +55,9 @@ class ListOfVideosViewController: UIViewController {
         super.viewDidLoad()
         listOfVideosTable.delegate = self
         listOfVideosTable.dataSource = self
+        listOfVideosTable.tableFooterView = UIView()
+        refreshControl.addTarget(self, action: #selector(refreshTable), for: .valueChanged)
+        self.listOfVideosTable.refreshControl = self.refreshControl
         setListOfVideoNavigationBar()
     }
     
@@ -57,6 +66,7 @@ class ListOfVideosViewController: UIViewController {
     }
     
     func fetchVideos()  {
+        SVProgressHUD.show()
         FireStoreManager.shared.downloadListOfGymVideos { (arr) in
             if arr.count > 0 {
                 for sinleVid in arr {
@@ -71,6 +81,7 @@ class ListOfVideosViewController: UIViewController {
                                     if self.listOfVideoArray.count == arr.count {
                                         self.listOfVideosTable.reloadData()
                                     }
+                                    SVProgressHUD.dismiss()
                                     break
                                 case .failure(_):
                                     break
@@ -88,6 +99,7 @@ class ListOfVideosViewController: UIViewController {
                                     if self.listOfVideoArray.count == arr.count {
                                         self.listOfVideosTable.reloadData()
                                     }
+                                    SVProgressHUD.dismiss()
                                     break
                                 case .failure(_):
                                     break
@@ -96,11 +108,17 @@ class ListOfVideosViewController: UIViewController {
                         }
                         break
                     default:
+                        SVProgressHUD.dismiss()
                         break
                     }
                 }
             }
         }
+    }
+    
+    @objc func refreshTable() {
+        self.fetchVideos()
+        self.refreshControl.endRefreshing()
     }
     
     func setListOfVideoNavigationBar()  {
@@ -120,7 +138,9 @@ class ListOfVideosViewController: UIViewController {
         let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
         stackView.widthAnchor.constraint(equalToConstant: 40).isActive = true
         navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView), animated: true)
-        navigationItem.setRightBarButton(UIBarButtonItem(customView: addBtn), animated: true)
+        if AppManager.shared.loggedInRole != LoggedInRole.Member {
+            navigationItem.setRightBarButton(UIBarButtonItem(customView: addBtn), animated: true)
+        }
     }
     
     func uploadGymVideo(videoUrl:URL) {
@@ -132,7 +152,6 @@ class ListOfVideosViewController: UIViewController {
                 print("VIDEO IS UPLOADED SUCCESSFULLY.")
                 self.isImgaeAddedOrDeleted = true
                 self.fetchVideos()
-                SVProgressHUD.dismiss()
             }else {
                 SVProgressHUD.dismiss()
                 print("VIDEO IS NOT UPLOADED  SUCCESSFULLY.")
@@ -150,9 +169,7 @@ class ListOfVideosViewController: UIViewController {
         imagePicker.delegate = self
         present(imagePicker, animated: true, completion: nil)
     }
-    
 }
-
 
 extension ListOfVideosViewController : UITableViewDataSource {
     
@@ -170,7 +187,6 @@ extension ListOfVideosViewController : UITableViewDataSource {
         
         return cell
     }
-    
 }
 
 
@@ -183,9 +199,7 @@ extension ListOfVideosViewController : UITableViewDelegate {
         gymVideoVC.role = self.listOfVideoArray[indexPath.row].ownerRole
         self.navigationController?.pushViewController(gymVideoVC, animated: true)
     }
-    
 }
-
 
 extension ListOfVideosViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {

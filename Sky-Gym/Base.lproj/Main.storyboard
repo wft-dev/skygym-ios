@@ -11884,37 +11884,37 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="listOfVideosCell" id="lZk-gZ-OiL" customClass="ListOfVideosCell" customModule="Sky_Gym" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="320" height="95.5"/>
+                                        <rect key="frame" x="0.0" y="28" width="320" height="104"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lZk-gZ-OiL" id="E4t-T4-aF2">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="95.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="104"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2ad-D0-3tG">
-                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="95.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="104"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5cM-k6-VTA">
-                                                            <rect key="frame" x="20" y="15" width="60" height="60.5"/>
+                                                            <rect key="frame" x="20" y="15" width="50" height="50"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" constant="60" id="8d2-d1-2Hu"/>
-                                                                <constraint firstAttribute="width" constant="60" id="nq8-nZ-x1i"/>
+                                                                <constraint firstAttribute="height" constant="50" id="8d2-d1-2Hu"/>
+                                                                <constraint firstAttribute="width" constant="50" id="nq8-nZ-x1i"/>
                                                             </constraints>
                                                         </imageView>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="asdfasdfasdfasdfasdfasdfasd" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j5V-YZ-1tT">
-                                                            <rect key="frame" x="90" y="20" width="210" height="31.5"/>
+                                                            <rect key="frame" x="80" y="15" width="220" height="50.5"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="22" id="Ksc-Fj-BE5"/>
                                                             </constraints>
-                                                            <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="20"/>
+                                                            <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="41H-q3-qlQ">
-                                                            <rect key="frame" x="90" y="53.5" width="210" height="22"/>
+                                                            <rect key="frame" x="80" y="65.5" width="220" height="18"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" constant="22" id="ddF-0Y-l8u"/>
+                                                                <constraint firstAttribute="height" constant="18" id="ddF-0Y-l8u"/>
                                                             </constraints>
-                                                            <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="16"/>
+                                                            <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="14"/>
                                                             <color key="textColor" red="0.88235294119999996" green="0.80784313730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
@@ -11922,11 +11922,11 @@
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                     <constraints>
                                                         <constraint firstAttribute="trailing" secondItem="j5V-YZ-1tT" secondAttribute="trailing" constant="20" id="0fS-mE-jS5"/>
-                                                        <constraint firstItem="41H-q3-qlQ" firstAttribute="top" secondItem="j5V-YZ-1tT" secondAttribute="bottom" constant="2" id="0kf-H6-b72"/>
+                                                        <constraint firstItem="41H-q3-qlQ" firstAttribute="top" secondItem="j5V-YZ-1tT" secondAttribute="bottom" id="0kf-H6-b72"/>
                                                         <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="41H-q3-qlQ" secondAttribute="bottom" constant="20" id="35P-c9-nrF"/>
                                                         <constraint firstItem="5cM-k6-VTA" firstAttribute="top" secondItem="2ad-D0-3tG" secondAttribute="top" constant="15" id="JQq-14-jCC"/>
-                                                        <constraint firstAttribute="bottom" secondItem="5cM-k6-VTA" secondAttribute="bottom" constant="20" id="KD1-lv-Urz"/>
-                                                        <constraint firstItem="j5V-YZ-1tT" firstAttribute="top" secondItem="2ad-D0-3tG" secondAttribute="top" constant="20" id="cKT-DJ-5yN"/>
+                                                        <constraint firstAttribute="bottom" secondItem="5cM-k6-VTA" secondAttribute="bottom" priority="250" constant="20" id="KD1-lv-Urz"/>
+                                                        <constraint firstItem="j5V-YZ-1tT" firstAttribute="top" secondItem="2ad-D0-3tG" secondAttribute="top" constant="15" id="cKT-DJ-5yN"/>
                                                         <constraint firstItem="41H-q3-qlQ" firstAttribute="leading" secondItem="5cM-k6-VTA" secondAttribute="trailing" constant="10" id="ckl-ss-wCX"/>
                                                         <constraint firstItem="j5V-YZ-1tT" firstAttribute="leading" secondItem="5cM-k6-VTA" secondAttribute="trailing" constant="10" id="kTl-rH-9nu"/>
                                                         <constraint firstAttribute="trailing" secondItem="41H-q3-qlQ" secondAttribute="trailing" constant="20" id="pVa-4V-N5I"/>
@@ -12027,7 +12027,22 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fUD-2m-jRa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="17505" y="1010"/>
+            <point key="canvasLocation" x="17209" y="1010"/>
+        </scene>
+        <!--List Of Workout View Controller-->
+        <scene sceneID="z3Y-b4-jVX">
+            <objects>
+                <viewController id="gFG-Ac-tc2" customClass="ListOfWorkoutViewController" customModule="Sky_Gym" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="NZ0-l2-LLS">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="dZd-Vy-KLs"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fDM-MD-fgf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="17873" y="1010"/>
         </scene>
         <!--View Event Screen View Controller-->
         <scene sceneID="h0E-MX-AV4">

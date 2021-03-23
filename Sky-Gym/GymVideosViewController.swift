@@ -82,11 +82,11 @@ class GymVideosViewController: UIViewController {
        }()
 
        private var deleteBtn:UIButton = {
-           let cancelBtn = UIButton()
-           let cancelTitle = NSAttributedString(string: "Delete", attributes: [NSAttributedString.Key.foregroundColor:UIColor.red])
-           cancelBtn.setAttributedTitle(cancelTitle, for: .normal)
-           cancelBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-           return cancelBtn
+           let deleteBtn = UIButton()
+           let deleteTitle = NSAttributedString(string: "Delete", attributes: [NSAttributedString.Key.foregroundColor:UIColor.red])
+           deleteBtn.setAttributedTitle(deleteTitle, for: .normal)
+           deleteBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+           return deleteBtn
        }()
        
        private var refreshController:UIRefreshControl = {
@@ -107,11 +107,10 @@ class GymVideosViewController: UIViewController {
         AppManager.shared.videoPageToken = ""
         self.videoForRole = self.role == "Admin" ? .Admin : .Trainer
         self.downloadGymVideos(role: self.videoForRole, id:self.ownerId)
-        
     }
     
     func downloadGymVideos(role:Role,id:String) {
-        if self.videoUrlArray.count < self.gymVideoUrlArrayStr.count ||  self.videoUrlArray.count == 0 ||  self.isImgaeAddedOrDeleted == true {
+        if self.videoUrlArray.count < self.gymVideoUrlArrayStr.count ||  self.videoUrlArray.count == 0 ||  self.isImgaeAddedOrDeleted == true || self.refreshController.isRefreshing == true {
             SVProgressHUD.show()
             FireStoreManager.shared.downloadGymVideosUrls(id:self.ownerId) { (vidUrlStr, err) in
                 if err == nil  && vidUrlStr.count  > 0 {
@@ -121,19 +120,20 @@ class GymVideosViewController: UIViewController {
                             for singleGymVideo in gymVideos {
                                 guard let singleVideoUrl = singleGymVideo.url else  { return }
                                 if self.gymVideoUrlArray.contains(singleVideoUrl) == false {
-                                    print("SINGLE VIDEO URL IS : \(singleVideoUrl)")
                                     self.gymVideoUrlArray.append(singleVideoUrl)
                                     let image = self.createVideoThumbnail(videoUrl: singleVideoUrl)
-                                    if image != nil { self.videoUrlArray.append(image!) }
+                                    if image != nil {
+                                        self.videoUrlArray.append(image!)
+                                    }
                                 }
                             }
-                            if self.videoUrlArray.count >= self.gymVideoUrlArray.count || self.isImgaeAddedOrDeleted == true {
+                            if self.videoUrlArray.count >= self.gymVideoUrlArray.count || self.isImgaeAddedOrDeleted == true || self.refreshController.isRefreshing == true {
                                 self.gymVideoCollectionView.reloadData()
                                 self.isImgaeAddedOrDeleted = false
-                                print("RELOADED")
+                                self.refreshController.endRefreshing()
                                 SVProgressHUD.dismiss()
                             }
-                        }else {
+                        } else {
                             SVProgressHUD.dismiss()
                         }
                     }
@@ -171,6 +171,9 @@ class GymVideosViewController: UIViewController {
         let rightstackView = UIStackView(arrangedSubviews: [selectBtn,rightSpaceBtn,addBtn])
      
         if AppManager.shared.loggedInRole == LoggedInRole.Admin {
+            self.addBtn.isEnabled = self.ownerId == self.loggedInID ? true : false
+            self.addBtn.isHidden = self.ownerId == self.loggedInID ? false : true
+            self.addBtn.alpha = self.ownerId == self.loggedInID ? 1.0 : 0.0
             navigationItem.setRightBarButton(UIBarButtonItem(customView: rightstackView), animated: true)
         } else {
             if self.ownerId == self.loggedInID {
@@ -182,7 +185,6 @@ class GymVideosViewController: UIViewController {
     
     @objc func refresh() {
         self.downloadGymVideos(role: self.videoForRole, id: self.ownerId)
-        self.refreshController.endRefreshing()
     }
     
     @objc func addNewVideo() {
@@ -231,9 +233,14 @@ class GymVideosViewController: UIViewController {
                     self.isImgaeAddedOrDeleted = true
                     self.isDeleteEnable = false
                     self.videoUrlArray = self.videoUrlArray.enumerated().filter({ !self.deleteVideoIndex.contains($0.0) }).map { $0.1 }
+                    self.gymVideoUrlArray = self.gymVideoUrlArray.enumerated().filter({ !self.deleteVideoIndex.contains($0.0) }).map { $0.1 }
+                    
+                    print("VIDEO ARRAY : \(self.videoUrlArray)")
                     self.deleteVideoIndex.removeAll()
                     self.setGymVideoNavigationBar()
-                     self.downloadGymVideos(role: self.videoForRole, id: self.ownerId)
+                    DispatchQueue.main.async {
+                      self.downloadGymVideos(role: self.videoForRole, id: self.ownerId)
+                    }
                 }else {
                     print("\(err!)")
                     print("Try again")
@@ -262,7 +269,6 @@ class GymVideosViewController: UIViewController {
                 print("VIDEO IS UPLOADED SUCCESSFULLY.")
                 self.isImgaeAddedOrDeleted = true
                 self.downloadGymVideos(role: self.videoForRole, id: self.ownerId)
-                SVProgressHUD.dismiss()
             }else {
                 SVProgressHUD.dismiss()
                 print("VIDEO IS NOT UPLOADED  SUCCESSFULLY.")
@@ -285,6 +291,8 @@ class GymVideosViewController: UIViewController {
     }
     
     func playVideo(url:URL)  {
+        print("ARRAY COUNT URL ARRAY : \(self.gymVideoUrlArray.count)")
+        print(" VIDEO CONTAIN :  \(self.gymVideoUrlArray.contains(url))")
         let player = AVPlayer(url: url)
         self.playVideoVC.player = player
         self.navigationController?.pushViewController(self.playVideoVC, animated: true)
@@ -337,6 +345,7 @@ extension GymVideosViewController : UICollectionViewDelegate {
             self.addVideoForDelete(index: indexPath.row)
             self.gymVideoCollectionView.reloadData()
         }else {
+            print("INDEX IS : \(indexPath.row), URL : \(self.gymVideoUrlArray[indexPath.row]) ")
              self.playVideo(url:self.gymVideoUrlArray[indexPath.row])
         }
     }

@@ -70,7 +70,7 @@ extension MenuItemsViewController {
         var array:[String] = []
         switch role {
         case .Admin:
-            array = ["Dashboard","Member","Trainer","Membership Plan","Visitors","Profile","Events","Gallary","Gym Videos","Logout"]
+            array = ["Dashboard","Member","Trainer","Membership Plan","Visitors","Profile","Events","Gallary"," Videos","Logout"]
         case .Trainer :
             array = ["Dashboard","Gym Info","Home", "Member","Membership Plan","Profile","Visitors","Events","Gallary",
                 "Videos","Logout"]
@@ -81,7 +81,7 @@ extension MenuItemsViewController {
                 array.remove(at: 3)
             }
         case .Member :
-            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events", "Gallary","Videos" ,"Logout"]
+            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events", "Gallary","Videos","Logout"]
         }
         return array
     }

@@ -1914,6 +1914,7 @@ class FireStoreManager: NSObject {
         var deletingUrls = urls
         deleteVideoUrl(id: id, urls: urls) { (err) in
             if err == nil {
+                print("DELETING URLS ARE : \(urls)")
                 
                 for singleUrl in deletingUrls {
                     print(" ===== ===>>>>>  \(singleUrl)")
