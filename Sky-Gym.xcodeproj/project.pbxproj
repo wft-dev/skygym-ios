@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4219F69725A49750005BF579 /* MemberLoginProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219F69625A49750005BF579 /* MemberLoginProfileViewController.swift */; };
 		4219F69925A498D3005BF579 /* MemberLoginTrainerProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219F69825A498D3005BF579 /* MemberLoginTrainerProfileViewController.swift */; };
+		422FD427260B16C0001052C9 /* AddNewWorkoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422FD426260B16C0001052C9 /* AddNewWorkoutViewController.swift */; };
 		4231BF9425342965007EFBBF /* ViewVisitorScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF9325342965007EFBBF /* ViewVisitorScreenViewController.swift */; };
 		4231BF98253458A9007EFBBF /* ListOfEventsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF97253458A9007EFBBF /* ListOfEventsViewController.swift */; };
 		4231BF9A25347328007EFBBF /* ViewEventScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */; };
@@ -66,6 +67,7 @@
 /* Begin PBXFileReference section */
 		4219F69625A49750005BF579 /* MemberLoginProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberLoginProfileViewController.swift; sourceTree = "<group>"; };
 		4219F69825A498D3005BF579 /* MemberLoginTrainerProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberLoginTrainerProfileViewController.swift; sourceTree = "<group>"; };
+		422FD426260B16C0001052C9 /* AddNewWorkoutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewWorkoutViewController.swift; sourceTree = "<group>"; };
 		4231BF9325342965007EFBBF /* ViewVisitorScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewVisitorScreenViewController.swift; sourceTree = "<group>"; };
 		4231BF97253458A9007EFBBF /* ListOfEventsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfEventsViewController.swift; sourceTree = "<group>"; };
 		4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewEventScreenViewController.swift; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 				42A407A2251C780A0087B02F /* AdminRegistrationSecondViewController.swift */,
 				424937222526094D0043ADFF /* AddMemberViewController.swift */,
 				42A407A4251C78570087B02F /* AppManager.swift */,
+				42CAADF2252C90DA006E1D76 /* PurchaseViewController.swift */,
 				42A407A6251CC6A40087B02F /* MemberAndTrainerLoginViewController.swift */,
 				42F7DBAE2521A444001F0050 /* MenuItemsViewController.swift */,
 				42F7DBB02521E870001F0050 /* AdminDashboardViewController.swift */,
@@ -180,7 +183,6 @@
 				423F8709252B4846001C30D4 /* MemberDetailViewController.swift */,
 				42CAADF0252C4992006E1D76 /* CurrentMembershipDetailViewController.swift */,
 				42BC9BF7252DCEC200435000 /* MemberViewController.swift */,
-				42CAADF2252C90DA006E1D76 /* PurchaseViewController.swift */,
 				4259DC202523469A00F08FA6 /* ListOfMembersViewController.swift */,
 				42BC9BF5252D82EE00435000 /* MemberAttandanceViewController.swift */,
 				42651AD52530657400539B19 /* MembershipViewScreenViewController.swift */,
@@ -209,6 +211,7 @@
 				4249E33726022AAA009BCFD7 /* GymVideosViewController.swift */,
 				425B31672604D19E002D23DD /* ListOfVideosViewController.swift */,
 				424FD2F1260A10D300D8D811 /* ListOfWorkoutViewController.swift */,
+				422FD426260B16C0001052C9 /* AddNewWorkoutViewController.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -383,6 +386,7 @@
 				42446A28256FA7AE00F966FD /* Validator.swift in Sources */,
 				423C02B925E7DAA700F548CD /* ChatViewController.swift in Sources */,
 				42BC9BF6252D82EE00435000 /* MemberAttandanceViewController.swift in Sources */,
+				422FD427260B16C0001052C9 /* AddNewWorkoutViewController.swift in Sources */,
 				42A407A7251CC6A40087B02F /* MemberAndTrainerLoginViewController.swift in Sources */,
 				42F7DBB12521E870001F0050 /* AdminDashboardViewController.swift in Sources */,
 				42A407A1251C59940087B02F /* AdminRegistrationViewController.swift in Sources */,

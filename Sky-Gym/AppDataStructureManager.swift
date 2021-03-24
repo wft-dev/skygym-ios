@@ -360,3 +360,19 @@ struct VideoList {
     var ownerRole:String
     var ownerID:String
 }
+
+struct WorkoutPlanList {
+    var workoutPlan:String
+    var numberOfSets:Int
+    var numberOfReps:Int
+    var weight:Int
+}
+
+struct WorkoutPlan {
+    var workoutPlan:String
+    var workoutDescription:String
+    var sets:String
+    var reps:String
+    var weight:String
+    var members:[String]
+}

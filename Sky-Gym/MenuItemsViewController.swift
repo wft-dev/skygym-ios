@@ -70,7 +70,7 @@ extension MenuItemsViewController {
         var array:[String] = []
         switch role {
         case .Admin:
-            array = ["Dashboard","Member","Trainer","Membership Plan","Visitors","Profile","Events","Gallary"," Videos","Logout"]
+            array = ["Dashboard","Member","Trainer","Membership Plan","Visitors","Profile","Events","Gallary"," Videos","Workout Plans","Logout"]
         case .Trainer :
             array = ["Dashboard","Gym Info","Home", "Member","Membership Plan","Profile","Visitors","Events","Gallary",
                 "Videos","Logout"]
@@ -126,6 +126,11 @@ extension MenuItemsViewController {
             let gymVideoVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfVideosVC") as! ListOfVideosViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gymVideoVC), animated: true)
             break
+        case 9:
+            let workoutVC = self.storyBoard.instantiateViewController(withIdentifier: "workoutVC") as! ListOfWorkoutViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: workoutVC), animated: true)
+            break
+            
         default:
             self.appDelgate?.swRevealVC.revealToggle(animated: true)
             self.logOut()
