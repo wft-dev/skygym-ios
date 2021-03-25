@@ -362,17 +362,24 @@ struct VideoList {
 }
 
 struct WorkoutPlanList {
+    var workoutID:String
     var workoutPlan:String
-    var numberOfSets:Int
-    var numberOfReps:Int
-    var weight:Int
+    var numberOfSets:String
+    var numberOfReps:String
+    var weight:String
 }
 
 struct WorkoutPlan {
+    var workoutID:String
     var workoutPlan:String
     var workoutDescription:String
     var sets:String
     var reps:String
     var weight:String
     var members:[String]
+}
+
+struct WorkoutMemberList {
+    var memberName:String
+    var memberID:String
 }

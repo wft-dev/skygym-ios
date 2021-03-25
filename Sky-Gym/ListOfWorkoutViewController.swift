@@ -30,35 +30,35 @@ class ListOfWorkoutViewController: UIViewController {
         return menuBtn
     }()
 
-    var workoutPlanList :[WorkoutPlanList] = []
+    var workoutPlanListArray :[WorkoutPlanList] = []
     
     var addWorkoutVC:AddNewWorkoutViewController? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setListOfWorkoutNavigationBar()
-        self.workoutPlanList = [
-            WorkoutPlanList(workoutPlan: "Workout Plan 1 ", numberOfSets: 10, numberOfReps: 2, weight: 10) ,
-            WorkoutPlanList(workoutPlan: "Workout Plan 2 ", numberOfSets: 10, numberOfReps: 3, weight: 10) ,
-            WorkoutPlanList(workoutPlan: "Workout Plan 3 ", numberOfSets: 10, numberOfReps: 4, weight: 10) ,
-            WorkoutPlanList(workoutPlan: "Workout Plan 4 ", numberOfSets: 10, numberOfReps: 5, weight: 12) ,
-            WorkoutPlanList(workoutPlan: "Workout Plan 5 ", numberOfSets: 10, numberOfReps: 5, weight: 10) ,
-            WorkoutPlanList(workoutPlan: "Workout Plan 6 ", numberOfSets: 12, numberOfReps: 5, weight: 12) ,
-            WorkoutPlanList(workoutPlan: "Workout Plan 7 ", numberOfSets: 12, numberOfReps: 6, weight: 12) ,
-            WorkoutPlanList(workoutPlan: "Workout Plan 8 ", numberOfSets: 12, numberOfReps: 6, weight: 12) ,
-        ]
-        
         workoutPlanListTable.dataSource = self
         workoutPlanListTable.delegate = self
         workoutPlanListTable.separatorStyle = .none
-        
         addWorkoutVC = self.storyboard?.instantiateViewController(withIdentifier: "addWorkoutVC") as? AddNewWorkoutViewController
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.getAllWorkoutPlans()
     }
     
     
     @IBAction func addNewWorkout(_ sender: Any) {
         addWorkoutVC?.isNewWorkout = true
         self.navigationController?.pushViewController(addWorkoutVC!, animated: true)
+    }
+    
+    func getAllWorkoutPlans()  {
+        FireStoreManager.shared.getAllWorkout { (arr) in
+            self.workoutPlanListArray = arr
+            self.workoutPlanListTable.reloadData()
+        }
     }
     
     func setListOfWorkoutNavigationBar()  {
@@ -86,7 +86,7 @@ class ListOfWorkoutViewController: UIViewController {
 
 extension ListOfWorkoutViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.workoutPlanList.count
+        return self.workoutPlanListArray.count
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -96,7 +96,7 @@ extension ListOfWorkoutViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "workoutCell", for: indexPath) as! ListOfWorkoutTableCell
         
-        let singleWorkout = workoutPlanList[indexPath.row]
+        let singleWorkout = workoutPlanListArray[indexPath.row]
         
         cell.workoutMainView.layer.cornerRadius = 12.0
         cell.workoutMainView.layer.borderColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1).cgColor
@@ -105,7 +105,7 @@ extension ListOfWorkoutViewController : UITableViewDataSource {
         cell.workoutPlanName.text = singleWorkout.workoutPlan
         cell.numberOfSets.text = "\(singleWorkout.numberOfSets)"
         cell.numberOfReps.text = "\(singleWorkout.numberOfReps)"
-        cell.weight.text = "\(singleWorkout.weight)"
+        cell.weight.text = "\(singleWorkout.weight) K.G."
         
         cell.selectionStyle = .none
         
@@ -129,6 +129,7 @@ extension ListOfWorkoutViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
        //addWorkoutVC
         addWorkoutVC?.isNewWorkout = false
+        addWorkoutVC?.workoutID = self.workoutPlanListArray[indexPath.row].workoutID
         self.navigationController?.pushViewController(addWorkoutVC!, animated: true)
     }
     

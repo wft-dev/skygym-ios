@@ -880,9 +880,22 @@ class AppManager: NSObject {
         return parentId
     }
     
-//    func  getListVideoStr(data:[String:String]) -> VideoList {
-//        return VideoList(videoImgae: UIImage(named: ""), ownerName: data["ownerName"], ownerRole: <#T##String#>, ownerID: <#T##String#>)
-//    }
+    func getWorkoutPlan(data:[String:Any]) -> WorkoutPlan {
+        let workoutPlanID = data["workoutID"] as! String
+        let workoutPlanData = data["workoutPlan"] as! [String:Any]
+        let workoutPlan = WorkoutPlan(workoutID: workoutPlanID, workoutPlan: workoutPlanData["wokroutTitle"] as! String, workoutDescription: workoutPlanData["workoutDescription"] as! String, sets: workoutPlanData["sets"] as! String, reps: workoutPlanData["reps"] as! String, weight: workoutPlanData["weight"] as! String, members: workoutPlanData["members"] as! [String])
+
+        return workoutPlan
+    }
+    
+    
+    func getWorkoutPlanList(data:[String:Any]) -> WorkoutPlanList {
+        let workoutPlanID = data["workoutID"] as! String
+        let workoutPlanData = data["workoutPlan"] as! [String:Any]
+        let workoutPlan = WorkoutPlanList(workoutID: workoutPlanID, workoutPlan: workoutPlanData["wokroutTitle"] as! String, numberOfSets: workoutPlanData["sets"] as! String, numberOfReps: workoutPlanData["reps"] as! String, weight: workoutPlanData["weight"] as! String)
+        
+        return workoutPlan
+    }
     
 }
 

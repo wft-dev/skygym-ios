@@ -1934,7 +1934,100 @@ class FireStoreManager: NSObject {
         }
     }
     
+    func getAllMembersNameAndID() -> Result<[WorkoutMemberList],Error> {
+        var result:Result<[WorkoutMemberList],Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        
+        
+        var memberArray : [WorkoutMemberList] = []
+        fireDB.collection("Members")
+        .order(by: "timeStamp", descending: false)
+            .getDocuments { (querSnapshot, err) in
+            if err == nil && (querSnapshot?.documents.count)! > 0 {
+                for singleDoc in querSnapshot!.documents {
+                    let data =  singleDoc.data()
+                    let memberDetail = data["memberDetail"] as! [String:String]
+                    let memberName = "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)"
+                    let memberID = memberDetail["memberID"]!
+                 
+                    memberArray.append(WorkoutMemberList(memberName: memberName, memberID: memberID))
+                }
+                result = .success(memberArray)
+                semaphores.signal()
+            }
+        }
+        let _ = semaphores.wait(timeout: .distantFuture)
+        return result
+    }
+    
+    func getMemberNameBy(id:String) -> Result<WorkoutMemberList,Error> {
+        var result:Result<WorkoutMemberList,Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        
+        fireDB.collection("Members").document(id)
+            .getDocument { (docSnapshot, err) in
+                if err == nil && docSnapshot!.exists == true {
+                    let data =  docSnapshot!.data()
+                    let memberDetail = data?["memberDetail"] as! [String:String]
+                    let memberName = "\(memberDetail["firstName"]!) \(memberDetail["lastName"]!)"
+                    let memberID = memberDetail["memberID"]!
+                    
+                    result = .success(WorkoutMemberList(memberName: memberName, memberID: memberID))
+                    semaphores.signal()
+                }
+        }
+        let _ = semaphores.wait(timeout: .distantFuture)
+        return result
+    }
+
+    func addNewWorkout(id:String,data:Dictionary<String,Any>,handler:@escaping (Error?) -> Void) {
+        fireDB.collection("workoutPlan").document("\(id)").setData([
+            "timeStamp" : Date().timeIntervalSince1970,
+            "workoutID":id,
+            "workoutPlan":data
+        ]) { (err) in
+            handler(err)
+        }
+    }
+    
+    func getAllWorkout(handler:@escaping ([WorkoutPlanList]) -> Void) {
+        var workoutPlan:[WorkoutPlanList] = []
+        fireDB.collection("workoutPlan")
+        .order(by: "timeStamp", descending: false)
+            .getDocuments { (querySnapshot, err) in
+            if err == nil && (querySnapshot?.documents.count)! > 0 {
+                for singleDoc in querySnapshot!.documents {
+                    let workoutData = singleDoc.data()
+                    workoutPlan.append(AppManager.shared.getWorkoutPlanList(data:workoutData))
+                }
+                handler(workoutPlan)
+            }else {
+                handler([])
+            }
+        }
+    }
+    
+    func getWorkoutByID(id:String,handler:@escaping (WorkoutPlan?) -> Void ) {
+        fireDB.collection("workoutPlan").document(id).getDocument { (docSnapshot, err) in
+            if err == nil && docSnapshot!.exists  == true {
+                handler(AppManager.shared.getWorkoutPlan(data: docSnapshot!.data()!))
+            } else {
+                handler(nil)
+            }
+        }
+    }
+    
+    func deleteWorkoutByID(id:String,handler:@escaping (Error?) -> Void) {
+        fireDB.collection("workoutPlan").document(id).delete { (err) in
+            handler(err)
+        }
+    }
+   
+    
 }
+
+
+
 
 
 

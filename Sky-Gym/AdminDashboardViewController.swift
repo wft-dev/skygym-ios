@@ -41,8 +41,7 @@ class AdminDashboardViewController: BaseViewController {
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
             self.setDashboardValues()
-        })
-        
+        })   
     }
     
     override func viewWillAppear(_ animated: Bool) {
