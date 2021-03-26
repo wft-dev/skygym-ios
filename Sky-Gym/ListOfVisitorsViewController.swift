@@ -482,9 +482,11 @@ extension ListOfVisitorsViewController:UISearchBarDelegate{
 }
 
 extension ListOfVisitorsViewController:CustomCellSegue{
+    
     func showMessage(vc: MFMessageComposeViewController) {
         self.present(vc, animated: true, completion: nil)
     }
+    
     func applySegueToChat(id: String, memberName: String) {
         let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "chatVC") as! ChatViewController
         let currentChatUser = ChatUsers(messageSenderID: self.senderID, messageReceiverID: id, messageSenderName: self.senderName, messageReceiverName: memberName)
@@ -498,6 +500,7 @@ extension ListOfVisitorsViewController:CustomCellSegue{
         addMemberVC.visitorID = id
         addMemberVC.visitorProfileImgData = self.visitorProfileImage?.pngData()
         self.navigationController?.pushViewController(addMemberVC, animated: true)
+        
     }
 
 }

@@ -98,7 +98,11 @@ class AddNewWorkoutViewController: BaseViewController {
                 switch result {
                 case let  .success(arr) :
                     self.memberNameArray  = arr
-                    self.memberListTable.reloadData()
+                    if self.isNewWorkout == true  {
+                        self.clearWokroutFields()
+                    }else {
+                        self.fetchWorkoutBy(id: self.workoutID)
+                    }
                     break
                 case .failure(_) :
                     print("FAILURE ")
@@ -107,21 +111,27 @@ class AddNewWorkoutViewController: BaseViewController {
             }
         }
         
-        if self.isNewWorkout == true  {
-            self.clearWokroutFields()
-        }else {
-            fetchWorkoutBy(id: self.workoutID)
-        }
     }
     
     func fetchWorkoutBy(id:String) {
         SVProgressHUD.show()
-        FireStoreManager.shared.getWorkoutByID(id: id, handler: {
-            (workOut) in
-            self.setWokoutPlanDataToFields(workoutPlan: workOut!)
-            self.memberListTable.reloadData()
-            SVProgressHUD.dismiss()
-        })
+        self.selectedMemberArray.removeAll()
+
+            FireStoreManager.shared.getWorkoutByID(id: id, handler: {
+                (workOut) in
+                
+                for singleID in workOut!.members {
+                    for member in self.memberNameArray {
+                        if member.memberID == singleID {
+                            self.selectedMemberArray.append(member.memberName)
+                        }
+                    }
+                }
+                self.setWokoutPlanDataToFields(workoutPlan: workOut!)
+                self.memberListTable.reloadData()
+                self.setDataToAssignMemberField()
+                SVProgressHUD.dismiss()
+            })
     }
 
     @objc func workoutPlanFieldsRequiredValidation( _ textField:UITextField)  {
@@ -180,6 +190,7 @@ class AddNewWorkoutViewController: BaseViewController {
     
     func setDataToAssignMemberField () {
         var str = ""
+        print("array : \(selectedMemberArray)")
         for singleMember in selectedMemberArray {
             str += "\(singleMember)  "
         }
@@ -287,6 +298,7 @@ class AddNewWorkoutViewController: BaseViewController {
         self.reps.text = workoutPlan.reps
         self.weight.text = workoutPlan.weight
         self.selectedMemberIDArray = workoutPlan.members
+        self.selectedIndexArray = workoutPlan.memberIndex
     }
 }
 
@@ -343,6 +355,7 @@ extension AddNewWorkoutViewController : UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         self.workoutPlanFieldsRequiredValidation(textField)
     }
+    
 }
 
 extension AddNewWorkoutViewController:UITableViewDataSource {

@@ -776,6 +776,8 @@ extension ProfileAdminViewController:UIPickerViewDelegate{
 }
 
 class WeekDayTableCell: UITableViewCell {
+    
     @IBOutlet weak var checkBtn: UIButton!
     @IBOutlet weak var weekDayLabel: UILabel!
+    
 }

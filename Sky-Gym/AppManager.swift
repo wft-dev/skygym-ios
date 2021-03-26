@@ -883,7 +883,7 @@ class AppManager: NSObject {
     func getWorkoutPlan(data:[String:Any]) -> WorkoutPlan {
         let workoutPlanID = data["workoutID"] as! String
         let workoutPlanData = data["workoutPlan"] as! [String:Any]
-        let workoutPlan = WorkoutPlan(workoutID: workoutPlanID, workoutPlan: workoutPlanData["wokroutTitle"] as! String, workoutDescription: workoutPlanData["workoutDescription"] as! String, sets: workoutPlanData["sets"] as! String, reps: workoutPlanData["reps"] as! String, weight: workoutPlanData["weight"] as! String, members: workoutPlanData["members"] as! [String])
+        let workoutPlan = WorkoutPlan(workoutID: workoutPlanID, workoutPlan: workoutPlanData["wokroutTitle"] as! String, workoutDescription: workoutPlanData["workoutDescription"] as! String, sets: workoutPlanData["sets"] as! String, reps: workoutPlanData["reps"] as! String, weight: workoutPlanData["weight"] as! String, members: workoutPlanData["members"] as! [String], memberIndex: workoutPlanData["membersIndexArray"] as! [Int])
 
         return workoutPlan
     }

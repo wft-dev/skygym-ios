@@ -377,6 +377,7 @@ struct WorkoutPlan {
     var reps:String
     var weight:String
     var members:[String]
+    var memberIndex : [Int]
 }
 
 struct WorkoutMemberList {
