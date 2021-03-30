@@ -57,7 +57,8 @@ class ListOfWorkoutViewController: UIViewController {
     
     func getAllWorkoutPlans()  {
         SVProgressHUD.show()
-        FireStoreManager.shared.getAllWorkout { (arr) in
+        let parentID = AppManager.shared.trainerID != "" ? AppManager.shared.trainerID : AppManager.shared.adminID
+        FireStoreManager.shared.getAllWorkout(parentID:parentID) { (arr) in
             self.workoutPlanListArray = arr
             self.workoutPlanListTable.reloadData()
             SVProgressHUD.dismiss()
@@ -125,17 +126,26 @@ class ListOfWorkoutViewController: UIViewController {
     
     
     @objc func deleteWorkout(_ gesture:UIGestureRecognizer){
-        SVProgressHUD.show()
-        let id = "\(gesture.view!.tag)"
+
         
-        FireStoreManager.shared.deleteWorkoutByID(id: id) { (err) in
-            if err == nil {
-                print("SUCCESS")
-                self.getAllWorkoutPlans()
-                SVProgressHUD.dismiss()
+        let deleteAlertController = UIAlertController(title: "Attention", message: "Do you really want to delete this workout plan ?", preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "Yes", style: .default) { (_) in
+                    SVProgressHUD.show()
+            let id = "\(gesture.view!.tag)"
+            
+            FireStoreManager.shared.deleteWorkoutByID(id: id) { (err) in
+                if err == nil {
+                    print("SUCCESS")
+                    self.getAllWorkoutPlans()
+                    SVProgressHUD.dismiss()
+                }
             }
         }
         
+        let cancelAlertAction = UIAlertAction(title: "No", style: .default, handler: nil)
+        deleteAlertController.addAction(okAlertAction)
+        deleteAlertController.addAction(cancelAlertAction)
+        present(deleteAlertController, animated: true, completion: nil)
     }
     
     

@@ -35,6 +35,7 @@ class AddNewWorkoutViewController: BaseViewController {
     @IBOutlet weak var memberListTable: UITableView!
     @IBOutlet weak var memberListDoneBtn: UIButton!
     @IBOutlet weak var mainScrollView: UIScrollView!
+    @IBOutlet weak var assignToMemberLabel: UILabel!
     
     private var leftBtn:UIButton = {
         let leftBtn = UIButton()
@@ -86,11 +87,15 @@ class AddNewWorkoutViewController: BaseViewController {
         stackView = UIStackView(arrangedSubviews: [spaceBtn,leftBtn])
         stackView?.widthAnchor.constraint(equalToConstant: 40).isActive = true
         setAddWorkoutNavigationBar()
+       // self.changeView()
         setTextFields()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.memberNameArray.removeAll()
+        
+        SVProgressHUD.show()
         
         DispatchQueue.global(qos: .background).async {
             let result = FireStoreManager.shared.getAllMembersNameAndID()
@@ -100,12 +105,15 @@ class AddNewWorkoutViewController: BaseViewController {
                     self.memberNameArray  = arr
                     if self.isNewWorkout == true  {
                         self.clearWokroutFields()
+                        self.memberListTable.reloadData()
                     }else {
                         self.fetchWorkoutBy(id: self.workoutID)
                     }
+                    SVProgressHUD.dismiss()
                     break
                 case .failure(_) :
                     print("FAILURE ")
+                    SVProgressHUD.dismiss()
                     break
                 }
             }
@@ -113,25 +121,51 @@ class AddNewWorkoutViewController: BaseViewController {
         
     }
     
+    func changeView()  {
+        if AppManager.shared.loggedInRole == LoggedInRole.Trainer {
+            setTextFields()
+        }else {
+            self.textFieldsArray.forEach { (textField) in
+                textField.backgroundColor = .clear
+                textField.isEnabled = false
+                textField.borderStyle = .none
+            }
+            
+            self.descriptionTextView.isUserInteractionEnabled = false
+            self.descriptionTextView.backgroundColor = .clear
+            self.descriptionTextView.layer.borderWidth = 0.0
+            
+            self.assignToMember.isHidden = true
+            self.assignToMember.alpha = 0.0
+            self.assignToMemberErrror.isHidden = true
+            self.assignToMemberErrror.alpha = 0.0
+            self.assignToMemberLabel.isHidden = true
+            self.assignToMemberLabel.alpha = 0.0
+            
+            self.addNewWorkoutBtn.isHidden = true
+            self.addNewWorkoutBtn.alpha = 0.0 
+        }
+    }
+    
     func fetchWorkoutBy(id:String) {
         SVProgressHUD.show()
         self.selectedMemberArray.removeAll()
-
-            FireStoreManager.shared.getWorkoutByID(id: id, handler: {
-                (workOut) in
-                
-                for singleID in workOut!.members {
-                    for member in self.memberNameArray {
-                        if member.memberID == singleID {
-                            self.selectedMemberArray.append(member.memberName)
-                        }
+        
+        FireStoreManager.shared.getWorkoutByID(id: id, handler: {
+            (workOut) in
+            
+            for singleID in workOut!.members {
+                for member in self.memberNameArray {
+                    if member.memberID == singleID {
+                        self.selectedMemberArray.append(member.memberName)
                     }
                 }
-                self.setWokoutPlanDataToFields(workoutPlan: workOut!)
-                self.memberListTable.reloadData()
-                self.setDataToAssignMemberField()
-                SVProgressHUD.dismiss()
-            })
+            }
+            self.setWokoutPlanDataToFields(workoutPlan: workOut!)
+            self.memberListTable.reloadData()
+            self.setDataToAssignMemberField()
+            SVProgressHUD.dismiss()
+        })
     }
 
     @objc func workoutPlanFieldsRequiredValidation( _ textField:UITextField)  {
@@ -190,7 +224,6 @@ class AddNewWorkoutViewController: BaseViewController {
     
     func setDataToAssignMemberField () {
         var str = ""
-        print("array : \(selectedMemberArray)")
         for singleMember in selectedMemberArray {
             str += "\(singleMember)  "
         }
@@ -208,24 +241,59 @@ class AddNewWorkoutViewController: BaseViewController {
         SVProgressHUD.show()
         self.workoutPlanValidation()
         if ValidationManager.shared.isWorkoutPlanFieldsValidated(textFieldArray: self.textFieldsArray, textView: self.descriptionTextView) == true {
-            self.isNewWorkout == true ?  addWorkoutPlanToDatabase(id: "\(Int.random(in: 9999..<1000000))") : addWorkoutPlanToDatabase(id: self.workoutID)
+            let parentID = AppManager.shared.trainerID != "" ? AppManager.shared.trainerID : AppManager.shared.adminID
+            self.isNewWorkout == true ?  addWorkoutPlanToDatabase(id: "\(Int.random(in: 9999..<1000000))",parentID:parentID ) : updateWorkoutPlan(id: self.workoutID)
         }else {
             SVProgressHUD.dismiss()
             print("ERROR ")
         }
     }
-    
-    func addWorkoutPlanToDatabase(id:String) {
-        FireStoreManager.shared.addNewWorkout(id:id , data: getDataFromTextFields()) { (err) in
+
+    func addWorkoutPlanToDatabase(id:String,parentID:String) {
+        FireStoreManager.shared.addNewWorkout(id:id,parentID:parentID,data:getDataFromTextFields()) { (err) in
             SVProgressHUD.dismiss()
             if err == nil {
-                self.showAlert(messageTitle: "Success", message: "New workout plan is added successfully.")
+                for (index,singleMemberID) in self.selectedMemberIDArray.enumerated() {
+                    FireStoreManager.shared.addWorkoutPlansToMember(memberID: singleMemberID, workoutID: id, handler: {
+                        err  in
+                        if err == nil {
+                            if index  == self.selectedMemberIDArray.count - 1  {
+                                self.showAlert(messageTitle: "Success", message: "New workout plan is added successfully.")
+                            }
+                        }else {
+                         self.showAlert(messageTitle: "Error", message: "Something went wrong, please try again.")
+                        }
+                    })
+                }
+                
             } else {
                 self.showAlert(messageTitle: "Error", message: "Something went wrong, please try again.")
             }
         }
     }
     
+    func updateWorkoutPlan(id:String) {
+        FireStoreManager.shared.updateWorkoutPlan(id: id, data: getDataFromTextFields()) { (err) in
+            if err == nil {
+                SVProgressHUD.dismiss()
+                for (index,singleMemberID) in self.selectedMemberIDArray.enumerated() {
+                    FireStoreManager.shared.addWorkoutPlansToMember(memberID: singleMemberID, workoutID: id, handler: {
+                        err  in
+                        if err == nil {
+                            if index  == self.selectedMemberIDArray.count - 1  {
+                                self.showAlert(messageTitle: "Success", message: "Workout plan is updated successfully.")
+                            }
+                        }else {
+                            self.showAlert(messageTitle: "Error", message: "Something went wrong, please try again.")
+                        }
+                    })
+                }
+            } else {
+              self.showAlert(messageTitle: "Error", message: "Something went wrong, please try again.")
+            }
+        }
+    }
+
     func clearWokroutFields()  {
         self.selectedIndexArray.removeAll()
         self.selectedMemberArray.removeAll()

@@ -72,8 +72,8 @@ extension MenuItemsViewController {
         case .Admin:
             array = ["Dashboard","Member","Trainer","Membership Plan","Visitors","Profile","Events","Gallary"," Videos","Workout Plans","Logout"]
         case .Trainer :
-            array = ["Dashboard","Gym Info","Home", "Member","Membership Plan","Profile","Visitors","Events","Gallary",
-                "Videos","Logout"]
+            array = ["Dashboard","Gym Info","Home", "Member","Membership Plan","Profile","Visitors","Events", "Gallary",
+                "Videos","Workout  Plan","Logout"]
             if AppManager.shared.trainerVisitorPermission == false  {
             array.remove(at: 6)
             }
@@ -81,7 +81,7 @@ extension MenuItemsViewController {
                 array.remove(at: 3)
             }
         case .Member :
-            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events", "Gallary","Videos","Logout"]
+            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events", "Gallary","Videos","Workout  Plan","Logout"]
         }
         return array
     }
@@ -184,6 +184,11 @@ extension MenuItemsViewController {
             self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gymVideoVC), animated: true)
             break
             
+        case memberIndex == 3 && visitorIndex == 6 ? 10 :visitorIndex == 6 || memberIndex == 3 ? 9 : 8 :
+            let workoutVC = self.storyBoard.instantiateViewController(withIdentifier: "workoutVC") as! ListOfWorkoutViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: workoutVC), animated: true)
+            break
+            
         default:
             self.appDelgate?.swRevealVC.revealToggle(animated: true)
             self.logOut()
@@ -224,6 +229,10 @@ extension MenuItemsViewController {
         case 7 :
             let gymVideoVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfVideosVC") as! ListOfVideosViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gymVideoVC), animated: true)
+            break
+        case 8:
+            let workoutVC = self.storyBoard.instantiateViewController(withIdentifier: "workoutVC") as! ListOfWorkoutViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: workoutVC), animated: true)
             break
         default:
             self.appDelgate?.swRevealVC.revealToggle(animated: true)

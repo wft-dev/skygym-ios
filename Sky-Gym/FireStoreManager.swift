@@ -16,11 +16,14 @@ import SVProgressHUD
 
 class FireStoreManager: NSObject {
     static let shared:FireStoreManager = FireStoreManager()
-    private override init() {}
     let fireDB = Firestore.firestore()
     let fireStorageRef = Storage.storage().reference()
-
+    var batch:WriteBatch? = nil
     
+    private override init() {
+        batch = fireDB.batch()
+    }
+
     func getGymInfo(gymID:String) -> Result<GymDetail,Error> {
         var result:Result<GymDetail,Error>!
         let semaphore = DispatchSemaphore(value: 0)
@@ -42,7 +45,6 @@ class FireStoreManager: NSObject {
         let _ = semaphore.wait(wallTimeout: .distantFuture)
         return result
     }
-    
     
     //FOR ADMIN LOGIN
     func isAdminLogin(email:String,password:String,result:@escaping (Bool,Error?)->Void) {
@@ -77,7 +79,6 @@ class FireStoreManager: NSObject {
         })
     }
     
-    
     func getAdminNameBy(id:String) -> Result<String,Error> {
         var result:Result<String,Error>!
         let semaphores = DispatchSemaphore(value: 0)
@@ -94,7 +95,6 @@ class FireStoreManager: NSObject {
         let _ = semaphores.wait(timeout: .distantFuture)
         return result
     }
-    
     
     func trainerOrMemberLogin(collectionPath:String,gymID:String,email:String,password:String,result:@escaping (Bool,Error?) -> Void) {
         let encryptedPassword = AppManager.shared.encryption(plainText: password)
@@ -337,6 +337,7 @@ class FireStoreManager: NSObject {
         let month = Calendar.current.dateComponents([.month], from: Date()).month!
         let attendence = AppManager.shared.getCompleteInitialStructure(year: year, month: month,checkIn: "", checkOut: "", present: false)
         let parentID = AppManager.shared.loggedInRole == LoggedInRole.Trainer ? AppManager.shared.trainerID : AppManager.shared.adminID
+        let workoutPlans:[String] = []
 
         self.fireDB.collection("/Members").document("/\(memberID)").setData(
             [
@@ -347,7 +348,8 @@ class FireStoreManager: NSObject {
                 "memberDetail":memberDetail,
                 "memberships":memberships,
                 "attendence" :attendence,
-                "timeStamp":Date().timeIntervalSince1970
+                "timeStamp":Date().timeIntervalSince1970,
+                "wokroutPlans" : workoutPlans
             ] , completion: {
                 err in
                 handler(err)
@@ -1980,35 +1982,46 @@ class FireStoreManager: NSObject {
         return result
     }
 
-    func addNewWorkout(id:String,data:Dictionary<String,Any>,handler:@escaping (Error?) -> Void) {
+    func addNewWorkout(id:String,parentID:String,data:Dictionary<String,Any>,handler:@escaping (Error?) -> Void) {
         fireDB.collection("workoutPlan").document("\(id)").setData([
             "timeStamp" : Date().timeIntervalSince1970,
             "workoutID":id,
+            "workoutPlan":data,
+            "parentID" : parentID
+        ]) { (err) in
+            handler(err)
+        }
+    }
+    
+    func updateWorkoutPlan(id:String,data:Dictionary<String,Any>,handler:@escaping (Error?) -> Void) {
+        fireDB.collection("workoutPlan").document("\(id)").updateData([
             "workoutPlan":data
         ]) { (err) in
             handler(err)
         }
     }
     
-    func getAllWorkout(handler:@escaping ([WorkoutPlanList]) -> Void) {
+    func getAllWorkout(parentID:String,handler:@escaping ([WorkoutPlanList]) -> Void) {
         var workoutPlan:[WorkoutPlanList] = []
         fireDB.collection("workoutPlan")
-        .order(by: "timeStamp", descending: false)
+            .order(by: "timeStamp", descending: false)
+           // .whereField("parentID", isEqualTo: parentID)
             .getDocuments { (querySnapshot, err) in
-            if err == nil && (querySnapshot?.documents.count)! > 0 {
-                for singleDoc in querySnapshot!.documents {
-                    let workoutData = singleDoc.data()
-                    workoutPlan.append(AppManager.shared.getWorkoutPlanList(data:workoutData))
+                if err == nil && (querySnapshot?.documents.count)! > 0 {
+                    for singleDoc in querySnapshot!.documents {
+                        let workoutData = singleDoc.data()
+                        workoutPlan.append(AppManager.shared.getWorkoutPlanList(data:workoutData))
+                    }
+                    handler(workoutPlan)
+                }else {
+                    handler([])
                 }
-                handler(workoutPlan)
-            }else {
-                handler([])
-            }
         }
     }
     
     func getWorkoutByID(id:String,handler:@escaping (WorkoutPlan?) -> Void ) {
-        fireDB.collection("workoutPlan").document(id).getDocument { (docSnapshot, err) in
+        fireDB.collection("workoutPlan").document(id)
+            .getDocument { (docSnapshot, err) in
             if err == nil && docSnapshot!.exists  == true {
                 handler(AppManager.shared.getWorkoutPlan(data: docSnapshot!.data()!))
             } else {
@@ -2022,7 +2035,23 @@ class FireStoreManager: NSObject {
             handler(err)
         }
     }
-   
+    
+    func addWorkoutPlansToMember(memberID:String,workoutID:String,handler:@escaping (Error?) -> Void) {
+        let ref = fireDB.collection("Members").document(memberID)
+        ref.getDocument { (docSnapshot, err) in
+            if err == nil && docSnapshot?.exists == true {
+                let data  = docSnapshot!.data()
+                var workoutPlans = data?["workoutPlans"] as! [String]
+                workoutPlans.append(workoutID)
+                ref.updateData(["workoutPlan" : workoutPlans], completion: {
+                    errWorkout in
+                    handler(errWorkout)
+                })
+            }else {
+                handler(err)
+            }
+        }
+    }
     
 }
 

@@ -182,9 +182,6 @@ class AddMemberViewController: BaseViewController {
         print("User info : \(self.getMemberDetails())")
         print("Member ship info : \(self.getMembershipDetails())")
       //  })
-        
-
-        
     }
     
     @objc func showTrainerList() {
@@ -230,7 +227,7 @@ class AddMemberViewController: BaseViewController {
         if ValidationManager.shared.isMembershipFieldsValidated(textFieldArray: self.membershipFieldArray, textView: self.membershipDetailTextView) == true {
             switch self.updateBtn.tag {
             case 0101:
-                 self.cashPaymentUpdateBtnAction()
+                self.cashPaymentUpdateBtnAction()
                 break
             case 1011 :
                 self.onlinePaymentUpdateAction()
@@ -731,8 +728,6 @@ class AddMemberViewController: BaseViewController {
         let memberID = memberDetail["memberID"]
         let email = memberDetail["email"]
         if self.isAlreadyExistsEmail == false {
-            print("member id : ++++++++++++ \(self.memberIDTextField.text!)")
-            print("member id : ++++++++++++ \(memberID!)")
             FireStoreManager.shared.addNewUserCredentials(id: memberID!, email: email!, password:encryptedPassword!, handler: {
                 (err) in
                 
