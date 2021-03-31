@@ -2043,7 +2043,7 @@ class FireStoreManager: NSObject {
                 let data  = docSnapshot!.data()
                 var workoutPlans = data?["workoutPlans"] as! [String]
                 workoutPlans.append(workoutID)
-                ref.updateData(["workoutPlan" : workoutPlans], completion: {
+                ref.updateData(["workoutPlans" : workoutPlans], completion: {
                     errWorkout in
                     handler(errWorkout)
                 })
