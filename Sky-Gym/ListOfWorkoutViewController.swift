@@ -19,8 +19,8 @@ class ListOfWorkoutTableCell: UITableViewCell {
 }
 
 class ListOfWorkoutViewController: UIViewController {
-
     @IBOutlet weak var workoutPlanListTable: UITableView!
+    @IBOutlet weak var addNewWorkoutBtn: UIButton!
     
     private var menuBtn:UIButton = {
         let menuBtn = UIButton()
@@ -30,10 +30,19 @@ class ListOfWorkoutViewController: UIViewController {
         menuBtn.widthAnchor.constraint(equalToConstant: 30).isActive = true
         return menuBtn
     }()
+    
+    private var backBtn:UIButton = {
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "left-arrow"), for: .normal)
+        backButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        backButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        return backButton
+    }()
 
     var workoutPlanListArray :[WorkoutPlanList] = []
-    
     var addWorkoutVC:AddNewWorkoutViewController? = nil
+    var stackView :UIStackView? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,13 +55,47 @@ class ListOfWorkoutViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.getAllWorkoutPlans()
+        if AppManager.shared.loggedInRole == LoggedInRole.Trainer || AppManager.shared.loggedInRole == LoggedInRole.Admin{
+            getAllWorkoutPlans()
+            addNewWorkoutBtn.isHidden = false
+            addNewWorkoutBtn.alpha = 1.0
+        } else {
+            addNewWorkoutBtn.isHidden = true
+            addNewWorkoutBtn.alpha = 0.0
+            getAllMemberWokroutPlans()
+        }
     }
     
     
     @IBAction func addNewWorkout(_ sender: Any) {
         addWorkoutVC?.isNewWorkout = true
+        addWorkoutVC?.workoutID = ""
         self.navigationController?.pushViewController(addWorkoutVC!, animated: true)
+    }
+    
+    func getAllMemberWokroutPlans() {
+        self.workoutPlanListArray.removeAll()
+        SVProgressHUD.show()
+        FireStoreManager.shared.getWorkoutPlansIDsForMember(memberID: AppManager.shared.memberID, handler: {
+            (idArray) in
+            if idArray.count > 0 {
+                for (index,id) in idArray.enumerated() {
+                    FireStoreManager.shared.getWorkoutByID(id: id, handler: {
+                        (workout) in
+                        self.workoutPlanListArray.append(WorkoutPlanList(workoutID: workout!.workoutID, workoutPlan: workout!.workoutPlan, numberOfSets: workout!.sets, numberOfReps: workout!.reps, weight: workout!.weight))
+                        
+                        if index == self.workoutPlanListArray.count - 1 {
+                            self.workoutPlanListTable.reloadData()
+                            SVProgressHUD.dismiss()
+                        }
+                        
+                    })
+                }
+                
+            }else {
+                SVProgressHUD.dismiss()
+            }
+        })
     }
     
     func getAllWorkoutPlans()  {
@@ -64,7 +107,6 @@ class ListOfWorkoutViewController: UIViewController {
             SVProgressHUD.dismiss()
         }
     }
-    
     
     func addWorkoutPlanCustomSwipe(cellView:UIView,cell:ListOfWorkoutTableCell) {
         let leftSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(eventLeftSwipeAction(_:)))
@@ -111,7 +153,6 @@ class ListOfWorkoutViewController: UIViewController {
         deleteView.superview?.sendSubviewToBack(deleteView)
     }
     
-    
     @objc func eventLeftSwipeAction(_ gesture:UIGestureRecognizer){
         UIView.animate(withDuration: 0.4, animations: {
             gesture.view?.frame.origin.x = -((gesture.view?.frame.width)!/2)
@@ -124,9 +165,7 @@ class ListOfWorkoutViewController: UIViewController {
         })
     }
     
-    
     @objc func deleteWorkout(_ gesture:UIGestureRecognizer){
-
         
         let deleteAlertController = UIAlertController(title: "Attention", message: "Do you really want to delete this workout plan ?", preferredStyle: .alert)
         let okAlertAction = UIAlertAction(title: "Yes", style: .default) { (_) in
@@ -148,7 +187,6 @@ class ListOfWorkoutViewController: UIViewController {
         present(deleteAlertController, animated: true, completion: nil)
     }
     
-    
     func setListOfWorkoutNavigationBar()  {
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
@@ -160,14 +198,21 @@ class ListOfWorkoutViewController: UIViewController {
         titleLabel.attributedText = title
         navigationItem.titleView = titleLabel
         menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
-        
+        backBtn.addTarget(self, action: #selector(traineAttendenceBackBtnAction), for: .touchUpInside)
         let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
-        let stackView = UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
-        stackView.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView), animated: true)
+        
+        if AppManager.shared.loggedInRole == LoggedInRole.Member {
+            stackView = UIStackView(arrangedSubviews: [spaceBtn,backBtn])
+        } else {
+            stackView =  UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
+        }
+        stackView?.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView!), animated: true)
     }
     
      @objc func menuChange() {  AppManager.shared.appDelegate.swRevealVC.revealToggle(self) }
+    
+    @objc func traineAttendenceBackBtnAction() {  self.navigationController?.popViewController(animated: true) }
     
 }
 
@@ -197,7 +242,9 @@ extension ListOfWorkoutViewController : UITableViewDataSource {
         cell.workoutMainView.tag = Int(singleWorkout.workoutID)!
         
         cell.selectionStyle = .none
-        addWorkoutPlanCustomSwipe(cellView: cell.workoutMainView, cell: cell)
+        if AppManager.shared.loggedInRole != LoggedInRole.Member {
+            addWorkoutPlanCustomSwipe(cellView: cell.workoutMainView, cell: cell)
+        }
         
         return cell
         

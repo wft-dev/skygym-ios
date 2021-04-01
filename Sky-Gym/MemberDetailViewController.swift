@@ -46,7 +46,7 @@ class MemberDetailViewController: BaseViewController {
         self.msgLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(msgAction)))
         
         if AppManager.shared.loggedInRole == LoggedInRole.Member {
-        memberDetailOptionArrary = ["Current membership details","Purchase","Attendence",""]
+        memberDetailOptionArrary = ["Current membership details","Purchase","Attendence", "Workout Plans",""]
         }else {
           memberDetailOptionArrary = ["Add new Membership","Current membership details","Purchase","Attendence",""]
         }
@@ -268,6 +268,10 @@ extension MemberDetailViewController:UITableViewDelegate{
             attendenceVC.memberUserImgData = self.memberImg?.image?.pngData()
             self.navigationController?.pushViewController(attendenceVC, animated: true)
             
+        case AppManager.shared.loggedInRole == LoggedInRole.Member ? 3 : 4 :
+            let workoutVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "workoutVC") as! ListOfWorkoutViewController
+            self.navigationController?.pushViewController(workoutVC, animated: true)
+            break
         default:
             break
         }

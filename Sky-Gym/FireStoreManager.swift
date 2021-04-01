@@ -2042,13 +2042,26 @@ class FireStoreManager: NSObject {
             if err == nil && docSnapshot?.exists == true {
                 let data  = docSnapshot!.data()
                 var workoutPlans = data?["workoutPlans"] as! [String]
-                workoutPlans.append(workoutID)
-                ref.updateData(["workoutPlans" : workoutPlans], completion: {
-                    errWorkout in
-                    handler(errWorkout)
-                })
+                if workoutPlans.contains(workoutID) == false {
+                   workoutPlans.append(workoutID)
+                    ref.updateData(["workoutPlans" : workoutPlans], completion: {
+                        errWorkout in
+                        handler(errWorkout)
+                    })
+                }else { handler(nil) }
             }else {
                 handler(err)
+            }
+        }
+    }
+    
+    func getWorkoutPlansIDsForMember(memberID:String,handler:@escaping ([String]) -> Void )  {
+        let ref = fireDB.collection("Members").document(memberID)
+        ref.getDocument { (docSnapshot, err) in
+            if err == nil && docSnapshot?.exists == true {
+                let data = docSnapshot?.data()
+                let wokroutPlans = data?["workoutPlans"] as! [String]
+                handler(wokroutPlans)
             }
         }
     }

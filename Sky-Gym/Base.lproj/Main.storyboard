@@ -12176,6 +12176,7 @@
                         <viewLayoutGuide key="safeArea" id="dZd-Vy-KLs"/>
                     </view>
                     <connections>
+                        <outlet property="addNewWorkoutBtn" destination="U7c-b8-NMm" id="h2Y-Fc-V8Q"/>
                         <outlet property="workoutPlanListTable" destination="0Mq-wz-GSP" id="aM2-f3-kay"/>
                     </connections>
                 </viewController>
@@ -12323,7 +12324,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yps-rZ-4Cl">
-                                                <rect key="frame" x="25" y="295" width="270" height="1"/>
+                                                <rect key="frame" x="25" y="290" width="270" height="1"/>
                                                 <color key="backgroundColor" systemColor="systemGray3Color" red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="i31-FL-7sV"/>
@@ -12413,10 +12414,22 @@
                                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </state>
                                             </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MP7-Br-jyv">
+                                                <rect key="frame" x="25" y="428" width="270" height="55"/>
+                                                <color key="backgroundColor" red="0.027450980390000001" green="0.10980392160000001" blue="0.1450980392" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="55" id="7Xy-o2-OQK"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="Poppins-Medium" family="Poppins" pointSize="18"/>
+                                                <state key="normal" title="Add A Reminder">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <constraints>
                                             <constraint firstItem="F96-8a-PO2" firstAttribute="bottom" secondItem="Ee2-01-l0b" secondAttribute="bottom" id="0Vh-xy-b0E"/>
+                                            <constraint firstAttribute="trailing" secondItem="MP7-Br-jyv" secondAttribute="trailing" constant="25" id="0l6-xw-1dx"/>
                                             <constraint firstItem="F96-8a-PO2" firstAttribute="trailing" secondItem="Ee2-01-l0b" secondAttribute="trailing" id="0t2-5N-FL3"/>
                                             <constraint firstItem="6fP-fT-AKq" firstAttribute="leading" secondItem="pXO-Ci-zP6" secondAttribute="leading" constant="25" id="1SM-yx-cfh"/>
                                             <constraint firstItem="A4C-Ce-2lD" firstAttribute="leading" secondItem="pXO-Ci-zP6" secondAttribute="leading" constant="25" id="30u-en-OKo"/>
@@ -12437,7 +12450,7 @@
                                             <constraint firstItem="yrb-0G-wcQ" firstAttribute="top" secondItem="o5x-nn-q36" secondAttribute="bottom" constant="3" id="DzZ-xy-oA9"/>
                                             <constraint firstItem="7gp-AS-uya" firstAttribute="top" secondItem="1W9-ec-DpN" secondAttribute="bottom" priority="250" constant="10" id="Ekg-gB-vCn"/>
                                             <constraint firstItem="Gj9-DK-TF8" firstAttribute="trailing" secondItem="mFE-Mo-dmL" secondAttribute="trailing" id="FDA-Mj-xG8"/>
-                                            <constraint firstItem="p0o-Tb-63O" firstAttribute="top" secondItem="yps-rZ-4Cl" secondAttribute="bottom" constant="20" id="FS4-fH-dgv"/>
+                                            <constraint firstItem="p0o-Tb-63O" firstAttribute="top" secondItem="yps-rZ-4Cl" secondAttribute="bottom" constant="25" id="FS4-fH-dgv"/>
                                             <constraint firstItem="1W9-ec-DpN" firstAttribute="leading" secondItem="pXO-Ci-zP6" secondAttribute="leading" constant="25" id="FVD-34-AI5"/>
                                             <constraint firstItem="jtR-m7-La5" firstAttribute="leading" secondItem="Yip-oT-OsJ" secondAttribute="leading" id="Fbk-0d-daC"/>
                                             <constraint firstItem="Ydm-js-nDw" firstAttribute="leading" secondItem="pXO-Ci-zP6" secondAttribute="leading" constant="25" id="HJT-Ci-dq5"/>
@@ -12465,6 +12478,7 @@
                                             <constraint firstItem="8JD-D3-HnI" firstAttribute="top" secondItem="uhc-dA-keo" secondAttribute="bottom" constant="20" id="URz-E2-oqa"/>
                                             <constraint firstItem="7hF-P4-mXb" firstAttribute="leading" secondItem="pXO-Ci-zP6" secondAttribute="leading" constant="25" id="VVm-mE-4iH"/>
                                             <constraint firstAttribute="trailing" secondItem="WUk-Ej-6oc" secondAttribute="trailing" constant="30" id="WnH-Pk-0X0"/>
+                                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="MP7-Br-jyv" secondAttribute="bottom" constant="20" id="XKT-gd-crt"/>
                                             <constraint firstAttribute="trailing" secondItem="6fP-fT-AKq" secondAttribute="trailing" constant="25" id="XUU-dt-g33"/>
                                             <constraint firstAttribute="trailing" secondItem="yps-rZ-4Cl" secondAttribute="trailing" constant="25" id="Xwb-C7-9VW"/>
                                             <constraint firstAttribute="trailing" secondItem="7hF-P4-mXb" secondAttribute="trailing" constant="25" id="Y7T-Jb-NKG"/>
@@ -12498,6 +12512,7 @@
                                             <constraint firstAttribute="trailing" secondItem="b3y-Dl-3b9" secondAttribute="trailing" constant="25" id="kKE-Au-g7z"/>
                                             <constraint firstItem="7gp-AS-uya" firstAttribute="centerY" secondItem="Id3-a9-k6J" secondAttribute="centerY" id="kWM-Uz-KgI"/>
                                             <constraint firstItem="i5h-OC-beQ" firstAttribute="leading" secondItem="Id3-a9-k6J" secondAttribute="trailing" constant="20" id="kzg-MN-eh7"/>
+                                            <constraint firstItem="MP7-Br-jyv" firstAttribute="leading" secondItem="pXO-Ci-zP6" secondAttribute="leading" constant="25" id="lsA-Eb-VDh"/>
                                             <constraint firstItem="pnK-By-dgE" firstAttribute="leading" secondItem="pXO-Ci-zP6" secondAttribute="leading" constant="25" id="mcV-dw-L0e"/>
                                             <constraint firstItem="Yip-oT-OsJ" firstAttribute="leading" secondItem="T75-4N-xEk" secondAttribute="trailing" constant="20" id="nl9-IG-oM9"/>
                                             <constraint firstItem="F96-8a-PO2" firstAttribute="top" secondItem="Ee2-01-l0b" secondAttribute="top" id="ou2-il-jyh"/>
@@ -12513,6 +12528,7 @@
                                             <constraint firstItem="Yip-oT-OsJ" firstAttribute="centerY" secondItem="T75-4N-xEk" secondAttribute="centerY" id="uGp-Zh-vqr"/>
                                             <constraint firstItem="uhc-dA-keo" firstAttribute="leading" secondItem="pXO-Ci-zP6" secondAttribute="leading" constant="25" id="uj0-OG-sgI"/>
                                             <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Ydm-js-nDw" secondAttribute="bottom" constant="20" id="vXH-Z0-fGa"/>
+                                            <constraint firstItem="MP7-Br-jyv" firstAttribute="top" secondItem="Ydm-js-nDw" secondAttribute="bottom" constant="80" id="wyp-fr-cQ4"/>
                                             <constraint firstAttribute="trailing" secondItem="yrb-0G-wcQ" secondAttribute="trailing" constant="25" id="yFH-4a-Pys"/>
                                             <constraint firstItem="L5d-3j-XYo" firstAttribute="leading" secondItem="gYe-Om-9MX" secondAttribute="leading" id="yq8-IO-cHd"/>
                                             <constraint firstAttribute="trailing" secondItem="Yip-oT-OsJ" secondAttribute="trailing" constant="25" id="zic-li-5ZK"/>
@@ -12626,6 +12642,7 @@
                     </view>
                     <connections>
                         <outlet property="addNewWorkoutBtn" destination="WUk-Ej-6oc" id="sRo-yq-5gY"/>
+                        <outlet property="addReminderBtn" destination="MP7-Br-jyv" id="0Jo-0c-Dlg"/>
                         <outlet property="assignToMember" destination="Ee2-01-l0b" id="3ud-e8-ien"/>
                         <outlet property="assignToMemberErrror" destination="5qT-ck-FUx" id="JHl-8o-XuC"/>
                         <outlet property="assignToMemberLabel" destination="pnK-By-dgE" id="ZWE-Rd-h4B"/>
@@ -12651,6 +12668,7 @@
                         <outlet property="setsError" destination="lmZ-zi-tAe" id="Vfu-Ul-8T1"/>
                         <outlet property="setsHrLineView" destination="7hF-P4-mXb" id="YVY-ZK-lxl"/>
                         <outlet property="showMemberListBtn" destination="F96-8a-PO2" id="VM5-YP-KE7"/>
+                        <outlet property="topRepConstraint" destination="pSi-QZ-Lht" id="x4l-nr-pas"/>
                         <outlet property="weight" destination="Yip-oT-OsJ" id="O5c-rg-QnF"/>
                         <outlet property="weightError" destination="jtR-m7-La5" id="oYi-cI-ow1"/>
                         <outlet property="weightHrLineView" destination="Ydm-js-nDw" id="JgC-QE-ner"/>

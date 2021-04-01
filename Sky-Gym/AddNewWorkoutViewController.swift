@@ -54,7 +54,10 @@ class AddNewWorkoutViewController: BaseViewController {
     @IBOutlet  var desctiptionTopConstraint: NSLayoutConstraint!
     @IBOutlet  var setTopConstraint: NSLayoutConstraint!
     @IBOutlet  var repTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var topRepConstraint: NSLayoutConstraint!
     
+    @IBOutlet weak var addReminderBtn: UIButton!
+ 
     private var leftBtn:UIButton = {
         let leftBtn = UIButton()
         leftBtn.setImage(UIImage(named: "left-arrow"), for: .normal)
@@ -64,12 +67,24 @@ class AddNewWorkoutViewController: BaseViewController {
         return leftBtn
     }()
     
+    private var editBtn:UIButton = {
+        let editBtn = UIButton()
+        editBtn.setImage(UIImage(named: "edit"), for: .normal)
+        editBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+        editBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        editBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
+        return editBtn
+    }()
+    
     private var pickerView :UIPickerView = {
        return UIPickerView()
     }()
     
     let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     var stackView : UIStackView? = nil
+    
+    let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+    var rightStackView : UIStackView? = nil
     
     var isNewWorkout:Bool = false
     var workoutID:String = ""
@@ -100,6 +115,7 @@ class AddNewWorkoutViewController: BaseViewController {
         self.hrLineView = [ workoutPlanHrLineView,workoutDescriptionHrLineView, setsHrLineView, repsHrLineView, weightHrLineView ]
         
         addNewWorkoutBtn.addTarget(self, action: #selector(addNewWorkoutPlan), for: .touchUpInside)
+        
         pickerView.delegate = self
         pickerView.dataSource = self
         memberListTable.delegate = self
@@ -110,17 +126,22 @@ class AddNewWorkoutViewController: BaseViewController {
         assignToMember.isEnabled = false
         memberListView.isHidden = true
         memberListView.alpha = 0.0
+        
         stackView = UIStackView(arrangedSubviews: [spaceBtn,leftBtn])
         stackView?.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        rightStackView = UIStackView(arrangedSubviews: [editBtn,rightSpaceBtn])
+        rightStackView?.widthAnchor.constraint(equalToConstant: 28).isActive = true
+        
         setAddWorkoutNavigationBar()
-        self.changeView()
+        
         setTextFields()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.memberNameArray.removeAll()
-        
+        self.changeView()
         SVProgressHUD.show()
         
         DispatchQueue.global(qos: .background).async {
@@ -130,11 +151,14 @@ class AddNewWorkoutViewController: BaseViewController {
                 case let  .success(arr) :
                     self.memberNameArray  = arr
                     if self.isNewWorkout == true  {
+                        self.addNewWorkoutBtn.setTitle("A D D", for: .normal)
                         self.clearWokroutFields()
                         self.memberListTable.reloadData()
                     }else {
+                        self.addNewWorkoutBtn.setTitle("U P D A T E", for: .normal)
                         self.fetchWorkoutBy(id: self.workoutID)
                     }
+                    
                     SVProgressHUD.dismiss()
                     break
                 case .failure(_) :
@@ -147,7 +171,11 @@ class AddNewWorkoutViewController: BaseViewController {
     }
     
     func changeView()  {
-        if AppManager.shared.loggedInRole == LoggedInRole.Member {
+        print("NEW WORKOUT : \(self.isNewWorkout)  : WORK OUT ID : \(self.workoutID)")
+        if self.isNewWorkout == false || self.workoutID  != "" {
+            navigationItem.setRightBarButton(UIBarButtonItem(customView: rightStackView!), animated: true)
+            
+            showMemberListBtn.isEnabled = false
             assignToMemberLabel.isHidden = true
             assignToMemberLabel.alpha = 0.0
             addNewWorkoutBtn.isHidden = true
@@ -167,6 +195,8 @@ class AddNewWorkoutViewController: BaseViewController {
             hideNonEditLabel(hide: false)
             hideHrLineView(hide: false)
         } else {
+            self.navigationItem.rightBarButtonItem = nil
+            showMemberListBtn.isEnabled = true
             assignToMemberLabel.isHidden = false
             assignToMemberLabel.alpha = 1.0
             addNewWorkoutBtn.isHidden = false
@@ -174,13 +204,13 @@ class AddNewWorkoutViewController: BaseViewController {
             descriptionTextView.isHidden = false
             descriptionTextView.alpha = 1.0
             
-            nonEditRepsTopConstraint.isActive = false
-            nonEditSetsTopConstraint.isActive = false
-            nonEditDescriptionTopConstraint.isActive = false
+            nonEditRepsTopConstraint.isActive = true
+            nonEditSetsTopConstraint.isActive = true
+            nonEditDescriptionTopConstraint.isActive = true
             
             setTopConstraint.priority = .defaultHigh
             desctiptionTopConstraint.priority = .defaultHigh
-             repTopConstraint.priority = .defaultHigh
+            repTopConstraint.priority = .defaultHigh
             
             hideTextFieldArray(hide: false)
             hideNonEditLabel(hide: true)
@@ -207,6 +237,10 @@ class AddNewWorkoutViewController: BaseViewController {
             $0.isHidden = hide
             $0.alpha = hide == false ? 1.0 : 0.0
         }
+    }
+    
+    func addNotification(date:Date)  {
+        
     }
     
     func fetchWorkoutBy(id:String) {
@@ -262,22 +296,15 @@ class AddNewWorkoutViewController: BaseViewController {
         leftBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
         navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView!), animated: true)
         
-        let editBtn = UIButton()
-        editBtn.setImage(UIImage(named: "edit"), for: .normal)
-        editBtn.addTarget(self, action: #selector(makeProfileEditable), for: .touchUpInside)
-        editBtn.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-        editBtn.heightAnchor.constraint(equalToConstant: 18).isActive = true
-        editBtn.widthAnchor.constraint(equalToConstant: 18).isActive = true
-        let rightSpaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
-        let rightStackView = UIStackView(arrangedSubviews: [editBtn,rightSpaceBtn])
-        rightStackView.widthAnchor.constraint(equalToConstant: 28).isActive = true
-        let rightBtn = UIBarButtonItem(customView: rightStackView)
-        navigationItem.rightBarButtonItem = rightBtn
+        if AppManager.shared.loggedInRole != LoggedInRole.Member || self.isNewWorkout == false {
+            editBtn.addTarget(self, action: #selector(makeProfileEditable), for: .touchUpInside)
+            navigationItem.setRightBarButton(UIBarButtonItem(customView: rightStackView!), animated: true)
+        }
+
     }
     
     @objc func makeProfileEditable(){
         isEdit = !isEdit
-    
         let priority:UILayoutPriority = !isEdit == true ? .defaultHigh : .defaultLow
         
         assignToMemberLabel.isHidden = isEdit
@@ -286,16 +313,16 @@ class AddNewWorkoutViewController: BaseViewController {
         addNewWorkoutBtn.alpha = isEdit == true ? 0.0 : 1.0
         descriptionTextView.isHidden = isEdit
         descriptionTextView.alpha = isEdit == true ? 0.0 : 1.0
+        showMemberListBtn.isEnabled = !isEdit
         
-        DispatchQueue.main.async {
-            self.nonEditRepsTopConstraint.isActive =  self.isEdit
-            self.nonEditSetsTopConstraint.isActive = self.isEdit
-            self.nonEditDescriptionTopConstraint.isActive = self.isEdit
-        }
+        self.nonEditRepsTopConstraint.isActive =  self.isEdit
+        self.nonEditSetsTopConstraint.isActive = self.isEdit
+        self.nonEditDescriptionTopConstraint.isActive = self.isEdit
         
         setTopConstraint.priority = priority
         desctiptionTopConstraint.priority = priority
         repTopConstraint.priority = priority
+        topRepConstraint.priority = priority
         
         hideTextFieldArray(hide: isEdit)
         hideNonEditLabel(hide: !isEdit)
@@ -305,6 +332,7 @@ class AddNewWorkoutViewController: BaseViewController {
     @objc func showMemberList() {
         self.navigationItem.hidesBackButton = true
         self.navigationItem.leftBarButtonItems = nil
+        self.navigationItem.rightBarButtonItem = nil
         mainScrollView.isScrollEnabled = false
         addNewWorkoutBtn.isHidden = true
         addNewWorkoutBtn.alpha = 0.0
@@ -314,6 +342,7 @@ class AddNewWorkoutViewController: BaseViewController {
     
     @objc func memberListAction() {
         navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView!), animated: true)
+        navigationItem.setRightBarButton(UIBarButtonItem(customView: rightStackView!), animated: true)
         mainScrollView.isScrollEnabled = true
         addNewWorkoutBtn.isHidden = false
         addNewWorkoutBtn.alpha = 1.0

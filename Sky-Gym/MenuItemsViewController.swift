@@ -81,7 +81,7 @@ extension MenuItemsViewController {
                 array.remove(at: 3)
             }
         case .Member :
-            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events", "Gallary","Videos","Workout  Plan","Logout"]
+            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events", "Gallary","Videos","Logout"]
         }
         return array
     }
@@ -229,10 +229,6 @@ extension MenuItemsViewController {
         case 7 :
             let gymVideoVC = self.storyBoard.instantiateViewController(withIdentifier: "listOfVideosVC") as! ListOfVideosViewController
             self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gymVideoVC), animated: true)
-            break
-        case 8:
-            let workoutVC = self.storyBoard.instantiateViewController(withIdentifier: "workoutVC") as! ListOfWorkoutViewController
-            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: workoutVC), animated: true)
             break
         default:
             self.appDelgate?.swRevealVC.revealToggle(animated: true)
