@@ -38,6 +38,7 @@
 		4259DC1F2523121C00F08FA6 /* MemberAndTrainerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */; };
 		4259DC212523469A00F08FA6 /* ListOfMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4259DC202523469A00F08FA6 /* ListOfMembersViewController.swift */; };
 		425B31682604D19E002D23DD /* ListOfVideosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425B31672604D19E002D23DD /* ListOfVideosViewController.swift */; };
+		425CF7A6261725EF000C9EC2 /* AddReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425CF7A5261725EF000C9EC2 /* AddReminderViewController.swift */; };
 		425E40D32599F0DB0052401F /* TrainerProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425E40D22599F0DB0052401F /* TrainerProfileViewController.swift */; };
 		42651AD225301FF700539B19 /* TrainerAttendanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD125301FF700539B19 /* TrainerAttendanceViewController.swift */; };
 		42651AD425303F1500539B19 /* ListOfMembershipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD325303F1500539B19 /* ListOfMembershipViewController.swift */; };
@@ -98,6 +99,7 @@
 		4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAndTrainerDetailView.swift; sourceTree = "<group>"; };
 		4259DC202523469A00F08FA6 /* ListOfMembersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfMembersViewController.swift; sourceTree = "<group>"; };
 		425B31672604D19E002D23DD /* ListOfVideosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfVideosViewController.swift; sourceTree = "<group>"; };
+		425CF7A5261725EF000C9EC2 /* AddReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReminderViewController.swift; sourceTree = "<group>"; };
 		425E40D22599F0DB0052401F /* TrainerProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerProfileViewController.swift; sourceTree = "<group>"; };
 		42651AD125301FF700539B19 /* TrainerAttendanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerAttendanceViewController.swift; sourceTree = "<group>"; };
 		42651AD325303F1500539B19 /* ListOfMembershipViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfMembershipViewController.swift; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 				425B31672604D19E002D23DD /* ListOfVideosViewController.swift */,
 				424FD2F1260A10D300D8D811 /* ListOfWorkoutViewController.swift */,
 				422FD426260B16C0001052C9 /* AddNewWorkoutViewController.swift */,
+				425CF7A5261725EF000C9EC2 /* AddReminderViewController.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -384,6 +387,7 @@
 				424BA43125D121F0000F1B1B /* ProfileAdminViewController.swift in Sources */,
 				42651AD425303F1500539B19 /* ListOfMembershipViewController.swift in Sources */,
 				42446A28256FA7AE00F966FD /* Validator.swift in Sources */,
+				425CF7A6261725EF000C9EC2 /* AddReminderViewController.swift in Sources */,
 				423C02B925E7DAA700F548CD /* ChatViewController.swift in Sources */,
 				42BC9BF6252D82EE00435000 /* MemberAttandanceViewController.swift in Sources */,
 				422FD427260B16C0001052C9 /* AddNewWorkoutViewController.swift in Sources */,

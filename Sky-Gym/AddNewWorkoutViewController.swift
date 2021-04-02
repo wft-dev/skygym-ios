@@ -8,6 +8,7 @@
 
 import UIKit
 import SVProgressHUD
+import UserNotifications
 
 
 class MemberListForWorkoutCell: UITableViewCell {
@@ -100,6 +101,7 @@ class AddNewWorkoutViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        requestReminder()
         setWorkOutUI()
     }
     
@@ -136,6 +138,8 @@ class AddNewWorkoutViewController: BaseViewController {
         setAddWorkoutNavigationBar()
         
         setTextFields()
+        
+        addReminderBtn.addTarget(self, action: #selector(addReminder), for: .touchUpInside)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -171,10 +175,16 @@ class AddNewWorkoutViewController: BaseViewController {
     }
     
     func changeView()  {
-        print("NEW WORKOUT : \(self.isNewWorkout)  : WORK OUT ID : \(self.workoutID)")
+        addReminderBtn.isHidden = AppManager.shared.loggedInRole == LoggedInRole.Member ? false : true
+        addReminderBtn.alpha = AppManager.shared.loggedInRole == LoggedInRole.Member ? 1.0 : 0.0
+        
+        if AppManager.shared.loggedInRole != LoggedInRole.Member && self.workoutID  != "" {
+           navigationItem.setRightBarButton(UIBarButtonItem(customView: rightStackView!), animated: true)
+        }else {
+            self.navigationItem.rightBarButtonItem = nil
+        }
+        
         if self.isNewWorkout == false || self.workoutID  != "" {
-            navigationItem.setRightBarButton(UIBarButtonItem(customView: rightStackView!), animated: true)
-            
             showMemberListBtn.isEnabled = false
             assignToMemberLabel.isHidden = true
             assignToMemberLabel.alpha = 0.0
@@ -194,8 +204,9 @@ class AddNewWorkoutViewController: BaseViewController {
             hideTextFieldArray(hide: true)
             hideNonEditLabel(hide: false)
             hideHrLineView(hide: false)
+   
         } else {
-            self.navigationItem.rightBarButtonItem = nil
+            
             showMemberListBtn.isEnabled = true
             assignToMemberLabel.isHidden = false
             assignToMemberLabel.alpha = 1.0
@@ -239,8 +250,22 @@ class AddNewWorkoutViewController: BaseViewController {
         }
     }
     
-    func addNotification(date:Date)  {
+    func requestReminder()  {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert], completionHandler: {
+            (result,err) in
+            if result {
+                print("All set!")
+            } else if let error = err {
+                print(error.localizedDescription)
+            }
+        })
+    }
+    
+    @objc func addReminder()  {
         
+        let reminderVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "reminderVC") as! AddReminderViewController
+        self.navigationController?.pushViewController(reminderVC, animated: true)
+    
     }
     
     func fetchWorkoutBy(id:String) {
@@ -296,11 +321,10 @@ class AddNewWorkoutViewController: BaseViewController {
         leftBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
         navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView!), animated: true)
         
-        if AppManager.shared.loggedInRole != LoggedInRole.Member || self.isNewWorkout == false {
+        if AppManager.shared.loggedInRole == LoggedInRole.Trainer  {
             editBtn.addTarget(self, action: #selector(makeProfileEditable), for: .touchUpInside)
             navigationItem.setRightBarButton(UIBarButtonItem(customView: rightStackView!), animated: true)
         }
-
     }
     
     @objc func makeProfileEditable(){
@@ -456,6 +480,7 @@ class AddNewWorkoutViewController: BaseViewController {
         descriptionTextView.layer.cornerRadius = 7.0
         descriptionTextView.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
         addNewWorkoutBtn.layer.cornerRadius = 7.0
+        addReminderBtn.layer.cornerRadius = 7.0
         
         descriptionTextView.clipsToBounds = true
         self.textFieldsArray.forEach { (textField) in
@@ -603,4 +628,22 @@ extension AddNewWorkoutViewController : UITextViewDelegate {
     
 }
 
+
+extension URL {
+    static func localURLForXCAsset(name: String,ext:String) -> URL? {
+        let fileManager = FileManager.default
+        guard let cacheDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {return nil}
+        let url = cacheDirectory.appendingPathComponent("\(name).\(ext)")
+        guard fileManager.fileExists(atPath: url.path) else {
+            guard
+                let image = UIImage(named: name),
+                let data = image.pngData()
+                else { return nil }
+
+            fileManager.createFile(atPath: url.path, contents: data, attributes: nil)
+            return url
+        }
+        return url
+    }
+}
 

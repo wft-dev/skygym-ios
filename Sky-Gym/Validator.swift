@@ -368,6 +368,13 @@ class ValidationManager: NSObject {
                 isTextViewRequiredValid(textView: textView)
         return flag
     }
+    
+    func isReminderFieldsValidated(textFieldArray:[UITextField],textView:UITextView) -> Bool {
+        var flag:Bool = false
+        flag = isAllFieldsRequiredValidated(textFieldArray: textFieldArray, phoneNumberTextField: nil) &&
+                isTextViewRequiredValid(textView: textView)
+        return flag
+    }
 
     
     
