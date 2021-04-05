@@ -264,6 +264,7 @@ class AddNewWorkoutViewController: BaseViewController {
     @objc func addReminder()  {
         
         let reminderVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "reminderVC") as! AddReminderViewController
+        reminderVC.workoutID = self.workoutID
         self.navigationController?.pushViewController(reminderVC, animated: true)
     
     }
@@ -594,6 +595,8 @@ extension AddNewWorkoutViewController:UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "memberListCell", for: indexPath) as! MemberListForWorkoutCell
+        
+        
 
         cell.checkImg.image = UIImage(named: self.selectedIndexArray.contains(indexPath.row) || self.selectedMemberIDArray.contains(memberNameArray[indexPath.row].memberID) ? "checked-checkbox" : "unchecked-checkbox")
         cell.memberName.text = memberNameArray[indexPath.row].memberName
@@ -629,21 +632,21 @@ extension AddNewWorkoutViewController : UITextViewDelegate {
 }
 
 
-extension URL {
-    static func localURLForXCAsset(name: String,ext:String) -> URL? {
-        let fileManager = FileManager.default
-        guard let cacheDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {return nil}
-        let url = cacheDirectory.appendingPathComponent("\(name).\(ext)")
-        guard fileManager.fileExists(atPath: url.path) else {
-            guard
-                let image = UIImage(named: name),
-                let data = image.pngData()
-                else { return nil }
-
-            fileManager.createFile(atPath: url.path, contents: data, attributes: nil)
-            return url
-        }
-        return url
-    }
-}
+//extension URL {
+//    static func localURLForXCAsset(name: String,ext:String) -> URL? {
+//        let fileManager = FileManager.default
+//        guard let cacheDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {return nil}
+//        let url = cacheDirectory.appendingPathComponent("\(name).\(ext)")
+//        guard fileManager.fileExists(atPath: url.path) else {
+//            guard
+//                let image = UIImage(named: name),
+//                let data = image.pngData()
+//                else { return nil }
+//
+//            fileManager.createFile(atPath: url.path, contents: data, attributes: nil)
+//            return url
+//        }
+//        return url
+//    }
+//}
 
