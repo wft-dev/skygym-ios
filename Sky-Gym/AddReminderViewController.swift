@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class ReminderWeekdaysTableCell: UITableViewCell {
     @IBOutlet weak var checkBoxImgView: UIImageView!
@@ -35,7 +36,6 @@ class AddReminderViewController: UIViewController {
         return UNUserNotificationCenter.current()
     }()
     
-    
     @IBOutlet weak var noteTextView: UITextView!
     @IBOutlet weak var reminderTextField: UITextField!
     @IBOutlet weak var setReminderBtn: UIButton!
@@ -50,23 +50,31 @@ class AddReminderViewController: UIViewController {
     @IBOutlet weak var showWeekDaysListBtn: UIButton!
     @IBOutlet weak var repeatLabel: UILabel!
     
-    
     let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     var stackView : UIStackView? = nil
     var repeatReminder:Bool = false
-    var weekDaysArray:[String] = [ "Sunday","Monday","Tuesday","Wednesday","Thrusday","Friday","Saturday"]
+    var weekDaysArray:[String] = ["Sunday","Monday","Tuesday","Wednesday","Thrusday","Friday","Saturday"]
     var selectedWeekDaysIndexes:[Int] = []
     var reminderTime:String = ""
     var reminderImgURL:URL? = nil
     var workoutID:String = ""
+    var workoutName:String = ""
+    var notificationIdentifiers:[String] = []
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setReminderUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        DispatchQueue.main.async {
+            self.fetchUserNotifications()
+        }
+    }
+    
     func setReminderUI() {
+         SVProgressHUD.show()
         setReminderNavigationBar()
         setReminderTextField()
         
@@ -82,32 +90,85 @@ class AddReminderViewController: UIViewController {
         
         self.repeatImgView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toggleRepeat)))
         self.repeatLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toggleRepeat)))
-        
-       // UNUserNotificationCenter.current().removeAllDeliveredNotifications()
-        
-       // print("WORKOUT ID IS : \(self.workoutID)")
-        DispatchQueue.main.async {
-//            self.notificationCenter.removeAllDeliveredNotifications()
-//            self.notificationCenter.removeAllPendingNotificationRequests()
-            self.fetchUserNotifications()
-            self.weekdaysTable.reloadData()
-        }
+//        notificationCenter.removeAllDeliveredNotifications()
+//        notificationCenter.removeAllPendingNotificationRequests()
+
     }
     
     func fetchUserNotifications() {
+        var note = ""
+        var time = ""
+        var  reminderRepeat = false
+        self.selectedWeekDaysIndexes.removeAll()
+        self.notificationIdentifiers.removeAll()
         notificationCenter.getPendingNotificationRequests(completionHandler: {
             notificationArray in
             
-            for notification in notificationArray {
-                let userReminder = notification.content.userInfo
-                let reminderWorkoutID = (userReminder["workoutID"] ?? "0") as! String
+            for (i,notification) in notificationArray.enumerated() {
+                let userReminder = notification.content
+                let userReminderInfo = userReminder.userInfo
+                let reminderWorkoutID = (userReminderInfo["workoutID"] ?? "0") as! String
                 if reminderWorkoutID  == self.workoutID {
-                    print("TRIGGER IS : \(userReminder)")
-                    
+                    self.selectedWeekDaysIndexes.append((userReminderInfo["weekDay"] as! Int) - 1 )
+                    self.notificationIdentifiers.append(notification.identifier)
                 }
-                print("selected week day array : \(self.selectedWeekDaysIndexes)")
+                if i == notificationArray.firstIndex(of: notificationArray.last!) {
+                    note = userReminderInfo["note"] as! String
+                    time  = self.convert12HrTimeZone(time: "\(userReminderInfo["hour"]!):\(userReminderInfo["min"]!)")
+                    reminderRepeat = notification.trigger!.repeats
+                }
             }
+            
+            self.notificationCenter.getDeliveredNotifications(completionHandler: {
+                (notificationArray) in
+                
+                for (index,notification) in notificationArray.enumerated() {
+                    let userReminder = notification.request.content
+                    let userReminderInfo = userReminder.userInfo
+                    let reminderWorkoutID = (userReminderInfo["workoutID"] ?? "0") as! String
+                    if reminderWorkoutID  == self.workoutID {
+                        if self.selectedWeekDaysIndexes.contains((userReminderInfo["weekDay"] as! Int) - 1) == false {
+                            self.selectedWeekDaysIndexes.append((userReminderInfo["weekDay"] as! Int) - 1 )
+                        }
+                        if self.notificationIdentifiers.contains(notification.request.identifier) == false {
+                            self.notificationIdentifiers.append(notification.request.identifier)
+                        }
+                    }
+                    
+                    if index == notificationArray.firstIndex(of: notificationArray.last!) {
+                        note = userReminderInfo["note"] as! String
+                        time  = self.convert12HrTimeZone(time: "\(userReminderInfo["hour"]!):\(userReminderInfo["min"]!)")
+                        reminderRepeat = notification.request.trigger!.repeats
+                    }
+                }
+                
+                DispatchQueue.main.async {
+                    if self.notificationIdentifiers.count > 0 {
+                        print("IDENTIFIERS ARRAY : \(self.notificationIdentifiers)")
+                        self.weekdaysTable.reloadData()
+                        self.setValuesToWeekdaysTextField()
+                        self.noteTextView.text = note
+                        self.reminderTime = time
+                        self.timeTextField.text = time
+                        self.repeatImgView.image = UIImage(named: reminderRepeat == true ? "checked-checkbox": "unchecked-checkbox")
+                        SVProgressHUD.dismiss()
+                    }else {
+                       SVProgressHUD.dismiss()
+                    }
+                }
+            })
+            
         })
+    }
+    
+    
+    func convert12HrTimeZone(time:String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        var time = dateFormatter.date(from: time)!
+        time = Calendar.current.date(byAdding: .minute, value: 5, to: time, wrappingComponents: false)!
+        dateFormatter.dateFormat = "h:mm a"
+        return dateFormatter.string(from: time)
     }
     
     func setReminderNavigationBar()  {
@@ -180,42 +241,58 @@ class AddReminderViewController: UIViewController {
         ValidationManager.shared.requiredValidation(textView: self.noteTextView, errorLabel: self.noteErrorLabel, errorMessage: "Empty.")
         
         if ValidationManager.shared.isReminderFieldsValidated(textFieldArray: [reminderTextField,timeTextField], textView: noteTextView) {
-            let content = UNMutableNotificationContent()
-            content.title = "Sky-Gym"
-            content.subtitle = "Workout Reminder"
-            content.body = "Your today's workout will start after 5 min. Note:  \(noteTextView.text!)"
-            content.categoryIdentifier = "local"
-
-            
-            for singleValue in self.selectedWeekDaysIndexes {
-                var reminderDateComponent = DateComponents()
-                reminderDateComponent.weekday = singleValue + 1
-                reminderDateComponent.hour = (reminderTime.split(separator: ":").first! as NSString).integerValue
-                reminderDateComponent.minute = (reminderTime.split(separator: ":").last! as NSString).integerValue
-                
-                content.userInfo = [
-                    "workoutID": self.workoutID,
-                    "weekDay": singleValue + 1,
-                    "hour" : reminderDateComponent.hour!,
-                    "min" : reminderDateComponent.minute!
-                ]
-                
-                let trigger = UNCalendarNotificationTrigger(dateMatching: reminderDateComponent, repeats: repeatReminder)
-                let request = UNNotificationRequest(identifier: "\(UUID().uuidString)", content: content, trigger: trigger)
-                
-                print(" REQUEST IS : \(request)")
-                
-                notificationCenter.add(request, withCompletionHandler: {
-                    err in
-                    if err == nil {
-                        self.showReminderAlert(title: "Success", msg: "Reminder is added successfully.")
-                    }else {
-                        self.showReminderAlert(title: "Error", msg: "Something went wrong , please try again.")
-                    }
-                })
+            addNewReminder()
+        }
+    }
+    
+    func addNewReminder() {
+        var removingNotificationArray:[String] = []
+        for singleIdentifier in self.notificationIdentifiers {
+            let lastValueOfIdentifier = (String(singleIdentifier.last!) as NSString ).integerValue
+            if self.selectedWeekDaysIndexes.contains(lastValueOfIdentifier - 1 ) == false {
+                removingNotificationArray.append(singleIdentifier)
             }
         }
+        
+        if removingNotificationArray.count > 0 {
+            notificationCenter.removePendingNotificationRequests(withIdentifiers: removingNotificationArray)
+            notificationCenter.removeDeliveredNotifications(withIdentifiers: removingNotificationArray)
+        }
 
+        let content = UNMutableNotificationContent()
+        content.title = "Sky-Gym"
+        content.subtitle = "Reminder For \(self.workoutName)"
+        content.body = "Your today's workout will start after 5 min. Note:  \(noteTextView.text!)"
+        content.categoryIdentifier = "local"
+        
+        for singleValue in self.selectedWeekDaysIndexes {
+            var reminderDateComponent = DateComponents()
+            reminderDateComponent.weekday = singleValue + 1
+            reminderDateComponent.hour = (reminderTime.split(separator: ":").first! as NSString).integerValue
+            reminderDateComponent.minute = (reminderTime.split(separator: ":").last! as NSString).integerValue
+            
+            content.userInfo = [
+                "workoutID": self.workoutID,
+                "weekDay": singleValue + 1,
+                "hour" : reminderDateComponent.hour!,
+                "min" : reminderDateComponent.minute!,
+                "note" : noteTextView.text!
+            ]
+            
+            let trigger = UNCalendarNotificationTrigger(dateMatching: reminderDateComponent, repeats: repeatReminder)
+            let request = UNNotificationRequest(identifier: "\(workoutID)/\(singleValue + 1)", content: content, trigger: trigger)
+            
+            print(" REQUEST IS : \(request)")
+            
+            notificationCenter.add(request, withCompletionHandler: {
+                err in
+                if err == nil {
+                    self.showReminderAlert(title: "Success", msg: "Reminder is added successfully.")
+                }else {
+                    self.showReminderAlert(title: "Error", msg: "Something went wrong , please try again.")
+                }
+            })
+        }
     }
     
     @objc func reminderFieldsRequiredValidation( _ textField:UITextField)  {
@@ -247,6 +324,7 @@ class AddReminderViewController: UIViewController {
     }
     
     func setValuesToWeekdaysTextField() {
+        reminderTextField.text = ""
         selectedWeekDaysIndexes = selectedWeekDaysIndexes.sorted()
         var str = ""
         for singleValue in selectedWeekDaysIndexes {

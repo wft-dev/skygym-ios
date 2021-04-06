@@ -79,17 +79,18 @@ class ListOfWorkoutViewController: UIViewController {
         FireStoreManager.shared.getWorkoutPlansIDsForMember(memberID: AppManager.shared.memberID, handler: {
             (idArray) in
             if idArray.count > 0 {
-                for (index,id) in idArray.enumerated() {
+                for  id in idArray {
                     FireStoreManager.shared.getWorkoutByID(id: id, handler: {
                         (workout) in
                         self.workoutPlanListArray.append(WorkoutPlanList(workoutID: workout!.workoutID, workoutPlan: workout!.workoutPlan, numberOfSets: workout!.sets, numberOfReps: workout!.reps, weight: workout!.weight))
                         
-                        if index == self.workoutPlanListArray.count - 1 {
+                        if self.workoutPlanListArray.count == idArray.count {
                             self.workoutPlanListTable.reloadData()
                             SVProgressHUD.dismiss()
                         }
                         
                     })
+                    
                 }
                 
             }else {
