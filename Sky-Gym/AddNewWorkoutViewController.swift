@@ -48,6 +48,8 @@ class AddNewWorkoutViewController: BaseViewController {
     @IBOutlet weak var repsHrLineView: UIView!
     @IBOutlet weak var weightNonEdit: UILabel!
     @IBOutlet weak var weightHrLineView: UIView!
+    @IBOutlet weak var assignToMemberNonEditLabel: UILabel!
+    @IBOutlet weak var assignToMemberHrLineView: UIView!
     
     @IBOutlet  var nonEditDescriptionTopConstraint: NSLayoutConstraint!
     @IBOutlet  var nonEditSetsTopConstraint: NSLayoutConstraint!
@@ -112,9 +114,14 @@ class AddNewWorkoutViewController: BaseViewController {
             "12","13","14","15","16","17","18","19","20"
         ]
         
-        self.nonEditLabelsArray = [ workoutPlanNonEdit,workoutDescritptionNonEdit, noOfSetsNonEdit,noOfRepsNonEdit,weightNonEdit ]
+        self.nonEditLabelsArray = [ workoutPlanNonEdit,workoutDescritptionNonEdit, noOfSetsNonEdit,noOfRepsNonEdit,weightNonEdit]
         
-        self.hrLineView = [ workoutPlanHrLineView,workoutDescriptionHrLineView, setsHrLineView, repsHrLineView, weightHrLineView ]
+        self.hrLineView = [ workoutPlanHrLineView,workoutDescriptionHrLineView, setsHrLineView, repsHrLineView, weightHrLineView]
+        
+        if AppManager.shared.loggedInRole != LoggedInRole.Member {
+            self.nonEditLabelsArray.append(assignToMemberNonEditLabel)
+            self.hrLineView.append(assignToMemberHrLineView)
+        }
         
         addNewWorkoutBtn.addTarget(self, action: #selector(addNewWorkoutPlan), for: .touchUpInside)
         
@@ -186,8 +193,16 @@ class AddNewWorkoutViewController: BaseViewController {
         
         if self.isNewWorkout == false || self.workoutID  != "" {
             showMemberListBtn.isEnabled = false
-            assignToMemberLabel.isHidden = true
-            assignToMemberLabel.alpha = 0.0
+            
+            if AppManager.shared.loggedInRole == LoggedInRole.Member {
+                assignToMemberLabel.isHidden = true
+                assignToMemberLabel.alpha = 0.0
+                assignToMemberHrLineView.isHidden = true
+                assignToMemberHrLineView.alpha =  0.0
+                assignToMemberNonEditLabel.isHidden = true
+                assignToMemberNonEditLabel.alpha = 0.0
+            }
+
             addNewWorkoutBtn.isHidden = true
             addNewWorkoutBtn.alpha = 0.0
             descriptionTextView.isHidden = true
@@ -208,8 +223,14 @@ class AddNewWorkoutViewController: BaseViewController {
         } else {
             
             showMemberListBtn.isEnabled = true
-            assignToMemberLabel.isHidden = false
-            assignToMemberLabel.alpha = 1.0
+            if AppManager.shared.loggedInRole == LoggedInRole.Member {
+                assignToMemberLabel.isHidden = false
+                assignToMemberLabel.alpha = 1.0
+                assignToMemberHrLineView.isHidden = false
+                assignToMemberHrLineView.alpha = 1.0
+                assignToMemberNonEditLabel.isHidden = false
+                assignToMemberNonEditLabel.alpha = 1.0
+            }
             addNewWorkoutBtn.isHidden = false
             addNewWorkoutBtn.alpha = 1.0
             descriptionTextView.isHidden = false
@@ -333,8 +354,11 @@ class AddNewWorkoutViewController: BaseViewController {
         isEdit = !isEdit
         let priority:UILayoutPriority = !isEdit == true ? .defaultHigh : .defaultLow
         
-        assignToMemberLabel.isHidden = isEdit
-        assignToMemberLabel.alpha =  isEdit == true ? 0.0 : 1.0
+        if AppManager.shared.loggedInRole == LoggedInRole.Member {
+                    assignToMemberLabel.isHidden = isEdit
+                    assignToMemberLabel.alpha =  isEdit == true ? 0.0 : 1.0
+        }
+
         addNewWorkoutBtn.isHidden = isEdit
         addNewWorkoutBtn.alpha = isEdit == true ? 0.0 : 1.0
         descriptionTextView.isHidden = isEdit
@@ -530,6 +554,15 @@ class AddNewWorkoutViewController: BaseViewController {
         self.noOfSetsNonEdit.text = workoutPlan.sets
         self.noOfRepsNonEdit.text = workoutPlan.reps
         self.weightNonEdit.text = workoutPlan.weight
+        
+        self.assignToMemberNonEditLabel.text = ""
+        for (i,singleMember) in self.selectedMemberArray.enumerated() {
+            if i == self.selectedMemberArray.count - 1 {
+                self.assignToMemberNonEditLabel.text! += "\(singleMember)"
+            }else {
+                self.assignToMemberNonEditLabel.text! += "\(singleMember),  "
+            }
+        }
     }
 }
 

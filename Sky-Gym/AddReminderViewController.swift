@@ -68,9 +68,9 @@ class AddReminderViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        DispatchQueue.main.async {
+        //DispatchQueue.main.async {
             self.fetchUserNotifications()
-        }
+        //}
     }
     
     func setReminderUI() {
@@ -104,15 +104,15 @@ class AddReminderViewController: UIViewController {
         notificationCenter.getPendingNotificationRequests(completionHandler: {
             notificationArray in
             
-            for (i,notification) in notificationArray.enumerated() {
+            for notification in notificationArray {
                 let userReminder = notification.content
                 let userReminderInfo = userReminder.userInfo
                 let reminderWorkoutID = (userReminderInfo["workoutID"] ?? "0") as! String
                 if reminderWorkoutID  == self.workoutID {
+                    print("FOR WORKOUT : \(reminderWorkoutID)")
                     self.selectedWeekDaysIndexes.append((userReminderInfo["weekDay"] as! Int) - 1 )
                     self.notificationIdentifiers.append(notification.identifier)
-                }
-                if i == notificationArray.firstIndex(of: notificationArray.last!) {
+                    
                     note = userReminderInfo["note"] as! String
                     time  = self.convert12HrTimeZone(time: "\(userReminderInfo["hour"]!):\(userReminderInfo["min"]!)")
                     reminderRepeat = notification.trigger!.repeats
@@ -122,7 +122,7 @@ class AddReminderViewController: UIViewController {
             self.notificationCenter.getDeliveredNotifications(completionHandler: {
                 (notificationArray) in
                 
-                for (index,notification) in notificationArray.enumerated() {
+                for notification in notificationArray {
                     let userReminder = notification.request.content
                     let userReminderInfo = userReminder.userInfo
                     let reminderWorkoutID = (userReminderInfo["workoutID"] ?? "0") as! String
@@ -133,12 +133,11 @@ class AddReminderViewController: UIViewController {
                         if self.notificationIdentifiers.contains(notification.request.identifier) == false {
                             self.notificationIdentifiers.append(notification.request.identifier)
                         }
-                    }
-                    
-                    if index == notificationArray.firstIndex(of: notificationArray.last!) {
-                        note = userReminderInfo["note"] as! String
-                        time  = self.convert12HrTimeZone(time: "\(userReminderInfo["hour"]!):\(userReminderInfo["min"]!)")
-                        reminderRepeat = notification.request.trigger!.repeats
+                        if note == "" {
+                            note = userReminderInfo["note"] as! String
+                            time  = self.convert12HrTimeZone(time: "\(userReminderInfo["hour"]!):\(userReminderInfo["min"]!)")
+                            reminderRepeat = notification.request.trigger!.repeats
+                        }
                     }
                 }
                 
@@ -153,7 +152,7 @@ class AddReminderViewController: UIViewController {
                         self.repeatImgView.image = UIImage(named: reminderRepeat == true ? "checked-checkbox": "unchecked-checkbox")
                         SVProgressHUD.dismiss()
                     }else {
-                       SVProgressHUD.dismiss()
+                        SVProgressHUD.dismiss()
                     }
                 }
             })
