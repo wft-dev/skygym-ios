@@ -68,5 +68,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>would like to update your health usage with heart rate data. Actually we never do anything of the kind but it seems Apple has lost control of X-Code and has few if any answers, so we will ask this permission.</string>
+	<key>NSHomeKitUsageDescription</key>
+	<string>would like to update your health usage with heart rate data. Actually we never do anything of the kind but it seems Apple has lost control of X-Code and has few if any answers, so we will ask this permission.</string>
 </dict>
 </plist>

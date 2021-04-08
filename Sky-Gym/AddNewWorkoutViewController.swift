@@ -666,21 +666,3 @@ extension AddNewWorkoutViewController : UITextViewDelegate {
 }
 
 
-//extension URL {
-//    static func localURLForXCAsset(name: String,ext:String) -> URL? {
-//        let fileManager = FileManager.default
-//        guard let cacheDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {return nil}
-//        let url = cacheDirectory.appendingPathComponent("\(name).\(ext)")
-//        guard fileManager.fileExists(atPath: url.path) else {
-//            guard
-//                let image = UIImage(named: name),
-//                let data = image.pngData()
-//                else { return nil }
-//
-//            fileManager.createFile(atPath: url.path, contents: data, attributes: nil)
-//            return url
-//        }
-//        return url
-//    }
-//}
-

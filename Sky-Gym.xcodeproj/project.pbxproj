@@ -20,6 +20,9 @@
 		423F870A252B4846001C30D4 /* MemberDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423F8709252B4846001C30D4 /* MemberDetailViewController.swift */; };
 		42434EFE25F6295300543396 /* GallaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42434EFD25F6295300543396 /* GallaryViewController.swift */; };
 		42446A28256FA7AE00F966FD /* Validator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42446A27256FA7AE00F966FD /* Validator.swift */; };
+		4247D4C5261F0D1A0023BF80 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4247D4C4261F0D1A0023BF80 /* SettingsViewController.swift */; };
+		4247D4C7261F15B70023BF80 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4247D4C6261F15B70023BF80 /* HealthKitManager.swift */; };
+		4247D4C9261F28CB0023BF80 /* StepsOrHeartRateTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4247D4C8261F28CB0023BF80 /* StepsOrHeartRateTableViewController.swift */; };
 		424937232526094D0043ADFF /* AddMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424937222526094D0043ADFF /* AddMemberViewController.swift */; };
 		4249C38A251B12BD00DC9AE0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249C389251B12BD00DC9AE0 /* AppDelegate.swift */; };
 		4249C38C251B12BD00DC9AE0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249C38B251B12BD00DC9AE0 /* SceneDelegate.swift */; };
@@ -79,6 +82,9 @@
 		423F8709252B4846001C30D4 /* MemberDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDetailViewController.swift; sourceTree = "<group>"; };
 		42434EFD25F6295300543396 /* GallaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GallaryViewController.swift; sourceTree = "<group>"; };
 		42446A27256FA7AE00F966FD /* Validator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validator.swift; sourceTree = "<group>"; };
+		4247D4C4261F0D1A0023BF80 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		4247D4C6261F15B70023BF80 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
+		4247D4C8261F28CB0023BF80 /* StepsOrHeartRateTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsOrHeartRateTableViewController.swift; sourceTree = "<group>"; };
 		424937222526094D0043ADFF /* AddMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemberViewController.swift; sourceTree = "<group>"; };
 		4249C386251B12BD00DC9AE0 /* Sky-Gym.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sky-Gym.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4249C389251B12BD00DC9AE0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -215,6 +221,9 @@
 				424FD2F1260A10D300D8D811 /* ListOfWorkoutViewController.swift */,
 				422FD426260B16C0001052C9 /* AddNewWorkoutViewController.swift */,
 				425CF7A5261725EF000C9EC2 /* AddReminderViewController.swift */,
+				4247D4C4261F0D1A0023BF80 /* SettingsViewController.swift */,
+				4247D4C6261F15B70023BF80 /* HealthKitManager.swift */,
+				4247D4C8261F28CB0023BF80 /* StepsOrHeartRateTableViewController.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -371,11 +380,13 @@
 				4231BF9A25347328007EFBBF /* ViewEventScreenViewController.swift in Sources */,
 				42A407A5251C78570087B02F /* AppManager.swift in Sources */,
 				4259DC1F2523121C00F08FA6 /* MemberAndTrainerDetailView.swift in Sources */,
+				4247D4C7261F15B70023BF80 /* HealthKitManager.swift in Sources */,
 				4249E33826022AAA009BCFD7 /* GymVideosViewController.swift in Sources */,
 				425E40D32599F0DB0052401F /* TrainerProfileViewController.swift in Sources */,
 				42D13392252F0ED500BA7EE5 /* TrainerEditScreenViewController.swift in Sources */,
 				4231BF98253458A9007EFBBF /* ListOfEventsViewController.swift in Sources */,
 				424FD2F2260A10D300D8D811 /* ListOfWorkoutViewController.swift in Sources */,
+				4247D4C9261F28CB0023BF80 /* StepsOrHeartRateTableViewController.swift in Sources */,
 				42651AD62530657400539B19 /* MembershipViewScreenViewController.swift in Sources */,
 				4249C38E251B12BD00DC9AE0 /* ViewController.swift in Sources */,
 				4249C38A251B12BD00DC9AE0 /* AppDelegate.swift in Sources */,
@@ -389,6 +400,7 @@
 				42446A28256FA7AE00F966FD /* Validator.swift in Sources */,
 				425CF7A6261725EF000C9EC2 /* AddReminderViewController.swift in Sources */,
 				423C02B925E7DAA700F548CD /* ChatViewController.swift in Sources */,
+				4247D4C5261F0D1A0023BF80 /* SettingsViewController.swift in Sources */,
 				42BC9BF6252D82EE00435000 /* MemberAttandanceViewController.swift in Sources */,
 				422FD427260B16C0001052C9 /* AddNewWorkoutViewController.swift in Sources */,
 				42A407A7251CC6A40087B02F /* MemberAndTrainerLoginViewController.swift in Sources */,
