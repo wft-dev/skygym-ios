@@ -384,3 +384,10 @@ struct WorkoutMemberList {
     var memberName:String
     var memberID:String
 }
+
+
+struct HealthStatics {
+    var value:String
+    var date:String
+    
+}
