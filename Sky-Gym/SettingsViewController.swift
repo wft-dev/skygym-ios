@@ -59,8 +59,10 @@ class SettingsViewController: UIViewController {
 
         if getSwitchBtnStatus() {
             //healthKitTableVC
-            let healthKitTableVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "healthKitTableVC") as! StepsOrHeartRateTableViewController
-            self.navigationController?.pushViewController(healthKitTableVC, animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+                let healthKitTableVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "healthKitTableVC") as! StepsOrHeartRateTableViewController
+                self.navigationController?.pushViewController(healthKitTableVC, animated: true)
+            })
         }else {
             
         }

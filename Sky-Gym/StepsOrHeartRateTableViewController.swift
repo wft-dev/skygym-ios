@@ -11,6 +11,8 @@ import UIKit
 class HealthKitCell: UITableViewCell {
     @IBOutlet weak var value: UILabel!
     @IBOutlet weak var date: UILabel!
+    
+    @IBOutlet weak var healthKitCellMainView: UIView!
 }
 
 struct HealthKitStr {
@@ -28,20 +30,27 @@ class StepsOrHeartRateTableViewController: UIViewController {
 //    @IBOutlet weak var previousDateBtn: UIButton!
 //    @IBOutlet weak var nextDateBtn: UIButton!
     
+    @IBOutlet weak var mainView: UIView!
+    
+    
     
     var healthKitArray:[HealthKitStr] =  [
     HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2323", date: "April,1 2021"),
+    HealthKitStr(value: "2322", date: "April,1 2021"),
+    HealthKitStr(value: "2321", date: "April,1 2021"),
+    HealthKitStr(value: "2324", date: "April,1 2021"),
+    HealthKitStr(value: "2326", date: "April,1 2021"),
+    HealthKitStr(value: "2328", date: "April,1 2021"),
+    HealthKitStr(value: "2399", date: "April,1 2021"),
+    HealthKitStr(value: "2387", date: "April,1 2021"),
+    HealthKitStr(value: "2355", date: "April,1 2021"),
+    HealthKitStr(value: "2321", date: "April,1 2021"),
+    HealthKitStr(value: "2324", date: "April,1 2021"),
+    HealthKitStr(value: "2326", date: "April,1 2021"),
+    HealthKitStr(value: "2328", date: "April,1 2021"),
+    HealthKitStr(value: "2399", date: "April,1 2021"),
+    HealthKitStr(value: "2387", date: "April,1 2021"),
+    HealthKitStr(value: "400", date: "April,1 2021"),
     ]
     
     private var leftBtn:UIButton = {
@@ -58,15 +67,31 @@ class StepsOrHeartRateTableViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setHealthKitTableNavigationBar()
         
         self.stepsOrHeartRateTable.tableFooterView = UIView()
         self.stepsOrHeartRateTable.separatorStyle = .none
         self.stepsOrHeartRateTable.isScrollEnabled = false
+        
+        
+        //self.stepsOrHeartRateTable.estimatedRowHeight = UITableView.automaticDimension
 
         self.stepsOrHeartRateTable.dataSource  = self
         self.stepsOrHeartRateTable.delegate = self
         
+        print("VIEW HEIGHT : \(view.frame.height)")
+        
+        print("SCROLL VIEW MAIN  HEIGHT : \(self.mainView.frame.height)")
+        
+        print("TABLE  CONTENT HEIGHT : \(self.stepsOrHeartRateTable.contentSize.height)")
+        print("TABLE FRAME HEIGHT : \(self.stepsOrHeartRateTable.frame.height)")
+
         // healthKitSetUpUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.stepsOrHeartRateTable.estimatedRowHeight = 68
+        self.stepsOrHeartRateTable.rowHeight = 68
     }
     
 //    func healthKitSetUpUI()  {
@@ -77,7 +102,6 @@ class StepsOrHeartRateTableViewController: UIViewController {
 //        self.imgView.image = UIImage(named: "user1")
 //        self.memberName.text = "Member 2"
 //        self.memberAddress.text = "SCO 265-240-230, sector 22D, Chandigarh, India"
-//        setHealthKitTableNavigationBar()
 //    }
     
     func setHealthKitTableNavigationBar()  {
@@ -114,12 +138,12 @@ extension StepsOrHeartRateTableViewController : UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "healthkitCell", for: indexPath) as! HealthKitCell
 
-        cell.value.text = healthKitArray[indexPath.row].value
-        cell.date.text = healthKitArray[indexPath.row].date
+        cell.value.text = healthKitArray[indexPath.section].value
+        cell.date.text = healthKitArray[indexPath.section].date
 
-        cell.contentView.layer.borderColor = UIColor.lightGray.cgColor
-        cell.contentView.layer.borderWidth = 0.5
-        cell.contentView.layer.cornerRadius  = 15.0
+        cell.healthKitCellMainView.layer.borderColor = UIColor.lightGray.cgColor
+        cell.healthKitCellMainView.layer.borderWidth = 0.5
+        cell.healthKitCellMainView.layer.cornerRadius  = 15.0
 
         cell.selectionStyle = .none
 
@@ -129,15 +153,24 @@ extension StepsOrHeartRateTableViewController : UITableViewDataSource {
 }
 
 extension StepsOrHeartRateTableViewController : UITableViewDelegate {
+    
+      func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+          let header = UIView()
+          header.backgroundColor = .clear
+          return header
+      }
 
       func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
           return 15
+      }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 68.0
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 68.0
     }
 
-      func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-          let headerView = UIView()
-          headerView.backgroundColor = UIColor.clear
-          return headerView
-      }
-
+    
 }
