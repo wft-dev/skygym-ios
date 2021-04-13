@@ -36,6 +36,7 @@
 		4249C3AE251B6BAA00DC9AE0 /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4249C3AD251B6BAA00DC9AE0 /* Poppins-Bold.ttf */; };
 		4249E33826022AAA009BCFD7 /* GymVideosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249E33726022AAA009BCFD7 /* GymVideosViewController.swift */; };
 		424BA43125D121F0000F1B1B /* ProfileAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424BA43025D121F0000F1B1B /* ProfileAdminViewController.swift */; };
+		424C137C2625A26400DCFA24 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424C137B2625A26400DCFA24 /* TestViewController.swift */; };
 		424FD2F2260A10D300D8D811 /* ListOfWorkoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424FD2F1260A10D300D8D811 /* ListOfWorkoutViewController.swift */; };
 		4259DC1D252311EF00F08FA6 /* MemberAndTrainerDetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */; };
 		4259DC1F2523121C00F08FA6 /* MemberAndTrainerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */; };
@@ -100,6 +101,7 @@
 		4249C3AD251B6BAA00DC9AE0 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Bold.ttf"; sourceTree = "<group>"; };
 		4249E33726022AAA009BCFD7 /* GymVideosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymVideosViewController.swift; sourceTree = "<group>"; };
 		424BA43025D121F0000F1B1B /* ProfileAdminViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileAdminViewController.swift; sourceTree = "<group>"; };
+		424C137B2625A26400DCFA24 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		424FD2F1260A10D300D8D811 /* ListOfWorkoutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfWorkoutViewController.swift; sourceTree = "<group>"; };
 		4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemberAndTrainerDetailView.xib; sourceTree = "<group>"; };
 		4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAndTrainerDetailView.swift; sourceTree = "<group>"; };
@@ -224,6 +226,7 @@
 				4247D4C4261F0D1A0023BF80 /* SettingsViewController.swift */,
 				4247D4C6261F15B70023BF80 /* HealthKitManager.swift */,
 				4247D4C8261F28CB0023BF80 /* StepsOrHeartRateTableViewController.swift */,
+				424C137B2625A26400DCFA24 /* TestViewController.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -394,6 +397,7 @@
 				423EB0E025F215530094AA0B /* CardPaymentViewController.swift in Sources */,
 				42651AD225301FF700539B19 /* TrainerAttendanceViewController.swift in Sources */,
 				42F7DBB72521F790001F0050 /* BaseViewController.swift in Sources */,
+				424C137C2625A26400DCFA24 /* TestViewController.swift in Sources */,
 				42BC9BF8252DCEC200435000 /* MemberViewController.swift in Sources */,
 				424BA43125D121F0000F1B1B /* ProfileAdminViewController.swift in Sources */,
 				42651AD425303F1500539B19 /* ListOfMembershipViewController.swift in Sources */,

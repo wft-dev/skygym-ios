@@ -234,7 +234,7 @@ extension TrainerAttendanceViewController:UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "trainerAttendanceCell", for: indexPath) as! TrainerAttendanceTableCell
         
-        self.setAttandanceTableCellView(tableCellView: cell.trainerAttendanceCellView )
+        self.setAttandanceTableCellView(tableCellView: cell.trainerAttendanceCellView)
         cell.checkInTimeView.layer.cornerRadius = 12.0
         cell.checkOutTimeView.layer.cornerRadius = 12.0
         

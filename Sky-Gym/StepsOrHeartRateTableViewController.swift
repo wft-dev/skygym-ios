@@ -13,6 +13,7 @@ class HealthKitCell: UITableViewCell {
     @IBOutlet weak var date: UILabel!
     
     @IBOutlet weak var healthKitCellMainView: UIView!
+    
 }
 
 struct HealthKitStr {
@@ -22,17 +23,19 @@ struct HealthKitStr {
 
 class StepsOrHeartRateTableViewController: UIViewController {
     
-//    @IBOutlet weak var imgView: UIImageView!
-//    @IBOutlet weak var memberName: UILabel!
-//    @IBOutlet weak var memberAddress: UILabel!
-//    @IBOutlet weak var checkByDateBtn: UIButton!
+    @IBOutlet weak var imgView: UIImageView!
+    @IBOutlet weak var memberName: UILabel!
+    @IBOutlet weak var memberAddress: UILabel!
+    @IBOutlet weak var checkByDateBtn: UIButton!
     @IBOutlet weak var stepsOrHeartRateTable: UITableView!
-//    @IBOutlet weak var previousDateBtn: UIButton!
-//    @IBOutlet weak var nextDateBtn: UIButton!
+    @IBOutlet weak var previousDateBtn: UIButton!
+    @IBOutlet weak var nextDateBtn: UIButton!
     
     @IBOutlet weak var mainView: UIView!
     
-    
+//    @IBOutlet weak var tableHeightContstraint: NSLayoutConstraint!
+
+    @IBOutlet weak var backBtn: UIButton!
     
     var healthKitArray:[HealthKitStr] =  [
     HealthKitStr(value: "2323", date: "April,1 2021"),
@@ -72,37 +75,33 @@ class StepsOrHeartRateTableViewController: UIViewController {
         self.stepsOrHeartRateTable.tableFooterView = UIView()
         self.stepsOrHeartRateTable.separatorStyle = .none
         self.stepsOrHeartRateTable.isScrollEnabled = false
-        
-        
-        //self.stepsOrHeartRateTable.estimatedRowHeight = UITableView.automaticDimension
 
         self.stepsOrHeartRateTable.dataSource  = self
         self.stepsOrHeartRateTable.delegate = self
         
         print("VIEW HEIGHT : \(view.frame.height)")
-        
         print("SCROLL VIEW MAIN  HEIGHT : \(self.mainView.frame.height)")
-        
         print("TABLE  CONTENT HEIGHT : \(self.stepsOrHeartRateTable.contentSize.height)")
         print("TABLE FRAME HEIGHT : \(self.stepsOrHeartRateTable.frame.height)")
-
-        // healthKitSetUpUI()
+        
+        healthKitSetUpUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        self.stepsOrHeartRateTable.estimatedRowHeight = 68
-        self.stepsOrHeartRateTable.rowHeight = 68
+        super.viewWillAppear(animated)
+        self.stepsOrHeartRateTable.rowHeight = 66.0
     }
     
-//    func healthKitSetUpUI()  {
-//        self.stepsOrHeartRateTable.dataSource  = self
-//        self.stepsOrHeartRateTable.delegate = self
-//        self.checkByDateBtn.layer.cornerRadius = 15.0
-//
-//        self.imgView.image = UIImage(named: "user1")
-//        self.memberName.text = "Member 2"
-//        self.memberAddress.text = "SCO 265-240-230, sector 22D, Chandigarh, India"
-//    }
+    func healthKitSetUpUI()  {
+        self.stepsOrHeartRateTable.dataSource  = self
+        self.stepsOrHeartRateTable.delegate = self
+        self.checkByDateBtn.layer.cornerRadius = 12.0
+        self.backBtn.layer.cornerRadius = 12.0
+
+        self.imgView.image = UIImage(named: "user1")
+        self.memberName.text = "Member 2"
+        self.memberAddress.text = "SCO 265-240-230, sector 22D, Chandigarh, India"
+    }
     
     func setHealthKitTableNavigationBar()  {
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
@@ -149,7 +148,6 @@ extension StepsOrHeartRateTableViewController : UITableViewDataSource {
 
         return cell
     }
-
 }
 
 extension StepsOrHeartRateTableViewController : UITableViewDelegate {
@@ -165,11 +163,11 @@ extension StepsOrHeartRateTableViewController : UITableViewDelegate {
       }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 68.0
+        return UITableView.automaticDimension
     }
-    
+
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 68.0
+        return UITableView.automaticDimension
     }
 
     
