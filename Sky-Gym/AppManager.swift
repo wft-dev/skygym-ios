@@ -194,6 +194,15 @@ class AppManager: NSObject {
         }
     }
     
+//    var isHealthKitEnabled:Bool {
+//        get{
+//            UserDefaults.standard.bool(forKey: "isHealthKitEnabled")
+//        }
+//        set {
+//            UserDefaults.standard.set(newValue, forKey: "isHealthKitEnabled")
+//        }
+//    }
+    
     var pageToken:String = ""
     var videoPageToken:String = ""
     
@@ -470,12 +479,23 @@ class AppManager: NSObject {
         return endDate
     }
     
+    func getNext7DaysDateFormat(startDate:Date) -> Date {
+        let next7DaysDate = Calendar.current.date(byAdding: .day, value: 6, to: startDate)!
+        return next7DaysDate
+    }
+    
+    
     func getPrevious7DaysDate(startDate:Date) -> String {
-        let next7DaysDate = Calendar.current.date(byAdding: .day, value: -6, to: startDate)!
+        let previous7DaysDate = Calendar.current.date(byAdding: .day, value: -6, to: startDate)!
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "dd MMM yyyy"
-        let  endDate = dateFormatter.string(from: next7DaysDate)
+        let  endDate = dateFormatter.string(from: previous7DaysDate)
         return endDate
+    }
+    
+    func getPrevious7DaysDateFormat(startDate:Date) -> Date {
+        let previous7DaysDate = Calendar.current.date(byAdding: .day, value: -6, to: startDate)!
+        return previous7DaysDate
     }
     
     
@@ -485,6 +505,11 @@ class AppManager: NSObject {
         dateFormatter.dateFormat =  "dd MMM yyyy"
         let  endDate = dateFormatter.string(from: previousDayDate)
         return endDate
+    }
+    
+    func getDayByAdding(value:Int,to actualDate:Date) -> Date {
+        let day = Calendar.current.date(byAdding: .day, value: value, to: actualDate)!
+        return day
     }
     
     func getNextDayDate(startDate:Date) -> String {

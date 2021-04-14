@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 
 
@@ -34,6 +35,11 @@ class SettingsViewController: UIViewController {
     func setSettingsUI() {
         setSettingsNavigationBar()
         healthKitSwitch.addTarget(self, action: #selector(healthKitAction), for: .valueChanged)
+       
+        FireStoreManager.shared.getHealthKitStatus(memberID: AppManager.shared.memberID) { (status) in
+            self.healthKitSwitch.setOn(status, animated: true)
+        }
+        
     }
     
     func setSettingsNavigationBar()  {
@@ -59,17 +65,61 @@ class SettingsViewController: UIViewController {
 
         if getSwitchBtnStatus() {
             //healthKitTableVC
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
-                let healthKitTableVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "healthKitTableVC") as! StepsOrHeartRateTableViewController
-                self.navigationController?.pushViewController(healthKitTableVC, animated: true)
+            HealthKitManager.shared.healthKitRequestAuthorization(completion: {
+                (flag) in
+                if flag == true {
+                    DispatchQueue.main.async {
+                        self.healthKitAlert(title: "Enabled", msg: "Welcome,Health kit is enabled. Check health data in Home menu")
+                    }
+                }else {
+                     self.healthKitAlert(title: "Error", msg: "Something went wrong, try again.")
+                    print("FAILED.")
+                }
             })
-        }else {
             
+        }else {
+            self.healthKitAlert(title: "Disabled", msg: "Health kit is disabled.")
         }
+    
     }
     
     func getSwitchBtnStatus() -> Bool {
         return healthKitSwitch.isOn
     }
+    
+    func healthKitAlert(title:String,msg:String,status:Bool)  {
+        let alertController = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: {
+        _ in
+            SVProgressHUD.show()
+            
+            FireStoreManager.shared.setHealthKitStatus(memberID: AppManager.shared.memberID, healthKitStatus: status) { (err) in
+                SVProgressHUD.dismiss()
+                if err != nil {
+                    self.healthKitSwitch.setOn(false, animated: true)
+                    self.healthKitAlert(title: "Error", msg: "Something went wrong, please try again.")
+                }
+                
+            }
+        })
+        
+        alertController.addAction(okAlertAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    
+    func healthKitAlert(title:String,msg:String)  {
+        let alertController = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        
+        alertController.addAction(okAlertAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
 
 }
+
+
+
+
+

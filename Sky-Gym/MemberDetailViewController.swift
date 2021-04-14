@@ -47,6 +47,15 @@ class MemberDetailViewController: BaseViewController {
         
         if AppManager.shared.loggedInRole == LoggedInRole.Member {
         memberDetailOptionArrary = ["Current membership details","Purchase","Attendence", "Workout Plans",""]
+
+            FireStoreManager.shared.getHealthKitStatus(memberID: AppManager.shared.memberID) { (status) in
+                if status == true {
+                    self.memberDetailOptionArrary.insert("Health Data", at: 4)
+                }else {
+                    self.memberDetailOptionArrary.remove(at: 4)
+                }
+            }
+            
         }else {
           memberDetailOptionArrary = ["Add new Membership","Current membership details","Purchase","Attendence",""]
         }
@@ -71,6 +80,8 @@ class MemberDetailViewController: BaseViewController {
         self.showMemberWithID(id:AppManager.shared.memberID)
         self.memberDetailTable.reloadData()
     }
+    
+
     
     func setCustomMemberDetailNavigation()  {
         let s = AppManager.shared.loggedInRole == LoggedInRole.Member ? "Home" : "Member Detail"
@@ -252,14 +263,17 @@ extension MemberDetailViewController:UITableViewDelegate{
             let addNewMemberShipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "addMemberVC") as! AddMemberViewController
             addNewMemberShipVC.isNewMember = false
             self.navigationController?.pushViewController(addNewMemberShipVC, animated: true)
+            break
             
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 0 : 1 :
             let currentMembershipVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "currentMembershipDetailVC") as! CurrentMembershipDetailViewController
             self.navigationController?.pushViewController(currentMembershipVC, animated: true)
+            break
             
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 1 : 2 :
             let purchaseVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "purchaseVC") as! PurchaseViewController
             self.navigationController?.pushViewController(purchaseVC, animated: true)
+            break
             
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 2 : 3  :
             let attendenceVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "memberAttendanceVC") as! MemberAttandanceViewController
@@ -267,11 +281,18 @@ extension MemberDetailViewController:UITableViewDelegate{
             attendenceVC.memberAddress = self.address
             attendenceVC.memberUserImgData = self.memberImg?.image?.pngData()
             self.navigationController?.pushViewController(attendenceVC, animated: true)
+            break
             
         case AppManager.shared.loggedInRole == LoggedInRole.Member ? 3 : 4 :
             let workoutVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "workoutVC") as! ListOfWorkoutViewController
             self.navigationController?.pushViewController(workoutVC, animated: true)
             break
+            
+        case AppManager.shared.loggedInRole == LoggedInRole.Member ? 4 : 5 :
+            let healthDataVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "healthDataVC") as! HealthDataViewController
+            self.navigationController?.pushViewController(healthDataVC, animated: true)
+            break
+            
         default:
             break
         }

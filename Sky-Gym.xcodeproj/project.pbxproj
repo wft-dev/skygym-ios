@@ -36,7 +36,6 @@
 		4249C3AE251B6BAA00DC9AE0 /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4249C3AD251B6BAA00DC9AE0 /* Poppins-Bold.ttf */; };
 		4249E33826022AAA009BCFD7 /* GymVideosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249E33726022AAA009BCFD7 /* GymVideosViewController.swift */; };
 		424BA43125D121F0000F1B1B /* ProfileAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424BA43025D121F0000F1B1B /* ProfileAdminViewController.swift */; };
-		424C137C2625A26400DCFA24 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424C137B2625A26400DCFA24 /* TestViewController.swift */; };
 		424FD2F2260A10D300D8D811 /* ListOfWorkoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424FD2F1260A10D300D8D811 /* ListOfWorkoutViewController.swift */; };
 		4259DC1D252311EF00F08FA6 /* MemberAndTrainerDetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */; };
 		4259DC1F2523121C00F08FA6 /* MemberAndTrainerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */; };
@@ -44,6 +43,8 @@
 		425B31682604D19E002D23DD /* ListOfVideosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425B31672604D19E002D23DD /* ListOfVideosViewController.swift */; };
 		425CF7A6261725EF000C9EC2 /* AddReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425CF7A5261725EF000C9EC2 /* AddReminderViewController.swift */; };
 		425E40D32599F0DB0052401F /* TrainerProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425E40D22599F0DB0052401F /* TrainerProfileViewController.swift */; };
+		4262418E2626BD44009F9EE9 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4262418D2626BD44009F9EE9 /* HealthKit.framework */; };
+		4262419026270528009F9EE9 /* HealthDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4262418F26270528009F9EE9 /* HealthDataViewController.swift */; };
 		42651AD225301FF700539B19 /* TrainerAttendanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD125301FF700539B19 /* TrainerAttendanceViewController.swift */; };
 		42651AD425303F1500539B19 /* ListOfMembershipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD325303F1500539B19 /* ListOfMembershipViewController.swift */; };
 		42651AD62530657400539B19 /* MembershipViewScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42651AD52530657400539B19 /* MembershipViewScreenViewController.swift */; };
@@ -101,7 +102,6 @@
 		4249C3AD251B6BAA00DC9AE0 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Bold.ttf"; sourceTree = "<group>"; };
 		4249E33726022AAA009BCFD7 /* GymVideosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymVideosViewController.swift; sourceTree = "<group>"; };
 		424BA43025D121F0000F1B1B /* ProfileAdminViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileAdminViewController.swift; sourceTree = "<group>"; };
-		424C137B2625A26400DCFA24 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		424FD2F1260A10D300D8D811 /* ListOfWorkoutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfWorkoutViewController.swift; sourceTree = "<group>"; };
 		4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemberAndTrainerDetailView.xib; sourceTree = "<group>"; };
 		4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAndTrainerDetailView.swift; sourceTree = "<group>"; };
@@ -109,6 +109,9 @@
 		425B31672604D19E002D23DD /* ListOfVideosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfVideosViewController.swift; sourceTree = "<group>"; };
 		425CF7A5261725EF000C9EC2 /* AddReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReminderViewController.swift; sourceTree = "<group>"; };
 		425E40D22599F0DB0052401F /* TrainerProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerProfileViewController.swift; sourceTree = "<group>"; };
+		4262418C2626BD44009F9EE9 /* Sky-Gym.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Sky-Gym.entitlements"; sourceTree = "<group>"; };
+		4262418D2626BD44009F9EE9 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		4262418F26270528009F9EE9 /* HealthDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDataViewController.swift; sourceTree = "<group>"; };
 		42651AD125301FF700539B19 /* TrainerAttendanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerAttendanceViewController.swift; sourceTree = "<group>"; };
 		42651AD325303F1500539B19 /* ListOfMembershipViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfMembershipViewController.swift; sourceTree = "<group>"; };
 		42651AD52530657400539B19 /* MembershipViewScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipViewScreenViewController.swift; sourceTree = "<group>"; };
@@ -142,6 +145,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8A288FE878FB50B1D6D7901 /* Pods_Sky_Gym.framework in Frameworks */,
+				4262418E2626BD44009F9EE9 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,6 +173,7 @@
 		4249C388251B12BD00DC9AE0 /* Sky-Gym */ = {
 			isa = PBXGroup;
 			children = (
+				4262418C2626BD44009F9EE9 /* Sky-Gym.entitlements */,
 				4249C389251B12BD00DC9AE0 /* AppDelegate.swift */,
 				4249C38B251B12BD00DC9AE0 /* SceneDelegate.swift */,
 				4249C38D251B12BD00DC9AE0 /* ViewController.swift */,
@@ -226,7 +231,7 @@
 				4247D4C4261F0D1A0023BF80 /* SettingsViewController.swift */,
 				4247D4C6261F15B70023BF80 /* HealthKitManager.swift */,
 				4247D4C8261F28CB0023BF80 /* StepsOrHeartRateTableViewController.swift */,
-				424C137B2625A26400DCFA24 /* TestViewController.swift */,
+				4262418F26270528009F9EE9 /* HealthDataViewController.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -253,6 +258,7 @@
 		8BEF3EF71A7A2EB004774E9E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4262418D2626BD44009F9EE9 /* HealthKit.framework */,
 				4F84D1FA3B68CE52B796C350 /* Pods_Sky_Gym.framework */,
 			);
 			name = Frameworks;
@@ -394,10 +400,10 @@
 				4249C38E251B12BD00DC9AE0 /* ViewController.swift in Sources */,
 				4249C38A251B12BD00DC9AE0 /* AppDelegate.swift in Sources */,
 				4249C38C251B12BD00DC9AE0 /* SceneDelegate.swift in Sources */,
+				4262419026270528009F9EE9 /* HealthDataViewController.swift in Sources */,
 				423EB0E025F215530094AA0B /* CardPaymentViewController.swift in Sources */,
 				42651AD225301FF700539B19 /* TrainerAttendanceViewController.swift in Sources */,
 				42F7DBB72521F790001F0050 /* BaseViewController.swift in Sources */,
-				424C137C2625A26400DCFA24 /* TestViewController.swift in Sources */,
 				42BC9BF8252DCEC200435000 /* MemberViewController.swift in Sources */,
 				424BA43125D121F0000F1B1B /* ProfileAdminViewController.swift in Sources */,
 				42651AD425303F1500539B19 /* ListOfMembershipViewController.swift in Sources */,
@@ -573,6 +579,7 @@
 			baseConfigurationReference = ECB12277B5DC425A173F4D55 /* Pods-Sky-Gym.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Sky-Gym/Sky-Gym.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = "Sky-Gym/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -592,6 +599,7 @@
 			baseConfigurationReference = 59F5F610B1FD37E8CF655883 /* Pods-Sky-Gym.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Sky-Gym/Sky-Gym.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = "Sky-Gym/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;

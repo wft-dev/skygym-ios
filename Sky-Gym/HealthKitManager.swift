@@ -13,8 +13,10 @@ import HealthKit
 
 
 class HealthKitManager: NSObject {
+    
     static let shared:HealthKitManager = HealthKitManager()
     private override init() {}
+    
     let healthKitStore:HKHealthStore = HKHealthStore()
     let interval :DateComponents = {
         var interVal = DateComponents()
@@ -28,6 +30,11 @@ class HealthKitManager: NSObject {
         df.timeZone = .none
         return df
     }()
+    
+//    private lazy var anchorDate:DateComponents = {
+//
+//
+//    }()
     
     func healthKitRequestAuthorization(completion:@escaping (Bool) -> Void ) {
         if HKHealthStore.isHealthDataAvailable()  {
@@ -44,7 +51,8 @@ class HealthKitManager: NSObject {
     }
     
     func getSteps(for sampleType:HKQuantityType, start: Date, end: Date,completion:@escaping ([HealthStatics]) -> Void) {
-        let stepPredicate = HKSampleQuery.predicateForSamples(withStart: start, end: end, options: .strictStartDate)
+        let startDate = Calendar.current.date(byAdding: .day, value: -1, to: start)
+        let stepPredicate = HKSampleQuery.predicateForSamples(withStart: startDate, end: end, options: .strictEndDate)
         
         let stepQuery = HKStatisticsCollectionQuery(quantityType: sampleType , quantitySamplePredicate: stepPredicate, options: .cumulativeSum, anchorDate: end, intervalComponents: interval)
         
@@ -52,11 +60,10 @@ class HealthKitManager: NSObject {
             (query,result,err ) in
             
             if err == nil {
-                
                 if let myResult = result {
                     var stepData:[HealthStatics] = []
                     
-                    myResult.enumerateStatistics(from: start, to: end) { (statics, stop) in
+                    myResult.enumerateStatistics(from: startDate!, to: end) { (statics, stop) in
                         if let quantity = statics.sumQuantity() {
                             let steps = Int(quantity.doubleValue(for: .count()))
                             stepData.append(HealthStatics(value: "\(steps)", date: "\(self.df.string(from: statics.endDate))"))
@@ -65,15 +72,16 @@ class HealthKitManager: NSObject {
                     completion(stepData.reversed())
                 }
             }
-            HKHealthStore().execute(stepQuery)
         }
+        HKHealthStore().execute(stepQuery)
     }
     
     func getHeartRate(for sampleType:HKQuantityType,start:Date,end:Date,completion:@escaping ([HealthStatics]) -> Void ) {
         var heartRateData:[HealthStatics] = []
-        let heartRatePredicate = HKSampleQuery.predicateForSamples(withStart: start, end: end, options: .strictStartDate)
+        let startDate = Calendar.current.date(byAdding: .day, value: -1, to: start)
+        let heartRatePredicate = HKSampleQuery.predicateForSamples(withStart: startDate!, end: end, options: .strictStartDate)
         
-        let heartQuery = HKSampleQuery(sampleType: sampleType, predicate: heartRatePredicate, limit: 10, sortDescriptors: nil) { (query, result, err) in
+        let heartQuery = HKSampleQuery(sampleType: sampleType, predicate: heartRatePredicate, limit: 7, sortDescriptors: nil) { (query, result, err) in
             if err == nil {
                 
                 if let heartRateResult = result {
@@ -83,13 +91,9 @@ class HealthKitManager: NSObject {
                     }
                     completion(heartRateData.reversed())
                 }
-                
             }
-            
         }
-        
         HKHealthStore().execute(heartQuery)
-        
     }
     
 }

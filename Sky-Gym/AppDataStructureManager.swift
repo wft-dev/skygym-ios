@@ -389,5 +389,14 @@ struct WorkoutMemberList {
 struct HealthStatics {
     var value:String
     var date:String
-    
 }
+
+enum HealthParameter {
+    case steps
+    case heartRate
+}
+
+//struct HealthKitStr {
+//    var value:String
+//    var date:String
+//}

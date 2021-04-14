@@ -7,18 +7,13 @@
 //
 
 import UIKit
+import HealthKit
+import SVProgressHUD
 
 class HealthKitCell: UITableViewCell {
     @IBOutlet weak var value: UILabel!
     @IBOutlet weak var date: UILabel!
-    
     @IBOutlet weak var healthKitCellMainView: UIView!
-    
-}
-
-struct HealthKitStr {
-    var value:String
-    var date:String
 }
 
 class StepsOrHeartRateTableViewController: UIViewController {
@@ -30,31 +25,35 @@ class StepsOrHeartRateTableViewController: UIViewController {
     @IBOutlet weak var stepsOrHeartRateTable: UITableView!
     @IBOutlet weak var previousDateBtn: UIButton!
     @IBOutlet weak var nextDateBtn: UIButton!
-    
     @IBOutlet weak var mainView: UIView!
-    
-//    @IBOutlet weak var tableHeightContstraint: NSLayoutConstraint!
-
     @IBOutlet weak var backBtn: UIButton!
+    @IBOutlet weak var noDataFoundText: UILabel!
+    @IBOutlet weak var tableHeightConstraint: NSLayoutConstraint!
     
-    var healthKitArray:[HealthKitStr] =  [
-    HealthKitStr(value: "2323", date: "April,1 2021"),
-    HealthKitStr(value: "2322", date: "April,1 2021"),
-    HealthKitStr(value: "2321", date: "April,1 2021"),
-    HealthKitStr(value: "2324", date: "April,1 2021"),
-    HealthKitStr(value: "2326", date: "April,1 2021"),
-    HealthKitStr(value: "2328", date: "April,1 2021"),
-    HealthKitStr(value: "2399", date: "April,1 2021"),
-    HealthKitStr(value: "2387", date: "April,1 2021"),
-    HealthKitStr(value: "2355", date: "April,1 2021"),
-    HealthKitStr(value: "2321", date: "April,1 2021"),
-    HealthKitStr(value: "2324", date: "April,1 2021"),
-    HealthKitStr(value: "2326", date: "April,1 2021"),
-    HealthKitStr(value: "2328", date: "April,1 2021"),
-    HealthKitStr(value: "2399", date: "April,1 2021"),
-    HealthKitStr(value: "2387", date: "April,1 2021"),
-    HealthKitStr(value: "400", date: "April,1 2021"),
+    lazy var datePicker:UIDatePicker = {
+        let datePicker = UIDatePicker()
+        datePicker.timeZone = .none
+        datePicker.locale = .none
+        datePicker.datePickerMode = .date
+        return datePicker
+    }()
+    
+    lazy var toolBar:UIToolbar? = nil
+    
+    var healthKitArray:[HealthStatics] =  [
+    HealthStatics(value: "2323", date: "April,1 2021"),
+    HealthStatics(value: "2322", date: "April,1 2021"),
+    HealthStatics(value: "2321", date: "April,1 2021"),
+    HealthStatics(value: "2324", date: "April,1 2021"),
+    HealthStatics(value: "2326", date: "April,1 2021"),
+    HealthStatics(value: "2328", date: "April,1 2021"),
+    HealthStatics(value: "2399", date: "April,1 2021")
     ]
+    
+    var startDate:Date? = nil
+    var endDate:Date? = nil
+    var memberDetail:MemberDetailStructure? = nil
+    var healthDataFor : HealthParameter = .steps
     
     private var leftBtn:UIButton = {
         let leftBtn = UIButton()
@@ -70,44 +69,141 @@ class StepsOrHeartRateTableViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setHealthKitTableNavigationBar()
-        
-        self.stepsOrHeartRateTable.tableFooterView = UIView()
-        self.stepsOrHeartRateTable.separatorStyle = .none
-        self.stepsOrHeartRateTable.isScrollEnabled = false
-
-        self.stepsOrHeartRateTable.dataSource  = self
-        self.stepsOrHeartRateTable.delegate = self
-        
-        print("VIEW HEIGHT : \(view.frame.height)")
-        print("SCROLL VIEW MAIN  HEIGHT : \(self.mainView.frame.height)")
-        print("TABLE  CONTENT HEIGHT : \(self.stepsOrHeartRateTable.contentSize.height)")
-        print("TABLE FRAME HEIGHT : \(self.stepsOrHeartRateTable.frame.height)")
-        
         healthKitSetUpUI()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.stepsOrHeartRateTable.rowHeight = 66.0
+    func healthKitSetUpUI()  {
+        setHealthKitTableNavigationBar()
+        
+        stepsOrHeartRateTable.tableFooterView = UIView()
+        stepsOrHeartRateTable.separatorStyle = .none
+        stepsOrHeartRateTable.isScrollEnabled = false
+        stepsOrHeartRateTable.dataSource  = self
+        stepsOrHeartRateTable.delegate = self
+
+        checkByDateBtn.layer.cornerRadius = 12.0
+        backBtn.layer.cornerRadius = 12.0
+        backBtn.addTarget(self, action: #selector(backAciton), for: .touchUpInside)
+        checkByDateBtn.addTarget(self, action: #selector(checkByDateAction), for: .touchUpInside)
+        previousDateBtn.addTarget(self, action: #selector(previousDateAction), for: .touchUpInside)
+        nextDateBtn.addTarget(self, action: #selector(nextDateAction), for: .touchUpInside)
+        
+        self.imgView.layer.cornerRadius = 10.0
+        self.imgView.contentMode = .scaleAspectFill
+        
+        self.startDate = Date()
+        self.endDate = AppManager.shared.getNext7DaysDateFormat(startDate: Date())
+        
+        previousDateBtn.setTitle("\(AppManager.shared.dateWithMonthNameWithNoDash(date: self.startDate!))", for: .normal)
+        nextDateBtn.setTitle("\(AppManager.shared.dateWithMonthNameWithNoDash(date: self.endDate!))", for: .normal)
+
+        DispatchQueue.main.async {
+            self.getMemberData(memberID: AppManager.shared.memberID)
+        }
+        
     }
     
-    func healthKitSetUpUI()  {
-        self.stepsOrHeartRateTable.dataSource  = self
-        self.stepsOrHeartRateTable.delegate = self
-        self.checkByDateBtn.layer.cornerRadius = 12.0
-        self.backBtn.layer.cornerRadius = 12.0
+    func getMemberData(memberID:String) {
+        SVProgressHUD.show()
+        FireStoreManager.shared.getMemberByID(id: memberID) { (data, err) in
+            if err == nil {
+                let memberDetail = data?["memberDetail"] as! [String:String]
+                self.memberDetail = AppManager.shared.getMemberDetailStr(memberDetail: memberDetail)
+                self.memberName.text = "\(self.memberDetail!.firstName) \(self.memberDetail!.lastName)"
+                self.memberAddress.text = self.memberDetail!.address
+                
+                self.fetchHealthData(for: self.healthDataFor, startDate:self.startDate!, endDate: self.endDate!)
+                
+                FireStoreManager.shared.downloadUserImg(id: memberID, result: {
+                    (url , err) in
+                    SVProgressHUD.dismiss()
+                    if err == nil {
+                        let data = try! Data(contentsOf: url!)
+                        self.imgView.image = UIImage(data: data)
+                    }else {
+                        self.imgView.image = UIImage(named: "user1")
+                    }
+                })
+                
+            }else {
+                SVProgressHUD.dismiss()
+            }
+        }
+        
+    }
+    
+    
+    func fetchHealthData(for healthParameter : HealthParameter,startDate:Date,endDate:Date) {
+        print("HEALTH PARAMETER IN FETCHING DATA : \(healthParameter)")
+        SVProgressHUD.show()
+        self.healthKitArray.removeAll()
+        
+        switch healthParameter {
+        case .steps:
+            let steps = HKSampleType.quantityType(forIdentifier: .stepCount)!
+            
+            HealthKitManager.shared.getSteps(for: steps, start:startDate, end: endDate) { (arr) in
+                if arr.count > 0 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0  , execute: {
+                        self.healthKitArray = arr
+                        self.stepsOrHeartRateTable.isHidden = false
+                        self.stepsOrHeartRateTable.alpha = 1.0
+                        self.noDataFoundText.isHidden = true
+                        self.noDataFoundText.alpha = 0.0
+                        self.stepsOrHeartRateTable.reloadData()
+                        SVProgressHUD.dismiss()
+                    })
+                }else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0  , execute: {
+                        self.stepsOrHeartRateTable.isHidden = true
+                        self.stepsOrHeartRateTable.alpha = 0.0
+                        self.noDataFoundText.isHidden = false
+                        self.noDataFoundText.alpha = 1.0
+                        self.stepsOrHeartRateTable.reloadData()
+                        SVProgressHUD.dismiss()
+                    })
+                }
+            }
+            break
+        case .heartRate :
+            let heartRate = HKSampleType.quantityType(forIdentifier: .heartRate)!
+            
+            print("START DATE IS : \(self.startDate!)")
+            print("END DATE IS : \(self.endDate!)")
+            
+            HealthKitManager.shared.getHeartRate(for: heartRate, start: self.startDate!, end: self.endDate!) { (arr) in
+                if arr.count > 0 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
+                        self.healthKitArray = arr
+                        self.stepsOrHeartRateTable.isHidden = false
+                        self.stepsOrHeartRateTable.alpha = 1.0
+                        self.noDataFoundText.isHidden = true
+                        self.noDataFoundText.alpha = 0.0
+                        self.stepsOrHeartRateTable.reloadData()
+                        SVProgressHUD.dismiss()
+                    })
+                }else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0  , execute: {
+                        self.stepsOrHeartRateTable.isHidden = true
+                        self.stepsOrHeartRateTable.alpha = 0.0
+                        self.noDataFoundText.isHidden = false
+                        self.noDataFoundText.alpha = 1.0
+                        self.stepsOrHeartRateTable.reloadData()
+                        SVProgressHUD.dismiss()
+                    })
 
-        self.imgView.image = UIImage(named: "user1")
-        self.memberName.text = "Member 2"
-        self.memberAddress.text = "SCO 265-240-230, sector 22D, Chandigarh, India"
+                }
+            }
+            break
+        }
+   
     }
     
     func setHealthKitTableNavigationBar()  {
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.isTranslucent = true
-        let title = NSAttributedString(string: "Steps", attributes: [
+        let title = NSAttributedString(string: healthDataFor == HealthParameter.steps ? "Steps" : "Heart Rate", attributes: [
             NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
         ])
         let titleLabel = UILabel()
@@ -121,6 +217,77 @@ class StepsOrHeartRateTableViewController: UIViewController {
     }
     
     @objc func backAciton() { self.navigationController?.popViewController(animated: true) }
+    
+    @objc func checkByDateAction() {
+       setPickerView()
+    }
+    
+    @objc func previousDateAction() {
+        self.startDate = AppManager.shared.getDayByAdding(value: -1, to: self.startDate!)
+        self.endDate = AppManager.shared.getDayByAdding(value: -1, to: self.endDate!)
+        
+        previousDateBtn.setTitle("\(AppManager.shared.dateWithMonthNameWithNoDash(date: self.startDate!))", for: .normal)
+        nextDateBtn.setTitle("\(AppManager.shared.dateWithMonthNameWithNoDash(date: self.endDate!))", for: .normal)
+        
+        fetchHealthData(for: self.healthDataFor, startDate: self.startDate!, endDate: self.endDate!)
+       
+       }
+    
+    @objc func nextDateAction() {
+        self.startDate = AppManager.shared.getDayByAdding(value: 1, to: self.startDate!)
+        self.endDate = AppManager.shared.getDayByAdding(value: 1, to: self.endDate!)
+        
+        previousDateBtn.setTitle("\(AppManager.shared.dateWithMonthNameWithNoDash(date: self.startDate!))", for: .normal)
+        nextDateBtn.setTitle("\(AppManager.shared.dateWithMonthNameWithNoDash(date: self.endDate!))", for: .normal)
+        
+        fetchHealthData(for: self.healthDataFor, startDate: self.startDate!, endDate: self.endDate!)
+       }
+    
+    @objc func dateChanged(_ sender: UIDatePicker?) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat =  "d MMM yyyy"
+        if let date = sender?.date {
+            let nextEndDate = AppManager.shared.getNext7DaysDateFormat(startDate: date)
+            previousDateBtn.setTitle("\(dateFormatter.string(from: date))", for: .normal)
+            nextDateBtn.setTitle("\(dateFormatter.string(from: nextEndDate))", for: .normal)
+        }
+    }
+    
+    @objc func onDoneButtonClick() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat =  "d MMM yyyy"
+        self.startDate = datePicker.date
+        self.endDate = AppManager.shared.getNext7DaysDateFormat(startDate: datePicker.date)
+        previousDateBtn.setTitle("\(dateFormatter.string(from: self.startDate!))", for: .normal)
+        nextDateBtn.setTitle("\(dateFormatter.string(from: self.endDate!))", for: .normal)
+        
+        fetchHealthData(for: self.healthDataFor, startDate: self.startDate!, endDate: self.endDate!)
+        
+        toolBar!.removeFromSuperview()
+        self.datePicker.removeFromSuperview()
+    }
+    
+    @objc func onCancelButtonClick() {
+        toolBar!.removeFromSuperview()
+        datePicker.removeFromSuperview()
+        self.view.endEditing(true)
+    }
+    
+    func setPickerView() {
+        datePicker.backgroundColor = UIColor.white
+        datePicker.autoresizingMask = .flexibleWidth
+        datePicker.datePickerMode = .date
+        
+        datePicker.addTarget(self, action: #selector(self.dateChanged(_:)), for: .valueChanged)
+        datePicker.frame = CGRect(x: 0.0, y: UIScreen.main.bounds.size.height - 250, width: UIScreen.main.bounds.size.width, height: 250)
+        self.view.addSubview(datePicker)
+        
+        toolBar = UIToolbar(frame: CGRect(x: 0, y: UIScreen.main.bounds.size.height - 250, width: UIScreen.main.bounds.size.width, height: 50))
+        toolBar?.barStyle = .default
+        toolBar?.items = [UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(self.onCancelButtonClick)),UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(self.onDoneButtonClick))]
+        toolBar?.sizeToFit()
+        self.view.addSubview(self.toolBar!)
+    }
     
 }
 
@@ -169,6 +336,5 @@ extension StepsOrHeartRateTableViewController : UITableViewDelegate {
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-
     
 }

@@ -2066,7 +2066,29 @@ class FireStoreManager: NSObject {
         }
     }
     
+    func setHealthKitStatus(memberID:String,healthKitStatus:Bool,completion:@escaping (Error?) -> Void ) {
+        let ref = fireDB.collection("Members").document(memberID)
+        ref.updateData(["healthKitStatus":healthKitStatus]) { (err) in
+            completion(err)
+        }
+    }
+    
+    func getHealthKitStatus(memberID:String,completion:@escaping (Bool) -> Void) {
+        let ref = fireDB.collection("Members").document(memberID)
+        ref.getDocument { (docSnapshot, err) in
+            if err == nil && docSnapshot?.exists == true {
+                let data = docSnapshot?.data()
+                let healthKitStatus = data!["healthKitStatus"] as! Bool
+                completion(healthKitStatus)
+            }
+        }
+    }
+    
+    
 }
+
+
+
 
 
 
