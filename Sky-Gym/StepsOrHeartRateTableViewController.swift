@@ -40,15 +40,7 @@ class StepsOrHeartRateTableViewController: UIViewController {
     
     lazy var toolBar:UIToolbar? = nil
     
-    var healthKitArray:[HealthStatics] =  [
-    HealthStatics(value: "2323", date: "April,1 2021"),
-    HealthStatics(value: "2322", date: "April,1 2021"),
-    HealthStatics(value: "2321", date: "April,1 2021"),
-    HealthStatics(value: "2324", date: "April,1 2021"),
-    HealthStatics(value: "2326", date: "April,1 2021"),
-    HealthStatics(value: "2328", date: "April,1 2021"),
-    HealthStatics(value: "2399", date: "April,1 2021")
-    ]
+    var healthKitArray:[HealthStatics] =  []
     
     var startDate:Date? = nil
     var endDate:Date? = nil
@@ -134,7 +126,6 @@ class StepsOrHeartRateTableViewController: UIViewController {
     
     
     func fetchHealthData(for healthParameter : HealthParameter,startDate:Date,endDate:Date) {
-        print("HEALTH PARAMETER IN FETCHING DATA : \(healthParameter)")
         SVProgressHUD.show()
         self.healthKitArray.removeAll()
         
@@ -154,7 +145,7 @@ class StepsOrHeartRateTableViewController: UIViewController {
                         SVProgressHUD.dismiss()
                     })
                 }else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0  , execute: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5  , execute: {
                         self.stepsOrHeartRateTable.isHidden = true
                         self.stepsOrHeartRateTable.alpha = 0.0
                         self.noDataFoundText.isHidden = false
@@ -168,13 +159,11 @@ class StepsOrHeartRateTableViewController: UIViewController {
         case .heartRate :
             let heartRate = HKSampleType.quantityType(forIdentifier: .heartRate)!
             
-            print("START DATE IS : \(self.startDate!)")
-            print("END DATE IS : \(self.endDate!)")
-            
             HealthKitManager.shared.getHeartRate(for: heartRate, start: self.startDate!, end: self.endDate!) { (arr) in
                 if arr.count > 0 {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 , execute: {
                         self.healthKitArray = arr
+                        // print("ARRAY HEALTH KIT ARRAY : \(arr)")
                         self.stepsOrHeartRateTable.isHidden = false
                         self.stepsOrHeartRateTable.alpha = 1.0
                         self.noDataFoundText.isHidden = true
@@ -183,7 +172,7 @@ class StepsOrHeartRateTableViewController: UIViewController {
                         SVProgressHUD.dismiss()
                     })
                 }else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0  , execute: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5  , execute: {
                         self.stepsOrHeartRateTable.isHidden = true
                         self.stepsOrHeartRateTable.alpha = 0.0
                         self.noDataFoundText.isHidden = false
@@ -191,12 +180,11 @@ class StepsOrHeartRateTableViewController: UIViewController {
                         self.stepsOrHeartRateTable.reloadData()
                         SVProgressHUD.dismiss()
                     })
-
                 }
             }
             break
         }
-   
+        
     }
     
     func setHealthKitTableNavigationBar()  {
@@ -246,6 +234,8 @@ class StepsOrHeartRateTableViewController: UIViewController {
     @objc func dateChanged(_ sender: UIDatePicker?) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "d MMM yyyy"
+        dateFormatter.timeZone = .none
+        dateFormatter.locale = .none
         if let date = sender?.date {
             let nextEndDate = AppManager.shared.getNext7DaysDateFormat(startDate: date)
             previousDateBtn.setTitle("\(dateFormatter.string(from: date))", for: .normal)
@@ -256,8 +246,11 @@ class StepsOrHeartRateTableViewController: UIViewController {
     @objc func onDoneButtonClick() {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat =  "d MMM yyyy"
-        self.startDate = datePicker.date
-        self.endDate = AppManager.shared.getNext7DaysDateFormat(startDate: datePicker.date)
+        dateFormatter.timeZone = .none
+        dateFormatter.locale = .none
+        self.startDate = AppManager.shared.getStandardFormatDate(date: datePicker.date)
+        self.endDate = AppManager.shared.getNext7DaysDateFormat(startDate: self.startDate!)
+            
         previousDateBtn.setTitle("\(dateFormatter.string(from: self.startDate!))", for: .normal)
         nextDateBtn.setTitle("\(dateFormatter.string(from: self.endDate!))", for: .normal)
         

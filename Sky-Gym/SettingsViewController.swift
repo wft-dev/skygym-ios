@@ -69,16 +69,16 @@ class SettingsViewController: UIViewController {
                 (flag) in
                 if flag == true {
                     DispatchQueue.main.async {
-                        self.healthKitAlert(title: "Enabled", msg: "Welcome,Health kit is enabled. Check health data in Home menu")
+                        self.healthKitAlert(title: "Enabled", msg: "Welcome,Health kit is enabled. Check health data in Home menu",status: true)
                     }
                 }else {
-                     self.healthKitAlert(title: "Error", msg: "Something went wrong, try again.")
+                     self.healthKitAlert(title: "Error", msg: "Something went wrong, try again.",status: false)
                     print("FAILED.")
                 }
             })
             
         }else {
-            self.healthKitAlert(title: "Disabled", msg: "Health kit is disabled.")
+            self.healthKitAlert(title: "Disabled", msg: "Health kit is disabled.",status: false)
         }
     
     }

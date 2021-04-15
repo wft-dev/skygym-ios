@@ -51,8 +51,10 @@ class MemberDetailViewController: BaseViewController {
             FireStoreManager.shared.getHealthKitStatus(memberID: AppManager.shared.memberID) { (status) in
                 if status == true {
                     self.memberDetailOptionArrary.insert("Health Data", at: 4)
+                    self.memberDetailTable.reloadData()
                 }else {
                     self.memberDetailOptionArrary.remove(at: 4)
+                    self.memberDetailTable.reloadData()
                 }
             }
             
