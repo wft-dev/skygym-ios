@@ -396,7 +396,3 @@ enum HealthParameter {
     case heartRate
 }
 
-//struct HealthKitStr {
-//    var value:String
-//    var date:String
-//}

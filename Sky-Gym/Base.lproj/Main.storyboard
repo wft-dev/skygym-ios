@@ -1232,10 +1232,10 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sGn-JS-BtB">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="466"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="656"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HpX-cg-MM5">
-                                                <rect key="frame" x="0.0" y="20" width="320" height="446"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="320" height="656"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gym Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4ai-Mw-PkA">
                                                         <rect key="frame" x="30" y="10" width="260" height="20"/>
@@ -1386,6 +1386,22 @@
                                                             <constraint firstAttribute="height" constant="1.5" id="W1X-fD-uK0"/>
                                                         </constraints>
                                                     </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LiK-04-ruf">
+                                                        <rect key="frame" x="30" y="446" width="260" height="200"/>
+                                                        <subviews>
+                                                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="fWg-Nd-PQ4">
+                                                                <rect key="frame" x="0.0" y="0.0" width="260" height="200"/>
+                                                            </mapView>
+                                                        </subviews>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                        <constraints>
+                                                            <constraint firstItem="fWg-Nd-PQ4" firstAttribute="top" secondItem="LiK-04-ruf" secondAttribute="top" id="05P-G4-jqe"/>
+                                                            <constraint firstAttribute="trailing" secondItem="fWg-Nd-PQ4" secondAttribute="trailing" id="Cac-iw-noS"/>
+                                                            <constraint firstAttribute="height" constant="200" id="DXA-Jz-Tyh"/>
+                                                            <constraint firstAttribute="bottom" secondItem="fWg-Nd-PQ4" secondAttribute="bottom" id="Yt8-2S-HJh"/>
+                                                            <constraint firstItem="fWg-Nd-PQ4" firstAttribute="leading" secondItem="LiK-04-ruf" secondAttribute="leading" id="tN6-5q-Xfi"/>
+                                                        </constraints>
+                                                    </view>
                                                 </subviews>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
@@ -1429,6 +1445,8 @@
                                                     <constraint firstItem="IRc-5u-0mg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="hHZ-GE-20s" secondAttribute="trailing" constant="8" id="aAl-CN-Ugp"/>
                                                     <constraint firstItem="T3h-Fp-sRV" firstAttribute="leading" secondItem="HpX-cg-MM5" secondAttribute="leading" constant="30" id="aXF-4W-Lf9"/>
                                                     <constraint firstAttribute="trailing" secondItem="t9b-wR-PzM" secondAttribute="trailing" constant="30" id="akH-jZ-a1j"/>
+                                                    <constraint firstItem="LiK-04-ruf" firstAttribute="top" secondItem="t9b-wR-PzM" secondAttribute="bottom" constant="20" id="bCx-sB-Z1J"/>
+                                                    <constraint firstAttribute="bottom" secondItem="LiK-04-ruf" secondAttribute="bottom" constant="10" id="eLr-KO-2rF"/>
                                                     <constraint firstAttribute="trailing" secondItem="URv-Ij-UjG" secondAttribute="trailing" constant="30" id="ehr-XF-IVB"/>
                                                     <constraint firstItem="URv-Ij-UjG" firstAttribute="leading" secondItem="4ai-Mw-PkA" secondAttribute="leading" id="f16-bD-HlL"/>
                                                     <constraint firstItem="aT0-gq-Coa" firstAttribute="leading" secondItem="2D2-x6-i9z" secondAttribute="leading" id="ft8-gX-MBl"/>
@@ -1437,7 +1455,6 @@
                                                     <constraint firstAttribute="trailing" secondItem="xWi-KD-9ac" secondAttribute="trailing" constant="30" id="iK6-GW-8SF"/>
                                                     <constraint firstItem="4dK-P2-wvQ" firstAttribute="top" secondItem="2qT-uf-ibm" secondAttribute="bottom" constant="5" id="idU-iT-AW3"/>
                                                     <constraint firstItem="FSw-TV-27A" firstAttribute="leading" secondItem="HpX-cg-MM5" secondAttribute="leading" constant="30" id="jEV-Ea-nga"/>
-                                                    <constraint firstAttribute="bottom" secondItem="t9b-wR-PzM" secondAttribute="bottom" constant="20" id="jVx-S5-cgB"/>
                                                     <constraint firstAttribute="trailing" secondItem="IRc-5u-0mg" secondAttribute="trailing" constant="50" id="maJ-4b-i9A"/>
                                                     <constraint firstItem="Bsx-Bh-XpX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="imw-Qy-bTi" secondAttribute="trailing" constant="5" id="mld-2g-RMR"/>
                                                     <constraint firstItem="TOh-5l-H12" firstAttribute="leading" secondItem="HpX-cg-MM5" secondAttribute="leading" constant="30" id="nPe-BR-gsn"/>
@@ -1448,6 +1465,8 @@
                                                     <constraint firstItem="6rk-h2-xjr" firstAttribute="top" secondItem="xWi-KD-9ac" secondAttribute="bottom" constant="30" id="skF-pn-udj"/>
                                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="420" id="t9z-QI-eMU"/>
                                                     <constraint firstAttribute="trailing" secondItem="4dK-P2-wvQ" secondAttribute="trailing" constant="30" id="tik-hw-HWx"/>
+                                                    <constraint firstItem="LiK-04-ruf" firstAttribute="leading" secondItem="HpX-cg-MM5" secondAttribute="leading" constant="30" id="uCD-2R-Lb2"/>
+                                                    <constraint firstAttribute="trailing" secondItem="LiK-04-ruf" secondAttribute="trailing" constant="30" id="vOM-w2-B7c"/>
                                                     <constraint firstAttribute="trailing" secondItem="2D2-x6-i9z" secondAttribute="trailing" constant="30" id="vqb-sQ-oQ9"/>
                                                     <constraint firstItem="Bsx-Bh-XpX" firstAttribute="leading" secondItem="IRc-5u-0mg" secondAttribute="leading" id="wyr-r8-n3O"/>
                                                     <constraint firstItem="GEG-Mi-s3b" firstAttribute="leading" secondItem="HpX-cg-MM5" secondAttribute="leading" constant="30" id="z9w-IN-9ZF"/>
@@ -1457,7 +1476,7 @@
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <constraints>
                                             <constraint firstAttribute="bottom" secondItem="HpX-cg-MM5" secondAttribute="bottom" id="4Hk-h9-geK"/>
-                                            <constraint firstItem="HpX-cg-MM5" firstAttribute="top" secondItem="sGn-JS-BtB" secondAttribute="top" constant="20" id="eIU-gO-ocR"/>
+                                            <constraint firstItem="HpX-cg-MM5" firstAttribute="top" secondItem="sGn-JS-BtB" secondAttribute="top" id="eIU-gO-ocR"/>
                                             <constraint firstAttribute="height" priority="250" constant="480" id="lo2-Vx-w1W"/>
                                             <constraint firstItem="HpX-cg-MM5" firstAttribute="leading" secondItem="sGn-JS-BtB" secondAttribute="leading" id="nb6-Bd-quO"/>
                                             <constraint firstAttribute="trailing" secondItem="HpX-cg-MM5" secondAttribute="trailing" id="r4S-eS-n9A"/>
@@ -1475,17 +1494,38 @@
                                 <viewLayoutGuide key="contentLayoutGuide" id="dFC-3E-wbT"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="NiE-2v-sKe"/>
                             </scrollView>
+                            <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pNn-Bn-eWQ">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                                <subviews>
+                                    <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="POk-Yd-XgU">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                                    </mapView>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="POk-Yd-XgU" secondAttribute="bottom" id="AEP-wQ-GeO"/>
+                                    <constraint firstAttribute="trailing" secondItem="POk-Yd-XgU" secondAttribute="trailing" id="gUe-Hi-5HM"/>
+                                    <constraint firstItem="POk-Yd-XgU" firstAttribute="leading" secondItem="pNn-Bn-eWQ" secondAttribute="leading" id="k3f-lS-ycd"/>
+                                    <constraint firstItem="POk-Yd-XgU" firstAttribute="top" secondItem="pNn-Bn-eWQ" secondAttribute="top" id="l5r-wM-4uF"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="I2m-Ih-QDJ" firstAttribute="top" secondItem="gjy-Di-lPb" secondAttribute="top" id="Jq6-dJ-48B"/>
                             <constraint firstItem="gjy-Di-lPb" firstAttribute="bottom" secondItem="I2m-Ih-QDJ" secondAttribute="bottom" id="Vy4-Zd-YTe"/>
+                            <constraint firstItem="pNn-Bn-eWQ" firstAttribute="leading" secondItem="gjy-Di-lPb" secondAttribute="leading" id="d8f-rk-jrz"/>
+                            <constraint firstItem="pNn-Bn-eWQ" firstAttribute="top" secondItem="gjy-Di-lPb" secondAttribute="top" id="esy-ks-Ws2"/>
                             <constraint firstItem="gjy-Di-lPb" firstAttribute="trailing" secondItem="I2m-Ih-QDJ" secondAttribute="trailing" id="pi6-Fh-0MP"/>
+                            <constraint firstItem="gjy-Di-lPb" firstAttribute="bottom" secondItem="pNn-Bn-eWQ" secondAttribute="bottom" id="sjo-Nx-8nX"/>
+                            <constraint firstItem="gjy-Di-lPb" firstAttribute="trailing" secondItem="pNn-Bn-eWQ" secondAttribute="trailing" id="ve3-hA-yBW"/>
                             <constraint firstItem="I2m-Ih-QDJ" firstAttribute="leading" secondItem="gjy-Di-lPb" secondAttribute="leading" id="x7M-Z2-AGF"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="gjy-Di-lPb"/>
                     </view>
                     <connections>
+                        <outlet property="fullMapView" destination="POk-Yd-XgU" id="FRS-9I-OVn"/>
+                        <outlet property="fullMapViewContainer" destination="pNn-Bn-eWQ" id="abI-oz-Zv5"/>
                         <outlet property="gymAddressLabel" destination="2qT-uf-ibm" id="uBj-0S-Wiy"/>
                         <outlet property="gymDaysLabel" destination="vfY-us-1e5" id="dlF-Tf-al7"/>
                         <outlet property="gymNameLabel" destination="URv-Ij-UjG" id="xva-jz-6RI"/>
@@ -1493,6 +1533,9 @@
                         <outlet property="gymOwnerNameLabel" destination="imw-Qy-bTi" id="lPg-tL-MVH"/>
                         <outlet property="gymOwnerPhoneNoLabel" destination="Bsx-Bh-XpX" id="MRc-Om-Hb6"/>
                         <outlet property="gymTimingLabel" destination="aT0-gq-Coa" id="wao-jR-Ukl"/>
+                        <outlet property="mainScrollView" destination="I2m-Ih-QDJ" id="Ufb-0Z-Ghj"/>
+                        <outlet property="mapContainerView" destination="LiK-04-ruf" id="D03-nT-wij"/>
+                        <outlet property="myMapView" destination="fWg-Nd-PQ4" id="LND-eo-IH3"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k7v-ng-Fyc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -13064,7 +13107,7 @@
                                                 <rect key="frame" x="20" y="222" width="280" height="600"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="600" id="leM-h2-zt8"/>
+                                                    <constraint firstAttribute="height" constant="600" id="vub-qU-46t"/>
                                                 </constraints>
                                                 <prototypes>
                                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="healthkitCell" rowHeight="68.5" id="F6c-Tn-JOX" customClass="HealthKitCell" customModule="Sky_Gym" customModuleProvider="target">
@@ -13160,7 +13203,7 @@
                                             <constraint firstItem="Bzs-u4-uzw" firstAttribute="leading" secondItem="YO3-2L-OCY" secondAttribute="leading" constant="40" id="fyC-9D-25M"/>
                                             <constraint firstAttribute="trailing" secondItem="IzE-tS-vo5" secondAttribute="trailing" constant="20" id="gpG-yx-ETY"/>
                                             <constraint firstAttribute="bottom" secondItem="h2q-6b-vwb" secondAttribute="bottom" constant="35" id="hbH-JJ-7Uy"/>
-                                            <constraint firstAttribute="height" priority="250" constant="480" id="hbt-Kw-NWn"/>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" priority="250" constant="480" id="hbt-Kw-NWn"/>
                                             <constraint firstItem="pYW-0n-1tL" firstAttribute="top" secondItem="TbO-Ri-09c" secondAttribute="bottom" constant="50" id="j2y-cB-bgY"/>
                                             <constraint firstItem="h2q-6b-vwb" firstAttribute="top" secondItem="IzE-tS-vo5" secondAttribute="bottom" constant="20" id="kir-oX-jlw"/>
                                             <constraint firstItem="pYW-0n-1tL" firstAttribute="top" secondItem="kre-rQ-Sdc" secondAttribute="bottom" constant="50" id="lTg-dm-lyX"/>
@@ -13205,7 +13248,6 @@
                         <outlet property="noDataFoundText" destination="pYW-0n-1tL" id="XLC-t0-Q1c"/>
                         <outlet property="previousDateBtn" destination="kre-rQ-Sdc" id="Bs2-DR-Exv"/>
                         <outlet property="stepsOrHeartRateTable" destination="IzE-tS-vo5" id="9Li-T5-Fnr"/>
-                        <outlet property="tableHeightConstraint" destination="leM-h2-zt8" id="UXT-jq-Xxi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5fq-5Z-tvg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

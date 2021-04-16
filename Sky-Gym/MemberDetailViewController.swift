@@ -249,11 +249,14 @@ extension MemberDetailViewController:UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "memberDetailCell", for: indexPath) as! MemberDetailTableViewCell
         cell.detailName.text = self.memberDetailOptionArrary[indexPath.row]
-        //cell.sele
+        cell.selectionStyle = .none
         
-        if cell.detailName.text == "" {
+        if self.memberDetailOptionArrary[indexPath.row] == "" {
             cell.detailBtn.isHidden = true
+        }else {
+            cell.detailBtn.isHidden = false
         }
+        
         return cell
     }
 }

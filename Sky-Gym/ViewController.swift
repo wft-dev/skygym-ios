@@ -18,6 +18,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var memberLoginBtn: UIButton?
     @IBOutlet weak var emailErrorLabel: UILabel?
     @IBOutlet weak var passwordErrorLabel: UILabel?
+    
+    
+    
+    
  
     override func viewDidLoad() {
         super.viewDidLoad()
