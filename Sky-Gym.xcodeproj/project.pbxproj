@@ -10,6 +10,8 @@
 		4219F69725A49750005BF579 /* MemberLoginProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219F69625A49750005BF579 /* MemberLoginProfileViewController.swift */; };
 		4219F69925A498D3005BF579 /* MemberLoginTrainerProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4219F69825A498D3005BF579 /* MemberLoginTrainerProfileViewController.swift */; };
 		422FD427260B16C0001052C9 /* AddNewWorkoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422FD426260B16C0001052C9 /* AddNewWorkoutViewController.swift */; };
+		42314DCA262D674600ED6FAA /* CustomAnnotationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42314DC9262D674600ED6FAA /* CustomAnnotationView.xib */; };
+		42314DCC262D690300ED6FAA /* CustomAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42314DCB262D690300ED6FAA /* CustomAnnotation.swift */; };
 		4231BF9425342965007EFBBF /* ViewVisitorScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF9325342965007EFBBF /* ViewVisitorScreenViewController.swift */; };
 		4231BF98253458A9007EFBBF /* ListOfEventsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF97253458A9007EFBBF /* ListOfEventsViewController.swift */; };
 		4231BF9A25347328007EFBBF /* ViewEventScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */; };
@@ -74,6 +76,8 @@
 		4219F69625A49750005BF579 /* MemberLoginProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberLoginProfileViewController.swift; sourceTree = "<group>"; };
 		4219F69825A498D3005BF579 /* MemberLoginTrainerProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberLoginTrainerProfileViewController.swift; sourceTree = "<group>"; };
 		422FD426260B16C0001052C9 /* AddNewWorkoutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewWorkoutViewController.swift; sourceTree = "<group>"; };
+		42314DC9262D674600ED6FAA /* CustomAnnotationView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomAnnotationView.xib; sourceTree = "<group>"; };
+		42314DCB262D690300ED6FAA /* CustomAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnnotation.swift; sourceTree = "<group>"; };
 		4231BF9325342965007EFBBF /* ViewVisitorScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewVisitorScreenViewController.swift; sourceTree = "<group>"; };
 		4231BF97253458A9007EFBBF /* ListOfEventsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfEventsViewController.swift; sourceTree = "<group>"; };
 		4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewEventScreenViewController.swift; sourceTree = "<group>"; };
@@ -232,6 +236,8 @@
 				4247D4C6261F15B70023BF80 /* HealthKitManager.swift */,
 				4247D4C8261F28CB0023BF80 /* StepsOrHeartRateTableViewController.swift */,
 				4262418F26270528009F9EE9 /* HealthDataViewController.swift */,
+				42314DC9262D674600ED6FAA /* CustomAnnotationView.xib */,
+				42314DCB262D690300ED6FAA /* CustomAnnotation.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -324,6 +330,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42314DCA262D674600ED6FAA /* CustomAnnotationView.xib in Resources */,
 				4249C399251B12BF00DC9AE0 /* LaunchScreen.storyboard in Resources */,
 				4249C3AE251B6BAA00DC9AE0 /* Poppins-Bold.ttf in Resources */,
 				4249C3AA251B693800DC9AE0 /* Poppins-SemiBold.ttf in Resources */,
@@ -387,6 +394,7 @@
 				423EB0DE25F2007A0094AA0B /* StripeManager.swift in Sources */,
 				42CAADF1252C4992006E1D76 /* CurrentMembershipDetailViewController.swift in Sources */,
 				4231BF9A25347328007EFBBF /* ViewEventScreenViewController.swift in Sources */,
+				42314DCC262D690300ED6FAA /* CustomAnnotation.swift in Sources */,
 				42A407A5251C78570087B02F /* AppManager.swift in Sources */,
 				4259DC1F2523121C00F08FA6 /* MemberAndTrainerDetailView.swift in Sources */,
 				4247D4C7261F15B70023BF80 /* HealthKitManager.swift in Sources */,

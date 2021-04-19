@@ -10,6 +10,7 @@ import UIKit
 import MapKit
 import SVProgressHUD
 
+
 class GymInfoViewController: UIViewController {
     
     @IBOutlet weak var mainScrollView: UIScrollView!
@@ -41,6 +42,12 @@ class GymInfoViewController: UIViewController {
         leftBtn.widthAnchor.constraint(equalToConstant: 20).isActive = true
         return leftBtn
     }()
+    
+//    lazy private var customAnnotationView :CustomAnnotation = {
+//        var customAnnotationView = Bundle.main.loadNibNamed("CustomAnnotationView", owner: self, options: nil)?.first as! CustomAnnotation
+//        customAnnotationView.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
+//        return customAnnotationView
+//    }()
     
     var spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
     var stackView:UIStackView? = nil
@@ -156,6 +163,13 @@ class GymInfoViewController: UIViewController {
         
     }
     
+//    func getCustomAnnotationView () -> UIView {
+//        let customView = UIView()
+//        customView.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
+//        customView.addSubview(self.customAnnotationView)
+//        return customView
+//    }
+    
     func setMapCoordinates(map:MKMapView,coordinate:CLLocationCoordinate2D) {
         let mapAnnotation = MKPointAnnotation()
         var region = MKCoordinateRegion()
@@ -166,8 +180,8 @@ class GymInfoViewController: UIViewController {
         
         mapAnnotation.coordinate = region.center
         mapAnnotation.title = "SKY-GYM"
-        mapAnnotation.subtitle = self.gymAddressLabel.text!
-
+        mapAnnotation.subtitle = "SGAR SAGAR SGAR ADAE SDFASDKFJL"
+        
         map.addAnnotation(mapAnnotation)
         map.setRegion(region, animated: true)
     }
@@ -183,13 +197,34 @@ class GymInfoViewController: UIViewController {
                     print("Error in finding the gym info \(err)")
                 case let .success(gymInfo) :
                     self.setGymInfo(gymDetail: gymInfo)
-                    print("ADDRESS IS : \(gymInfo.gymAddress)")
                     self.setupPin(address: "sector 32D, sector 32 , Chandigarh")
                     SVProgressHUD.dismiss()
                 }
             }
         }
     }
+    
+    func configureDetailView(annotationView: MKAnnotationView) {
+        let width = 100
+        let height = 100
+
+        let calloutView = UIView()
+        calloutView.translatesAutoresizingMaskIntoConstraints = false
+
+        let views = ["calloutView": calloutView]
+
+        calloutView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[calloutView(100)]", options: [], metrics: nil, views: views))
+        calloutView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[calloutView(100)]", options: [], metrics: nil, views: views))
+
+
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        imageView.image = UIImage(named: "address_back")
+
+        calloutView.addSubview(imageView)
+
+        annotationView.detailCalloutAccessoryView = calloutView
+    }
+
     
     func setGymInfo(gymDetail:GymDetail) {
         self.gymNameLabel.text = gymDetail.gymName
@@ -199,8 +234,8 @@ class GymInfoViewController: UIViewController {
         self.gymOwnerNameLabel.text = gymDetail.gymOwnerName
         self.gymOwnerPhoneNoLabel.text = gymDetail.gymOwnerPhoneNumber
         self.gymOwnerAddressLabel.text = gymDetail.gymOwnerAddress
-  
     }
+
 }
 
 extension GymInfoViewController:MKMapViewDelegate {
@@ -215,20 +250,21 @@ extension GymInfoViewController:MKMapViewDelegate {
         
         if annotatioView == nil {
             annotatioView = MKAnnotationView(annotation: annotation, reuseIdentifier: annotationIdentifier)
-            annotatioView?.canShowCallout = true
         } else {
             annotatioView?.annotation = annotation
         }
         
+        annotatioView?.canShowCallout = true
         annotatioView?.image = UIImage(named: "placeholder")
+
+//        let leftView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+//        let logoImgView = UIImageView(image: UIImage(named: "logo"))
+//        logoImgView.frame = leftView.frame
+//        leftView.addSubview(logoImgView)
+//        annotatioView?.leftCalloutAccessoryView = leftView
         
-        let leftView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
-        let logoImgView = UIImageView(image: UIImage(named: "logo"))
-        logoImgView.frame = leftView.frame
-        leftView.addSubview(logoImgView)
-        annotatioView?.leftCalloutAccessoryView = leftView
-        
-        
+        self.configureDetailView(annotationView: annotatioView!)
+
         return annotatioView
     }
 
