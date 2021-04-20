@@ -56,6 +56,9 @@ class CardPaymentViewController: UIViewController {
         payBtn.addTarget(self, action: #selector(completePayment), for: .touchUpInside)
     }
     
+    
+    
+    
     @objc func completePayment(){
         SVProgressHUD.show()
         self.view.isUserInteractionEnabled = false
@@ -155,5 +158,8 @@ extension CardPaymentViewController : STPPaymentCardTextFieldDelegate {
             self.payBtn.alpha = 1.0
         }
     }
+    
+    
+    
     
 }
