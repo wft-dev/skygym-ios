@@ -2084,6 +2084,99 @@ class FireStoreManager: NSObject {
         }
     }
     
+    //REMINDERS FUNCTIONALITY
+    
+    func addOrUpdateReminder(memberID:String,reminderID:String,reminderData:[String:Any],completion:@escaping (Error?) -> Void ) {
+        let ref = fireDB.collection("Reminders").document(memberID)
+        ref.getDocument { (docSnapshot, err) in
+            if err == nil {
+                if  docSnapshot?.exists == true  {
+                    let data = docSnapshot?.data()
+                    var workouts = data?["workout"] as! [String:Any]
+                    workouts[reminderID] = reminderData
+                    
+                    ref.updateData(["workout":workouts]) { (err) in
+                        completion(err)
+                    }
+                    
+                }else {
+                    let workout = [reminderID:reminderData]
+                    ref.setData(["workout":workout]) { (err) in
+                        completion(err)
+                    }
+                }
+            }else {
+                print("ERROR IS : \(err!)")
+                completion(err)
+            }
+        }
+    }
+    
+    
+    func getAllReminders(memberID:String,completion:@escaping ([Reminder]) -> Void) {
+        let ref = fireDB.collection("Reminders").document(memberID)
+        var reminderArray:[Reminder] = []
+        
+        ref.getDocument { (docSnapshot, err) in
+            if err == nil && docSnapshot?.exists == true  {
+                let workout = (docSnapshot?.data()?["workout"] as! Dictionary<String,Any>)
+                
+                workout.forEach { (key,value) in
+                    let reminderValues = value as! Dictionary<String,Any>
+                    
+                    reminderArray.append(Reminder(reminderID: key, workoutName: reminderValues["workoutName"] as! String ,note:reminderValues["note"] as! String , weekDays: reminderValues["weekdays"] as! [Int], time: reminderValues["time"]  as! String , isRepeat: reminderValues["isRepeat"] as! Bool ))
+                }
+                completion(reminderArray)
+                
+            }else {
+                completion(reminderArray)
+            }
+        }
+    }
+    
+    func getReminderBy(reminderID:String,memberID:String,completion:@escaping (Reminder?) -> Void) {
+        let ref = fireDB.collection("Reminders").document(memberID)
+        var reminder:Reminder? = nil
+        
+        ref.getDocument { (docSnapshot, err) in
+            if err == nil && docSnapshot?.exists == true  {
+                let workout = (docSnapshot?.data()?["workout"] as! Dictionary<String,Any>)
+                
+                if workout[reminderID] != nil {
+                    let values = workout[reminderID] as! [String:Any]
+                    reminder = Reminder(reminderID: reminderID, workoutName:values["workoutName"] as! String ,note: values["note"] as! String, weekDays: values["weekdays"] as! [Int], time: values["time"] as! String , isRepeat: values["isRepeat"] as! Bool)
+                }
+                completion(reminder)
+            } else {
+                completion(reminder)
+            }
+        }
+    }
+    
+    func deleteReminderBy(reminderID:String,memberID:String,completion:@escaping (Error?) -> Void) {
+        let ref = fireDB.collection("Reminders").document(memberID)
+    
+        ref.getDocument { (docSnapshot, err) in
+            if err == nil && docSnapshot?.exists == true {
+                var workout = (docSnapshot?.data()?["workout"] as! Dictionary<String,Any>)
+                
+                if workout[reminderID] != nil {
+                    workout.remove(at: workout.index(forKey: reminderID)!)
+                    
+                    ref.updateData(["workout":workout]) { (err) in
+                        completion(err)
+                    }
+                }else {
+                    print("ALREADY DELETED.")
+                }
+            }else {
+                completion(err)
+            }
+        }
+    }
+    
+    
+    
     
 }
 

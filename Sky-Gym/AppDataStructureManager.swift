@@ -396,3 +396,12 @@ enum HealthParameter {
     case heartRate
 }
 
+struct Reminder {
+    var reminderID:String
+    var workoutName:String
+    var note:String
+    var weekDays:[Int]
+    var time:String
+    var isRepeat:Bool
+}
+

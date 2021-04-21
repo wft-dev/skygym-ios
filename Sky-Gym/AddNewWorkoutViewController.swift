@@ -283,12 +283,10 @@ class AddNewWorkoutViewController: BaseViewController {
     }
     
     @objc func addReminder()  {
-        
         let reminderVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "reminderVC") as! AddReminderViewController
         reminderVC.workoutID = self.workoutID
         reminderVC.workoutName = self.workoutPlanNonEdit.text!
         self.navigationController?.pushViewController(reminderVC, animated: true)
-    
     }
     
     func fetchWorkoutBy(id:String) {

@@ -38,16 +38,31 @@ class MemberDetailViewController: BaseViewController {
     
     override func viewDidLoad() {
        super.viewDidLoad()
-       
+        setMemberDetailUI()
+        
+//        FireStoreManager.shared.getReminderBy(reminderID: "2424", memberID: "3333") { (reminder) in
+//            print("REMINDER \(reminder?.reminderID) , \(reminder?.note)")
+//        }
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        SVProgressHUD.show()
+        self.showMemberWithID(id:AppManager.shared.memberID)
+        self.memberDetailTable.reloadData()
+    }
+    
+    func setMemberDetailUI() {
         self.callLabel.isUserInteractionEnabled = true
         self.msgLabel.isUserInteractionEnabled = true
-
+        
         self.callLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(callAction)))
         self.msgLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(msgAction)))
         
         if AppManager.shared.loggedInRole == LoggedInRole.Member {
-        memberDetailOptionArrary = ["Current membership details","Purchase","Attendence", "Workout Plans",""]
-
+            memberDetailOptionArrary = ["Current membership details","Purchase","Attendence", "Workout Plans",""]
+            
             FireStoreManager.shared.getHealthKitStatus(memberID: AppManager.shared.memberID) { (status) in
                 if status == true {
                     self.memberDetailOptionArrary.insert("Health Data", at: 4)
@@ -59,7 +74,7 @@ class MemberDetailViewController: BaseViewController {
             }
             
         }else {
-          memberDetailOptionArrary = ["Add new Membership","Current membership details","Purchase","Attendence",""]
+            memberDetailOptionArrary = ["Add new Membership","Current membership details","Purchase","Attendence",""]
         }
         
         [self.paidTextLabel,self.upaidTextLabel].forEach{
@@ -75,14 +90,6 @@ class MemberDetailViewController: BaseViewController {
         self.viewForMemberDetail.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showMemberDetail)))
         self.setCustomMemberDetailNavigation()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        SVProgressHUD.show()
-        self.showMemberWithID(id:AppManager.shared.memberID)
-        self.memberDetailTable.reloadData()
-    }
-    
 
     
     func setCustomMemberDetailNavigation()  {
