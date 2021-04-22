@@ -81,7 +81,7 @@ extension MenuItemsViewController {
                 array.remove(at: 3)
             }
         case .Member :
-            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events", "Gallary","Videos","Settings","Logout"]
+            array = ["Home","Gym Info","Membership plans","Profile","Trainer","Events", "Gallary","Videos","Posts","Settings","Logout"]
         }
         return array
     }
@@ -232,6 +232,11 @@ extension MenuItemsViewController {
             break
             
         case 8 :
+            let gymPostFeedVC = self.storyBoard.instantiateViewController(withIdentifier: "postFeedVC") as! GymPostFeedsPageViewController
+            self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: gymPostFeedVC), animated: true)
+                break
+            
+        case 9 :
                 let settingsVC = self.storyBoard.instantiateViewController(withIdentifier: "settingsVC") as! SettingsViewController
                 self.appDelgate?.swRevealVC.pushFrontViewController(UINavigationController(rootViewController: settingsVC), animated: true)
                 break

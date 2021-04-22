@@ -405,3 +405,25 @@ struct Reminder {
     var isRepeat:Bool
 }
 
+
+struct Posts {
+    var userID:String
+    var userNameImg:UIImage
+    var userName:String
+    var postImg:UIImage
+    var isLiked:Bool
+    var isUnliked:Bool
+    var likesCount:Int
+    var unlikesCount:Int
+    var caption:String
+    var comments:[Comment]
+    var timeForPost:String
+}
+
+
+struct Comment {
+    var userID:String
+    var userName:String
+    var commentStr:String
+}
+

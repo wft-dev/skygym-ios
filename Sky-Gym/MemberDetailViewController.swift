@@ -95,7 +95,7 @@ class MemberDetailViewController: BaseViewController {
     func setCustomMemberDetailNavigation()  {
         let s = AppManager.shared.loggedInRole == LoggedInRole.Member ? "Home" : "Member Detail"
         let title = NSAttributedString(string: s, attributes: [
-            NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,
+            NSAttributedString.Key.font : UIFont(name: "Poppins-Medium", size: 22) as! UIFont,
         ])
         let titleLabel = UILabel()
         titleLabel.attributedText = title
