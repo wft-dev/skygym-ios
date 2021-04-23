@@ -420,10 +420,13 @@ struct Posts {
     var timeForPost:String
 }
 
-
 struct Comment {
     var userID:String
     var userName:String
     var commentStr:String
+}
+
+protocol PostFeed {
+    func reloadFeedTable(row:Int,section:Int) 
 }
 

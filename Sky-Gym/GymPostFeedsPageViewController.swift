@@ -17,7 +17,6 @@ class PostFeedCell: UITableViewCell {
     @IBOutlet weak var dislikeBtn: UIButton!
     @IBOutlet weak var commentBtn: UIButton!
     @IBOutlet weak var totalLikesLabel: UILabel!
-    @IBOutlet weak var userNameForCaptionLabel: UILabel!
     @IBOutlet weak var captionLabel: UILabel!
     @IBOutlet weak var moreBtn: UIButton!
     @IBOutlet weak var viewAllCommentBtn: UIButton!
@@ -26,22 +25,45 @@ class PostFeedCell: UITableViewCell {
     @IBOutlet weak var secondLatestCommentUserNameLabel: UILabel!
     @IBOutlet weak var secondLatestCommentLabel: UILabel!
     @IBOutlet weak var timeOfPostLabel: UILabel!
+   // @IBOutlet weak var captionHeightConstraint: NSLayoutConstraint!
+    
+    var delegate:PostFeed? = nil
+    
+    var likeImgName = "like"
+    var dislikeImgName = "dislike"
     
     override func awakeFromNib() {
+        likeBtn.setImage(UIImage(named:likeImgName ), for: .normal)
+        dislikeBtn.setImage(UIImage(named: dislikeImgName), for: .normal)
         likeBtn.addTarget(self, action: #selector(likePostAction), for: .touchUpInside)
         dislikeBtn.addTarget(self, action: #selector(dislikePostAction), for: .touchUpInside)
     }
     
-  @objc  func likePostAction() {
-    likeBtn.setImage(UIImage(named: "like-fill"), for: .normal)
+    @objc  func likePostAction() {
+        if dislikeImgName == "dislike-fill" {
+            dislikeImgName = "dislike"
+            likeImgName = "like-fill"
+            likeBtn.setImage(UIImage(named: likeImgName ), for: .normal)
+            dislikeBtn.setImage(UIImage(named: dislikeImgName), for: .normal)
+        }else {
+            likeImgName =  likeImgName == "like" ? "like-fill" : "like"
+            likeBtn.setImage(UIImage(named: likeImgName ), for: .normal)
+        }
     }
     
     @objc  func dislikePostAction() {
-        
+        if likeImgName == "like-fill" {
+            dislikeImgName = "dislike-fill"
+            likeImgName = "like"
+            likeBtn.setImage(UIImage(named: likeImgName ), for: .normal)
+            dislikeBtn.setImage(UIImage(named: dislikeImgName), for: .normal)
+        }else {
+            dislikeImgName =  dislikeImgName == "dislike" ? "dislike-fill" : "dislike"
+            dislikeBtn.setImage(UIImage(named: dislikeImgName ), for: .normal)
+        }
     }
-    
+   
 }
-
 
 class GymPostFeedsPageViewController: UIViewController {
 
@@ -57,7 +79,6 @@ class GymPostFeedsPageViewController: UIViewController {
     }()
     
     var stackView:UIStackView? = nil
-    
     var commentArray:[Comment] = []
     var postsArray:[Posts] = []
     
@@ -70,14 +91,15 @@ class GymPostFeedsPageViewController: UIViewController {
         commentArray = [
             Comment(userID: "4444", userName: "Sagar",commentStr: "Nice keep it up.")
         ]
+ 
+        let caption = "My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment sagar."
         
         postsArray = [
-           Posts(userID: "64628", userNameImg: UIImage(named: "user")!, userName: "Sagar Bohat", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: "My First post.Please like and comment.", comments: commentArray,timeForPost: "1 hour ago"),
-           Posts(userID: "64628", userNameImg: UIImage(named: "user")!, userName: "Sagar Kumar", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: "My First post.Please like and comment.", comments: commentArray,timeForPost: "2 hour ago"),
-           Posts(userID: "64628", userNameImg: UIImage(named: "user")!, userName: "Sagar Bohat", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: "My First post.Please like and comment.", comments: commentArray,timeForPost: "3 hour ago"),
-           Posts(userID: "64628", userNameImg: UIImage(named: "user")!, userName: "Sagar Kumar", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: "My First post.Please like and comment.", comments: commentArray,timeForPost: "4 hour ago")
+           Posts(userID: "64628", userNameImg: UIImage(named: "user")!, userName: "Sagar Bohat", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption:caption, comments: commentArray,timeForPost: "1 hour ago"),
+           Posts(userID: "6545", userNameImg: UIImage(named: "user")!, userName: "Sagar Kumar", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: "My First post.Please like and comment.", comments: commentArray,timeForPost: "2 hour ago"),
+           Posts(userID: "5545", userNameImg: UIImage(named: "user")!, userName: "Sagar Bohat", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: "My First post.Please like and comment.", comments: commentArray,timeForPost: "3 hour ago"),
+           Posts(userID: "3221", userNameImg: UIImage(named: "user")!, userName: "Sagar Kumar", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: caption, comments: commentArray,timeForPost: "4 hour ago")
         ]
-        
     }
     
     func setPostsFeedNavigationBar()  {
@@ -98,6 +120,21 @@ class GymPostFeedsPageViewController: UIViewController {
     }
     
      @objc func menuChange() {  AppManager.shared.appDelegate.swRevealVC.revealToggle(self) }
+    
+    func getAttributedCaption(userName:String,caption:String) -> NSMutableAttributedString {
+        let userNameBold = NSMutableAttributedString(string: userName, attributes: [NSAttributedString.Key.font:UIFont(name: "Poppins-Bold", size: 12)!])
+        
+        userNameBold.append(NSAttributedString(string: "  \(caption)"))
+        
+        return userNameBold
+    }
+    
+    @objc func showFullCaption(_ sender:UIButton) {
+        let indexPath = IndexPath(row: sender.tag, section: 0)
+        let cell = self.postFeedTable.cellForRow(at: indexPath ) as! PostFeedCell
+        cell.captionLabel.numberOfLines = 0
+        self.postFeedTable.reloadRows(at: [indexPath], with: .automatic)
+    }
 
 }
 
@@ -112,31 +149,35 @@ extension GymPostFeedsPageViewController:UITableViewDataSource{
         let singlePost = postsArray[indexPath.row]
         let comment = commentArray[0]
         
-        
         cell.userImg.layer.cornerRadius = cell.userImg.frame.height/2
-        
         
         cell.userImg.image = singlePost.userNameImg
         cell.userNameLabel.text = singlePost.userName
         cell.postImg.image = singlePost.postImg
         cell.totalLikesLabel.text = "100 likes"
-        cell.userNameForCaptionLabel.text = singlePost.userName
-        cell.captionLabel.text = singlePost.caption
+        cell.captionLabel.attributedText = getAttributedCaption(userName: singlePost.userName, caption: singlePost.caption)
         cell.latestCommentUserNameLabel.text = comment.userName
         cell.latestCommentLabel.text = comment.commentStr
         cell.secondLatestCommentUserNameLabel.text = comment.userName
         cell.secondLatestCommentLabel.text = comment.commentStr
         cell.timeOfPostLabel.text = singlePost.timeForPost
-        
-        
-        
+        cell.moreBtn.tag = indexPath.row
+        cell.moreBtn.addTarget(self, action: #selector(showFullCaption(_:)), for: .touchUpInside)
+        cell.delegate = self
         cell.selectionStyle = .none
         
         return cell
         
     }
     
-    
 }
 
 extension GymPostFeedsPageViewController:UITableViewDelegate{}
+
+extension GymPostFeedsPageViewController:PostFeed {
+    
+    func reloadFeedTable(row: Int, section: Int) {
+        self.postFeedTable.reloadData()
+    }
+    
+}
