@@ -427,6 +427,6 @@ struct Comment {
 }
 
 protocol PostFeed {
-    func reloadFeedTable(row:Int,section:Int) 
+    func reloadFeedTable() 
 }
 

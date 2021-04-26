@@ -26,48 +26,13 @@ class PostFeedCell: UITableViewCell {
     @IBOutlet weak var secondLatestCommentLabel: UILabel!
     @IBOutlet weak var timeOfPostLabel: UILabel!
    // @IBOutlet weak var captionHeightConstraint: NSLayoutConstraint!
-    
     var delegate:PostFeed? = nil
-    
-    var likeImgName = "like"
-    var dislikeImgName = "dislike"
-    
-    override func awakeFromNib() {
-        likeBtn.setImage(UIImage(named:likeImgName ), for: .normal)
-        dislikeBtn.setImage(UIImage(named: dislikeImgName), for: .normal)
-        likeBtn.addTarget(self, action: #selector(likePostAction), for: .touchUpInside)
-        dislikeBtn.addTarget(self, action: #selector(dislikePostAction), for: .touchUpInside)
-    }
-    
-    @objc  func likePostAction() {
-        if dislikeImgName == "dislike-fill" {
-            dislikeImgName = "dislike"
-            likeImgName = "like-fill"
-            likeBtn.setImage(UIImage(named: likeImgName ), for: .normal)
-            dislikeBtn.setImage(UIImage(named: dislikeImgName), for: .normal)
-        }else {
-            likeImgName =  likeImgName == "like" ? "like-fill" : "like"
-            likeBtn.setImage(UIImage(named: likeImgName ), for: .normal)
-        }
-    }
-    
-    @objc  func dislikePostAction() {
-        if likeImgName == "like-fill" {
-            dislikeImgName = "dislike-fill"
-            likeImgName = "like"
-            likeBtn.setImage(UIImage(named: likeImgName ), for: .normal)
-            dislikeBtn.setImage(UIImage(named: dislikeImgName), for: .normal)
-        }else {
-            dislikeImgName =  dislikeImgName == "dislike" ? "dislike-fill" : "dislike"
-            dislikeBtn.setImage(UIImage(named: dislikeImgName ), for: .normal)
-        }
-    }
-   
 }
 
 class GymPostFeedsPageViewController: UIViewController {
 
     @IBOutlet weak var postFeedTable: UITableView!
+    var newPostImg:UIImage? = nil
     
     private var menuBtn:UIButton = {
         let menuBtn = UIButton()
@@ -78,15 +43,41 @@ class GymPostFeedsPageViewController: UIViewController {
         return menuBtn
     }()
     
+    private var addBtn:UIButton = {
+        let addBtn = UIButton()
+        addBtn.setImage(UIImage(named: "add-image"), for: .normal)
+        addBtn.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+        addBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        addBtn.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        return addBtn
+    }()
+    
+    lazy private var imagePicker:UIImagePickerController = {
+        let imagePicker = UIImagePickerController()
+        return imagePicker
+    }()
+    
     var stackView:UIStackView? = nil
     var commentArray:[Comment] = []
     var postsArray:[Posts] = []
+    var likeArray:[Int] = []
+    var dislikeArray:[Int] = []
+    var captionExpand:[Int] = []
+    var likeImgName = "like"
+    var dislikeImgName = "dislike"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setPostsFeedNavigationBar()
+        postFeedTable.shouldIgnoreScrollingAdjustment = true
         postFeedTable.separatorStyle = .none
+        postFeedTable.allowsSelection = false
+        postFeedTable.estimatedRowHeight = UITableView.automaticDimension
+        imagePicker.delegate = self
+        
+        self.likeArray.removeAll()
+        self.dislikeArray.removeAll()
         
         commentArray = [
             Comment(userID: "4444", userName: "Sagar",commentStr: "Nice keep it up.")
@@ -113,29 +104,69 @@ class GymPostFeedsPageViewController: UIViewController {
         titleLabel.attributedText = title
         navigationItem.titleView = titleLabel
         menuBtn.addTarget(self, action: #selector(menuChange), for: .touchUpInside)
+        addBtn.addTarget(self, action: #selector(addPostAction), for: .touchUpInside)
         let spaceBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
         stackView =  UIStackView(arrangedSubviews: [spaceBtn,menuBtn])
         stackView?.widthAnchor.constraint(equalToConstant: 40).isActive = true
         navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView!), animated: true)
+        navigationItem.setRightBarButton(UIBarButtonItem(customView: addBtn), animated: true)
     }
     
      @objc func menuChange() {  AppManager.shared.appDelegate.swRevealVC.revealToggle(self) }
     
+     @objc func addPostAction() {
+        
+        imagePicker.allowsEditing = true
+        imagePicker.modalPresentationStyle = .fullScreen
+        imagePicker.sourceType = .photoLibrary
+        present(self.imagePicker, animated: true, completion: nil)
+    }
+    
     func getAttributedCaption(userName:String,caption:String) -> NSMutableAttributedString {
         let userNameBold = NSMutableAttributedString(string: userName, attributes: [NSAttributedString.Key.font:UIFont(name: "Poppins-Bold", size: 12)!])
-        
         userNameBold.append(NSAttributedString(string: "  \(caption)"))
-        
         return userNameBold
+    }
+
+    @objc  func likePostAction(_ sender:UIButton) {
+        if self.likeArray.contains(sender.tag) {
+            self.likeArray.remove(at: self.likeArray.firstIndex(of: sender.tag)!)
+        }else {
+            if self.dislikeArray.contains(sender.tag) {
+                self.dislikeArray.remove(at: self.dislikeArray.firstIndex(of: sender.tag)!)
+            }
+            self.likeArray.append(sender.tag)
+        }
+         self.reload(tableView: postFeedTable)
+    }
+    
+    
+    @objc  func dislikePostAction(_ sender:UIButton) {
+        if self.dislikeArray.contains(sender.tag) {
+            self.dislikeArray.remove(at: self.dislikeArray.firstIndex(of: sender.tag)!)
+        }else {
+            if self.likeArray.contains(sender.tag) {
+                self.likeArray.remove(at: self.likeArray.firstIndex(of: sender.tag)!)
+            }
+            self.dislikeArray.append(sender.tag)
+        }
+        self.reload(tableView: postFeedTable)
     }
     
     @objc func showFullCaption(_ sender:UIButton) {
-        let indexPath = IndexPath(row: sender.tag, section: 0)
-        let cell = self.postFeedTable.cellForRow(at: indexPath ) as! PostFeedCell
-        cell.captionLabel.numberOfLines = 0
-        self.postFeedTable.reloadRows(at: [indexPath], with: .automatic)
+        if captionExpand.contains(sender.tag)  == false {
+             captionExpand.append(sender.tag)
+        }
+        self.reload(tableView: postFeedTable)
     }
-
+    
+    func reload(tableView: UITableView) {
+        let contentOffset = tableView.contentOffset
+        tableView.reloadData()
+        tableView.layoutIfNeeded()
+        tableView.setContentOffset(contentOffset, animated: false)
+    }
+    
 }
 
 extension GymPostFeedsPageViewController:UITableViewDataSource{
@@ -148,9 +179,8 @@ extension GymPostFeedsPageViewController:UITableViewDataSource{
         let cell = tableView.dequeueReusableCell(withIdentifier: "postFeedCell", for: indexPath) as! PostFeedCell
         let singlePost = postsArray[indexPath.row]
         let comment = commentArray[0]
-        
+
         cell.userImg.layer.cornerRadius = cell.userImg.frame.height/2
-        
         cell.userImg.image = singlePost.userNameImg
         cell.userNameLabel.text = singlePost.userName
         cell.postImg.image = singlePost.postImg
@@ -161,23 +191,71 @@ extension GymPostFeedsPageViewController:UITableViewDataSource{
         cell.secondLatestCommentUserNameLabel.text = comment.userName
         cell.secondLatestCommentLabel.text = comment.commentStr
         cell.timeOfPostLabel.text = singlePost.timeForPost
+        
         cell.moreBtn.tag = indexPath.row
-        cell.moreBtn.addTarget(self, action: #selector(showFullCaption(_:)), for: .touchUpInside)
+        cell.likeBtn.tag = indexPath.row
+        cell.dislikeBtn.tag = indexPath.row
+        
+        likeImgName = self.likeArray.contains(indexPath.row) ? "like-fill" : "like"
+        dislikeImgName = self.dislikeArray.contains(indexPath.row) ? "dislike-fill" : "dislike"
+        cell.captionLabel.numberOfLines = self.captionExpand.contains(indexPath.row) ? 0 : 3
+        
+        cell.likeBtn.setImage(UIImage(named:likeImgName ), for: .normal)
+        cell.dislikeBtn.setImage(UIImage(named: dislikeImgName), for: .normal)
+
+        cell.likeBtn.addTarget(self, action: #selector(likePostAction(_ :)), for: .touchUpInside)
+        cell.dislikeBtn.addTarget(self, action: #selector(dislikePostAction(_ :)), for: .touchUpInside)
+        
+        if captionExpand.contains(indexPath.row) {
+            cell.moreBtn.removeTarget(self, action: #selector(showFullCaption(_ :)), for: .touchUpInside)
+            cell.moreBtn.isHidden = true
+            cell.moreBtn.isUserInteractionEnabled = false
+            cell.moreBtn.alpha = 0.0
+        }else {
+            cell.moreBtn.addTarget(self, action: #selector(showFullCaption(_ :)), for: .touchUpInside)
+            cell.moreBtn.isHidden = false
+            cell.moreBtn.isUserInteractionEnabled = true
+            cell.moreBtn.alpha = 1.0
+        }
+        
+        cell.isUserInteractionEnabled = true
+       
         cell.delegate = self
         cell.selectionStyle = .none
         
         return cell
-        
+    }
+}
+
+extension GymPostFeedsPageViewController:UITableViewDelegate{
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        UITableView.automaticDimension
     }
     
 }
 
-extension GymPostFeedsPageViewController:UITableViewDelegate{}
-
 extension GymPostFeedsPageViewController:PostFeed {
     
-    func reloadFeedTable(row: Int, section: Int) {
+    func reloadFeedTable() {
         self.postFeedTable.reloadData()
     }
     
+}
+
+
+
+extension GymPostFeedsPageViewController:UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image:UIImage = info[.editedImage] as? UIImage {
+            self.newPostImg  = image
+        }
+        dismiss(animated: true) {
+            let uploadPhotoVc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "uploadPhotoVC") as! UploadPhotoViewController
+            self.navigationController?.pushViewController(uploadPhotoVc, animated: true)
+        }
+    }
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
 }
