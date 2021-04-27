@@ -221,11 +221,6 @@ class ViewVisitorScreenViewController: BaseViewController {
     }
     
     func setVisitorViewNavigationBar() {
-//        self.visitorViewNavigationBar.menuBtn.isHidden = true
-//        self.visitorViewNavigationBar.leftArrowBtn.isHidden = false
-//        self.visitorViewNavigationBar.leftArrowBtn.alpha = 1.0
-//        self.visitorViewNavigationBar.searchBtn.isHidden = true
-//        self.visitorViewNavigationBar.navigationTitleLabel.text = "Visitor"
         
         let title = NSAttributedString(string: "Visitor", attributes: [
             NSAttributedString.Key.font :UIFont(name: "Poppins-Medium", size: 22)!,

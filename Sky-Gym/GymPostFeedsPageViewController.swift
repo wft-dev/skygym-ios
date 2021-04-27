@@ -115,17 +115,10 @@ class GymPostFeedsPageViewController: UIViewController {
      @objc func menuChange() {  AppManager.shared.appDelegate.swRevealVC.revealToggle(self) }
     
      @objc func addPostAction() {
-        
         imagePicker.allowsEditing = true
         imagePicker.modalPresentationStyle = .fullScreen
         imagePicker.sourceType = .photoLibrary
         present(self.imagePicker, animated: true, completion: nil)
-    }
-    
-    func getAttributedCaption(userName:String,caption:String) -> NSMutableAttributedString {
-        let userNameBold = NSMutableAttributedString(string: userName, attributes: [NSAttributedString.Key.font:UIFont(name: "Poppins-Bold", size: 12)!])
-        userNameBold.append(NSAttributedString(string: "  \(caption)"))
-        return userNameBold
     }
 
     @objc  func likePostAction(_ sender:UIButton) {
@@ -139,7 +132,6 @@ class GymPostFeedsPageViewController: UIViewController {
         }
          self.reload(tableView: postFeedTable)
     }
-    
     
     @objc  func dislikePostAction(_ sender:UIButton) {
         if self.dislikeArray.contains(sender.tag) {
@@ -158,6 +150,11 @@ class GymPostFeedsPageViewController: UIViewController {
              captionExpand.append(sender.tag)
         }
         self.reload(tableView: postFeedTable)
+    }
+    
+    @objc func viewAllCommentAction(_ sender:UIButton) {
+        let commentsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "commentsVC") as! CommentsViewController
+        self.navigationController?.pushViewController(commentsVC, animated: true)
     }
     
     func reload(tableView: UITableView) {
@@ -185,7 +182,7 @@ extension GymPostFeedsPageViewController:UITableViewDataSource{
         cell.userNameLabel.text = singlePost.userName
         cell.postImg.image = singlePost.postImg
         cell.totalLikesLabel.text = "100 likes"
-        cell.captionLabel.attributedText = getAttributedCaption(userName: singlePost.userName, caption: singlePost.caption)
+        cell.captionLabel.attributedText = AppManager.shared.getAttributedCaption(userName: singlePost.userName, caption: singlePost.caption)
         cell.latestCommentUserNameLabel.text = comment.userName
         cell.latestCommentLabel.text = comment.commentStr
         cell.secondLatestCommentUserNameLabel.text = comment.userName
@@ -205,6 +202,7 @@ extension GymPostFeedsPageViewController:UITableViewDataSource{
 
         cell.likeBtn.addTarget(self, action: #selector(likePostAction(_ :)), for: .touchUpInside)
         cell.dislikeBtn.addTarget(self, action: #selector(dislikePostAction(_ :)), for: .touchUpInside)
+        cell.viewAllCommentBtn.addTarget(self, action: #selector(viewAllCommentAction(_ :)), for: .touchUpInside)
         
         if captionExpand.contains(indexPath.row) {
             cell.moreBtn.removeTarget(self, action: #selector(showFullCaption(_ :)), for: .touchUpInside)
@@ -252,6 +250,7 @@ extension GymPostFeedsPageViewController:UIImagePickerControllerDelegate, UINavi
         }
         dismiss(animated: true) {
             let uploadPhotoVc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "uploadPhotoVC") as! UploadPhotoViewController
+            uploadPhotoVc.selecteImage = self.newPostImg
             self.navigationController?.pushViewController(uploadPhotoVc, animated: true)
         }
     }

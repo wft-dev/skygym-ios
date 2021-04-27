@@ -40,9 +40,7 @@ class MemberDetailViewController: BaseViewController {
        super.viewDidLoad()
         setMemberDetailUI()
         
-//        FireStoreManager.shared.getReminderBy(reminderID: "2424", memberID: "3333") { (reminder) in
-//            print("REMINDER \(reminder?.reminderID) , \(reminder?.note)")
-//        }
+        FireStoreManager.shared.uploadNewPostFor()
         
     }
     
@@ -95,7 +93,7 @@ class MemberDetailViewController: BaseViewController {
     func setCustomMemberDetailNavigation()  {
         let s = AppManager.shared.loggedInRole == LoggedInRole.Member ? "Home" : "Member Detail"
         let title = NSAttributedString(string: s, attributes: [
-            NSAttributedString.Key.font : UIFont(name: "Poppins-Medium", size: 22) as! UIFont,
+            NSAttributedString.Key.font : UIFont(name: "Poppins-Medium", size: 22)!,
         ])
         let titleLabel = UILabel()
         titleLabel.attributedText = title

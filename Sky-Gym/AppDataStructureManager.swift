@@ -424,6 +424,8 @@ struct Comment {
     var userID:String
     var userName:String
     var commentStr:String
+    var userImg:UIImage?
+    var time:String?
 }
 
 protocol PostFeed {

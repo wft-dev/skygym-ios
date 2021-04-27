@@ -922,6 +922,12 @@ class AppManager: NSObject {
         return workoutPlan
     }
     
+    func getAttributedCaption(userName:String,caption:String) -> NSMutableAttributedString {
+        let userNameBold = NSMutableAttributedString(string: userName, attributes: [NSAttributedString.Key.font:UIFont(name: "Poppins-Bold", size: 12)!])
+        userNameBold.append(NSAttributedString(string: "  \(caption)"))
+        return userNameBold
+    }
+    
 }
 
 

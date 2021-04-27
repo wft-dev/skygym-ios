@@ -9,6 +9,10 @@
 import UIKit
 
 class UploadPhotoViewController: UIViewController {
+    
+    @IBOutlet weak var newPostImg: UIImageView!
+    @IBOutlet weak var captionTextView: UITextView!
+    
     private var leftBtn:UIButton = {
         let leftBtn = UIButton()
         leftBtn.setImage(UIImage(named: "left-arrow"), for: .normal)
@@ -20,19 +24,26 @@ class UploadPhotoViewController: UIViewController {
     
     private var nextBtn:UIButton = {
         let nextBtn = UIButton()
-        nextBtn.setTitle("next", for: .normal)
+        nextBtn.setAttributedTitle(NSAttributedString(string: "Share", attributes: [
+            NSAttributedString.Key.foregroundColor:UIColor.black,
+            NSAttributedString.Key.font : UIFont(name: "Poppins-Regular", size: 18)!
+        ]), for: .normal)
         nextBtn.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
-        nextBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        nextBtn.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        nextBtn.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        nextBtn.widthAnchor.constraint(equalToConstant: 60).isActive = true
         return nextBtn
     }()
     
     var stackView:UIStackView? = nil
     var rightStackView:UIStackView? = nil
+    var selecteImage:UIImage? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setUploadPhotoNavigationBar()
+        self.newPostImg.image = selecteImage
+        self.captionTextView.layer.cornerRadius = 7.0
+        self.captionTextView.backgroundColor = UIColor(red: 232/255, green: 232/255, blue: 232/255, alpha: 1.0)
     }
     
     func setUploadPhotoNavigationBar()  {
@@ -52,11 +63,10 @@ class UploadPhotoViewController: UIViewController {
         stackView?.widthAnchor.constraint(equalToConstant: 40).isActive = true
         
         rightStackView =  UIStackView(arrangedSubviews: [spaceBtn,nextBtn])
-        rightStackView?.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        rightStackView?.widthAnchor.constraint(equalToConstant: 110).isActive = true
 
         navigationItem.setLeftBarButton(UIBarButtonItem(customView: stackView!), animated: true)
-        
-        navigationItem.setRightBarButton(UIBarButtonItem(customView: rightStackView!), animated: true)
+        navigationItem.setRightBarButton(UIBarButtonItem(customView: nextBtn), animated: true)
     }
     
     @objc func backAction(){

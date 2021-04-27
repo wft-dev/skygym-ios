@@ -39,6 +39,7 @@
 		4249C399251B12BF00DC9AE0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4249C397251B12BF00DC9AE0 /* LaunchScreen.storyboard */; };
 		4249E33826022AAA009BCFD7 /* GymVideosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4249E33726022AAA009BCFD7 /* GymVideosViewController.swift */; };
 		424BA43125D121F0000F1B1B /* ProfileAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424BA43025D121F0000F1B1B /* ProfileAdminViewController.swift */; };
+		424CCACC2637ED37001EE8D2 /* CommentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424CCACB2637ED37001EE8D2 /* CommentsViewController.swift */; };
 		424FD2F2260A10D300D8D811 /* ListOfWorkoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424FD2F1260A10D300D8D811 /* ListOfWorkoutViewController.swift */; };
 		4259DC1D252311EF00F08FA6 /* MemberAndTrainerDetailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */; };
 		4259DC1F2523121C00F08FA6 /* MemberAndTrainerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */; };
@@ -109,6 +110,7 @@
 		4249C39A251B12BF00DC9AE0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4249E33726022AAA009BCFD7 /* GymVideosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymVideosViewController.swift; sourceTree = "<group>"; };
 		424BA43025D121F0000F1B1B /* ProfileAdminViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileAdminViewController.swift; sourceTree = "<group>"; };
+		424CCACB2637ED37001EE8D2 /* CommentsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsViewController.swift; sourceTree = "<group>"; };
 		424FD2F1260A10D300D8D811 /* ListOfWorkoutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfWorkoutViewController.swift; sourceTree = "<group>"; };
 		4259DC1C252311EF00F08FA6 /* MemberAndTrainerDetailView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemberAndTrainerDetailView.xib; sourceTree = "<group>"; };
 		4259DC1E2523121C00F08FA6 /* MemberAndTrainerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAndTrainerDetailView.swift; sourceTree = "<group>"; };
@@ -254,6 +256,7 @@
 				4262418F26270528009F9EE9 /* HealthDataViewController.swift */,
 				4235BC4626317FE900AB5A90 /* GymPostFeedsPageViewController.swift */,
 				42BF8B902636E70F00CC12EB /* UploadPhotoViewController.swift */,
+				424CCACB2637ED37001EE8D2 /* CommentsViewController.swift */,
 			);
 			path = "Sky-Gym";
 			sourceTree = "<group>";
@@ -442,6 +445,7 @@
 				4259DC212523469A00F08FA6 /* ListOfMembersViewController.swift in Sources */,
 				424937232526094D0043ADFF /* AddMemberViewController.swift in Sources */,
 				42BF8B912636E70F00CC12EB /* UploadPhotoViewController.swift in Sources */,
+				424CCACC2637ED37001EE8D2 /* CommentsViewController.swift in Sources */,
 				42B873AE2536E19E004CCD50 /* FireStoreManager.swift in Sources */,
 				42F7DBAF2521A444001F0050 /* MenuItemsViewController.swift in Sources */,
 				429F714B257DF2E300965DB8 /* MessengerManager.swift in Sources */,
