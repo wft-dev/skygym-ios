@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 class CommentsTableCell: UITableViewCell {
     @IBOutlet weak var commentingUserImg: UIImageView!
     @IBOutlet weak var userComment: UILabel!
@@ -42,7 +41,6 @@ class CommentsViewController: UIViewController {
     
     var stackView:UIStackView? = nil
     var rightStackView:UIStackView? = nil
-    
     var commentArray:[Comment] = []
     
     override func viewDidLoad() {
@@ -101,7 +99,6 @@ class CommentsViewController: UIViewController {
     }
 
 }
-
 
 extension CommentsViewController:UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

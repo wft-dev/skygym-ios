@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class UploadPhotoViewController: UIViewController {
     
@@ -37,6 +38,7 @@ class UploadPhotoViewController: UIViewController {
     var stackView:UIStackView? = nil
     var rightStackView:UIStackView? = nil
     var selecteImage:UIImage? = nil
+    var userName:String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,7 +76,49 @@ class UploadPhotoViewController: UIViewController {
     }
     
     @objc func nextPostAction(){
-        self.navigationController?.popViewController(animated: true)
+        let alertController = UIAlertController(title: "Attention", message: "Do you want to post this ?", preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "OK", style: .default) { (_) in
+            self.shareAction()
+        }
+        let cancelAlertAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(okAlertAction)
+        alertController.addAction(cancelAlertAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func shareAction() {
+        SVProgressHUD.show()
+        FireStoreManager.shared.uploadNewPostFor(memberID: AppManager.shared.memberID, data: takeData()) { (err) in
+            SVProgressHUD.dismiss()
+            if err == nil {
+                self.showUploadPhotAlert(title: "Success", msg: "New post is uploaded successfully.")
+            }else {
+                self.showUploadPhotAlert(title: "Faiure", msg: "Something went wrong, please try again.")
+            }
+        }
+    }
+    
+    func showUploadPhotAlert(title:String,msg:String) {
+        let alertController = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+        let okAlertAction = UIAlertAction(title: "OK", style: .default) { (_) in
+            if title == "Success" {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
+        alertController.addAction(okAlertAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func takeData() -> Dictionary<String,Any> {
+        let uploadData:[String:Any] = [
+            "postImgData" : self.newPostImg.image?.jpegData(compressionQuality: 0.5),
+            "isLiked" :  false,
+            "isUnliked": false,
+            "caption" :  self.captionTextView.text!,
+            "timeForPost" : Date().timeIntervalSince1970
+        ]
+        return uploadData
     }
 
 }

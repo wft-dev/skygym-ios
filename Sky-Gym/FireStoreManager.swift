@@ -2176,41 +2176,88 @@ class FireStoreManager: NSObject {
     }
     
     //gym posts feed functionality
-    // memberID:String,data:Dictionary<String,Any>,completion:@escaping (Error?) -> Void
     
-    
-    func uploadNewPostFor()  {
-        let ref = fireDB.collection("PostFeeds").document("4444")
+    func uploadNewPostFor(memberID:String,data:Dictionary<String,Any>,completion:@escaping (Error?) -> Void)  {
+        let ref = fireDB.collection("PostFeeds").document(memberID)
+        let ImgStorageRef = fireStorageRef.child("posts/\(memberID)/\(data["timeForPost"]!)")
+        let df = DateFormatter()
+        df.dateFormat = "dd/MM/yyyy"
+        let today = df.string(from: Date())
+        
+        var uploadPostData = data
+        let imgData = uploadPostData["postImgData"] as! Data
+        uploadPostData.removeValue(forKey: "postImgData")
+        uploadPostData["postImgRef"] = ImgStorageRef.fullPath
         
         let postData : [String:Any] = [
-            "27/4/2021" : ["userName" : "Sagar",
-                           "userImg" : "Sagar",
-                           "postImg" : "Sagar",
-                           "isLiked" : true,
-                           "isUnliked":false,
-                           "caption" : "This is my first post.Please like and share it as much as you can.",
-                           "timeForPost" : Date().timeIntervalSince1970
-            ]
+            "\(today)" : uploadPostData
         ]
         
-        ref.setData([
-            "posts": postData
-        ]) { (err) in
-            if err == nil {
-                print("no error ")
+        ref.getDocument { (docSnapshot, err) in
+            if err == nil && docSnapshot?.exists == true {
+                var postDataS = docSnapshot!.data()!["posts"] as! [String:Any]
+                postDataS["\(today)"] = uploadPostData
+                ref.updateData(["posts":postDataS]) { (err) in
+                    if err == nil {
+                        ImgStorageRef.putData(imgData, metadata: nil, completion: {
+                            (_,finalError) in
+                            completion(finalError)
+                        })
+                    }else {
+                        completion(err)
+                    }
+                }
             }else {
-                print("Error : \(err!)")
+                ref.setData([
+                    "posts": postData
+                ]) { (err) in
+                    if err == nil {
+                        ImgStorageRef.putData(imgData, metadata: nil, completion: {
+                            (_,finalError) in
+                            completion(finalError)
+                        })
+                    }else {
+                        completion(err)
+                    }
+                }
             }
         }
     }
     
-//    func getAllPosts(<#parameters#>) -> <#return type#> {
-//        <#function body#>
+//    func fetchPost() {
+//
+//        let ref = fireDB.collection("PostFeeds")
+//        ref.getDocuments { (querySnapshot, err) in
+//            if err == nil {
+//                if querySnapshot?.documents.count ?? 0 > 0 {
+//                    for document in querySnapshot!.documents {
+//                        if document.exists  {
+//
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
 //    }
+
     
-    
-    
-    
+     //       let ref = fireDB.collection("PostFeeds")
+    //            .limit(to: 5)
+    //
+    //        ref.addSnapshotListener { (querySnapshot, err) in
+    //            if err == nil {
+    //                guard let snapshot = querySnapshot else {
+    //                    return
+    //                }
+    //                guard  let lastSnapshot = querySnapshot?.documents.last else {
+    //                    return
+    //                }
+    //                print("All documents : \(snapshot.documents)")
+    //                let next = ref.start(afterDocument: lastSnapshot)
+    //            }
+    //        }
+   
 }
 
 

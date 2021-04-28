@@ -40,7 +40,7 @@ class MemberDetailViewController: BaseViewController {
        super.viewDidLoad()
         setMemberDetailUI()
         
-        FireStoreManager.shared.uploadNewPostFor()
+        //FireStoreManager.shared.uploadNewPostFor()
         
     }
     

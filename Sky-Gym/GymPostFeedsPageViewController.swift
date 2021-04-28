@@ -93,6 +93,37 @@ class GymPostFeedsPageViewController: UIViewController {
         ]
     }
     
+    func fetchUserDetail(id:String) {
+        DispatchQueue.global(qos: .default).async {
+            let result = FireStoreManager.shared.isMemberWith(id: id)
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(flag):
+                    self.fetchUserInfo(flag: flag, id: id)
+                    break
+                case .failure(_):
+                    break
+                }
+            }
+        }
+    }
+    
+    func fetchUserInfo(flag:Bool,id:String) {
+        if flag == true  {
+            FireStoreManager.shared.getMemberByID(id: id) { (details, err) in
+                if err == nil {
+                    print("DETAIL IS : \(details!)")
+                }
+            }
+        } else {
+            FireStoreManager.shared.getTrainerBy(id: id) { (details, err) in
+                if err == nil {
+                    print("DETAIL IS  : \(details!) ")
+                }
+            }
+        }
+    }
+    
     func setPostsFeedNavigationBar()  {
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
@@ -146,10 +177,10 @@ class GymPostFeedsPageViewController: UIViewController {
     }
     
     @objc func showFullCaption(_ sender:UIButton) {
-        if captionExpand.contains(sender.tag)  == false {
+        if captionExpand.contains(sender.tag) == false {
              captionExpand.append(sender.tag)
+             self.reload(tableView: postFeedTable)
         }
-        self.reload(tableView: postFeedTable)
     }
     
     @objc func viewAllCommentAction(_ sender:UIButton) {
@@ -240,8 +271,6 @@ extension GymPostFeedsPageViewController:PostFeed {
     }
     
 }
-
-
 
 extension GymPostFeedsPageViewController:UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
