@@ -89,7 +89,7 @@ class UploadPhotoViewController: UIViewController {
     
     func shareAction() {
         SVProgressHUD.show()
-        FireStoreManager.shared.uploadNewPostFor(memberID: AppManager.shared.memberID, data: takeData()) { (err) in
+        FireStoreManager.shared.uploadNewPostFor(postID: "\(Int.random(in: 0 ..< 99999))",parentID:getParentID(),data: takeData()) { (err) in
             SVProgressHUD.dismiss()
             if err == nil {
                 self.showUploadPhotAlert(title: "Success", msg: "New post is uploaded successfully.")
@@ -116,9 +116,30 @@ class UploadPhotoViewController: UIViewController {
             "isLiked" :  false,
             "isUnliked": false,
             "caption" :  self.captionTextView.text!,
-            "timeForPost" : Date().timeIntervalSince1970
+            "likeCount" : 0,
+            "dislikeCount":0
         ]
         return uploadData
     }
+    
+    private func getParentID() -> String {
+        var parentID:String = ""
+        switch AppManager.shared.loggedInRole {
+        case .Admin:
+            parentID = ""
+            break
+        case .Member :
+            parentID = AppManager.shared.memberID
+            break
+        case .Trainer :
+            parentID = AppManager.shared.trainerID
+            break
+        default:
+            break
+        }
+        return parentID
+    }
+
+    
 
 }

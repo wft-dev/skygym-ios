@@ -42,6 +42,7 @@ class CommentsViewController: UIViewController {
     var stackView:UIStackView? = nil
     var rightStackView:UIStackView? = nil
     var commentArray:[Comment] = []
+    var userImg:UIImage? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,7 +50,7 @@ class CommentsViewController: UIViewController {
     }
     
     func setUpCommentsUI() {
-        userImgView.image = UIImage(named: "user")
+        userImgView.image = self.userImg
         userImgView.layer.cornerRadius = userImgView.frame.height/2
         commentTextField.layer.cornerRadius = 15.0
         commentTextField.layer.backgroundColor = UIColor.white.cgColor

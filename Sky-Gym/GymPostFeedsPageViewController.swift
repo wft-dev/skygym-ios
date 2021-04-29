@@ -65,6 +65,9 @@ class GymPostFeedsPageViewController: UIViewController {
     var captionExpand:[Int] = []
     var likeImgName = "like"
     var dislikeImgName = "dislike"
+    var userName:String = ""
+    var userImg:UIImage? = nil
+    let semaphores = DispatchSemaphore(value: 0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,21 +82,48 @@ class GymPostFeedsPageViewController: UIViewController {
         self.likeArray.removeAll()
         self.dislikeArray.removeAll()
         
-        commentArray = [
-            Comment(userID: "4444", userName: "Sagar",commentStr: "Nice keep it up.")
-        ]
- 
-        let caption = "My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment sagar."
+//        commentArray = [
+//            Comment(userID: "4444", userName: "Sagar",commentStr: "Nice keep it up.")
+//        ]
+//
+//        let caption = "My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment.My First post.Please like and comment sagar."
+//
+//        postsArray = [
+//           Posts(userID: "64628", userNameImg: UIImage(named: "user")!, userName: "Sagar Bohat", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption:caption, comments: commentArray,timeForPost: "1 hour ago"),
+//           Posts(userID: "6545", userNameImg: UIImage(named: "user")!, userName: "Sagar Kumar", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: "My First post.Please like and comment.", comments: commentArray,timeForPost: "2 hour ago"),
+//           Posts(userID: "5545", userNameImg: UIImage(named: "user")!, userName: "Sagar Bohat", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: "My First post.Please like and comment.", comments: commentArray,timeForPost: "3 hour ago"),
+//           Posts(userID: "3221", userNameImg: UIImage(named: "user")!, userName: "Sagar Kumar", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: caption, comments: commentArray,timeForPost: "4 hour ago")
+//        ]
         
-        postsArray = [
-           Posts(userID: "64628", userNameImg: UIImage(named: "user")!, userName: "Sagar Bohat", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption:caption, comments: commentArray,timeForPost: "1 hour ago"),
-           Posts(userID: "6545", userNameImg: UIImage(named: "user")!, userName: "Sagar Kumar", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: "My First post.Please like and comment.", comments: commentArray,timeForPost: "2 hour ago"),
-           Posts(userID: "5545", userNameImg: UIImage(named: "user")!, userName: "Sagar Bohat", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: "My First post.Please like and comment.", comments: commentArray,timeForPost: "3 hour ago"),
-           Posts(userID: "3221", userNameImg: UIImage(named: "user")!, userName: "Sagar Kumar", postImg: UIImage(named: "pexels")!, isLiked: true, isUnliked: false, likesCount: 1, unlikesCount: 0, caption: caption, comments: commentArray,timeForPost: "4 hour ago")
-        ]
+        self.fetchPosts()
     }
     
-    func fetchUserDetail(id:String) {
+    func fetchPosts() {
+        self.postsArray.removeAll()
+        DispatchQueue.global(qos: .background).async {
+            let result = FireStoreManager.shared.fetchPost()
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(postsDetailsArray):
+                    postsDetailsArray.forEach { (singlePost) in
+                        //self.postsArray.append(self.getCompleteSinglePost(data: singlePost))
+                        self.getCompleteSinglePost(data: singlePost)
+                    }
+                    self.reload(tableView: self.postFeedTable)
+                    break
+                case .failure(_):
+                    break
+                }
+            }
+        }
+    }
+    
+    private func getCompleteSinglePost(data:[String:Any]) {
+        let postData = data["postDetails"] as! [String:Any]
+        self.fetchUserDetail(id: data["parentID"] as! String)
+    }
+    
+   private func fetchUserDetail(id:String) {
         DispatchQueue.global(qos: .default).async {
             let result = FireStoreManager.shared.isMemberWith(id: id)
             DispatchQueue.main.async {
@@ -108,20 +138,65 @@ class GymPostFeedsPageViewController: UIViewController {
         }
     }
     
-    func fetchUserInfo(flag:Bool,id:String) {
+    private func fetchUserInfo(flag:Bool,id:String) {
         if flag == true  {
-            FireStoreManager.shared.getMemberByID(id: id) { (details, err) in
-                if err == nil {
-                    print("DETAIL IS : \(details!)")
-                }
-            }
+            self.getMemberName(memberID: id)
         } else {
-            FireStoreManager.shared.getTrainerBy(id: id) { (details, err) in
-                if err == nil {
-                    print("DETAIL IS  : \(details!) ")
+            self.getTrainerName(trainerID: id)
+        }
+        self.getUserImg(imgUrl: "Images/\(id)/userProfile.png")
+    }
+   
+    private func getMemberName(memberID:String) {
+        DispatchQueue.global(qos: .background).async {
+            let result = FireStoreManager.shared.getMemberNameBy(id: memberID)
+            
+            DispatchQueue.main.async {
+                switch result {
+                case let  .success(member):
+                    self.userName = member.memberName
+                    break
+                case .failure(_):
+                    break
                 }
             }
         }
+    }
+    
+    private func getTrainerName(trainerID:String) {
+        DispatchQueue.global(qos: .background).async {
+            let result = FireStoreManager.shared.getTrainerNameAndTypeBy(id: trainerID)
+            
+            DispatchQueue.main.async {
+                switch result {
+                case let  .success(trainer):
+                    self.userName = trainer.first!
+                    break
+                case .failure(_):
+                    break
+                }
+            }
+            
+        }
+    }
+    
+    private func getUserImg(imgUrl:String) {
+        DispatchQueue.global(qos: .background).async {
+          let result =  FireStoreManager.shared.downloadImage(imgUrl: imgUrl)
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(url):
+                    do {
+                        let imgData = try Data(contentsOf: url)
+                        self.userImg = UIImage(data: imgData)
+                    } catch let err { print("Error is : \(err)") }
+                    break
+                case .failure(_):
+                    break
+                }
+            }
+        }
+        
     }
     
     func setPostsFeedNavigationBar()  {
@@ -185,6 +260,7 @@ class GymPostFeedsPageViewController: UIViewController {
     
     @objc func viewAllCommentAction(_ sender:UIButton) {
         let commentsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "commentsVC") as! CommentsViewController
+        commentsVC.userImg = self.userImg
         self.navigationController?.pushViewController(commentsVC, animated: true)
     }
     

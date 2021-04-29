@@ -1617,6 +1617,26 @@ class FireStoreManager: NSObject {
             }
         })
     }
+
+    func downloadImage(imgUrl:String) -> Result<URL,Error> {
+        var result:Result<URL,Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        let imageRef = fireStorageRef.child(imgUrl)
+        imageRef.downloadURL(completion: {
+            (imgUrl,err) in
+
+            if err == nil {
+                result = .success(imgUrl!)
+                semaphores.signal()
+            }
+        })
+        
+        let _ = semaphores.wait(timeout: .distantFuture)
+        return result
+        
+    }
+
+    
     
     func uploadGallaryImage(imgData:Data,handler:@escaping (Error?) -> Void) {
         let imgRef = fireStorageRef.child("Gallary/\(Date().timeIntervalSince1970)")
@@ -2177,27 +2197,28 @@ class FireStoreManager: NSObject {
     
     //gym posts feed functionality
     
-    func uploadNewPostFor(memberID:String,data:Dictionary<String,Any>,completion:@escaping (Error?) -> Void)  {
-        let ref = fireDB.collection("PostFeeds").document(memberID)
-        let ImgStorageRef = fireStorageRef.child("posts/\(memberID)/\(data["timeForPost"]!)")
-        let df = DateFormatter()
-        df.dateFormat = "dd/MM/yyyy"
-        let today = df.string(from: Date())
-        
+    func uploadNewPostFor(postID:String,parentID:String,data:Dictionary<String,Any>,completion:@escaping (Error?) -> Void)  {
+        let timeStamp = Date().timeIntervalSince1970
+        let ref = fireDB.collection("PostFeeds").document(postID)
+        let ImgStorageRef = fireStorageRef.child("posts/\(postID)/\(timeStamp)")
+//        let df = DateFormatter()
+//        df.dateFormat = "dd/MM/yyyy"
+//        let today = df.string(from: Date())
+
         var uploadPostData = data
         let imgData = uploadPostData["postImgData"] as! Data
         uploadPostData.removeValue(forKey: "postImgData")
         uploadPostData["postImgRef"] = ImgStorageRef.fullPath
         
-        let postData : [String:Any] = [
-            "\(today)" : uploadPostData
-        ]
+//        let postData : [String:Any] = [
+//            "\(today)" : uploadPostData
+//        ]
         
         ref.getDocument { (docSnapshot, err) in
             if err == nil && docSnapshot?.exists == true {
-                var postDataS = docSnapshot!.data()!["posts"] as! [String:Any]
-                postDataS["\(today)"] = uploadPostData
-                ref.updateData(["posts":postDataS]) { (err) in
+                var postDataS = docSnapshot!.data()!["post"] as! [String:Any]
+                postDataS = uploadPostData
+                ref.updateData(["post":postDataS]) { (err) in
                     if err == nil {
                         ImgStorageRef.putData(imgData, metadata: nil, completion: {
                             (_,finalError) in
@@ -2207,9 +2228,11 @@ class FireStoreManager: NSObject {
                         completion(err)
                     }
                 }
-            }else {
+            } else {
                 ref.setData([
-                    "posts": postData
+                    "post": uploadPostData,
+                    "parentID":parentID,
+                    "timeStamp":timeStamp
                 ]) { (err) in
                     if err == nil {
                         ImgStorageRef.putData(imgData, metadata: nil, completion: {
@@ -2224,22 +2247,54 @@ class FireStoreManager: NSObject {
         }
     }
     
-//    func fetchPost() {
-//
-//        let ref = fireDB.collection("PostFeeds")
-//        ref.getDocuments { (querySnapshot, err) in
-//            if err == nil {
-//                if querySnapshot?.documents.count ?? 0 > 0 {
-//                    for document in querySnapshot!.documents {
-//                        if document.exists  {
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
+    func fetchPost() -> Result<[Dictionary<String,Any>],Error> {
+        var result:Result<[Dictionary<String,Any>],Error>!
+        let semaphores = DispatchSemaphore(value: 0)
+        var arrayOfPosts:[Dictionary<String,Any>] = []
+        let ref = fireDB.collection("PostFeeds")
+        ref.getDocuments { (querySnapshot, err) in
+            if err == nil {
+                if querySnapshot?.documents.count ?? 0 > 0 {
+                    for document in querySnapshot!.documents {
+                        if document.exists  {
+                            arrayOfPosts.append(self.filterPost(data: document.data()))
+                        }
+                    }
+                    result = .success(arrayOfPosts)
+                    semaphores.signal()
+                }
+            }
+        }
+        let _ = semaphores.wait(timeout: .distantFuture)
+        return result
+    }
+    
+    private func filterPost(data:[String:Any]) -> [String:Any] {
+        var filteredData:[String:Any] = [:]
+
+        filteredData["parentID"] = data["parentID"] as! String
+        filteredData["postDetails"] = data["post"] as! [String:Any]
+        filteredData["timeStamp"] = data["timeStamp"] as! TimeInterval
+        
+        return filteredData
+    }
+    
+    
+    
+//    struct Posts {
+//        var userID:String
+//        var userNameImg:UIImage
+//        var userName:String
+//        var postImg:UIImage
+//        var isLiked:Bool
+//        var isUnliked:Bool
+//        var likesCount:Int
+//        var unlikesCount:Int
+//        var caption:String
+//        var comments:[Comment]
+//        var timeForPost:String
 //    }
+    
 
     
      //       let ref = fireDB.collection("PostFeeds")
@@ -2257,6 +2312,8 @@ class FireStoreManager: NSObject {
     //                let next = ref.start(afterDocument: lastSnapshot)
     //            }
     //        }
+    
+    
    
 }
 

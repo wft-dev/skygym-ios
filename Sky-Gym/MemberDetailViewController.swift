@@ -40,8 +40,6 @@ class MemberDetailViewController: BaseViewController {
        super.viewDidLoad()
         setMemberDetailUI()
         
-        //FireStoreManager.shared.uploadNewPostFor()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
