@@ -21,8 +21,8 @@ class MemberAndTrainerLoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        gymIDTextField?.text = "1221"
-        emailTextField?.text = "trainer2@gmail.com"
+        gymIDTextField?.text = "" //"1221"
+        emailTextField?.text =  ""//"trainer2@gmail.com"
         passwordTextField?.text = ""
         
         self.assignbackground()
