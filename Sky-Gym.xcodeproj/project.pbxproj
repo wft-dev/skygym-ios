@@ -195,6 +195,7 @@
 		4249C388251B12BD00DC9AE0 /* Sky-Gym */ = {
 			isa = PBXGroup;
 			children = (
+				C2802C712949BD0B009C5D37 /* Manager */,
 				4262418C2626BD44009F9EE9 /* Sky-Gym.entitlements */,
 				4249C389251B12BD00DC9AE0 /* AppDelegate.swift */,
 				4249C38B251B12BD00DC9AE0 /* SceneDelegate.swift */,
@@ -210,7 +211,6 @@
 				423F8709252B4846001C30D4 /* MemberDetailViewController.swift */,
 				42A407A2251C780A0087B02F /* AdminRegistrationSecondViewController.swift */,
 				424937222526094D0043ADFF /* AddMemberViewController.swift */,
-				42A407A4251C78570087B02F /* AppManager.swift */,
 				42CAADF2252C90DA006E1D76 /* PurchaseViewController.swift */,
 				42A407A6251CC6A40087B02F /* MemberAndTrainerLoginViewController.swift */,
 				42F7DBAE2521A444001F0050 /* MenuItemsViewController.swift */,
@@ -242,7 +242,6 @@
 				42985EE525B949CE004915E5 /* ForgotPasswordViewController.swift */,
 				424BA43025D121F0000F1B1B /* ProfileAdminViewController.swift */,
 				423C02B825E7DAA700F548CD /* ChatViewController.swift */,
-				423EB0DD25F2007A0094AA0B /* StripeManager.swift */,
 				423EB0DF25F215530094AA0B /* CardPaymentViewController.swift */,
 				42434EFD25F6295300543396 /* GallaryViewController.swift */,
 				4249E33726022AAA009BCFD7 /* GymVideosViewController.swift */,
@@ -251,7 +250,6 @@
 				422FD426260B16C0001052C9 /* AddNewWorkoutViewController.swift */,
 				425CF7A5261725EF000C9EC2 /* AddReminderViewController.swift */,
 				4247D4C4261F0D1A0023BF80 /* SettingsViewController.swift */,
-				4247D4C6261F15B70023BF80 /* HealthKitManager.swift */,
 				4247D4C8261F28CB0023BF80 /* StepsOrHeartRateTableViewController.swift */,
 				4262418F26270528009F9EE9 /* HealthDataViewController.swift */,
 				4235BC4626317FE900AB5A90 /* GymPostFeedsPageViewController.swift */,
@@ -277,6 +275,16 @@
 				4F84D1FA3B68CE52B796C350 /* Pods_Sky_Gym.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C2802C712949BD0B009C5D37 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				423EB0DD25F2007A0094AA0B /* StripeManager.swift */,
+				4247D4C6261F15B70023BF80 /* HealthKitManager.swift */,
+				42A407A4251C78570087B02F /* AppManager.swift */,
+			);
+			path = Manager;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
