@@ -231,7 +231,6 @@
 				4231BF9325342965007EFBBF /* ViewVisitorScreenViewController.swift */,
 				4231BF97253458A9007EFBBF /* ListOfEventsViewController.swift */,
 				4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */,
-				42B873AD2536E19E004CCD50 /* FireStoreManager.swift */,
 				42C3F50F25386B3C007DBC79 /* AppDataStructureManager.swift */,
 				42446A27256FA7AE00F966FD /* Validator.swift */,
 				429F714A257DF2E300965DB8 /* MessengerManager.swift */,
@@ -280,6 +279,7 @@
 		C2802C712949BD0B009C5D37 /* Manager */ = {
 			isa = PBXGroup;
 			children = (
+				42B873AD2536E19E004CCD50 /* FireStoreManager.swift */,
 				423EB0DD25F2007A0094AA0B /* StripeManager.swift */,
 				4247D4C6261F15B70023BF80 /* HealthKitManager.swift */,
 				42A407A4251C78570087B02F /* AppManager.swift */,
