@@ -233,7 +233,6 @@
 				4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */,
 				42C3F50F25386B3C007DBC79 /* AppDataStructureManager.swift */,
 				42446A27256FA7AE00F966FD /* Validator.swift */,
-				429F714A257DF2E300965DB8 /* MessengerManager.swift */,
 				423BB6522594BA8400F5FB45 /* GymInfoViewController.swift */,
 				425E40D22599F0DB0052401F /* TrainerProfileViewController.swift */,
 				4219F69625A49750005BF579 /* MemberLoginProfileViewController.swift */,
@@ -283,6 +282,7 @@
 				423EB0DD25F2007A0094AA0B /* StripeManager.swift */,
 				4247D4C6261F15B70023BF80 /* HealthKitManager.swift */,
 				42A407A4251C78570087B02F /* AppManager.swift */,
+				429F714A257DF2E300965DB8 /* MessengerManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
