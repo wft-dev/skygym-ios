@@ -195,6 +195,7 @@
 		4249C388251B12BD00DC9AE0 /* Sky-Gym */ = {
 			isa = PBXGroup;
 			children = (
+				C239445E294AE88F00070744 /* AppConstant */,
 				C2802C712949BD0B009C5D37 /* Manager */,
 				4262418C2626BD44009F9EE9 /* Sky-Gym.entitlements */,
 				4249C389251B12BD00DC9AE0 /* AppDelegate.swift */,
@@ -232,7 +233,6 @@
 				4231BF97253458A9007EFBBF /* ListOfEventsViewController.swift */,
 				4231BF9925347328007EFBBF /* ViewEventScreenViewController.swift */,
 				42C3F50F25386B3C007DBC79 /* AppDataStructureManager.swift */,
-				42446A27256FA7AE00F966FD /* Validator.swift */,
 				423BB6522594BA8400F5FB45 /* GymInfoViewController.swift */,
 				425E40D22599F0DB0052401F /* TrainerProfileViewController.swift */,
 				4219F69625A49750005BF579 /* MemberLoginProfileViewController.swift */,
@@ -273,6 +273,14 @@
 				4F84D1FA3B68CE52B796C350 /* Pods_Sky_Gym.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C239445E294AE88F00070744 /* AppConstant */ = {
+			isa = PBXGroup;
+			children = (
+				42446A27256FA7AE00F966FD /* Validator.swift */,
+			);
+			path = AppConstant;
 			sourceTree = "<group>";
 		};
 		C2802C712949BD0B009C5D37 /* Manager */ = {
